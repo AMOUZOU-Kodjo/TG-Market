@@ -344,9 +344,9 @@ export default function SettingsPage() {
             </h3>
             <div className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800/50">
               <div className="flex items-center gap-3">
-                <div className={`flex h-10 w-10 items-center justify-center rounded-full ${twoFactorEnabled ? "bg-green-100 dark:bg-green-900/30" : "bg-gray-200 dark:bg-gray-700"}`}>
+                <div className={`flex h-10 w-10 items-center justify-center rounded-full ${twoFactorEnabled ? "bg-brand-100 dark:bg-brand-900/30" : "bg-gray-200 dark:bg-gray-700"}`}>
                   {twoFactorEnabled ? (
-                    <ShieldCheck className="h-5 w-5 text-green-600 dark:text-green-400" />
+                    <ShieldCheck className="h-5 w-5 text-brand-600 dark:text-brand-400" />
                   ) : (
                     <ShieldAlert className="h-5 w-5 text-gray-400" />
                   )}
@@ -373,7 +373,7 @@ export default function SettingsPage() {
                   }
                 }}
                 className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
-                  twoFactorEnabled ? "bg-green-600" : "bg-gray-300 dark:bg-gray-600"
+                  twoFactorEnabled ? "bg-brand-600" : "bg-gray-300 dark:bg-gray-600"
                 }`}
               >
                 <span
@@ -444,7 +444,7 @@ export default function SettingsPage() {
                     key={session.id}
                     className={`flex items-center justify-between rounded-xl border p-4 ${
                       session.isCurrent
-                        ? "border-green-200 bg-green-50/50 dark:border-green-800/30 dark:bg-green-900/10"
+                        ? "border-brand-200 bg-brand-50/50 dark:border-brand-800/30 dark:bg-brand-900/10"
                         : "border-gray-100 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/30"
                     }`}
                   >
@@ -458,8 +458,8 @@ export default function SettingsPage() {
                             {session.device}
                           </p>
                           {session.isCurrent && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-semibold text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                              <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                            <span className="inline-flex items-center gap-1 rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-semibold text-brand-700 dark:bg-brand-900/30 dark:text-brand-400">
+                              <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
                               Actuelle
                             </span>
                           )}
@@ -526,7 +526,7 @@ export default function SettingsPage() {
                       >
                         <div className="flex items-center gap-3">
                           {entry.success ? (
-                            <CheckCircle2 className="h-4 w-4 text-green-500" />
+                            <CheckCircle2 className="h-4 w-4 text-brand-500" />
                           ) : (
                             <X className="h-4 w-4 text-red-500" />
                           )}
@@ -540,7 +540,7 @@ export default function SettingsPage() {
                         <span
                           className={`text-xs font-medium ${
                             entry.success
-                              ? "text-green-600 dark:text-green-400"
+                              ? "text-brand-600 dark:text-brand-400"
                               : "text-red-600 dark:text-red-400"
                           }`}
                         >
@@ -702,9 +702,9 @@ export default function SettingsPage() {
                   </div>
                 </div>
               ) : mockKycStatus.documentStatus === "approved" ? (
-                <div className="flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  <p className="text-sm font-medium text-green-800 dark:text-green-300">Document vérifié avec succès</p>
+                <div className="flex items-center gap-3 rounded-xl border border-brand-200 bg-brand-50 p-4 dark:border-brand-800 dark:bg-brand-900/20">
+                  <CheckCircle2 className="h-5 w-5 text-brand-600" />
+                  <p className="text-sm font-medium text-brand-800 dark:text-brand-300">Document vérifié avec succès</p>
                 </div>
               ) : (
                 <div className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">

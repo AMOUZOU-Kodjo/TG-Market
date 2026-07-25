@@ -2,7 +2,7 @@ import { cn } from "@/shared/utils/cn";
 
 const variants = {
   primary:
-    "bg-red-200 text-red-950 dark:bg-red-800/15 dark:text-red-700",
+    "bg-brand-200 text-brand-950 dark:bg-brand-800/15 dark:text-brand-700",
   secondary:
     "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
   success:
@@ -45,7 +45,7 @@ export default function Badge({
             variant === "success" && "bg-green-700",
             variant === "warning" && "bg-yellow-500",
             variant === "danger" && "bg-red-700",
-            variant === "primary" && "bg-red-800",
+            variant === "primary" && "bg-brand-800",
             variant === "secondary" && "bg-gray-500",
             variant === "neutral" && "bg-gray-400"
           )}

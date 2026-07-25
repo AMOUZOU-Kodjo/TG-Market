@@ -84,7 +84,7 @@ export default function ReviewsPage() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Avis</h1>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {reviews.length} avis de la communauté AK Market
+          {reviews.length} avis de la communauté TG-Market
         </p>
       </div>
 
@@ -121,7 +121,7 @@ export default function ReviewsPage() {
           className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
         >
           <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
-            <MessageSquare className="h-5 w-5 text-red-800" />
+            <MessageSquare className="h-5 w-5 text-brand-800" />
             Laisser un avis
           </h2>
           <form onSubmit={handleSubmitReview} className="space-y-4">
@@ -179,7 +179,7 @@ export default function ReviewsPage() {
               onClick={() => setFilter(f.id)}
               className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium transition-colors ${
                 filter === f.id
-                  ? "bg-red-800 text-white"
+                  ? "bg-brand-800 text-white"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
               }`}
             >
@@ -222,14 +222,14 @@ export default function ReviewsPage() {
                       {formatRelativeTime(review.createdAt)}
                     </span>
                   </div>
-                  <p className="mt-1 text-xs text-red-800">
+                  <p className="mt-1 text-xs text-brand-800">
                     {review.productTitle}
                   </p>
                   <p className="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
                     {review.comment}
                   </p>
                   <div className="mt-3 flex items-center gap-3">
-                    <button className="flex items-center gap-1 text-xs text-gray-400 transition-colors hover:text-green-700 dark:hover:text-green-600">
+                    <button className="flex items-center gap-1 text-xs text-gray-400 transition-colors hover:text-brand-700 dark:hover:text-brand-600">
                       <ThumbsUp className="h-3.5 w-3.5" />
                       Utile
                     </button>

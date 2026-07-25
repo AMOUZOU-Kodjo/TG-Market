@@ -5,7 +5,7 @@ import { cn } from "@/shared/utils/cn";
 
 const variants = {
   primary:
-    "bg-red-800 text-white hover:bg-red-900 shadow-sm shadow-red-800/25 dark:bg-red-800 dark:hover:bg-red-900",
+    "bg-brand-800 text-white hover:bg-brand-900 shadow-sm shadow-brand-800/25 dark:bg-brand-800 dark:hover:bg-brand-900",
   secondary:
     "bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700",
   outline:
@@ -14,7 +14,7 @@ const variants = {
     "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800",
   danger:
     "bg-red-700 text-white hover:bg-red-800 shadow-sm shadow-red-700/25 dark:bg-red-700 dark:hover:bg-red-800",
-  link: "text-red-800 hover:text-red-900 underline-offset-4 hover:underline dark:text-red-700 dark:hover:text-red-400",
+  link: "text-brand-800 hover:text-brand-900 underline-offset-4 hover:underline dark:text-brand-700 dark:hover:text-brand-400",
 };
 
 const sizes = {
@@ -62,7 +62,7 @@ const Button = forwardRef(
         disabled={isDisabled}
         className={cn(
           "inline-flex items-center justify-center font-medium transition-all duration-200",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-800 focus-visible:ring-offset-2",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-800 focus-visible:ring-offset-2",
           "disabled:pointer-events-none disabled:opacity-50",
           variants[variant],
           sizes[size],

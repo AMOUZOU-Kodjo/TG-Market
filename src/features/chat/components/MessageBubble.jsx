@@ -15,7 +15,7 @@ export default function MessageBubble({ message, isOwn = false, showTimestamp = 
         className={cn(
           "max-w-[75%] rounded-2xl px-4 py-2.5",
           isOwn
-            ? "bg-red-800 text-white rounded-br-md"
+            ? "bg-brand-800 text-white rounded-br-md"
             : "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white rounded-bl-md"
         )}
       >
@@ -24,12 +24,12 @@ export default function MessageBubble({ message, isOwn = false, showTimestamp = 
           <div
             className={cn(
               "mt-1 flex items-center justify-end gap-1",
-              isOwn ? "text-red-200" : "text-gray-400 dark:text-gray-500"
+              isOwn ? "text-brand-200" : "text-gray-400 dark:text-gray-500"
             )}
           >
             <span className="text-[10px]">{formatTime(message.createdAt)}</span>
             {isOwn && (
-              <span className="text-red-300">
+              <span className="text-brand-300">
                 {message.read ? (
                   <CheckCheck className="h-3.5 w-3.5" />
                 ) : (

@@ -82,7 +82,7 @@ export default function ProductCard({
           {title}
         </div>
         <div className="mb-3 flex items-baseline gap-2">
-          <span className="text-lg font-bold text-red-800">
+          <span className="text-lg font-bold text-brand-800">
             {formatPrice(price)}
           </span>
           {originalPrice && (
@@ -92,7 +92,7 @@ export default function ProductCard({
           )}
         </div>
         {negotiable && (
-          <span className="mb-2 inline-block rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-medium text-red-900 dark:bg-red-800/10 dark:text-red-700">
+          <span className="mb-2 inline-block rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-medium text-brand-900 dark:bg-brand-800/10 dark:text-brand-700">
             Négociable
           </span>
         )}

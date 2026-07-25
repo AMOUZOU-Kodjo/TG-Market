@@ -45,6 +45,7 @@ import {
   MaintenancePage,
   VehicleListingsPage,
   HowItWorksPage,
+  ContactPage,
 } from "@/routes/lazyPages";
 
 const queryClient = new QueryClient({
@@ -165,6 +166,7 @@ function App() {
 
                       <Route path="/a-propos" element={<AboutPage />} />
                       <Route path="/comment-ca-marche" element={<HowItWorksPage />} />
+                      <Route path="/contact" element={<ContactPage />} />
                       <Route path="/faq" element={<FAQPage />} />
                       <Route path="/confidentialite" element={<PrivacyPage />} />
                       <Route path="/conditions" element={<TermsPage />} />

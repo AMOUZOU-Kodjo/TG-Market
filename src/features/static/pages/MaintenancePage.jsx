@@ -41,7 +41,7 @@ export default function MaintenancePage() {
                 repeat: Infinity,
                 ease: "linear",
               }}
-              className="absolute inset-0 rounded-full border-4 border-dashed border-red-300 dark:border-red-800/20"
+              className="absolute inset-0 rounded-full border-4 border-dashed border-brand-300 dark:border-brand-800/20"
             />
             <div className="absolute inset-0 flex items-center justify-center">
               <motion.div
@@ -54,7 +54,7 @@ export default function MaintenancePage() {
                   ease: "easeInOut",
                 }}
               >
-                <Wrench className="h-10 w-10 text-red-800" />
+                <Wrench className="h-10 w-10 text-brand-800" />
               </motion.div>
             </div>
           </div>
@@ -64,14 +64,14 @@ export default function MaintenancePage() {
               Maintenance en cours
             </h1>
             <p className="mb-6 text-gray-500 dark:text-gray-400">
-              AK Market est actuellement en maintenance pour améliorer vos
+              TG-Market est actuellement en maintenance pour améliorer vos
               services. Nous serons de retour très bientôt !
             </p>
           </div>
 
           {/* Estimated Time */}
-          <div className="mb-6 flex items-center gap-3 rounded-xl bg-red-50 p-4 dark:bg-red-800/5">
-            <Clock className="h-5 w-5 shrink-0 text-red-800" />
+          <div className="mb-6 flex items-center gap-3 rounded-xl bg-brand-50 p-4 dark:bg-brand-800/5">
+            <Clock className="h-5 w-5 shrink-0 text-brand-800" />
             <div>
               <p className="text-xs text-gray-500 dark:text-gray-400">
                 Retour estimé
@@ -94,7 +94,7 @@ export default function MaintenancePage() {
                 "Nouvelles fonctionnalités de messagerie",
               ].map((item, i) => (
                 <li key={i} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                  <div className="h-1.5 w-1.5 rounded-full bg-red-800" />
+                  <div className="h-1.5 w-1.5 rounded-full bg-brand-800" />
                   {item}
                 </li>
               ))}
@@ -126,10 +126,10 @@ export default function MaintenancePage() {
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="flex items-center gap-3 rounded-xl bg-green-50 p-4 dark:bg-green-700/10"
+              className="flex items-center gap-3 rounded-xl bg-brand-50 p-4 dark:bg-brand-700/10"
             >
-              <CheckCircle2 className="h-5 w-5 shrink-0 text-green-700" />
-              <p className="text-sm text-green-700 dark:text-green-600">
+              <CheckCircle2 className="h-5 w-5 shrink-0 text-brand-700" />
+              <p className="text-sm text-brand-700 dark:text-brand-600">
                 Parfait ! Vous recevrez un email à <strong>{email}</strong> dès que le site sera de retour.
               </p>
             </motion.div>
@@ -141,13 +141,13 @@ export default function MaintenancePage() {
               Suivez-nous sur les réseaux sociaux pour les dernières mises à jour
             </p>
             <div className="mt-3 flex justify-center gap-3">
-              <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-800 dark:bg-red-700/10 dark:text-red-400">
+              <span className="rounded-full bg-brand-100 px-3 py-1 text-xs font-medium text-brand-800 dark:bg-brand-700/10 dark:text-brand-400">
                 Facebook
               </span>
               <span className="rounded-full bg-sky-100 px-3 py-1 text-xs font-medium text-sky-600 dark:bg-sky-500/10 dark:text-sky-400">
                 Twitter
               </span>
-              <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-800 dark:bg-red-700/10 dark:text-red-400">
+              <span className="rounded-full bg-brand-100 px-3 py-1 text-xs font-medium text-brand-800 dark:bg-brand-700/10 dark:text-brand-400">
                 Instagram
               </span>
             </div>
@@ -155,7 +155,7 @@ export default function MaintenancePage() {
         </motion.div>
 
         <p className="mt-6 text-center text-xs text-gray-400 dark:text-gray-500">
-          © 2025 AK Market. Tous droits réservés.
+          © 2025 TG-Market. Tous droits réservés.
         </p>
       </div>
     </div>

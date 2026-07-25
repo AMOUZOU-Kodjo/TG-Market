@@ -11,12 +11,12 @@ export default function CategoryCard({
   ...rest
 }) {
   const colors = {
-    orange: "bg-red-50 text-red-800 dark:bg-red-800/10",
-    blue: "bg-red-50 text-red-700 dark:bg-red-700/10",
-    green: "bg-green-50 text-green-700 dark:bg-green-700/10",
-    purple: "bg-red-50 text-red-700 dark:bg-red-700/10",
-    pink: "bg-red-50 text-red-700 dark:bg-red-700/10",
-    teal: "bg-green-50 text-green-700 dark:bg-green-700/10",
+    orange: "bg-brand-50 text-brand-800 dark:bg-brand-800/10",
+    blue: "bg-brand-50 text-brand-700 dark:bg-brand-700/10",
+    green: "bg-brand-50 text-brand-700 dark:bg-brand-700/10",
+    purple: "bg-brand-50 text-brand-700 dark:bg-brand-700/10",
+    pink: "bg-brand-50 text-brand-700 dark:bg-brand-700/10",
+    teal: "bg-brand-50 text-brand-700 dark:bg-brand-700/10",
     red: "bg-red-50 text-red-700 dark:bg-red-700/10",
     yellow: "bg-yellow-50 text-yellow-600 dark:bg-yellow-500/10",
   };

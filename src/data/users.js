@@ -450,7 +450,7 @@ export const mockCurrentUser = formatUser({
   email: "mathieu.tossou@gmail.com",
   phone: "+22899123456",
   avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&facepad=4",
-  bio: "Entrepreneur \u00e0 Lom\u00e9. J\u2019ach\u00e8te et vends des produits vari\u00e9s sur AK Market depuis 2023.",
+  bio: "Entrepreneur \u00e0 Lom\u00e9. J\u2019ach\u00e8te et vends des produits vari\u00e9s sur TG-Market depuis 2023.",
   city: "Lom\u00e9",
   district: "B\u00e9",
   created_at: "2023-01-10T08:00:00Z",

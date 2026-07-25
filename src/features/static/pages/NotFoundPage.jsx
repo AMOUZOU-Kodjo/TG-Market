@@ -27,7 +27,7 @@ export default function NotFoundPage() {
               }}
               className="absolute inset-0 flex items-center justify-center"
             >
-              <span className="text-[120px] font-black leading-none text-red-800/20 dark:text-red-800/10">
+              <span className="text-[120px] font-black leading-none text-brand-800/20 dark:text-brand-800/10">
                 404
               </span>
             </motion.div>
@@ -45,9 +45,9 @@ export default function NotFoundPage() {
                 ease: "easeInOut",
                 delay: 0.5,
               }}
-              className="absolute left-4 top-4 rounded-xl bg-red-200 p-3 dark:bg-red-800/10"
+              className="absolute left-4 top-4 rounded-xl bg-brand-200 p-3 dark:bg-brand-800/10"
             >
-              <Search className="h-6 w-6 text-red-800" />
+              <Search className="h-6 w-6 text-brand-800" />
             </motion.div>
 
             <motion.div
@@ -62,7 +62,7 @@ export default function NotFoundPage() {
                 ease: "easeInOut",
                 delay: 1,
               }}
-              className="absolute right-4 top-8 rounded-xl bg-red-100 p-3 dark:bg-red-700/10"
+              className="absolute right-4 top-8 rounded-xl bg-brand-100 p-3 dark:bg-brand-700/10"
             >
               <span className="text-2xl">📦</span>
             </motion.div>
@@ -78,7 +78,7 @@ export default function NotFoundPage() {
                 ease: "easeInOut",
                 delay: 0.3,
               }}
-              className="absolute bottom-4 left-8 rounded-xl bg-green-100 p-3 dark:bg-green-700/10"
+              className="absolute bottom-4 left-8 rounded-xl bg-brand-100 p-3 dark:bg-brand-700/10"
             >
               <span className="text-2xl">🔍</span>
             </motion.div>
@@ -94,7 +94,7 @@ export default function NotFoundPage() {
                 ease: "easeInOut",
                 delay: 0.8,
               }}
-              className="absolute bottom-2 right-6 rounded-xl bg-red-100 p-3 dark:bg-red-700/10"
+              className="absolute bottom-2 right-6 rounded-xl bg-brand-100 p-3 dark:bg-brand-700/10"
             >
               <span className="text-2xl">❓</span>
             </motion.div>
@@ -140,11 +140,11 @@ export default function NotFoundPage() {
         >
           <p className="text-sm text-gray-500 dark:text-gray-400">
             En attendant, pourquoi ne pas{" "}
-            <Link to="/" className="font-medium text-red-800 hover:underline">
+            <Link to="/" className="font-medium text-brand-800 hover:underline">
               explorer les annonces
             </Link>
             {" "}ou{" "}
-            <Link to="/vendre" className="font-medium text-red-800 hover:underline">
+            <Link to="/vendre" className="font-medium text-brand-800 hover:underline">
               publier une annonce
             </Link>
             ?

@@ -92,10 +92,10 @@ const recentActivity = [
 ];
 
 const activityIcons = {
-  sale: { icon: DollarSign, color: "text-green-700", bg: "bg-green-50 dark:bg-green-700/10" },
-  user: { icon: Users, color: "text-red-700", bg: "bg-red-50 dark:bg-red-700/10" },
-  report: { icon: AlertTriangle, color: "text-red-700", bg: "bg-red-50 dark:bg-red-700/10" },
-  listing: { icon: List, color: "text-red-800", bg: "bg-red-50 dark:bg-red-800/10" },
+  sale: { icon: DollarSign, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
+  user: { icon: Users, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
+  report: { icon: AlertTriangle, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
+  listing: { icon: List, color: "text-brand-800", bg: "bg-brand-50 dark:bg-brand-800/10" },
 };
 
 export default function AdminDashboardPage() {
@@ -190,7 +190,7 @@ export default function AdminDashboardPage() {
                         {userStatuses[user.id] !== "verified" && (
                           <button
                             onClick={() => handleVerifyUser(user.id)}
-                            className="rounded-lg p-1.5 text-green-600 transition-colors hover:bg-green-700/10"
+                            className="rounded-lg p-1.5 text-brand-600 transition-colors hover:bg-brand-700/10"
                             title="Vérifier"
                           >
                             <UserCheck className="h-4 w-4" />
@@ -246,7 +246,7 @@ export default function AdminDashboardPage() {
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => handleApproveListing(listing.id)}
-                        className="rounded-lg bg-green-700/10 p-1.5 text-green-600 transition-colors hover:bg-green-700/20"
+                        className="rounded-lg bg-brand-700/10 p-1.5 text-brand-600 transition-colors hover:bg-brand-700/20"
                         title="Approuver"
                       >
                         <Check className="h-4 w-4" />
@@ -343,7 +343,7 @@ export default function AdminDashboardPage() {
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => toast.success(`Identité de ${verification.name} vérifiée`)}
-                        className="rounded-lg bg-green-700/10 p-2 text-green-600 transition-colors hover:bg-green-700/20"
+                        className="rounded-lg bg-brand-700/10 p-2 text-brand-600 transition-colors hover:bg-brand-700/20"
                         title="Approuver"
                       >
                         <Check className="h-4 w-4" />
@@ -377,7 +377,7 @@ export default function AdminDashboardPage() {
                   initial={{ height: 0 }}
                   animate={{ height: `${value}%` }}
                   transition={{ duration: 0.6, delay: i * 0.05, ease: "easeOut" }}
-                  className="flex-1 rounded-t-lg bg-red-800"
+                  className="flex-1 rounded-t-lg bg-brand-800"
                   title={`${value}M FCFA`}
                 />
               ))}
@@ -412,7 +412,7 @@ export default function AdminDashboardPage() {
                       <p className="text-xs text-gray-500">{activity.time}</p>
                     </div>
                     {activity.amount && (
-                      <span className="text-xs font-medium text-green-600">
+                      <span className="text-xs font-medium text-brand-600">
                         +{formatCFA(activity.amount)}
                       </span>
                     )}

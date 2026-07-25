@@ -24,7 +24,7 @@ export default function PriceTag({
     <div className={cn("inline-flex items-baseline gap-2", className)} {...rest}>
       <span
         className={cn(
-          "font-bold text-red-800",
+          "font-bold text-brand-800",
           sizes[size].price
         )}
       >
@@ -43,7 +43,7 @@ export default function PriceTag({
       {discountPercent && (
         <span
           className={cn(
-            "rounded-full bg-red-100 font-semibold text-red-800 dark:bg-red-700/15 dark:text-red-400",
+            "rounded-full bg-brand-100 font-semibold text-brand-800 dark:bg-brand-700/15 dark:text-brand-400",
             sizes[size].badge
           )}
         >

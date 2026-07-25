@@ -84,7 +84,7 @@ export const mockWalletTransactions = [
   { id: 2, type: "purchase", description: "Achat PS5 + 2 Manettes + 3 Jeux", amount: -380000, status: "completed", date: "2025-07-19T14:20:00Z", counterparty: "Kévin Agbéké" },
   { id: 3, type: "withdrawal", description: "Retrait vers Flooz +228 90 12 34 56", amount: -200000, status: "completed", date: "2025-07-18T09:00:00Z", counterparty: "Flooz" },
   { id: 4, type: "deposit", description: "Rechargement TMoney", amount: 150000, status: "completed", date: "2025-07-17T16:30:00Z", counterparty: "TMoney" },
-  { id: 5, type: "refund", description: "Remboursement - Commande #1234", amount: 65000, status: "completed", date: "2025-07-16T11:00:00Z", counterparty: "AK Market" },
+  { id: 5, type: "refund", description: "Remboursement - Commande #1234", amount: 65000, status: "completed", date: "2025-07-16T11:00:00Z", counterparty: "TG-Market" },
   { id: 6, type: "sale", description: "Vente Pagne Wax Hollandais 6 yards", amount: 45000, status: "completed", date: "2025-07-15T14:00:00Z", counterparty: "Ama Dzidzornu" },
   { id: 7, type: "withdrawal", description: "Retrait vers Mobile Money +228 91 23 45 67", amount: -100000, status: "pending", date: "2025-07-14T10:15:00Z", counterparty: "Mobile Money" },
   { id: 8, type: "sale", description: "Vente MacBook Air M2", amount: 650000, status: "completed", date: "2025-07-13T09:00:00Z", counterparty: "Prosper Degan" },

@@ -37,7 +37,7 @@ export default function HowItWorksPage() {
           <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={0}>
             <h1 className="text-4xl font-bold sm:text-5xl">Comment ça marche ?</h1>
             <p className="mt-4 text-lg text-white/80">
-              AK Market, l'application de seconde main au Togo.<br />
+              TG-Market, l'application de seconde main au Togo.<br />
               Ton style, tes bonnes affaires — vends et achète d'occasion.
             </p>
           </motion.div>
@@ -103,7 +103,7 @@ export default function HowItWorksPage() {
 
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="mt-12 grid gap-8 md:grid-cols-2">
             <motion.div variants={fadeUp} custom={0} className="overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-gray-800">
-              <div className="h-64 overflow-hidden bg-green-50 dark:bg-green-900/10">
+              <div className="h-64 overflow-hidden bg-brand-50 dark:bg-brand-900/10">
                 <StepImage
                   src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&h=400&fit=crop"
                   alt="Colis préparé pour l'expédition"
@@ -129,7 +129,7 @@ export default function HowItWorksPage() {
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">C'est parti pour la remise</h3>
                 <p className="mt-2 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
-                  Tu as le choix : remise en main propre, RDV sécurisé chez un partenaire AK Market (recommandé), ou la livraison.
+                  Tu as le choix : remise en main propre, RDV sécurisé chez un partenaire TG-Market (recommandé), ou la livraison.
                 </p>
               </div>
             </motion.div>
@@ -199,8 +199,8 @@ export default function HowItWorksPage() {
               {
                 image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&h=400&fit=crop",
                 title: "RDV sécurisés",
-                desc: "Un partenaire AK Market accueille l'échange : environnement sûr, validation QR Code, sérénité maximale !",
-                border: "border-green-200 dark:border-green-800/30",
+                desc: "Un partenaire TG-Market accueille l'échange : environnement sûr, validation QR Code, sérénité maximale !",
+                border: "border-brand-200 dark:border-brand-800/30",
               },
               {
                 image: "https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=600&h=400&fit=crop",
@@ -259,7 +259,7 @@ export default function HowItWorksPage() {
                 C'est ta preuve de sécurité et la clé pour débloquer le paiement.
               </p>
               <p className="mt-3 text-sm font-medium text-yellow-800 dark:text-yellow-400">
-                Sans scan QR, l'échange n'est pas sécurisé par AK Market.
+                Sans scan QR, l'échange n'est pas sécurisé par TG-Market.
               </p>
             </div>
           </motion.div>
@@ -272,7 +272,7 @@ export default function HowItWorksPage() {
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
             <h2 className="text-3xl font-bold sm:text-4xl">Prêt à commencer ?</h2>
             <p className="mt-4 text-lg text-white/80">
-              Rejoins la communauté AK Market et trouve de bonnes affaires près de chez toi.
+              Rejoins la communauté TG-Market et trouve de bonnes affaires près de chez toi.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <Link to="/inscription">

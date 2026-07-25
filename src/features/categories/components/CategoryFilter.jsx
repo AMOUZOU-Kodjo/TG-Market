@@ -78,46 +78,46 @@ const iconMap = {
 
 const hexToColorKey = (hex) => {
   const map = {
-    "#3B82F6": "text-red-700 bg-red-50 dark:bg-red-700/10",
-    "#EF4444": "text-red-700 bg-red-50 dark:bg-red-700/10",
-    "#8B5CF6": "text-red-700 bg-red-50 dark:bg-red-700/10",
+    "#3B82F6": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
+    "#EF4444": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
+    "#8B5CF6": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
     "#F59E0B": "text-yellow-500 bg-yellow-50 dark:bg-yellow-500/10",
-    "#EC4899": "text-red-700 bg-red-50 dark:bg-red-700/10",
-    "#10B981": "text-green-700 bg-green-50 dark:bg-green-700/10",
-    "#06B6D4": "text-red-700 bg-red-50 dark:bg-red-700/10",
-    "#7C3AED": "text-red-700 bg-red-50 dark:bg-red-700/10",
-    "#F97316": "text-red-800 bg-red-50 dark:bg-red-800/10",
-    "#F472B6": "text-red-700 bg-red-50 dark:bg-red-700/10",
-    "#FB923C": "text-red-700 bg-red-50 dark:bg-red-700/10",
-    "#22C55E": "text-green-700 bg-green-50 dark:bg-green-700/10",
-    "#6366F1": "text-red-700 bg-red-50 dark:bg-red-700/10",
-    "#A855F7": "text-red-700 bg-red-50 dark:bg-red-700/10",
-    "#0EA5E9": "text-red-700 bg-red-50 dark:bg-red-700/10",
-    "#D946EF": "text-red-700 bg-red-50 dark:bg-red-700/10",
-    "#E11D48": "text-red-700 bg-red-50 dark:bg-red-700/10",
-    "#16A34A": "text-green-800 bg-green-50 dark:bg-green-800/10",
-    "#C8102E": "text-red-800 bg-red-50 dark:bg-red-800/10",
+    "#EC4899": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
+    "#10B981": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
+    "#06B6D4": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
+    "#7C3AED": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
+    "#F97316": "text-brand-800 bg-brand-50 dark:bg-brand-800/10",
+    "#F472B6": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
+    "#FB923C": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
+    "#22C55E": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
+    "#6366F1": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
+    "#A855F7": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
+    "#0EA5E9": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
+    "#D946EF": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
+    "#E11D48": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
+    "#16A34A": "text-brand-800 bg-brand-50 dark:bg-brand-800/10",
+    "#C8102E": "text-brand-800 bg-brand-50 dark:bg-brand-800/10",
     "#D97706": "text-yellow-500 bg-yellow-50 dark:bg-yellow-500/10",
-    "#BE185D": "text-red-700 bg-red-50 dark:bg-red-700/10",
-    "#78716C": "text-green-700 bg-green-50 dark:bg-green-700/10",
-    "#0D9488": "text-green-800 bg-green-50 dark:bg-green-800/10",
-    "#C084FC": "text-red-700 bg-red-50 dark:bg-red-700/10",
-    "#475569": "text-green-700 bg-green-50 dark:bg-green-700/10",
-    "#DC2626": "text-red-700 bg-red-50 dark:bg-red-700/10",
+    "#BE185D": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
+    "#78716C": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
+    "#0D9488": "text-brand-800 bg-brand-50 dark:bg-brand-800/10",
+    "#C084FC": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
+    "#475569": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
+    "#DC2626": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
     "#92400E": "text-yellow-600 bg-yellow-50 dark:bg-yellow-600/10",
-    "#7C2D12": "text-red-700 bg-red-50 dark:bg-red-700/10",
+    "#7C2D12": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
     "#CA8A04": "text-yellow-500 bg-yellow-50 dark:bg-yellow-500/10",
-    "#DB2777": "text-red-700 bg-red-50 dark:bg-red-700/10",
+    "#DB2777": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
     "#B45309": "text-yellow-500 bg-yellow-50 dark:bg-yellow-500/10",
     "#FACC15": "text-yellow-500 bg-yellow-50 dark:bg-yellow-500/10",
-    "#6B7280": "text-green-700 bg-green-50 dark:bg-green-700/10",
+    "#6B7280": "text-brand-700 bg-brand-50 dark:bg-brand-700/10",
   };
-  return map[hex] || "text-red-800 bg-red-50 dark:bg-red-800/10";
+  return map[hex] || "text-brand-800 bg-brand-50 dark:bg-brand-800/10";
 };
 
 const hexToActiveBg = (hex) => {
   const base = hexToColorKey(hex).split(" ").find((c) => c.startsWith("bg-"));
-  return base ? base.replace("/10", "/20") : "bg-red-200";
+  return base ? base.replace("/10", "/20") : "bg-brand-200";
 };
 
 export default function CategoryFilter({
@@ -192,7 +192,7 @@ export default function CategoryFilter({
             className={cn(
               "rounded-lg p-1 transition-colors",
               isSearchOpen
-                ? "bg-red-50 text-red-800 dark:bg-red-800/10"
+                ? "bg-brand-50 text-brand-800 dark:bg-brand-800/10"
                 : "text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800"
             )}
             title="Rechercher"
@@ -219,7 +219,7 @@ export default function CategoryFilter({
                   placeholder="Filtrer..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-9 pr-8 text-xs text-gray-900 transition-colors placeholder:text-gray-400 focus:border-red-800 focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-800/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500"
+                  className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-9 pr-8 text-xs text-gray-900 transition-colors placeholder:text-gray-400 focus:border-brand-800 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-800/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500"
                   autoFocus
                 />
                 {searchQuery && (
@@ -251,7 +251,7 @@ export default function CategoryFilter({
                 className={cn(
                   "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-all",
                   selected
-                    ? "bg-red-50 dark:bg-red-800/10"
+                    ? "bg-brand-50 dark:bg-brand-800/10"
                     : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
                 )}
               >
@@ -269,7 +269,7 @@ export default function CategoryFilter({
                     className={cn(
                       "block truncate text-xs font-medium transition-colors",
                       selected
-                        ? "text-red-900 dark:text-red-700"
+                        ? "text-brand-900 dark:text-brand-700"
                         : "text-gray-700 dark:text-gray-300"
                     )}
                   >
@@ -284,7 +284,7 @@ export default function CategoryFilter({
                   className={cn(
                     "flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-all",
                     selected
-                      ? "border-red-800 bg-red-800 text-white"
+                      ? "border-brand-800 bg-brand-800 text-white"
                       : "border-gray-200 dark:border-gray-700"
                   )}
                 >
@@ -300,7 +300,7 @@ export default function CategoryFilter({
         <div className="border-t border-gray-100 px-4 py-2 dark:border-gray-800">
           <button
             onClick={() => setExpanded(true)}
-            className="flex w-full items-center justify-center gap-1 rounded-lg py-1.5 text-xs font-medium text-red-800 transition-colors hover:bg-red-50 dark:hover:bg-red-800/10"
+            className="flex w-full items-center justify-center gap-1 rounded-lg py-1.5 text-xs font-medium text-brand-800 transition-colors hover:bg-brand-50 dark:hover:bg-brand-800/10"
           >
             <ChevronDown className="h-3.5 w-3.5" />
             Voir {hiddenCount} de plus
@@ -333,7 +333,7 @@ export default function CategoryFilter({
                 <button
                   key={catId}
                   onClick={() => handleToggle(catId)}
-                  className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-1 text-[11px] font-medium text-red-900 transition-colors hover:bg-red-200 dark:bg-red-800/10 dark:text-red-700"
+                  className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-[11px] font-medium text-brand-900 transition-colors hover:bg-brand-200 dark:bg-brand-800/10 dark:text-brand-700"
                 >
                   {cat.name}
                   <X className="h-3 w-3" />

@@ -11,7 +11,7 @@ const MOCK_USER = {
   phone: "90123456",
   city: "Lomé",
   neighborhood: "Agbalepedogan",
-  bio: "Vendeur passionné depuis 5 ans sur AK Market.",
+  bio: "Vendeur passionné depuis 5 ans sur TG-Market.",
   avatar: null,
   role: "user",
   createdAt: "2024-01-15T00:00:00.000Z",
@@ -24,7 +24,7 @@ const MOCK_ADMIN = {
   ...MOCK_USER,
   id: "admin_1",
   firstName: "Admin",
-  lastName: "AK Market",
+  lastName: "TG-Market",
   email: "admin@akmarket.tg",
   role: "admin",
 };

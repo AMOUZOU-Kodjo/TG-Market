@@ -36,7 +36,7 @@ export default function ProductActions({ product }) {
       try {
         await navigator.share({
           title: product.title,
-          text: `Regarde ${product.title} sur AK Market`,
+          text: `Regarde ${product.title} sur TG-Market`,
           url: window.location.href,
         });
       } catch (err) {
@@ -130,7 +130,7 @@ export default function ProductActions({ product }) {
                   className="flex w-full items-center gap-3 px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
                 >
                   {copied ? (
-                    <Check className="h-4 w-4 text-green-700" />
+                    <Check className="h-4 w-4 text-brand-700" />
                   ) : (
                     <Copy className="h-4 w-4" />
                   )}

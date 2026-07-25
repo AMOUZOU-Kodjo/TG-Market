@@ -21,16 +21,16 @@ const categoryIcons = {
 };
 
 const categoryColors = {
-  Compte: "bg-red-50 text-red-800 dark:bg-red-700/10 dark:text-red-400",
-  Annonces: "bg-green-50 text-green-800 dark:bg-green-700/10 dark:text-green-600",
+  Compte: "bg-brand-50 text-brand-800 dark:bg-brand-700/10 dark:text-brand-400",
+  Annonces: "bg-brand-50 text-brand-800 dark:bg-brand-700/10 dark:text-brand-600",
   Tarifs: "bg-yellow-50 text-yellow-600 dark:bg-yellow-500/10 dark:text-warning-400",
-  Communication: "bg-red-50 text-red-800 dark:bg-red-700/10 dark:text-red-400",
-  Livraison: "bg-red-50 text-red-900 dark:bg-red-800/10 dark:text-red-700",
-  Sécurité: "bg-red-50 text-red-800 dark:bg-red-700/10 dark:text-red-400",
-  Paiement: "bg-green-50 text-green-800 dark:bg-green-700/10 dark:text-green-600",
+  Communication: "bg-brand-50 text-brand-800 dark:bg-brand-700/10 dark:text-brand-400",
+  Livraison: "bg-brand-50 text-brand-900 dark:bg-brand-800/10 dark:text-brand-700",
+  Sécurité: "bg-brand-50 text-brand-800 dark:bg-brand-700/10 dark:text-brand-400",
+  Paiement: "bg-brand-50 text-brand-800 dark:bg-brand-700/10 dark:text-brand-600",
   Vendeur: "bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400",
   Général: "bg-gray-50 text-gray-600 dark:bg-gray-500/10 dark:text-gray-400",
-  Promotion: "bg-red-50 text-red-800 dark:bg-red-700/10 dark:text-red-400",
+  Promotion: "bg-brand-50 text-brand-800 dark:bg-brand-700/10 dark:text-brand-400",
   Support: "bg-cyan-50 text-cyan-600 dark:bg-cyan-500/10 dark:text-cyan-400",
   Transactions: "bg-yellow-50 text-yellow-600 dark:bg-yellow-500/10 dark:text-warning-400",
 };
@@ -110,7 +110,7 @@ export default function FAQPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Hero */}
-      <section className="bg-red-800 px-4 py-16 text-white sm:px-6 lg:px-8">
+      <section className="bg-brand-800 px-4 py-16 text-white sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -119,7 +119,7 @@ export default function FAQPage() {
             <HelpCircle className="mx-auto mb-4 h-12 w-12 text-white/80" />
             <h1 className="text-3xl font-bold sm:text-4xl">Questions fréquentes</h1>
             <p className="mt-3 text-white/80">
-              Trouvez rapidement les réponses à vos questions sur AK Market
+              Trouvez rapidement les réponses à vos questions sur TG-Market
             </p>
           </motion.div>
         </div>
@@ -134,7 +134,7 @@ export default function FAQPage() {
             placeholder="Rechercher une question..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-12 pr-4 text-sm text-gray-900 shadow-sm transition-colors focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-red-800"
+            className="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-12 pr-4 text-sm text-gray-900 shadow-sm transition-colors focus:border-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-brand-800"
           />
         </div>
 
@@ -146,7 +146,7 @@ export default function FAQPage() {
               onClick={() => setActiveCategory(cat)}
               className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
                 activeCategory === cat
-                  ? "bg-red-800 text-white"
+                  ? "bg-brand-800 text-white"
                   : "bg-white text-gray-600 hover:bg-gray-100 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800"
               }`}
             >
@@ -186,7 +186,7 @@ export default function FAQPage() {
 
         {/* Contact CTA */}
         <div className="mt-12 rounded-2xl border border-gray-100 bg-white p-6 text-center dark:border-gray-800 dark:bg-gray-900">
-          <MessageCircle className="mx-auto mb-3 h-8 w-8 text-red-800" />
+          <MessageCircle className="mx-auto mb-3 h-8 w-8 text-brand-800" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             Vous n'avez pas trouvé votre réponse ?
           </h3>

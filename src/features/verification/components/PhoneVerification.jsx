@@ -45,11 +45,11 @@ export default function PhoneVerification({ phone = "+228 90 12 34 56", onVerify
 
   if (verified) {
     return (
-      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex items-center gap-3 rounded-xl bg-green-50 p-4 dark:bg-green-900/20">
-        <CheckCircle2 className="h-8 w-8 text-green-600" />
+      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex items-center gap-3 rounded-xl bg-brand-50 p-4 dark:bg-brand-900/20">
+        <CheckCircle2 className="h-8 w-8 text-brand-600" />
         <div>
-          <p className="font-medium text-green-800 dark:text-green-400">Téléphone vérifié</p>
-          <p className="text-sm text-green-600 dark:text-green-500">{phone}</p>
+          <p className="font-medium text-brand-800 dark:text-brand-400">Téléphone vérifié</p>
+          <p className="text-sm text-brand-600 dark:text-brand-500">{phone}</p>
         </div>
       </motion.div>
     );

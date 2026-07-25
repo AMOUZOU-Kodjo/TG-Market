@@ -123,7 +123,7 @@ export default function MessageInput({ onSend, disabled = false, className }) {
             className={cn(
               "rounded-lg p-2 transition-colors",
               showEmojis
-                ? "bg-red-50 text-red-800 dark:bg-red-900/20"
+                ? "bg-brand-50 text-brand-800 dark:bg-brand-900/20"
                 : "text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
             )}
             title="Emoji"
@@ -144,9 +144,9 @@ export default function MessageInput({ onSend, disabled = false, className }) {
             className={cn(
               "w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm",
               "text-gray-900 placeholder:text-gray-400",
-              "focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20",
+              "focus:border-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20",
               "dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500",
-              "dark:focus:border-red-800 dark:focus:ring-red-800/20",
+              "dark:focus:border-brand-800 dark:focus:ring-brand-800/20",
               "transition-colors duration-200",
               disabled && "cursor-not-allowed opacity-50"
             )}
@@ -166,7 +166,7 @@ export default function MessageInput({ onSend, disabled = false, className }) {
           className={cn(
             "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors",
             text.trim()
-              ? "bg-red-800 text-white shadow-sm shadow-red-800/25 hover:bg-red-900"
+              ? "bg-brand-800 text-white shadow-sm shadow-brand-800/25 hover:bg-brand-900"
               : "bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500"
           )}
         >

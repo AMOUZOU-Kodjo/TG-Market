@@ -42,7 +42,7 @@ export default function BadgeGrid({ badges }) {
             )}
             {badge.earned && (
               <div className="mt-2">
-                <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-medium text-green-700 dark:bg-green-900/20 dark:text-green-400">
+                <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-medium text-brand-700 dark:bg-brand-900/20 dark:text-brand-400">
                   ✓ Obtenu
                 </span>
               </div>

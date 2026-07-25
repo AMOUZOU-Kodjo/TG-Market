@@ -5,7 +5,7 @@ import { Camera, X, RefreshCw, CheckCircle2, AlertCircle } from "lucide-react";
 const statusConfig = {
   none: { label: "", color: "" },
   pending: { label: "Selfie en cours de vérification", color: "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400" },
-  approved: { label: "Selfie validé", color: "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400" },
+  approved: { label: "Selfie validé", color: "bg-brand-50 text-brand-700 dark:bg-brand-900/20 dark:text-brand-400" },
   rejected: { label: "Selfie rejeté", color: "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400" },
 };
 

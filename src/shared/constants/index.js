@@ -1,4 +1,4 @@
-export const APP_NAME = "AK Market";
+export const APP_NAME = "TG-Market";
 export const APP_DESCRIPTION = "La marketplace n°1 au Togo";
 export const CURRENCY = "FCFA";
 

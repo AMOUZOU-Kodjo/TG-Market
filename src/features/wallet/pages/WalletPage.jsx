@@ -43,11 +43,11 @@ const itemVariants = {
 };
 
 const txTypeIcons = {
-  sale: { icon: ArrowDownLeft, color: "text-green-700", bg: "bg-green-50 dark:bg-green-700/10" },
-  purchase: { icon: ArrowUpRight, color: "text-red-700", bg: "bg-red-50 dark:bg-red-700/10" },
+  sale: { icon: ArrowDownLeft, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
+  purchase: { icon: ArrowUpRight, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
   withdrawal: { icon: ArrowUpRight, color: "text-orange-700", bg: "bg-orange-50 dark:bg-orange-700/10" },
   deposit: { icon: ArrowDownLeft, color: "text-blue-700", bg: "bg-blue-50 dark:bg-blue-700/10" },
-  refund: { icon: RefreshCw, color: "text-green-700", bg: "bg-green-50 dark:bg-green-700/10" },
+  refund: { icon: RefreshCw, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
 };
 
 export default function WalletPage() {
@@ -79,7 +79,7 @@ export default function WalletPage() {
       >
         {/* Balance Card */}
         <motion.div variants={itemVariants}>
-          <div className="relative overflow-hidden rounded-2xl bg-red-800 p-6 text-white shadow-xl sm:p-8">
+          <div className="relative overflow-hidden rounded-2xl bg-brand-800 p-6 text-white shadow-xl sm:p-8">
             <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-white/10" />
             <div className="absolute -bottom-4 -left-4 h-24 w-24 rounded-full bg-white/5" />
             <div className="relative">
@@ -172,7 +172,7 @@ export default function WalletPage() {
                     <div className="text-right">
                       <p
                         className={`text-sm font-semibold ${
-                          tx.amount > 0 ? "text-green-800 dark:text-green-600" : "text-red-800 dark:text-red-400"
+                          tx.amount > 0 ? "text-brand-800 dark:text-brand-600" : "text-brand-800 dark:text-brand-400"
                         }`}
                       >
                         {tx.amount > 0 ? "+" : ""}{formatCFA(tx.amount)}
@@ -198,7 +198,7 @@ export default function WalletPage() {
               <div className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
                 <button
                   onClick={() => setSelectedEscrow(null)}
-                  className="mb-4 text-sm font-medium text-red-800 hover:text-red-900"
+                  className="mb-4 text-sm font-medium text-brand-800 hover:text-brand-900"
                 >
                   ← Retour à la liste
                 </button>
@@ -251,8 +251,8 @@ export default function WalletPage() {
             </div>
             <div className="space-y-3 p-4">
               {[
-                { id: 1, name: "T-Money", number: "+228 99 12 34 56", icon: "📱", color: "bg-green-700", linked: true },
-                { id: 2, name: "Moov Money", number: "+228 90 98 76 54", icon: "📱", color: "bg-red-700", linked: true },
+                { id: 1, name: "T-Money", number: "+228 99 12 34 56", icon: "📱", color: "bg-brand-700", linked: true },
+                { id: 2, name: "Moov Money", number: "+228 90 98 76 54", icon: "📱", color: "bg-brand-700", linked: true },
                 { id: 3, name: "Flooz", number: "+228 91 23 45 67", icon: "📱", color: "bg-orange-600", linked: false },
               ].map((method) => (
                 <div
@@ -271,7 +271,7 @@ export default function WalletPage() {
                   </Badge>
                 </div>
               ))}
-              <button className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-200 p-4 text-sm font-medium text-gray-500 transition-colors hover:border-red-400 hover:text-red-800 dark:border-gray-700 dark:hover:border-red-800/50 dark:hover:text-red-700">
+              <button className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-200 p-4 text-sm font-medium text-gray-500 transition-colors hover:border-brand-400 hover:text-brand-800 dark:border-gray-700 dark:hover:border-brand-800/50 dark:hover:text-brand-700">
                 <Plus className="h-4 w-4" />
                 Ajouter un moyen de paiement
               </button>

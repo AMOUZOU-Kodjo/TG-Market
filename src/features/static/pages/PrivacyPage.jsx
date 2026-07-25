@@ -5,7 +5,7 @@ const sections = [
   {
     icon: Database,
     title: "1. Informations que nous recueillons",
-    content: `Nous collectons différents types de informations selon ton utilisation de l'application AK Market, afin d'assurer le bon fonctionnement du service et de t'offrir une expérience optimale.
+    content: `Nous collectons différents types de informations selon ton utilisation de l'application TG-Market, afin d'assurer le bon fonctionnement du service et de t'offrir une expérience optimale.
 
 A. Données personnelles que tu fournis directement
 
@@ -20,7 +20,7 @@ B. Données collectées indirectement
 Traceurs techniques : Identifiants d'appareil et journaux de connexion nécessaires au fonctionnement et à la sécurité de l'application (note : il n'y a pas de cookies sur l'application mobile ; seuls des cookies essentiels peuvent être utilisés sur notre site web).
 Données de prestataires : Informations limitées provenant de nos prestataires d'hébergement et de stockage, ainsi que de nos prestataires de paiement, exclusivement pour exécuter ou valider une opération.
 
-Précision concernant le « Portefeuille » : L'affichage du « Portefeuille » ou du « Solde » dans l'application est purement informatif. AK Market ne détient jamais tes fonds et n'exécute aucune transaction financière. Les flux sont gérés exclusivement par les prestataires de paiement.`,
+Précision concernant le « Portefeuille » : L'affichage du « Portefeuille » ou du « Solde » dans l'application est purement informatif. TG-Market ne détient jamais tes fonds et n'exécute aucune transaction financière. Les flux sont gérés exclusivement par les prestataires de paiement.`,
   },
   {
     icon: Eye,
@@ -107,7 +107,7 @@ export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Hero */}
-      <section className="bg-red-800 px-4 py-16 text-white sm:px-6 lg:px-8">
+      <section className="bg-brand-800 px-4 py-16 text-white sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -126,10 +126,10 @@ export default function PrivacyPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8 rounded-2xl border border-red-300 bg-red-50 p-5 dark:border-red-800/20 dark:bg-red-800/5"
+          className="mb-8 rounded-2xl border border-brand-300 bg-brand-50 p-5 dark:border-brand-800/20 dark:bg-brand-800/5"
         >
-          <p className="text-sm leading-relaxed text-red-950 dark:text-red-400">
-            Cette politique explique comment nous recueillons, utilisons, conservons et partageons tes données lorsque tu utilises nos services AK Market.
+          <p className="text-sm leading-relaxed text-brand-950 dark:text-brand-400">
+            Cette politique explique comment nous recueillons, utilisons, conservons et partageons tes données lorsque tu utilises nos services TG-Market.
           </p>
         </motion.div>
 
@@ -146,8 +146,8 @@ export default function PrivacyPage() {
               className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
             >
               <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 dark:bg-red-800/10">
-                  <section.icon className="h-5 w-5 text-red-800" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 dark:bg-brand-800/10">
+                  <section.icon className="h-5 w-5 text-brand-800" />
                 </div>
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                   {section.title}

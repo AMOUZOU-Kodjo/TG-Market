@@ -80,41 +80,41 @@ const iconMap = {
 
 const hexToBg = (hex) => {
   const map = {
-    "#3B82F6": "bg-red-700",
-    "#EF4444": "bg-red-700",
-    "#8B5CF6": "bg-red-700",
+    "#3B82F6": "bg-brand-700",
+    "#EF4444": "bg-brand-700",
+    "#8B5CF6": "bg-brand-700",
     "#F59E0B": "bg-yellow-500",
-    "#EC4899": "bg-red-700",
-    "#10B981": "bg-green-700",
-    "#06B6D4": "bg-red-700",
-    "#7C3AED": "bg-red-700",
-    "#F97316": "bg-red-800",
-    "#F472B6": "bg-red-700",
-    "#FB923C": "bg-red-700",
-    "#22C55E": "bg-green-700",
-    "#6366F1": "bg-red-700",
-    "#A855F7": "bg-red-700",
-    "#0EA5E9": "bg-red-700",
-    "#D946EF": "bg-red-700",
-    "#E11D48": "bg-red-700",
-    "#16A34A": "bg-green-800",
-    "#C8102E": "bg-red-800",
+    "#EC4899": "bg-brand-700",
+    "#10B981": "bg-brand-700",
+    "#06B6D4": "bg-brand-700",
+    "#7C3AED": "bg-brand-700",
+    "#F97316": "bg-brand-800",
+    "#F472B6": "bg-brand-700",
+    "#FB923C": "bg-brand-700",
+    "#22C55E": "bg-brand-700",
+    "#6366F1": "bg-brand-700",
+    "#A855F7": "bg-brand-700",
+    "#0EA5E9": "bg-brand-700",
+    "#D946EF": "bg-brand-700",
+    "#E11D48": "bg-brand-700",
+    "#16A34A": "bg-brand-800",
+    "#C8102E": "bg-brand-800",
     "#D97706": "bg-yellow-500",
-    "#BE185D": "bg-red-700",
-    "#78716C": "bg-green-700",
-    "#0D9488": "bg-green-800",
-    "#C084FC": "bg-red-700",
-    "#475569": "bg-green-700",
-    "#DC2626": "bg-red-700",
+    "#BE185D": "bg-brand-700",
+    "#78716C": "bg-brand-700",
+    "#0D9488": "bg-brand-800",
+    "#C084FC": "bg-brand-700",
+    "#475569": "bg-brand-700",
+    "#DC2626": "bg-brand-700",
     "#92400E": "bg-yellow-600",
-    "#7C2D12": "bg-red-700",
+    "#7C2D12": "bg-brand-700",
     "#CA8A04": "bg-yellow-500",
-    "#DB2777": "bg-red-700",
+    "#DB2777": "bg-brand-700",
     "#B45309": "bg-yellow-500",
     "#FACC15": "bg-yellow-500",
-    "#6B7280": "bg-green-700",
+    "#6B7280": "bg-brand-700",
   };
-  return map[hex] || "bg-red-800";
+  return map[hex] || "bg-brand-800";
 };
 
 const staggerContainer = {
@@ -216,7 +216,7 @@ export default function CategoriesPage() {
                 setSearchQuery(e.target.value);
                 if (e.target.value) setSelectedLetter(null);
               }}
-              className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500"
+              className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500"
             />
           </div>
         </motion.div>
@@ -235,7 +235,7 @@ export default function CategoriesPage() {
             className={cn(
               "flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium transition-all",
               !selectedLetter && !searchQuery
-                ? "bg-red-800 text-white shadow-sm shadow-red-800/25"
+                ? "bg-brand-800 text-white shadow-sm shadow-brand-800/25"
                 : "bg-white text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
             )}
           >
@@ -251,7 +251,7 @@ export default function CategoriesPage() {
               className={cn(
                 "flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium transition-all",
                 selectedLetter === letter
-                  ? "bg-red-800 text-white shadow-sm shadow-red-800/25"
+                  ? "bg-brand-800 text-white shadow-sm shadow-brand-800/25"
                   : "bg-white text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
               )}
             >
@@ -278,7 +278,7 @@ export default function CategoriesPage() {
                 setSearchQuery("");
                 setSelectedLetter(null);
               }}
-              className="mt-4 text-sm font-medium text-red-800 hover:text-red-900"
+              className="mt-4 text-sm font-medium text-brand-800 hover:text-brand-900"
             >
               Réinitialiser les filtres
             </button>
@@ -332,13 +332,13 @@ export default function CategoriesPage() {
                         </div>
 
                         <div className="p-4">
-                          <h3 className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-red-800 transition-colors">
+                          <h3 className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-brand-800 transition-colors">
                             {cat.name}
                           </h3>
                           <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
                             {cat.description}
                           </p>
-                          <div className="mt-3 flex items-center gap-1 text-xs font-medium text-red-800 opacity-0 transition-opacity group-hover:opacity-100">
+                          <div className="mt-3 flex items-center gap-1 text-xs font-medium text-brand-800 opacity-0 transition-opacity group-hover:opacity-100">
                             Explorer
                             <ChevronRight className="h-3.5 w-3.5" />
                           </div>

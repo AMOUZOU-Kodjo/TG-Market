@@ -64,7 +64,7 @@ export default function ProductDetailPage() {
         </p>
         <button
           onClick={() => navigate("/")}
-          className="inline-flex items-center gap-2 rounded-xl bg-red-800 px-6 py-3 font-medium text-white transition-colors hover:bg-red-900"
+          className="inline-flex items-center gap-2 rounded-xl bg-brand-800 px-6 py-3 font-medium text-white transition-colors hover:bg-brand-900"
         >
           <Home className="h-4 w-4" />
           Retour à l'accueil
@@ -135,7 +135,7 @@ export default function ProductDetailPage() {
               </div>
 
               <div className="mb-5 flex items-baseline gap-3">
-                <span className="text-3xl font-bold text-red-800">
+                <span className="text-3xl font-bold text-brand-800">
                   {formatCFA(product.price)}
                 </span>
                 {product.originalPrice && (
@@ -143,7 +143,7 @@ export default function ProductDetailPage() {
                     <span className="text-lg text-gray-400 line-through dark:text-gray-600">
                       {formatCFA(product.originalPrice)}
                     </span>
-                    <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700 dark:bg-green-700/15 dark:text-green-600">
+                    <span className="rounded-full bg-brand-100 px-2.5 py-0.5 text-xs font-semibold text-brand-700 dark:bg-brand-700/15 dark:text-brand-600">
                       -{discountPct}%
                     </span>
                   </>
@@ -166,7 +166,7 @@ export default function ProductDetailPage() {
               </div>
 
               <div className="mb-5 flex items-start gap-2 rounded-xl bg-gray-50 p-3 dark:bg-gray-800">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-red-800" />
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-800" />
                 <span className="text-sm text-gray-700 dark:text-gray-300">
                   {product.neighborhood ? `${product.neighborhood}, ` : ""}
                   {product.city}, Togo
@@ -193,7 +193,7 @@ export default function ProductDetailPage() {
                   className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
                 >
                   <h3 className="mb-4 flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white">
-                    <Package className="h-5 w-5 text-red-800" />
+                    <Package className="h-5 w-5 text-brand-800" />
                     Caractéristiques
                   </h3>
                   <div className="grid gap-3 sm:grid-cols-2">
@@ -225,7 +225,7 @@ export default function ProductDetailPage() {
                 {product.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:border-red-400 hover:text-red-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:border-red-800/30 dark:hover:text-red-700"
+                    className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:border-brand-400 hover:text-brand-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:border-brand-800/30 dark:hover:text-brand-700"
                   >
                     <Tag className="h-3 w-3" />
                     {tag}

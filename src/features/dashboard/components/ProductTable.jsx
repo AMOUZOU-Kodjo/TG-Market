@@ -135,7 +135,7 @@ export default function ProductTable({ products = mockSellerProducts, onEdit, on
                       <p className="mt-0.5 text-xs text-gray-400 md:hidden">
                         <span className={cn(
                           "inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium",
-                          statusConfig[product.status]?.variant === "success" && "bg-green-100 text-green-700",
+                          statusConfig[product.status]?.variant === "success" && "bg-brand-100 text-brand-700",
                           statusConfig[product.status]?.variant === "warning" && "bg-yellow-50 text-yellow-600",
                           statusConfig[product.status]?.variant === "secondary" && "bg-gray-100 text-gray-700"
                         )}>

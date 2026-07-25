@@ -52,7 +52,7 @@ export default function ForgotPasswordPage() {
             <div className="mb-8">
               <Link
                 to="/connexion"
-                className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 transition-colors hover:text-red-800 dark:text-gray-400 dark:hover:text-red-700"
+                className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 transition-colors hover:text-brand-800 dark:text-gray-400 dark:hover:text-brand-700"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Retour à la connexion
@@ -104,9 +104,9 @@ export default function ForgotPasswordPage() {
                 damping: 20,
                 delay: 0.1,
               }}
-              className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-100 dark:bg-green-700/15"
+              className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-brand-100 dark:bg-brand-700/15"
             >
-              <CheckCircle2 className="h-10 w-10 text-green-700" />
+              <CheckCircle2 className="h-10 w-10 text-brand-700" />
             </motion.div>
 
             <motion.h1
@@ -160,9 +160,9 @@ export default function ForgotPasswordPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.35 }}
-              className="mt-8 rounded-2xl bg-red-50 p-4 dark:bg-red-800/10"
+              className="mt-8 rounded-2xl bg-brand-50 p-4 dark:bg-brand-800/10"
             >
-              <p className="text-sm text-red-950 dark:text-red-700">
+              <p className="text-sm text-brand-950 dark:text-brand-700">
                 💡 Vous ne trouvez pas l'email ? Vérifiez vos spams ou
                 contactez le support.
               </p>

@@ -12,6 +12,7 @@ import {
   ChevronRight,
   ArrowRight,
 } from "lucide-react";
+import Logo from "@/shared/ui/Logo";
 import "swiper/css";
 import "swiper/css/effect-fade";
 import "swiper/css/pagination";
@@ -264,9 +265,7 @@ export default function AuthHeroCarousel() {
       {/* Logo */}
       <div className="absolute left-8 top-8 z-30">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 backdrop-blur-md">
-            <span className="text-lg font-bold text-white">AK</span>
-          </div>
+          <Logo size="lg" className="bg-white/15 backdrop-blur-md shadow-none" />
           <span className="text-xl font-bold text-white">Market</span>
         </div>
       </div>

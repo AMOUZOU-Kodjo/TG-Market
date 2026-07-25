@@ -31,6 +31,7 @@ import {
   Apple,
   Play,
 } from "lucide-react";
+import Logo from "@/shared/ui/Logo";
 import { mockCurrentUser } from "../data/users";
 
 export default function MainLayout() {
@@ -83,7 +84,12 @@ export default function MainLayout() {
   const userMenuItems = [
     { to: "/profil", label: "Mon profil", icon: User },
     { to: "/tableau-de-bord", label: "Tableau de bord", icon: LayoutDashboard },
-    { to: "/messages", label: "Messages", icon: MessageCircle, badge: mockCurrentUser.unreadMessages },
+    {
+      to: "/messages",
+      label: "Messages",
+      icon: MessageCircle,
+      badge: mockCurrentUser.unreadMessages,
+    },
     { to: "/favoris", label: "Mes favoris", icon: Heart },
     { to: "/parametres", label: "Paramètres", icon: Settings },
   ];
@@ -94,21 +100,15 @@ export default function MainLayout() {
         {/* Header */}
         <header
           className={`sticky top-0 z-50 transition-all duration-300 ${
-            scrolled
-              ? "bg-green-900/95 backdrop-blur-xl shadow-md"
-              : "bg-green-900"
+            scrolled ? "bg-brand-900/90 backdrop-blur-xl shadow-md" : "bg-brand-900"
           }`}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               {/* Logo */}
               <Link to="/" className="flex items-center gap-2 shrink-0">
-                <div className="w-9 h-9 rounded-xl bg-green-900 flex items-center justify-center shadow-lg">
-                  <span className="text-white font-bold text-lg">AK</span>
-                </div>
-                <span className="text-xl font-bold text-white hidden sm:block">
-                  Market
-                </span>
+                <Logo size="md" />
+                <span className="text-xl font-bold text-white hidden sm:block">Market</span>
               </Link>
 
               {/* Desktop Search */}
@@ -141,8 +141,8 @@ export default function MainLayout() {
                       link.to === "/vendre"
                         ? "bg-white text-red-800 hover:bg-red-50 shadow-md"
                         : location.pathname === link.to
-                        ? "bg-white/20 text-white"
-                        : "text-white/80 hover:bg-white/10 hover:text-white"
+                          ? "bg-white/20 text-white"
+                          : "text-white/80 hover:bg-white/10 hover:text-white"
                     }`}
                   >
                     <link.icon className="w-4 h-4" />
@@ -167,7 +167,7 @@ export default function MainLayout() {
                   className="relative p-2 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors hidden sm:flex"
                 >
                   <Bell className="w-5 h-5" />
-                  <span className="absolute top-1 right-1 w-4 h-4 bg-red-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-brand-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                     {mockCurrentUser.notifications}
                   </span>
                 </Link>
@@ -217,7 +217,7 @@ export default function MainLayout() {
                               <item.icon className="w-4 h-4 text-gray-400" />
                               <span className="flex-1">{item.label}</span>
                               {item.badge && (
-                                <span className="px-2 py-0.5 bg-red-700 text-white text-[10px] font-bold rounded-full">
+                                <span className="px-2 py-0.5 bg-brand-700 text-white text-[10px] font-bold rounded-full">
                                   {item.badge}
                                 </span>
                               )}
@@ -262,7 +262,7 @@ export default function MainLayout() {
                 transition={{ duration: 0.2 }}
                 className="md:hidden overflow-hidden border-t border-white/20"
               >
-                <div className="p-4 space-y-3 bg-green-900">
+                <div className="p-4 space-y-3 bg-brand-900">
                   {/* Mobile Search */}
                   <form onSubmit={handleSearch}>
                     <div className="relative">
@@ -296,7 +296,7 @@ export default function MainLayout() {
                   >
                     <Bell className="w-5 h-5" />
                     Notifications
-                    <span className="ml-auto px-2 py-0.5 bg-red-700 text-white text-[10px] font-bold rounded-full">
+                    <span className="ml-auto px-2 py-0.5 bg-brand-700 text-white text-[10px] font-bold rounded-full">
                       {mockCurrentUser.notifications}
                     </span>
                   </Link>
@@ -319,27 +319,25 @@ export default function MainLayout() {
         </main>
 
         {/* Footer */}
-        <footer className="bg-green-900 dark:bg-green-950 text-gray-300">
+        <footer className="bg-brand-900 dark:bg-brand-950 text-gray-300">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {/* Brand */}
               <div>
                 <div className="flex items-center gap-2 mb-4">
-                  <div className="w-9 h-9 rounded-xl bg-green-900 flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">AK</span>
-                  </div>
+                  <Logo size="md" />
                   <span className="text-xl font-bold text-white">Market</span>
                 </div>
                 <p className="text-sm text-gray-400 mb-4 leading-relaxed">
-                  La première plateforme de marketplace au Togo. Achetez et vendez facilement,
-                  en toute confiance.
+                  La première plateforme de marketplace au Togo. Achetez et vendez facilement, en
+                  toute confiance.
                 </p>
                 <div className="flex gap-3">
                   {[Globe, MessageCircle, Share2, ExternalLink].map((Icon, i) => (
                     <a
                       key={i}
                       href="#"
-                      className="w-9 h-9 rounded-lg bg-gray-800 hover:bg-green-900 flex items-center justify-center transition-colors"
+                      className="w-9 h-9 rounded-lg bg-gray-800 hover:bg-brand-900 flex items-center justify-center transition-colors"
                     >
                       <Icon className="w-4 h-4" />
                     </a>
@@ -373,7 +371,7 @@ export default function MainLayout() {
                   {[
                     { to: "/faq", label: "Centre d'aide" },
                     { to: "/faq", label: "Questions fréquentes" },
-                    { to: "/a-propos", label: "Nous contacter" },
+                    { to: "/contact", label: "Nous contacter" },
                     { to: "/conditions", label: "Conditions générales" },
                     { to: "/confidentialite", label: "Politique de confidentialité" },
                   ].map((link) => (
@@ -424,7 +422,7 @@ export default function MainLayout() {
             </div>
 
             <div className="mt-10 pt-8 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
-              <p>&copy; 2025 AK Market. Tous droits réservés.</p>
+              <p>&copy; 2025 TG-Market. Tous droits réservés.</p>
               <div className="flex gap-4">
                 <Link to="/conditions" className="hover:text-white transition-colors">
                   CGU

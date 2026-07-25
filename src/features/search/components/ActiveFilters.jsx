@@ -17,10 +17,10 @@ export default function ActiveFilters({ filters = [], onRemove, onClearAll }) {
           onClick={() => onRemove?.(filter.key)}
           className={cn(
             "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
-            "border-red-300 bg-red-50 text-red-950",
-            "hover:border-red-400 hover:bg-red-200",
-            "dark:border-red-800/30 dark:bg-red-800/10 dark:text-red-700",
-            "dark:hover:border-red-800/50 dark:hover:bg-red-800/20"
+            "border-brand-300 bg-brand-50 text-brand-950",
+            "hover:border-brand-400 hover:bg-brand-200",
+            "dark:border-brand-800/30 dark:bg-brand-800/10 dark:text-brand-700",
+            "dark:hover:border-brand-800/50 dark:hover:bg-brand-800/20"
           )}
         >
           <span>{filter.label}</span>

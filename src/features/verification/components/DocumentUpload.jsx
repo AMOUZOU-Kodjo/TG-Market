@@ -5,7 +5,7 @@ import { Upload, FileCheck, X, AlertCircle, CheckCircle2 } from "lucide-react";
 const statusConfig = {
   none: { label: "", color: "" },
   pending: { label: "En cours de vérification", color: "bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400" },
-  approved: { label: "Document validé", color: "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400" },
+  approved: { label: "Document validé", color: "bg-brand-50 text-brand-700 dark:bg-brand-900/20 dark:text-brand-400" },
   rejected: { label: "Document rejeté", color: "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400" },
 };
 
@@ -73,7 +73,7 @@ export default function DocumentUpload({ documentType = "cni", onUpload, status 
           onDragLeave={() => setDragOver(false)}
           onDrop={handleDrop}
           className={`flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed p-8 transition-colors ${
-            dragOver ? "border-red-800 bg-red-50 dark:bg-red-900/10" : "border-gray-300 hover:border-red-400 dark:border-gray-600"
+            dragOver ? "border-brand-800 bg-brand-50 dark:bg-brand-900/10" : "border-gray-300 hover:border-brand-400 dark:border-gray-600"
           }`}
         >
           <Upload className="mb-2 h-8 w-8 text-gray-400" />

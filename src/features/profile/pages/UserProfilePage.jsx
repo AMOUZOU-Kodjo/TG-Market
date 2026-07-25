@@ -125,7 +125,7 @@ export default function UserProfilePage() {
         <div className="max-w-2xl space-y-6">
           <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-              <Shield className="h-4 w-4 text-red-800" />
+              <Shield className="h-4 w-4 text-brand-800" />
               Compte
             </h3>
             <div className="space-y-3">
@@ -157,7 +157,7 @@ export default function UserProfilePage() {
 
           <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-              <Bell className="h-4 w-4 text-red-800" />
+              <Bell className="h-4 w-4 text-brand-800" />
               Notifications
             </h3>
             <div className="space-y-3">
@@ -173,7 +173,7 @@ export default function UserProfilePage() {
                   </div>
                   <label className="relative inline-flex cursor-pointer items-center">
                     <input type="checkbox" className="peer sr-only" defaultChecked />
-                    <div className="h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all peer-checked:bg-red-800 after:peer-checked:translate-x-full dark:bg-gray-700" />
+                    <div className="h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all peer-checked:bg-brand-800 after:peer-checked:translate-x-full dark:bg-gray-700" />
                   </label>
                 </div>
               ))}
@@ -243,7 +243,7 @@ export default function UserProfilePage() {
                 alt={formData.name}
                 className="h-20 w-20 rounded-full object-cover"
               />
-              <button className="absolute bottom-0 right-0 flex h-7 w-7 items-center justify-center rounded-full bg-red-800 text-white shadow-md hover:bg-red-900 transition-colors">
+              <button className="absolute bottom-0 right-0 flex h-7 w-7 items-center justify-center rounded-full bg-brand-800 text-white shadow-md hover:bg-brand-900 transition-colors">
                 <Camera className="h-3.5 w-3.5" />
               </button>
             </div>

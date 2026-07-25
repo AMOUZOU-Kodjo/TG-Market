@@ -67,7 +67,7 @@ function ToggleSwitch({ checked, onChange, label }) {
         className={cn(
           "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200",
           checked
-            ? "bg-red-800"
+            ? "bg-brand-800"
             : "bg-gray-200 dark:bg-gray-700"
         )}
       >
@@ -136,7 +136,7 @@ export default function FilterSidebar({
         <div className="flex items-center gap-2">
           <h3 className="text-base font-bold text-gray-900 dark:text-white">Filtres</h3>
           {activeCount > 0 && (
-            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-800 px-1.5 text-[10px] font-bold text-white">
+            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-800 px-1.5 text-[10px] font-bold text-white">
               {activeCount}
             </span>
           )}
@@ -146,7 +146,7 @@ export default function FilterSidebar({
             <button
               type="button"
               onClick={onReset}
-              className="flex items-center gap-1 text-xs font-medium text-red-800 hover:text-red-900"
+              className="flex items-center gap-1 text-xs font-medium text-brand-800 hover:text-brand-900"
             >
               <RotateCcw className="h-3.5 w-3.5" />
               Réinitialiser
@@ -176,7 +176,7 @@ export default function FilterSidebar({
                   className={cn(
                     "flex h-4 w-4 items-center justify-center rounded border transition-colors",
                     categories.includes(cat.slug)
-                      ? "border-red-800 bg-red-800"
+                      ? "border-brand-800 bg-brand-800"
                       : "border-gray-300 dark:border-gray-600"
                   )}
                 >
@@ -203,7 +203,7 @@ export default function FilterSidebar({
                 placeholder="Min"
                 value={minPrice}
                 onChange={(e) => updateFilter("minPrice", e.target.value)}
-                className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500"
+                className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500"
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">FCFA</span>
             </div>
@@ -214,7 +214,7 @@ export default function FilterSidebar({
                 placeholder="Max"
                 value={maxPrice}
                 onChange={(e) => updateFilter("maxPrice", e.target.value)}
-                className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500"
+                className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500"
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">FCFA</span>
             </div>
@@ -232,7 +232,7 @@ export default function FilterSidebar({
                   className={cn(
                     "flex h-4 w-4 items-center justify-center rounded-full border-2 transition-colors",
                     city === c
-                      ? "border-red-800 bg-red-800"
+                      ? "border-brand-800 bg-brand-800"
                       : "border-gray-300 dark:border-gray-600"
                   )}
                 >
@@ -255,7 +255,7 @@ export default function FilterSidebar({
                   className={cn(
                     "flex h-4 w-4 items-center justify-center rounded border transition-colors",
                     conditions.includes(cond.value)
-                      ? "border-red-800 bg-red-800"
+                      ? "border-brand-800 bg-brand-800"
                       : "border-gray-300 dark:border-gray-600"
                   )}
                 >

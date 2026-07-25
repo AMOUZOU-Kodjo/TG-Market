@@ -3,7 +3,7 @@ import { Wallet, Clock, TrendingUp, ArrowUpRight, ArrowDownLeft, Minus, Plus, Re
 import { formatCFA } from "@/shared/utils/format";
 
 const cards = [
-  { key: "available", label: "Solde disponible", icon: Wallet, color: "text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400", trend: "+12%" },
+  { key: "available", label: "Solde disponible", icon: Wallet, color: "text-brand-600 bg-brand-50 dark:bg-brand-900/20 dark:text-brand-400", trend: "+12%" },
   { key: "pending", label: "En attente", icon: Clock, color: "text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-400", trend: null },
   { key: "totalEarned", label: "Total gagné", icon: TrendingUp, color: "text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400", trend: "+8%" },
 ];
@@ -27,7 +27,7 @@ export default function WalletBalance({ balance }) {
                 <Icon className="h-5 w-5" />
               </div>
               {c.trend && (
-                <span className="flex items-center gap-0.5 text-xs font-medium text-green-600">
+                <span className="flex items-center gap-0.5 text-xs font-medium text-brand-600">
                   <ArrowUpRight className="h-3 w-3" /> {c.trend}
                 </span>
               )}

@@ -20,12 +20,12 @@ import Avatar from "@/shared/ui/Avatar";
 import { formatRelativeTime } from "@/shared/utils/format";
 
 const notificationTypes = {
-  message: { icon: MessageCircle, color: "text-red-700", bg: "bg-red-50 dark:bg-red-700/10" },
-  price_drop: { icon: TrendingDown, color: "text-green-700", bg: "bg-green-50 dark:bg-green-700/10" },
+  message: { icon: MessageCircle, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
+  price_drop: { icon: TrendingDown, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
   review: { icon: Star, color: "text-yellow-500", bg: "bg-yellow-50 dark:bg-yellow-500/10" },
-  sold: { icon: Package, color: "text-red-700", bg: "bg-red-50 dark:bg-red-700/10" },
-  system: { icon: Megaphone, color: "text-red-800", bg: "bg-red-50 dark:bg-red-800/10" },
-  follower: { icon: UserPlus, color: "text-red-700", bg: "bg-red-50 dark:bg-red-700/10" },
+  sold: { icon: Package, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
+  system: { icon: Megaphone, color: "text-brand-800", bg: "bg-brand-50 dark:bg-brand-800/10" },
+  follower: { icon: UserPlus, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
 };
 
 const initialNotifications = [
@@ -69,7 +69,7 @@ const initialNotifications = [
   {
     id: 5,
     type: "system",
-    title: "Mise Ã  jour d'AK Market",
+    title: "Mise Ã  jour d'TG-Market",
     description: "Nouvelle fonctionnalitÃ© : paiement sÃ©curisÃ© via T-Money et Moov Money. DÃ©couvrez-le !",
     timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     read: true,
@@ -201,7 +201,7 @@ export default function NotificationsPage() {
             onClick={() => setFilter(f.id)}
             className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
               filter === f.id
-                ? "bg-red-800 text-white"
+                ? "bg-brand-800 text-white"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
             }`}
           >
@@ -235,12 +235,12 @@ export default function NotificationsPage() {
                 onClick={() => markAsRead(notification.id)}
                 className={`relative flex cursor-pointer gap-4 px-4 py-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50 ${
                   !notification.read
-                    ? "bg-red-50/50 dark:bg-red-800/5"
+                    ? "bg-brand-50/50 dark:bg-brand-800/5"
                     : ""
                 }`}
               >
                 {!notification.read && (
-                  <div className="absolute left-1.5 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-red-800" />
+                  <div className="absolute left-1.5 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-brand-800" />
                 )}
 
                 <div className="shrink-0">
@@ -267,7 +267,7 @@ export default function NotificationsPage() {
                     {notification.description}
                   </p>
                   {notification.productName && (
-                    <p className="mt-1 text-xs text-red-800">
+                    <p className="mt-1 text-xs text-brand-800">
                       {notification.productName}
                     </p>
                   )}
@@ -285,7 +285,7 @@ export default function NotificationsPage() {
                       e.stopPropagation();
                       deleteNotification(notification.id);
                     }}
-                    className="rounded-lg p-1.5 text-gray-400 opacity-0 transition-opacity hover:bg-red-50 hover:text-red-700 group-hover:opacity-100 dark:hover:bg-red-700/10 dark:hover:text-red-400"
+                    className="rounded-lg p-1.5 text-gray-400 opacity-0 transition-opacity hover:bg-brand-50 hover:text-brand-700 group-hover:opacity-100 dark:hover:bg-brand-700/10 dark:hover:text-brand-400"
                     style={{ opacity: 1 }}
                   >
                     <Trash2 className="h-4 w-4" />

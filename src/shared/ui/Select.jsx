@@ -65,9 +65,9 @@ const Select = forwardRef(
             onClick={() => setIsOpen(!isOpen)}
             className={cn(
               "flex w-full items-center justify-between rounded-xl border bg-white px-4 py-2.5 text-left text-sm transition-colors duration-200",
-              "focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20",
+              "focus:border-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20",
               "disabled:cursor-not-allowed disabled:opacity-50",
-              isOpen && "border-red-800 ring-2 ring-red-800/20",
+              isOpen && "border-brand-800 ring-2 ring-brand-800/20",
               error
                 ? "border-red-700 focus:border-red-700 focus:ring-red-700/20"
                 : "border-gray-300 dark:border-gray-700",
@@ -106,14 +106,14 @@ const Select = forwardRef(
                     className={cn(
                       "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors",
                       option.value === selected
-                        ? "bg-red-50 text-red-900 dark:bg-red-800/10 dark:text-red-700"
+                        ? "bg-brand-50 text-brand-900 dark:bg-brand-800/10 dark:text-brand-700"
                         : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800",
                       option.disabled && "cursor-not-allowed opacity-50"
                     )}
                   >
                     <span className="flex-1 truncate">{option.label}</span>
                     {option.value === selected && (
-                      <Check className="h-4 w-4 shrink-0 text-red-800" />
+                      <Check className="h-4 w-4 shrink-0 text-brand-800" />
                     )}
                   </button>
                 ))}

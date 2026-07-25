@@ -22,9 +22,9 @@ export default function StepIndicator({
                   className={cn(
                     "flex h-9 w-9 items-center justify-center rounded-full border-2 text-sm font-semibold transition-colors",
                     isCompleted
-                      ? "border-red-800 bg-red-800 text-white"
+                      ? "border-brand-800 bg-brand-800 text-white"
                       : isActive
-                        ? "border-red-800 bg-red-50 text-red-900 dark:bg-red-800/10"
+                        ? "border-brand-800 bg-brand-50 text-brand-900 dark:bg-brand-800/10"
                         : "border-gray-300 bg-white text-gray-400 dark:border-gray-700 dark:bg-gray-900"
                   )}
                 >
@@ -38,7 +38,7 @@ export default function StepIndicator({
                   className={cn(
                     "mt-2 text-center text-xs font-medium",
                     isActive
-                      ? "text-red-900 dark:text-red-700"
+                      ? "text-brand-900 dark:text-brand-700"
                       : isCompleted
                         ? "text-gray-900 dark:text-white"
                         : "text-gray-400 dark:text-gray-500"
@@ -52,7 +52,7 @@ export default function StepIndicator({
                   className={cn(
                     "mx-2 mb-5 h-0.5 flex-1 rounded-full transition-colors",
                     index < currentStep
-                      ? "bg-red-800"
+                      ? "bg-brand-800"
                       : "bg-gray-200 dark:bg-gray-800"
                   )}
                 />

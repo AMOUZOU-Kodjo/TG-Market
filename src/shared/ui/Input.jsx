@@ -87,23 +87,13 @@ const Input = forwardRef(
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
             >
-              {showPassword ? (
-                <EyeOff className="h-5 w-5" />
-              ) : (
-                <Eye className="h-5 w-5" />
-              )}
+              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
           )}
         </div>
-        {error && (
-          <p className="mt-1.5 text-xs text-red-700 dark:text-red-400">
-            {error}
-          </p>
-        )}
+        {error && <p className="mt-1.5 text-xs text-red-700 dark:text-red-400">{error}</p>}
         {!error && helperText && (
-          <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-            {helperText}
-          </p>
+          <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">{helperText}</p>
         )}
       </div>
     );

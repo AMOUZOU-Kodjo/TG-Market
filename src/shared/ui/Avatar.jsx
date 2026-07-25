@@ -28,12 +28,12 @@ function getInitials(name) {
 }
 
 const colors = [
-  "bg-red-800",
-  "bg-red-700",
-  "bg-green-700",
-  "bg-red-400",
-  "bg-green-700",
-  "bg-red-800",
+  "bg-brand-800",
+  "bg-brand-700",
+  "bg-brand-700",
+  "bg-brand-400",
+  "bg-brand-700",
+  "bg-brand-800",
   "bg-indigo-500",
 ];
 
@@ -85,7 +85,7 @@ export default function Avatar({
         <span
           className={cn(
             "absolute bottom-0 right-0 rounded-full",
-            online ? "bg-green-700" : "bg-gray-400",
+            online ? "bg-brand-700" : "bg-gray-400",
             statusSizes[size]
           )}
           style={{ borderColor: "white" }}
@@ -95,7 +95,7 @@ export default function Avatar({
         <div className="absolute -bottom-0.5 -right-0.5 rounded-full bg-white dark:bg-gray-900">
           <ShieldCheck
             className={cn(
-              "text-red-700",
+              "text-brand-700",
               size === "xs" && "h-3 w-3",
               size === "sm" && "h-3.5 w-3.5",
               size === "md" && "h-4 w-4",

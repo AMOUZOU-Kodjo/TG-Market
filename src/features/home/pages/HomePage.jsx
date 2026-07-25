@@ -60,7 +60,7 @@ import { mockCategories } from "@/data/categories";
 import { mockProducts } from "@/data/products";
 const recentProducts = mockProducts;
 const popularProducts = mockProducts;
-import { mockUsers } from "@/data/users";
+import { mockUsersFormatted as mockUsers } from "@/data/users";
 import { mockReviews } from "@/data/reviews";
 import Button from "@/shared/ui/Button";
 import CategoryCard from "@/shared/ui/CategoryCard";
@@ -187,7 +187,7 @@ function SectionHeader({ title, subtitle, action, actionLabel = "Voir tout", cla
       {action && (
         <Link
           to={action}
-          className="flex shrink-0 items-center gap-1 text-sm font-medium text-red-800 hover:text-red-900 transition-colors"
+          className="flex shrink-0 items-center gap-1 text-sm font-medium text-brand-800 hover:text-brand-900 transition-colors"
         >
           {actionLabel}
           <ArrowRight className="h-4 w-4" />
@@ -315,15 +315,15 @@ function HeroSection() {
             className="mt-10 flex flex-wrap items-center justify-center gap-6 text-sm text-white/70"
           >
             <div className="flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-green-300" />
+              <ShieldCheck className="h-4 w-4 text-brand-300" />
               <span>Paiement sécurisé</span>
             </div>
             <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-green-300" />
+              <Users className="h-4 w-4 text-brand-300" />
               <span>5 000+ utilisateurs</span>
             </div>
             <div className="flex items-center gap-2">
-              <PackageCheck className="h-4 w-4 text-green-300" />
+              <PackageCheck className="h-4 w-4 text-brand-300" />
               <span>Livraison disponible</span>
             </div>
           </motion.div>
@@ -375,7 +375,7 @@ function CategoriesSection() {
         <div className="mt-8 text-center">
           <Link
             to="/categories"
-            className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-red-400 hover:text-red-800 hover:shadow-md dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-red-800"
+            className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-brand-400 hover:text-brand-800 hover:shadow-md dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-brand-800"
           >
             Voir toutes les catégories
             <ArrowRight className="h-4 w-4" />
@@ -528,7 +528,7 @@ function VerifiedSellersSection() {
                     <div className="relative mx-auto mb-3 w-fit">
                       <Avatar src={seller.avatar} name={seller.name} size="lg" />
                       <div className="absolute -bottom-1 -right-1 rounded-full bg-white p-0.5 dark:bg-gray-900">
-                        <ShieldCheck className="h-4 w-4 text-red-700" />
+                        <ShieldCheck className="h-4 w-4 text-brand-700" />
                       </div>
                     </div>
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
@@ -567,19 +567,19 @@ function HowItWorksSection() {
       icon: FileText,
       title: "Publiez votre annonce",
       description: "Créez votre annonce en quelques minutes. Ajoutez des photos, une description et un prix.",
-      color: "bg-red-50 text-red-700 dark:bg-red-700/10",
+      color: "bg-brand-50 text-brand-700 dark:bg-brand-700/10",
     },
     {
       icon: MessageSquare,
       title: "Discutez avec les acheteurs",
       description: "Répondez aux questions, négociez le prix et convenez d'un lieu de rencontre.",
-      color: "bg-green-50 text-green-700 dark:bg-green-700/10",
+      color: "bg-brand-50 text-brand-700 dark:bg-brand-700/10",
     },
     {
       icon: ShieldCheck,
       title: "Vendez en toute sécurité",
       description: "Rencontrez l'acheteur en personne ou utilisez notre service de livraison sécurisé.",
-      color: "bg-red-50 text-red-700 dark:bg-red-700/10",
+      color: "bg-brand-50 text-brand-700 dark:bg-brand-700/10",
     },
   ];
 
@@ -617,7 +617,7 @@ function HowItWorksSection() {
                     <step.icon className="h-7 w-7" />
                   </div>
                 </div>
-                <div className="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-red-800 text-sm font-bold text-white shadow-lg shadow-red-800/25">
+                <div className="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-brand-800 text-sm font-bold text-white shadow-lg shadow-brand-800/25">
                   {i + 1}
                 </div>
               </div>
@@ -630,8 +630,8 @@ function HowItWorksSection() {
               {i < steps.length - 1 && (
                 <div className="absolute left-[calc(50%+60px)] top-10 hidden w-[calc(100%-120px)] md:block">
                   <div className="flex items-center justify-center">
-                    <div className="h-0.5 w-full bg-red-300 dark:bg-red-800/20" />
-                    <ChevronRight className="absolute right-0 h-5 w-5 text-red-400 dark:text-red-800/30" />
+                    <div className="h-0.5 w-full bg-brand-300 dark:bg-brand-800/20" />
+                    <ChevronRight className="absolute right-0 h-5 w-5 text-brand-400 dark:text-brand-800/30" />
                   </div>
                 </div>
               )}
@@ -710,7 +710,7 @@ function DownloadAppSection() {
                 Application mobile
               </Badge>
               <h2 className="text-2xl font-bold text-white sm:text-3xl">
-                Téléchargez l'application AK Market
+                Téléchargez l'application TG-Market
               </h2>
               <p className="mt-4 text-gray-400 leading-relaxed">
                 Achetez et vendez directement depuis votre smartphone. Notifications en temps réel,
@@ -741,7 +741,7 @@ function DownloadAppSection() {
                   { icon: Heart, label: "Gratuit" },
                 ].map((item) => (
                   <div key={item.label} className="flex items-center gap-2 text-sm text-gray-400">
-                    <item.icon className="h-4 w-4 text-red-700" />
+                    <item.icon className="h-4 w-4 text-brand-700" />
                     {item.label}
                   </div>
                 ))}
@@ -753,15 +753,15 @@ function DownloadAppSection() {
                 <div className="absolute inset-x-0 top-0 z-10 h-6 bg-gray-900" />
                 <img
                   src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=800&fit=crop"
-                  alt="AK Market App"
+                   alt="TG-Market App"
                   className="h-full w-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gray-900/60" />
               </div>
               <div className="absolute -right-4 bottom-20 rotate-6 rounded-xl bg-white p-3 shadow-xl">
                 <div className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-100">
-                    <CheckCircle2 className="h-5 w-5 text-green-700" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-100">
+                    <CheckCircle2 className="h-5 w-5 text-brand-700" />
                   </div>
                   <div>
                     <p className="text-xs font-semibold text-gray-900">Vente effectuée</p>
@@ -771,8 +771,8 @@ function DownloadAppSection() {
               </div>
               <div className="absolute -left-4 top-24 -rotate-3 rounded-xl bg-white p-3 shadow-xl">
                 <div className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-200">
-                    <Star className="h-5 w-5 text-red-800" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-200">
+                    <Star className="h-5 w-5 text-brand-800" />
                   </div>
                   <div>
                     <p className="text-xs font-semibold text-gray-900">Nouvel avis 5★</p>

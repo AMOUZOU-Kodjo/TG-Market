@@ -1,7 +1,7 @@
 export const mockFaqs = [
   {
     id: 1,
-    question: "Comment créer un compte sur AK Market ?",
+    question: "Comment créer un compte sur TG-Market ?",
     answer: "Pour créer un compte, cliquez sur 'S'inscrire' en haut à droite de la page d'accueil. Vous pouvez vous inscrire avec votre adresse email, numéro de téléphone ou via Google/Facebook. L'inscription est gratuite et ne prend que quelques secondes.",
     category: "Compte",
   },
@@ -14,7 +14,7 @@ export const mockFaqs = [
   {
     id: 3,
     question: "Combien coûte la publication d'une annonce ?",
-    answer: "La publication d'une annonce est entièrement gratuite sur AK Market. Nous ne facturons aucun droit d'inscription ni de renouvellement. Des options payantes existent pour mettre en avant vos annonces (annonce premium, mise en avant, boost), mais elles sont optionnelles.",
+    answer: "La publication d'une annonce est entièrement gratuite sur TG-Market. Nous ne facturons aucun droit d'inscription ni de renouvellement. Des options payantes existent pour mettre en avant vos annonces (annonce premium, mise en avant, boost), mais elles sont optionnelles.",
     category: "Tarifs",
   },
   {
@@ -26,7 +26,7 @@ export const mockFaqs = [
   {
     id: 5,
     question: "La livraison est-elle disponible ?",
-    answer: "Oui, AK Market propose un service de livraison dans les principales villes du Togo (Lomé, Kara, Sokodé, Kpalimé). Les frais de livraison varient selon la taille du produit et la distance. Vous pouvez aussi convenir d'un lieu de rencontre avec le vendeur pour un retrait en main propre.",
+    answer: "Oui, TG-Market propose un service de livraison dans les principales villes du Togo (Lomé, Kara, Sokodé, Kpalimé). Les frais de livraison varient selon la taille du produit et la distance. Vous pouvez aussi convenir d'un lieu de rencontre avec le vendeur pour un retrait en main propre.",
     category: "Livraison",
   },
   {
@@ -62,19 +62,19 @@ export const mockFaqs = [
   {
     id: 11,
     question: "Comment récupérer un produit acheté en cas de problème ?",
-    answer: "AK Market encourage les transactions en personne pour permettre l'inspection du produit avant l'achat. Si un litige survient, contactez d'abord le vendeur via la plateforme. Si le problème persiste, ouvrez une réclamation dans votre tableau de bord. Nous offrons une médiation gratuite pour les transactions vérifiées.",
+    answer: "TG-Market encourage les transactions en personne pour permettre l'inspection du produit avant l'achat. Si un litige survient, contactez d'abord le vendeur via la plateforme. Si le problème persiste, ouvrez une réclamation dans votre tableau de bord. Nous offrons une médiation gratuite pour les transactions vérifiées.",
     category: "Transactions",
   },
   {
     id: 12,
-    question: "Puis-je utiliser AK Market hors du Togo ?",
-    answer: "AK Market est principalement conçu pour le marché togolais, mais vous pouvez parcourir les annonces depuis n'importe où. La publication d'annonces est actuellement limitée aux utilisateurs au Togo. Nous prévoyons de nous étendre à d'autres pays d'Afrique de l'Ouest prochainement.",
+    question: "Puis-je utiliser TG-Market hors du Togo ?",
+    answer: "TG-Market est principalement conçu pour le marché togolais, mais vous pouvez parcourir les annonces depuis n'importe où. La publication d'annonces est actuellement limitée aux utilisateurs au Togo. Nous prévoyons de nous étendre à d'autres pays d'Afrique de l'Ouest prochainement.",
     category: "Général",
   },
   {
     id: 13,
     question: "Comment promouvoir mes annonces ?",
-    answer: "AK Market offre plusieurs options de promotion : Annonce Premium (mise en avant dans les résultats de recherche), Annonce mise en avant (affichée en première page), et Boost (promotion sur les réseaux sociaux). Ces options sont disponibles lors de la publication ou depuis votre tableau de bord.",
+    answer: "TG-Market offre plusieurs options de promotion : Annonce Premium (mise en avant dans les résultats de recherche), Annonce mise en avant (affichée en première page), et Boost (promotion sur les réseaux sociaux). Ces options sont disponibles lors de la publication ou depuis votre tableau de bord.",
     category: "Promotion",
   },
   {
@@ -86,7 +86,7 @@ export const mockFaqs = [
   {
     id: 15,
     question: "Les produits neufs ou d'occasion ?",
-    answer: "AK Market accueille tous types de produits : neufs, quasi-neufs, en très bon état, en bon état, en état correct, et même pour pièces. Chaque vendeur doit indiquer l'état du produit lors de la publication. Utilisez les filtres pour trouver exactement ce que vous cherchez.",
+    answer: "TG-Market accueille tous types de produits : neufs, quasi-neufs, en très bon état, en bon état, en état correct, et même pour pièces. Chaque vendeur doit indiquer l'état du produit lors de la publication. Utilisez les filtres pour trouver exactement ce que vous cherchez.",
     category: "Annonces",
   },
   {
@@ -98,7 +98,7 @@ export const mockFaqs = [
   {
     id: 17,
     question: "Comment protéger mes informations personnelles ?",
-    answer: "AK Market ne partage jamais vos informations personnelles avec des tiers. Votre numéro de téléphone n'est visible que par les personnes à qui vous envoyez un message. Nous vous recommandons de ne pas partager votre adresse, numéro de carte bancaire ou mots de passe avec quiconque sur la plateforme.",
+    answer: "TG-Market ne partage jamais vos informations personnelles avec des tiers. Votre numéro de téléphone n'est visible que par les personnes à qui vous envoyez un message. Nous vous recommandons de ne pas partager votre adresse, numéro de carte bancaire ou mots de passe avec quiconque sur la plateforme.",
     category: "Sécurité",
   },
 ];

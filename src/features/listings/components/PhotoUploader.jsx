@@ -79,14 +79,14 @@ export default function PhotoUploader({
         className={cn(
           "relative cursor-pointer rounded-2xl border-2 border-dashed p-8 text-center transition-all",
           isDragOver
-            ? "border-red-800 bg-red-50 dark:bg-red-800/10"
-            : "border-gray-300 hover:border-red-700 hover:bg-gray-50 dark:border-gray-700 dark:hover:border-red-800 dark:hover:bg-gray-800/50",
+            ? "border-brand-800 bg-brand-50 dark:bg-brand-800/10"
+            : "border-gray-300 hover:border-brand-700 hover:bg-gray-50 dark:border-gray-700 dark:hover:border-brand-800 dark:hover:bg-gray-800/50",
           photos.length >= maxPhotos && "cursor-not-allowed opacity-50"
         )}
       >
         <div className="flex flex-col items-center gap-3">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-200 dark:bg-red-800/10">
-            <Upload className="h-7 w-7 text-red-800" />
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-200 dark:bg-brand-800/10">
+            <Upload className="h-7 w-7 text-brand-800" />
           </div>
           <div>
             <p className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -106,7 +106,7 @@ export default function PhotoUploader({
                 e.stopPropagation();
                 addPhoto();
               }}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-red-800 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-900"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-brand-800 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-900"
             >
               <Camera className="h-4 w-4" />
               Ajouter une photo
@@ -162,7 +162,7 @@ export default function PhotoUploader({
                   </div>
                   {index === 0 && (
                     <div className="absolute left-1.5 top-1.5">
-                      <span className="rounded-md bg-red-800 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                      <span className="rounded-md bg-brand-800 px-1.5 py-0.5 text-[10px] font-bold text-white">
                         Principale
                       </span>
                     </div>
@@ -176,7 +176,7 @@ export default function PhotoUploader({
             <button
               type="button"
               onClick={addPhoto}
-              className="flex h-28 w-28 shrink-0 items-center justify-center rounded-xl border-2 border-dashed border-gray-300 transition-colors hover:border-red-700 hover:bg-red-50 dark:border-gray-700 dark:hover:border-red-800 dark:hover:bg-gray-800/50"
+              className="flex h-28 w-28 shrink-0 items-center justify-center rounded-xl border-2 border-dashed border-gray-300 transition-colors hover:border-brand-700 hover:bg-brand-50 dark:border-gray-700 dark:hover:border-brand-800 dark:hover:bg-gray-800/50"
             >
               <Plus className="h-6 w-6 text-gray-400" />
             </button>

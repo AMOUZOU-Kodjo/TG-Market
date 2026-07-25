@@ -13,7 +13,7 @@ const statusIcons = {
 const statusColors = {
   pending_delivery: "text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20",
   delivered: "text-blue-500 bg-blue-50 dark:bg-blue-900/20",
-  completed: "text-green-500 bg-green-50 dark:bg-green-900/20",
+  completed: "text-brand-500 bg-brand-50 dark:bg-brand-900/20",
   disputed: "text-red-500 bg-red-50 dark:bg-red-900/20",
   refunded: "text-gray-500 bg-gray-50 dark:bg-gray-800",
 };
@@ -72,7 +72,7 @@ export default function EscrowTimeline({ transaction }) {
             >
               <div className={`absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full border-2 ${
                 isCompleted
-                  ? "border-green-500 bg-green-50 text-green-600 dark:bg-green-900/20"
+                  ? "border-brand-500 bg-brand-50 text-brand-600 dark:bg-brand-900/20"
                   : isCurrent
                   ? "border-blue-500 bg-blue-50 text-blue-600 dark:bg-blue-900/20"
                   : "border-gray-300 bg-white text-gray-400 dark:border-gray-600 dark:bg-gray-900"

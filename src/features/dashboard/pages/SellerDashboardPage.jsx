@@ -19,10 +19,10 @@ import DashboardStats from "@/features/dashboard/components/DashboardStats";
 import ProductTable from "@/features/dashboard/components/ProductTable";
 
 const recentActivity = [
-  { id: 1, type: "sale", text: "Nouvelle vente : Samsung Galaxy S24 Ultra", time: "2025-07-20T10:30:00Z", icon: ShoppingCart, color: "text-green-700", bg: "bg-green-50 dark:bg-green-700/10" },
-  { id: 2, type: "message", text: "3 nouveaux messages de Kofi Améyo", time: "2025-07-20T09:15:00Z", icon: Star, color: "text-red-800", bg: "bg-red-50 dark:bg-red-800/10" },
-  { id: 3, type: "favorite", text: "PS5 ajouté en favoris par Kévin", time: "2025-07-19T16:45:00Z", icon: Star, color: "text-red-700", bg: "bg-red-50 dark:bg-red-700/10" },
-  { id: 4, type: "view", text: "Canon EOS R6 Mark II : 23 nouvelles vues", time: "2025-07-19T14:20:00Z", icon: TrendingUp, color: "text-red-700", bg: "bg-red-50 dark:bg-red-700/10" },
+  { id: 1, type: "sale", text: "Nouvelle vente : Samsung Galaxy S24 Ultra", time: "2025-07-20T10:30:00Z", icon: ShoppingCart, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
+  { id: 2, type: "message", text: "3 nouveaux messages de Kofi Améyo", time: "2025-07-20T09:15:00Z", icon: Star, color: "text-brand-800", bg: "bg-brand-50 dark:bg-brand-800/10" },
+  { id: 3, type: "favorite", text: "PS5 ajouté en favoris par Kévin", time: "2025-07-19T16:45:00Z", icon: Star, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
+  { id: 4, type: "view", text: "Canon EOS R6 Mark II : 23 nouvelles vues", time: "2025-07-19T14:20:00Z", icon: TrendingUp, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
   { id: 5, type: "review", text: "Nouvel avis 5 étoiles de Yao Agbeko", time: "2025-07-19T11:00:00Z", icon: Star, color: "text-yellow-500", bg: "bg-yellow-50 dark:bg-yellow-500/10" },
 ];
 
@@ -65,7 +65,7 @@ function OverviewTab() {
                   initial={{ height: 0 }}
                   animate={{ height: `${h}%` }}
                   transition={{ delay: 0.1 + i * 0.05, duration: 0.4 }}
-                  className="flex-1 rounded-t-lg bg-red-800"
+                  className="flex-1 rounded-t-lg bg-brand-800"
                 />
               ))}
             </div>
@@ -114,7 +114,7 @@ function ProductsTab() {
         <h3 className="text-base font-semibold text-gray-900 dark:text-white">
           Mes annonces
         </h3>
-        <button className="flex items-center gap-2 rounded-xl bg-red-800 px-4 py-2 text-sm font-medium text-white shadow-sm shadow-red-800/25 hover:bg-red-900 transition-colors">
+        <button className="flex items-center gap-2 rounded-xl bg-brand-800 px-4 py-2 text-sm font-medium text-white shadow-sm shadow-brand-800/25 hover:bg-brand-900 transition-colors">
           <Package className="h-4 w-4" />
           Nouvelle annonce
         </button>
@@ -207,7 +207,7 @@ function AnalyticsTab() {
           <div key={stat.label} className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
             <p className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</p>
             <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
-            <p className="mt-1 text-xs text-green-800 dark:text-green-600">{stat.change}</p>
+            <p className="mt-1 text-xs text-brand-800 dark:text-brand-600">{stat.change}</p>
           </div>
         ))}
       </div>
@@ -215,7 +215,7 @@ function AnalyticsTab() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
           <h4 className="mb-4 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-            <BarChart3 className="h-4 w-4 text-red-800" />
+            <BarChart3 className="h-4 w-4 text-brand-800" />
             Vues au fil du temps
           </h4>
           <div className="flex h-40 items-end gap-1.5">
@@ -225,7 +225,7 @@ function AnalyticsTab() {
                 initial={{ height: 0 }}
                 animate={{ height: `${h}%` }}
                 transition={{ delay: 0.1 + i * 0.03, duration: 0.4 }}
-                className="flex-1 rounded-t-md bg-red-700"
+                className="flex-1 rounded-t-md bg-brand-700"
               />
             ))}
           </div>
@@ -254,7 +254,7 @@ function AnalyticsTab() {
                   <p className="truncate text-sm text-gray-700 dark:text-gray-300">{p.title}</p>
                   <div className="mt-1 h-1.5 rounded-full bg-gray-100 dark:bg-gray-800">
                     <div
-                      className="h-full rounded-full bg-red-700"
+                      className="h-full rounded-full bg-brand-700"
                       style={{ width: `${p.pct}%` }}
                     />
                   </div>
@@ -276,7 +276,7 @@ function PromotionsTab() {
         <h3 className="text-base font-semibold text-gray-900 dark:text-white">
           Promotions
         </h3>
-        <button className="flex items-center gap-2 rounded-xl bg-red-800 px-4 py-2 text-sm font-medium text-white shadow-sm shadow-red-800/25 hover:bg-red-900 transition-colors">
+        <button className="flex items-center gap-2 rounded-xl bg-brand-800 px-4 py-2 text-sm font-medium text-white shadow-sm shadow-brand-800/25 hover:bg-brand-900 transition-colors">
           <Megaphone className="h-4 w-4" />
           Nouvelle promo
         </button>
@@ -290,11 +290,11 @@ function PromotionsTab() {
             <div className="flex items-center gap-3">
               <div className={cn(
                 "flex h-10 w-10 items-center justify-center rounded-xl",
-                promo.active ? "bg-green-50 dark:bg-green-700/10" : "bg-gray-100 dark:bg-gray-800"
+                promo.active ? "bg-brand-50 dark:bg-brand-700/10" : "bg-gray-100 dark:bg-gray-800"
               )}>
                 <Megaphone className={cn(
                   "h-5 w-5",
-                  promo.active ? "text-green-700" : "text-gray-400"
+                  promo.active ? "text-brand-700" : "text-gray-400"
                 )} />
               </div>
               <div>
@@ -354,7 +354,7 @@ export default function SellerDashboardPage() {
             className={cn(
               "relative flex items-center gap-2 whitespace-nowrap px-4 py-3 text-sm font-medium transition-colors",
               activeTab === tab.id
-                ? "text-red-800"
+                ? "text-brand-800"
                 : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
             )}
           >
@@ -363,7 +363,7 @@ export default function SellerDashboardPage() {
             {activeTab === tab.id && (
               <motion.div
                 layoutId="dashboard-tab"
-                className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-red-800"
+                className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-brand-800"
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
               />
             )}

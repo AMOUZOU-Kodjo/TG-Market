@@ -1,6 +1,7 @@
 import { Outlet, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
+import Logo from "@/shared/ui/Logo";
 import AuthHeroCarousel from "@/features/auth/components/AuthHeroCarousel";
 
 export default function AuthLayout() {
@@ -26,9 +27,7 @@ export default function AuthLayout() {
             {/* Mobile Brand */}
             <div className="lg:hidden text-center mb-8">
               <Link to="/" className="inline-flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-green-900 flex items-center justify-center shadow-lg shadow-green-700/25">
-                  <span className="text-white font-bold text-xl">AK</span>
-                </div>
+                <Logo size="lg" />
                 <span className="text-2xl font-bold text-green-900">
                   Market
                 </span>

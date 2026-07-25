@@ -18,7 +18,7 @@ export default function ConversationItem({
       className={cn(
         "flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left transition-colors",
         isSelected
-          ? "bg-red-50 dark:bg-red-800/10"
+          ? "bg-brand-50 dark:bg-brand-800/10"
           : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
       )}
     >
@@ -43,7 +43,7 @@ export default function ConversationItem({
               {participant?.name}
             </span>
             {participant?.verified && (
-              <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-red-700" />
+              <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-brand-700" />
             )}
           </div>
           <span className="shrink-0 text-xs text-gray-400 dark:text-gray-500">
@@ -77,7 +77,7 @@ export default function ConversationItem({
       </div>
 
       {unreadCount > 0 && (
-        <span className="mt-0.5 flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-red-800 px-1.5 text-[10px] font-bold text-white">
+        <span className="mt-0.5 flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-brand-800 px-1.5 text-[10px] font-bold text-white">
           {unreadCount}
         </span>
       )}

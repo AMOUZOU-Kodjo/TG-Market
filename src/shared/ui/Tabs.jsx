@@ -28,7 +28,7 @@ export default function Tabs({
             className={cn(
               "relative flex items-center gap-2 whitespace-nowrap px-4 py-3 text-sm font-medium transition-colors",
               currentTab === tab.id
-                ? "text-red-800"
+                ? "text-brand-800"
                 : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
             )}
           >
@@ -39,7 +39,7 @@ export default function Tabs({
                 className={cn(
                   "rounded-full px-1.5 py-0.5 text-[10px] font-semibold",
                   currentTab === tab.id
-                    ? "bg-red-200 text-red-900 dark:bg-red-800/15 dark:text-red-700"
+                    ? "bg-brand-200 text-brand-900 dark:bg-brand-800/15 dark:text-brand-700"
                     : "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400"
                 )}
               >
@@ -49,7 +49,7 @@ export default function Tabs({
             {currentTab === tab.id && (
               <motion.div
                 layoutId="tab-indicator"
-                className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-red-800"
+                className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-brand-800"
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
               />
             )}

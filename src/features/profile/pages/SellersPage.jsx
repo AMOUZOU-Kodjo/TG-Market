@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Home, Star, MapPin, Package, ShieldCheck } from "lucide-react";
 import Breadcrumb from "@/shared/ui/Breadcrumb";
 import Avatar from "@/shared/ui/Avatar";
-import { mockUsers } from "@/data/users";
+import { mockUsersFormatted as mockUsers } from "@/data/users";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -42,7 +42,7 @@ export default function SellersPage() {
           Vendeurs vérifiés
         </h1>
         <p className="mt-1 text-gray-500 dark:text-gray-400">
-          Nos vendeurs de confiance, vérifiés par AK Market.
+          Nos vendeurs de confiance, vérifiés par TG-Market.
         </p>
       </motion.div>
 

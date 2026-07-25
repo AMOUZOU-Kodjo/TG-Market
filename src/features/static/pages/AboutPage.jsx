@@ -52,7 +52,7 @@ const values = [
   {
     icon: Heart,
     title: "Communauté Togolaise",
-    description: "AK Market est né au Togo, pour le Togo. Notre plateforme est conçue pour répondre aux besoins spécifiques des Togolais.",
+    description: "TG-Market est né au Togo, pour le Togo. Notre plateforme est conçue pour répondre aux besoins spécifiques des Togolais.",
   },
   {
     icon: Handshake,
@@ -71,14 +71,14 @@ const teamMembers = [
     name: "Amouzou Kodjo",
     role: "Co-fondateur & Développeur Frontend",
     initials: "AK",
-    color: "bg-red-100 text-red-800 dark:bg-red-900/30",
-    bio: "Architecte de l\u2019interface AK Market. Passionné par les interfaces fluides et l\u2019expérience utilisateur mobile.",
+    color: "bg-brand-100 text-brand-800 dark:bg-brand-900/30",
+    bio: "Architecte de l\u2019interface TG-Market. Passionné par les interfaces fluides et l\u2019expérience utilisateur mobile.",
   },
   {
     name: "Awougno Kofi Yosua",
     role: "Co-fondateur & Développeur Backend",
     initials: "AY",
-    color: "bg-green-100 text-green-800 dark:bg-green-900/30",
+    color: "bg-brand-100 text-brand-800 dark:bg-brand-900/30",
     bio: "Cerveau technique derrière l\u2019API, la sécurité et l\u2019infrastructure. Garant de la fiabilité du système.",
   },
 ];
@@ -86,7 +86,7 @@ const teamMembers = [
 const timeline = [
   { year: "2021", title: "L\u2019idée est née", description: "Face au manque de plateforme locale, les fondateurs imaginent un marketplace 100% togolais." },
   { year: "2022", title: "Premier prototype", description: "L\u2019app est testée à Lomé avec 200 beta-testeurs. Les premières ventes ont lieu." },
-  { year: "2023", title: "Lancement officiel", description: "AK Market est lancé publiquement. 5 000 utilisateurs en 3 mois." },
+  { year: "2023", title: "Lancement officiel", description: "TG-Market est lancé publiquement. 5 000 utilisateurs en 3 mois." },
   { year: "2024", title: "Expansion nationale", description: "Déploiement à Kara, Sokodé, Kpalimé et Atakpamé. 24 000 utilisateurs actifs." },
   { year: "2025", title: "Paiement & Livraison", description: "Intégration Flooz, TMoney et livraison locale. Le séquestre s\u2019étoffe." },
 ];
@@ -160,7 +160,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-red-800 px-4 py-24 text-white sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden bg-brand-800 px-4 py-24 text-white sm:px-6 lg:px-8">
         <div className="absolute inset-0">
           <div className="absolute -left-20 -top-20 h-80 w-80 rounded-full bg-white/5" />
           <div className="absolute -bottom-20 -right-20 h-80 w-80 rounded-full bg-white/10" />
@@ -180,7 +180,7 @@ export default function AboutPage() {
               <span className="text-yellow-400">Togo</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-white/80">
-              AK Market connecte les vendeurs et acheteurs à travers tout le Togo.
+              TG-Market connecte les vendeurs et acheteurs à travers tout le Togo.
               Achetez, vendez et échangez en toute confiance.
             </p>
           </motion.div>
@@ -191,8 +191,8 @@ export default function AboutPage() {
             className="mt-8 flex flex-wrap items-center justify-center gap-4"
           >
             <Link to="/">
-              <Button size="lg" className="bg-white text-red-900 hover:bg-gray-100">
-                Explorer AK Market
+              <Button size="lg" className="bg-white text-brand-900 hover:bg-gray-100">
+                Explorer TG-Market
                 <ArrowRight className="ml-1 h-5 w-5" />
               </Button>
             </Link>
@@ -221,7 +221,7 @@ export default function AboutPage() {
                 variants={itemVariants}
                 className="rounded-2xl border border-gray-100 bg-white p-5 text-center dark:border-gray-800 dark:bg-gray-900"
               >
-                <stat.icon className="mx-auto mb-2 h-6 w-6 text-red-800" />
+                <stat.icon className="mx-auto mb-2 h-6 w-6 text-brand-800" />
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">{stat.label}</p>
               </motion.div>
@@ -259,7 +259,7 @@ export default function AboutPage() {
                 }`}
               >
                 <div className="hidden sm:block sm:w-1/2" />
-                <div className="absolute left-4 top-1 h-3 w-3 -translate-x-1/2 rounded-full border-2 border-red-800 bg-white dark:bg-gray-900 sm:left-1/2" />
+                <div className="absolute left-4 top-1 h-3 w-3 -translate-x-1/2 rounded-full border-2 border-brand-800 bg-white dark:bg-gray-900 sm:left-1/2" />
                 <div className="ml-10 sm:ml-0 sm:w-1/2">
                   <button
                     onClick={() => setOpenTimeline(openTimeline === i ? -1 : i)}
@@ -268,7 +268,7 @@ export default function AboutPage() {
                     <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
                       <div className="flex items-center justify-between">
                         <div>
-                          <span className="text-xs font-bold text-red-800">{item.year}</span>
+                          <span className="text-xs font-bold text-brand-800">{item.year}</span>
                           <h3 className="mt-1 text-base font-semibold text-gray-900 dark:text-white">{item.title}</h3>
                         </div>
                         {openTimeline === i ? (
@@ -304,13 +304,13 @@ export default function AboutPage() {
             viewport={{ once: true }}
             className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900 sm:p-12"
           >
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-50 dark:bg-red-900/20">
-              <Target className="h-7 w-7 text-red-800" />
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-900/20">
+              <Target className="h-7 w-7 text-brand-800" />
             </div>
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Notre mission</h2>
             <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-gray-600 dark:text-gray-400">
               Rendre le commerce accessible à tous les Togolais. Que vous soyez à Lomé, Kara, Sokodé ou Kpalimé,
-              AK Market vous permet de vendre et acheter en toute simplicité. Nous croyons que chaque Togolais
+              TG-Market vous permet de vendre et acheter en toute simplicité. Nous croyons que chaque Togolais
               mérite une plateforme fiable, sécurisée et pensée pour lui.
             </p>
           </motion.div>
@@ -345,8 +345,8 @@ export default function AboutPage() {
                 variants={itemVariants}
                 className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
               >
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 dark:bg-red-900/20">
-                  <value.icon className="h-6 w-6 text-red-800" />
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 dark:bg-brand-900/20">
+                  <value.icon className="h-6 w-6 text-brand-800" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{value.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
@@ -386,8 +386,8 @@ export default function AboutPage() {
                 variants={itemVariants}
                 className="rounded-2xl border border-gray-100 bg-white p-6 transition-shadow hover:shadow-md dark:border-gray-800 dark:bg-gray-900"
               >
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 dark:bg-red-900/20">
-                  <feature.icon className="h-6 w-6 text-red-800" />
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 dark:bg-brand-900/20">
+                  <feature.icon className="h-6 w-6 text-brand-800" />
                 </div>
                 <h3 className="text-base font-semibold text-gray-900 dark:text-white">{feature.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
@@ -433,7 +433,7 @@ export default function AboutPage() {
                 <h3 className="mt-4 text-base font-semibold text-gray-900 dark:text-white">
                   {member.name}
                 </h3>
-                <p className="mt-1 text-sm font-medium text-green-800 dark:text-green-400">{member.role}</p>
+                <p className="mt-1 text-sm font-medium text-brand-800 dark:text-brand-400">{member.role}</p>
                 <p className="mt-3 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
                   {member.bio}
                 </p>
@@ -483,7 +483,7 @@ export default function AboutPage() {
                   &ldquo;{t.text}&rdquo;
                 </p>
                 <div className="mt-4 flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 text-xs font-bold text-red-800 dark:bg-red-900/30">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-100 text-xs font-bold text-brand-800 dark:bg-brand-900/30">
                     {t.name.charAt(0)}
                   </div>
                   <div>
@@ -504,18 +504,18 @@ export default function AboutPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="rounded-2xl bg-red-800 p-8 text-center text-white sm:p-12"
+            className="rounded-2xl bg-brand-800 p-8 text-center text-white sm:p-12"
           >
             <h2 className="text-2xl font-bold sm:text-3xl">
-              Rejoignez AK Market aujourd{"'"}hui
+              Rejoignez TG-Market aujourd{"'"}hui
             </h2>
             <p className="mx-auto mt-4 max-w-md text-white/80">
-              Que vous soyez vendeur ou acheteur, AK Market est la meilleure
+              Que vous soyez vendeur ou acheteur, TG-Market est la meilleure
               plateforme pour vos échanges au Togo.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link to="/inscription">
-                <Button size="lg" className="bg-white text-red-900 hover:bg-gray-100">
+                <Button size="lg" className="bg-white text-brand-900 hover:bg-gray-100">
                   Créer un compte gratuit
                 </Button>
               </Link>

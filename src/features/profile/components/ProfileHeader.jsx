@@ -59,7 +59,7 @@ export default function ProfileHeader({
   return (
     <div className="overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-gray-900">
       <div className="relative h-48 sm:h-56">
-        <div className="absolute inset-0 bg-red-800" />
+        <div className="absolute inset-0 bg-brand-800" />
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyem0wLTRWMjhIMjR2Mmgxem0tMi0ydi0yaC0xdjJoMXptNC0ydjJIMjh2LTJoMTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30" />
       </div>
 
@@ -156,8 +156,8 @@ export default function ProfileHeader({
                 "dark:border-gray-800"
               )}
             >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-red-50 dark:bg-red-800/10">
-                <stat.icon className="h-4 w-4 text-red-800" />
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-50 dark:bg-brand-800/10">
+                <stat.icon className="h-4 w-4 text-brand-800" />
               </div>
               <div>
                 <p className="text-lg font-bold text-gray-900 dark:text-white">

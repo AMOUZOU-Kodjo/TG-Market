@@ -72,7 +72,7 @@ export default function CategoryPage() {
             action={
               <Link
                 to="/vendre"
-                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-red-700 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-red-800"
+                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-brand-700 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-brand-800"
               >
                 Publier une annonce
               </Link>

@@ -56,7 +56,7 @@ export default function MessagesPage() {
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">
             Messages
           </h2>
-          <button className="rounded-lg bg-red-800 p-2 text-white shadow-sm shadow-red-800/25 hover:bg-red-900 transition-colors">
+          <button className="rounded-lg bg-brand-800 p-2 text-white shadow-sm shadow-brand-800/25 hover:bg-brand-900 transition-colors">
             <Plus className="h-4 w-4" />
           </button>
         </div>
@@ -70,7 +70,7 @@ export default function MessagesPage() {
               placeholder="Rechercher une conversation..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder:text-gray-400 focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500"
+              className="w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder:text-gray-400 focus:border-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500"
             />
             {searchQuery && (
               <button

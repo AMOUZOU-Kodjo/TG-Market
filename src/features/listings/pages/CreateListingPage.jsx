@@ -173,7 +173,7 @@ export default function CreateListingPage() {
                     className={cn(
                       "flex flex-col items-center gap-2 rounded-2xl border-2 p-4 text-center transition-all",
                       isSelected
-                        ? "border-red-800 bg-red-50 shadow-md shadow-red-800/10 dark:bg-red-800/10"
+                        ? "border-brand-800 bg-brand-50 shadow-md shadow-brand-800/10 dark:bg-brand-800/10"
                         : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:hover:border-gray-600"
                     )}
                   >
@@ -190,7 +190,7 @@ export default function CreateListingPage() {
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        className="flex h-5 w-5 items-center justify-center rounded-full bg-red-800"
+                        className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-800"
                       >
                         <CheckCircle2 className="h-3.5 w-3.5 text-white" />
                       </motion.div>
@@ -291,7 +291,7 @@ export default function CreateListingPage() {
                     placeholder="0"
                     className={cn(
                       "w-full rounded-xl border bg-white py-2.5 pl-4 pr-24 text-lg font-bold text-gray-900 transition-colors",
-                      "placeholder:text-gray-400 focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20",
+                      "placeholder:text-gray-400 focus:border-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20",
                       "dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-500",
                       errors.price
                         ? "border-red-700"
@@ -324,7 +324,7 @@ export default function CreateListingPage() {
                   onClick={() => setValue("negotiable", !formValues.negotiable)}
                   className={cn(
                     "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200",
-                    formValues.negotiable ? "bg-red-800" : "bg-gray-300 dark:bg-gray-600"
+                    formValues.negotiable ? "bg-brand-800" : "bg-gray-300 dark:bg-gray-600"
                   )}
                 >
                   <span
@@ -353,7 +353,7 @@ export default function CreateListingPage() {
                   className={cn(
                     "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200",
                     formValues.deliveryAvailable
-                      ? "bg-red-800"
+                      ? "bg-brand-800"
                       : "bg-gray-300 dark:bg-gray-600"
                   )}
                 >
@@ -456,9 +456,9 @@ export default function CreateListingPage() {
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
-                  className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-green-100 dark:bg-green-700/10"
+                  className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-brand-100 dark:bg-brand-700/10"
                 >
-                  <CheckCircle2 className="h-12 w-12 text-green-700" />
+                  <CheckCircle2 className="h-12 w-12 text-brand-700" />
                 </motion.div>
 
                 <motion.h2
@@ -512,13 +512,13 @@ export default function CreateListingPage() {
                   <div className="flex items-center justify-center gap-3">
                     <button
                       onClick={() => handleShare("Facebook")}
-                      className="flex h-10 w-10 items-center justify-center rounded-full bg-red-800 text-white transition-transform hover:scale-110"
+                      className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-800 text-white transition-transform hover:scale-110"
                     >
                       <ExternalLink className="h-5 w-5" />
                     </button>
                     <button
                       onClick={() => handleShare("WhatsApp")}
-                      className="flex h-10 w-10 items-center justify-center rounded-full bg-green-700 text-white transition-transform hover:scale-110"
+                      className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-700 text-white transition-transform hover:scale-110"
                     >
                       <MessageCircle className="h-5 w-5" />
                     </button>
@@ -530,7 +530,7 @@ export default function CreateListingPage() {
                     </button>
                     <button
                       onClick={() => handleShare("copier")}
-                      className="flex h-10 w-10 items-center justify-center rounded-full bg-red-800 text-white transition-transform hover:scale-110"
+                      className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-800 text-white transition-transform hover:scale-110"
                     >
                       <Copy className="h-5 w-5" />
                     </button>
@@ -539,8 +539,8 @@ export default function CreateListingPage() {
               </motion.div>
             ) : (
               <div className="flex flex-col items-center py-12 text-center">
-                <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-red-200 dark:bg-red-800/10">
-                  <Send className="h-12 w-12 text-red-800" />
+                <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-brand-200 dark:bg-brand-800/10">
+                  <Send className="h-12 w-12 text-brand-800" />
                 </div>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                   Prêt à publier ?

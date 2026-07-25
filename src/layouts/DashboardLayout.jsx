@@ -21,6 +21,7 @@ import {
   Heart,
   X,
 } from "lucide-react";
+import Logo from "@/shared/ui/Logo";
 import { mockCurrentUser } from "../data/users";
 
 export default function DashboardLayout() {
@@ -74,11 +75,9 @@ export default function DashboardLayout() {
           {/* Sidebar Header */}
           <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100 dark:border-gray-700">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-green-900 flex items-center justify-center shrink-0">
-                <span className="text-white font-bold text-sm">AK</span>
-              </div>
+              <Logo size="sm" />
               {sidebarOpen && (
-                <span className="text-lg font-bold text-green-900">
+                <span className="text-lg font-bold text-brand-900">
                   Market
                 </span>
               )}
@@ -103,7 +102,7 @@ export default function DashboardLayout() {
               <img
                 src={mockCurrentUser.avatar}
                 alt={mockCurrentUser.name}
-                className="w-10 h-10 rounded-full object-cover ring-2 ring-red-700/20 shrink-0"
+                className="w-10 h-10 rounded-full object-cover ring-2 ring-brand-700/20 shrink-0"
               />
               {sidebarOpen && (
                 <div className="min-w-0">
@@ -128,17 +127,17 @@ export default function DashboardLayout() {
                   to={item.to}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                     isActive
-                      ? "bg-red-50 dark:bg-red-950/30 text-red-800 dark:text-red-400"
+                      ? "bg-brand-50 dark:bg-brand-950/30 text-brand-800 dark:text-brand-400"
                       : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50"
                   } ${!sidebarOpen ? "justify-center" : ""}`}
                   title={!sidebarOpen ? item.label : undefined}
                 >
-                  <item.icon className={`w-5 h-5 shrink-0 ${isActive ? "text-red-800 dark:text-red-400" : ""}`} />
+                  <item.icon className={`w-5 h-5 shrink-0 ${isActive ? "text-brand-800 dark:text-brand-400" : ""}`} />
                   {sidebarOpen && (
                     <>
                       <span className="flex-1">{item.label}</span>
                       {item.badge && (
-                        <span className="px-2 py-0.5 bg-red-700 text-white text-[10px] font-bold rounded-full">
+                        <span className="px-2 py-0.5 bg-brand-700 text-white text-[10px] font-bold rounded-full">
                           {item.badge}
                         </span>
                       )}
@@ -159,7 +158,7 @@ export default function DashboardLayout() {
               {sidebarOpen && <span>Aide</span>}
             </Link>
             <button
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-800 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-brand-800 hover:bg-brand-50 dark:hover:bg-brand-950/20 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
             >
               <LogOut className="w-5 h-5 shrink-0" />
               {sidebarOpen && <span>Deconnexion</span>}
@@ -183,7 +182,7 @@ export default function DashboardLayout() {
                 <input
                   type="text"
                   placeholder="Rechercher..."
-                  className="pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-700/50 text-gray-900 dark:text-white w-64"
+                  className="pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-700/50 text-gray-900 dark:text-white w-64"
                 />
               </div>
             </div>
@@ -194,7 +193,7 @@ export default function DashboardLayout() {
               >
                 <MessageCircle className="w-5 h-5" />
                 {mockCurrentUser.unreadMessages > 0 && (
-                  <span className="absolute top-1 right-1 w-4 h-4 bg-red-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-brand-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                     {mockCurrentUser.unreadMessages}
                   </span>
                 )}
@@ -205,12 +204,12 @@ export default function DashboardLayout() {
               >
                 <Bell className="w-5 h-5" />
                 {mockCurrentUser.notifications > 0 && (
-                  <span className="absolute top-1 right-1 w-4 h-4 bg-red-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-brand-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                     {mockCurrentUser.notifications}
                   </span>
                 )}
               </Link>
-              <Link to="/vendre" className="hidden sm:flex items-center gap-2 px-4 py-2 bg-green-900 text-white rounded-xl text-sm font-medium hover:bg-green-950 transition-colors shadow-md shadow-green-700/25">
+              <Link to="/vendre" className="hidden sm:flex items-center gap-2 px-4 py-2 bg-brand-900 text-white rounded-xl text-sm font-medium hover:bg-brand-950 transition-colors shadow-md shadow-brand-700/25">
                 + Nouvelle annonce
               </Link>
             </div>

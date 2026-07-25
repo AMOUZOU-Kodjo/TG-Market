@@ -5,9 +5,9 @@ const sections = [
   {
     icon: Building,
     title: "Éditeur du site",
-    content: `AK Market est édité par :
+    content: `TG-Market est édité par :
 
-AK Market SARU
+TG-Market SARU
 Capital social : 5 000 000 FCFA
 Registre du Commerce et du Crédit Mobilier de Lomé
 Numéro d'identification fiscale : XXXXXXXXXX
@@ -17,7 +17,7 @@ Directeur de la publication : Kofi Mensah, CEO`,
   {
     icon: Globe,
     title: "Hébergeur",
-    content: `Le site AK Market est hébergé par :
+    content: `Le site TG-Market est hébergé par :
 
 Cloudflare, Inc.
 101 Townsend Street
@@ -28,7 +28,7 @@ https://www.cloudflare.com`,
   {
     icon: Scale,
     title: "Propriété intellectuelle",
-    content: `L'ensemble du contenu du site AK Market (textes, images, graphismes, logos, icônes, sons, logiciels) est la propriété exclusive d'AK Market SARU ou de ses partenaires et est protégé par les lois internationales relatives à la propriété intellectuelle.
+    content: `L'ensemble du contenu du site TG-Market (textes, images, graphismes, logos, icônes, sons, logiciels) est la propriété exclusive d'TG-Market SARU ou de ses partenaires et est protégé par les lois internationales relatives à la propriété intellectuelle.
 
 Toute reproduction, représentation, modification, publication, transmission ou dénaturation du site ou de son contenu, par quelque procédé que ce soit, est interdite sans autorisation préalable écrite.
 
@@ -45,7 +45,7 @@ Téléphone : +228 90 00 00 00
 Horaires : Du lundi au vendredi, de 8h à 18h (GMT+0)
 
 Adresse postale :
-AK Market SARU
+TG-Market SARU
 Quartier Bé, Rue de la Paix
 BP 12345, Lomé
 Togo`,
@@ -55,7 +55,7 @@ Togo`,
     title: "Médiation",
     content: `En cas de litige, les parties s'engagent à rechercher une solution amiable avant toute action judiciaire. À défaut, les tribunaux compétents de Lomé seront seuls compétents pour connaître du litige.
 
-AK Market met à disposition un service de médiation gratuit pour les litiges entre utilisateurs. Pour en bénéficier, contactez medi@akmarket.tg.`,
+TG-Market met à disposition un service de médiation gratuit pour les litiges entre utilisateurs. Pour en bénéficier, contactez medi@akmarket.tg.`,
   },
   {
     icon: Scale,
@@ -67,9 +67,9 @@ Si aucune solution amiable n'est trouvée dans un délai de 30 jours, le litige 
   {
     icon: ExternalLink,
     title: "Liens externes",
-    content: `Le site AK Market peut contenir des liens vers des sites tiers. Ces liens sont fournis uniquement pour votre commodité. AK Market n'exerce aucun contrôle sur le contenu de ces sites tiers et décline toute responsabilité quant à leur contenu, leurs pratiques ou leurs politiques de confidentialité.
+    content: `Le site TG-Market peut contenir des liens vers des sites tiers. Ces liens sont fournis uniquement pour votre commodité. TG-Market n'exerce aucun contrôle sur le contenu de ces sites tiers et décline toute responsabilité quant à leur contenu, leurs pratiques ou leurs politiques de confidentialité.
 
-L'inclusion de liens vers des sites tiers ne signifie pas que AK Market approuve ou recommande ces sites.`,
+L'inclusion de liens vers des sites tiers ne signifie pas que TG-Market approuve ou recommande ces sites.`,
   },
 ];
 
@@ -86,12 +86,12 @@ const itemVariants = {
 export default function LegalNoticesPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      <section className="bg-red-800 px-4 py-16 text-white sm:px-6 lg:px-8">
+      <section className="bg-brand-800 px-4 py-16 text-white sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <Scale className="mx-auto mb-4 h-12 w-12 text-white/80" />
             <h1 className="text-3xl font-bold sm:text-4xl">Mentions légales</h1>
-            <p className="mt-3 text-white/80">Informations légales relatives au site AK Market</p>
+            <p className="mt-3 text-white/80">Informations légales relatives au site TG-Market</p>
           </motion.div>
         </div>
       </section>
@@ -110,8 +110,8 @@ export default function LegalNoticesPage() {
               className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
             >
               <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 dark:bg-red-800/10">
-                  <section.icon className="h-5 w-5 text-red-800" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 dark:bg-brand-800/10">
+                  <section.icon className="h-5 w-5 text-brand-800" />
                 </div>
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                   {section.title}
@@ -129,7 +129,7 @@ export default function LegalNoticesPage() {
         </motion.div>
 
         <div className="mt-8 text-center text-xs text-gray-400 dark:text-gray-500">
-          <p>© 2025 AK Market SARU. Tous droits réservés.</p>
+          <p>© 2025 TG-Market SARU. Tous droits réservés.</p>
           <p className="mt-1">Déclaration conformité RGPD & Loi Togolaise sur la Protection des Données Personnelles</p>
         </div>
       </div>

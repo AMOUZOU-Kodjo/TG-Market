@@ -69,7 +69,7 @@ export default function RegisterPage() {
       city: data.city,
     });
     if (result.success) {
-      toast.success("Inscription réussie ! Bienvenue sur AK Market 🎉");
+      toast.success("Inscription réussie ! Bienvenue sur TG-Market 🎉");
       navigate("/");
     } else {
       toast.error(result.error || "Erreur lors de l'inscription");
@@ -100,7 +100,7 @@ export default function RegisterPage() {
           Créer un compte
         </h1>
         <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-          Rejoignez la communauté AK Market et commencez à acheter/vendre
+          Rejoignez la communauté TG-Market et commencez à acheter/vendre
         </p>
       </motion.div>
 

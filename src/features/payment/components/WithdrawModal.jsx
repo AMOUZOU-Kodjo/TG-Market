@@ -40,8 +40,8 @@ export default function WithdrawModal({ isOpen, onClose, balance = 0, method = "
 
             {success ? (
               <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="py-8 text-center">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50 dark:bg-green-900/20">
-                  <CheckCircle2 className="h-8 w-8 text-green-600" />
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-900/20">
+                  <CheckCircle2 className="h-8 w-8 text-brand-600" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Retrait initié</h3>
                 <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
@@ -79,7 +79,7 @@ export default function WithdrawModal({ isOpen, onClose, balance = 0, method = "
                       </div>
                       <div className="mt-1 flex justify-between text-sm font-semibold">
                         <span className="text-gray-700 dark:text-gray-300">Montant net</span>
-                        <span className="text-green-600">{formatCFA(net)}</span>
+                        <span className="text-brand-600">{formatCFA(net)}</span>
                       </div>
                     </div>
                   )}

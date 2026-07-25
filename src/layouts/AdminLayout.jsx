@@ -22,6 +22,7 @@ import {
   UserCheck,
   AlertCircle,
 } from "lucide-react";
+import Logo from "@/shared/ui/Logo";
 import { mockCurrentUser } from "../data/users";
 
 export default function AdminLayout() {
@@ -51,7 +52,7 @@ export default function AdminLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-green-950">
+    <div className="min-h-screen bg-brand-950">
       {/* Mobile Overlay */}
       <AnimatePresence>
         {mobileSidebarOpen && (
@@ -68,20 +69,20 @@ export default function AdminLayout() {
       <div className="flex">
         {/* Admin Sidebar */}
         <aside
-          className={`fixed lg:sticky top-0 z-40 h-screen bg-green-900 border-r border-green-800 transition-all duration-300 flex flex-col ${
+          className={`fixed lg:sticky top-0 z-40 h-screen bg-brand-900 border-r border-brand-800 transition-all duration-300 flex flex-col ${
             sidebarOpen ? "w-64" : "w-20"
           } ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
         >
           {/* Sidebar Header */}
           <div className="h-16 flex items-center justify-between px-4 border-b border-gray-800">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-green-900 flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-brand-900 flex items-center justify-center shrink-0">
                 <Shield className="w-4 h-4 text-white" />
               </div>
               {sidebarOpen && (
                 <div>
-                  <span className="text-lg font-bold text-white">AK</span>
-                  <span className="text-xs ml-1 px-1.5 py-0.5 bg-red-700/20 text-red-400 rounded font-medium">
+                  <span className="text-lg font-bold text-white">TG</span>
+                  <span className="text-xs ml-1 px-1.5 py-0.5 bg-brand-700/20 text-brand-400 rounded font-medium">
                     ADMIN
                   </span>
                 </div>
@@ -108,14 +109,14 @@ export default function AdminLayout() {
                 <img
                   src={mockCurrentUser.avatar}
                   alt={mockCurrentUser.name}
-                  className="w-10 h-10 rounded-full object-cover ring-2 ring-red-700/30"
+                  className="w-10 h-10 rounded-full object-cover ring-2 ring-brand-700/30"
                 />
-                <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-700 rounded-full border-2 border-gray-900" />
+                <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-brand-700 rounded-full border-2 border-gray-900" />
               </div>
               {sidebarOpen && (
                 <div className="min-w-0">
                   <p className="font-semibold text-white text-sm truncate">{mockCurrentUser.name}</p>
-                  <p className="text-xs text-red-400 font-medium">Administrateur</p>
+                  <p className="text-xs text-brand-400 font-medium">Administrateur</p>
                 </div>
               )}
             </div>
@@ -131,12 +132,12 @@ export default function AdminLayout() {
                   to={item.to}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                     isActive
-                      ? "bg-red-700/10 text-red-400"
+                      ? "bg-brand-700/10 text-brand-400"
                       : "text-gray-400 hover:bg-gray-800 hover:text-gray-200"
                   } ${!sidebarOpen ? "justify-center" : ""}`}
                   title={!sidebarOpen ? item.label : undefined}
                 >
-                  <item.icon className={`w-5 h-5 shrink-0 ${isActive ? "text-red-400" : ""}`} />
+                  <item.icon className={`w-5 h-5 shrink-0 ${isActive ? "text-brand-400" : ""}`} />
                   {sidebarOpen && <span>{item.label}</span>}
                 </Link>
               );
@@ -153,7 +154,7 @@ export default function AdminLayout() {
               {sidebarOpen && <span>Retour au site</span>}
             </Link>
             <button
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-400 hover:bg-red-700/10 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-brand-400 hover:bg-brand-700/10 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
             >
               <LogOut className="w-5 h-5 shrink-0" />
               {sidebarOpen && <span>Deconnexion</span>}
@@ -164,7 +165,7 @@ export default function AdminLayout() {
         {/* Main Content */}
         <div className="flex-1 min-w-0">
           {/* Admin Header */}
-          <header className="sticky top-0 z-30 h-16 bg-green-900/80 backdrop-blur-xl border-b border-green-800 flex items-center justify-between px-4 sm:px-6">
+          <header className="sticky top-0 z-30 h-16 bg-brand-900/80 backdrop-blur-xl border-b border-brand-800 flex items-center justify-between px-4 sm:px-6">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setMobileSidebarOpen(true)}
@@ -177,18 +178,18 @@ export default function AdminLayout() {
                 <input
                   type="text"
                   placeholder="Rechercher dans l'admin..."
-                   className="pl-10 pr-4 py-2 bg-green-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-700/50 text-white placeholder-gray-500 w-72"
+                   className="pl-10 pr-4 py-2 bg-brand-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-700/50 text-white placeholder-gray-500 w-72"
                 />
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-red-700/10 text-red-400 text-xs font-medium rounded-lg">
+              <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-brand-700/10 text-brand-400 text-xs font-medium rounded-lg">
                 <Shield className="w-3.5 h-3.5" />
                 Mode Admin
               </span>
               <button className="relative p-2 rounded-lg hover:bg-gray-800 text-gray-400 transition-colors">
                 <Bell className="w-5 h-5" />
-                <span className="absolute top-1 right-1 w-4 h-4 bg-red-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                <span className="absolute top-1 right-1 w-4 h-4 bg-brand-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                   7
                 </span>
               </button>
@@ -204,7 +205,7 @@ export default function AdminLayout() {
               {adminStats.map((stat, i) => (
                 <div
                   key={i}
-                   className="bg-green-900 rounded-xl p-4 border border-green-800"
+                   className="bg-brand-900 rounded-xl p-4 border border-brand-800"
                 >
                   <div className="flex items-start justify-between">
                     <div>
@@ -216,7 +217,7 @@ export default function AdminLayout() {
                     </div>
                   </div>
                   <p className={`text-xs mt-2 font-medium ${
-                    stat.change.startsWith("+") ? "text-green-600" : "text-red-400"
+                    stat.change.startsWith("+") ? "text-brand-600" : "text-red-400"
                   }`}>
                     {stat.change} ce mois
                   </p>

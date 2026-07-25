@@ -327,7 +327,7 @@ export default function SearchResultsPage() {
             {query && (
               <span>
                 {" "}
-                pour « <span className="font-medium text-red-800">{query}</span> »
+                pour « <span className="font-medium text-brand-800">{query}</span> »
               </span>
             )}
           </p>
@@ -342,7 +342,7 @@ export default function SearchResultsPage() {
             >
               Filtres
               {activeFilterChips.length > 0 && (
-                <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-800 px-1 text-[10px] font-bold text-white">
+                <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-800 px-1 text-[10px] font-bold text-white">
                   {activeFilterChips.length}
                 </span>
               )}
@@ -355,7 +355,7 @@ export default function SearchResultsPage() {
                 className={cn(
                   "rounded-md p-1.5 transition-colors",
                   view === "grid"
-                    ? "bg-red-800 text-white"
+                    ? "bg-brand-800 text-white"
                     : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 )}
               >
@@ -367,7 +367,7 @@ export default function SearchResultsPage() {
                 className={cn(
                   "rounded-md p-1.5 transition-colors",
                   view === "list"
-                    ? "bg-red-800 text-white"
+                    ? "bg-brand-800 text-white"
                     : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 )}
               >

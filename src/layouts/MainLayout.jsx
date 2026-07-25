@@ -3,8 +3,6 @@ import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
-  Menu,
-  X,
   ChevronDown,
   Bell,
   User,
@@ -32,11 +30,11 @@ import {
   Play,
 } from "lucide-react";
 import Logo from "@/shared/ui/Logo";
+import BottomNav from "@/shared/ui/BottomNav";
 import CategoryBar from "@/features/home/components/CategoryBar";
 import { mockCurrentUser } from "../data/users";
 
 export default function MainLayout() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -53,7 +51,6 @@ export default function MainLayout() {
   }, []);
 
   useEffect(() => {
-    setMobileMenuOpen(false);
     setUserMenuOpen(false);
     window.scrollTo(0, 0);
   }, [location]);
@@ -106,16 +103,16 @@ export default function MainLayout() {
             scrolled ? "bg-brand-900/90 backdrop-blur-xl shadow-xl" : "bg-brand-900"
           }`}
         >
-          <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Desktop: single row */}
+            <div className="hidden md:flex items-center justify-between h-16">
               {/* Logo */}
               <Link to="/" className="flex items-center gap-2 shrink-0">
                 <Logo size="md" />
-                {/* <span className="text-xl font-bold text-white hidden sm:block">Market</span> */}
               </Link>
 
-              {/* Desktop Search */}
-              <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-xl mx-8">
+              {/* Search */}
+              <form onSubmit={handleSearch} className="flex flex-1 max-w-xl mx-8">
                 <div
                   className={`relative w-full transition-all duration-200 ${
                     searchFocused ? "scale-[1.02]" : ""
@@ -129,13 +126,13 @@ export default function MainLayout() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onFocus={() => setSearchFocused(true)}
                     onBlur={() => setSearchFocused(false)}
-                    className="w-full pl-10 pr-4 py-2.5 bg-white/20 border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/50  text-white placeholder-white/70 transition-all"
+                    className="w-full pl-10 pr-4 py-2.5 bg-white/20 border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder-white/70 transition-all"
                   />
                 </div>
               </form>
 
               {/* Desktop Nav */}
-              <nav className="hidden md:flex items-center gap-1">
+              <nav className="flex items-center gap-1">
                 {navLinks.map((link) => (
                   <Link
                     key={link.to}
@@ -167,7 +164,7 @@ export default function MainLayout() {
                 {/* Notifications */}
                 <Link
                   to="/notifications"
-                  className="relative p-2 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors hidden sm:flex"
+                  className="relative p-2 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors"
                 >
                   <Bell className="w-5 h-5" />
                   <span className="absolute top-1 right-1 w-4 h-4 bg-brand-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
@@ -187,7 +184,7 @@ export default function MainLayout() {
                       className="w-8 h-8 rounded-full object-cover ring-2 ring-white/30"
                     />
                     <ChevronDown
-                      className={`w-4 h-4 text-white/80 transition-transform hidden sm:block ${
+                      className={`w-4 h-4 text-white/80 transition-transform ${
                         userMenuOpen ? "rotate-180" : ""
                       }`}
                     />
@@ -244,69 +241,101 @@ export default function MainLayout() {
                   </AnimatePresence>
                 </div>
 
-                {/* Mobile Menu Toggle */}
+              </div>
+            </div>
+
+            {/* Mobile: two rows */}
+            <div className="md:hidden">
+              {/* Row 1: Logo */}
+              <div className="flex items-center justify-center py-2">
+                <Link to="/">
+                  <Logo size="md" />
+                </Link>
+              </div>
+
+              {/* Row 2: Search + Actions */}
+              <div className="flex items-center gap-2 pb-2">
+                <form onSubmit={handleSearch} className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
+                    <input
+                      type="text"
+                      placeholder="Rechercher..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 bg-white/20 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder-white/60"
+                    />
+                  </div>
+                </form>
                 <button
-                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="md:hidden p-2 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+                  onClick={() => setDarkMode(!darkMode)}
+                  className="p-2 rounded-lg text-white/80 hover:bg-white/10 transition-colors"
                 >
-                  {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                  {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                 </button>
+                <div className="relative" ref={userMenuRef}>
+                  <button
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className="p-1 rounded-full hover:bg-white/10 transition-colors"
+                  >
+                    <img
+                      src={mockCurrentUser.avatar}
+                      alt={mockCurrentUser.name}
+                      className="w-8 h-8 rounded-full object-cover ring-2 ring-white/30"
+                    />
+                  </button>
+
+                  <AnimatePresence>
+                    {userMenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-50"
+                      >
+                        <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                          <p className="font-semibold text-gray-900 dark:text-white text-sm">{mockCurrentUser.name}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{mockCurrentUser.email}</p>
+                        </div>
+                        <div className="p-2">
+                          {userMenuItems.map((item) => (
+                            <Link
+                              key={item.to}
+                              to={item.to}
+                              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                            >
+                              <item.icon className="w-4 h-4 text-gray-400" />
+                              <span className="flex-1">{item.label}</span>
+                              {item.badge && (
+                                <span className="px-2 py-0.5 bg-brand-700 text-white text-[10px] font-bold rounded-full">
+                                  {item.badge}
+                                </span>
+                              )}
+                            </Link>
+                          ))}
+                          <div className="my-1 border-t border-gray-100 dark:border-gray-700" />
+                          <Link
+                            to="/faq"
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                          >
+                            <HelpCircle className="w-4 h-4 text-gray-400" />
+                            Aide et support
+                          </Link>
+                          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-800 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors">
+                            <LogOut className="w-4 h-4" />
+                            Deconnexion
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Mobile Menu */}
-          <AnimatePresence>
-            {mobileMenuOpen && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="md:hidden overflow-hidden border-t border-white/20"
-              >
-                <div className="p-4 space-y-3 bg-brand-900">
-                  {/* Mobile Search */}
-                  <form onSubmit={handleSearch}>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
-                      <input
-                        type="text"
-                        placeholder="Rechercher..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 bg-white/20 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder-white/60"
-                      />
-                    </div>
-                  </form>
-                  {navLinks.map((link) => (
-                    <Link
-                      key={link.to}
-                      to={link.to}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium ${
-                        location.pathname === link.to
-                          ? "bg-white/20 text-white"
-                          : "text-white/80 hover:bg-white/10 hover:text-white"
-                      }`}
-                    >
-                      <link.icon className="w-5 h-5" />
-                      {link.label}
-                    </Link>
-                  ))}
-                  <Link
-                    to="/notifications"
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white/80 hover:bg-white/10 hover:text-white"
-                  >
-                    <Bell className="w-5 h-5" />
-                    Notifications
-                    <span className="ml-auto px-2 py-0.5 bg-brand-700 text-white text-[10px] font-bold rounded-full">
-                      {mockCurrentUser.notifications}
-                    </span>
-                  </Link>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+
         </header>
 
         {/* Category Bar */}
@@ -314,7 +343,7 @@ export default function MainLayout() {
         </div>
 
         {/* Main Content */}
-        <main className="flex-1">
+        <main className="flex-1 pb-20 md:pb-0">
           <motion.div
             key={location.pathname}
             initial={{ opacity: 0, y: 12 }}
@@ -444,6 +473,9 @@ export default function MainLayout() {
             </div>
           </div>
         </footer>
+
+        {/* Mobile Bottom Nav */}
+        <BottomNav />
       </div>
     </div>
   );

@@ -143,44 +143,63 @@ const GROUPS = [
 
 export default function CategoryBar() {
   const [openIndex, setOpenIndex] = useState(null);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [menuPos, setMenuPos] = useState({ left: 0, top: 0, width: 0 });
   const closeTimeout = useRef(null);
   const containerRef = useRef(null);
 
   const handleEnter = useCallback((i) => {
     clearTimeout(closeTimeout.current);
-    const bar = containerRef.current;
-    if (bar) {
-      const rect = bar.getBoundingClientRect();
-      setMenuPos({
-        left: rect.left,
-        top: rect.bottom,
-        width: rect.width,
-      });
+    if (window.innerWidth >= 768) {
+      const bar = containerRef.current;
+      if (bar) {
+        const rect = bar.getBoundingClientRect();
+        setMenuPos({
+          left: rect.left,
+          top: rect.bottom,
+          width: rect.width,
+        });
+      }
+      setOpenIndex(i);
     }
-    setOpenIndex(i);
   }, []);
 
   const handleLeave = useCallback(() => {
-    closeTimeout.current = setTimeout(() => setOpenIndex(null), 120);
+    if (window.innerWidth >= 768) {
+      closeTimeout.current = setTimeout(() => setOpenIndex(null), 120);
+    }
   }, []);
+
+  const handleMobileClick = useCallback((i) => {
+    if (window.innerWidth < 768) {
+      setOpenIndex(openIndex === i ? null : i);
+    }
+  }, [openIndex]);
 
   useEffect(() => {
     return () => clearTimeout(closeTimeout.current);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (openIndex !== null && containerRef.current && !containerRef.current.contains(e.target)) {
+        setOpenIndex(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [openIndex]);
+
   return (
     <div ref={containerRef} className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 z-50">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center gap-1 overflow-x-auto hide-scrollbar px-4 sm:px-6 lg:px-8 py-2">
-          <Link
+          {/* <Link
             to="/categories"
             className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-brand-800 text-white text-xs font-semibold whitespace-nowrap shrink-0 hover:bg-brand-900 transition-colors"
           >
-            <TbLayoutGrid className="w-3.5 h-3.5" />
-            Tout
-          </Link>
+             <TbLayoutGrid className="w-3.5 h-3.5" />
+            Tout 
+          </Link> */}
 
           {GROUPS.map((group, i) => {
             const Icon = group.icon;
@@ -192,11 +211,7 @@ export default function CategoryBar() {
                 onMouseLeave={handleLeave}
               >
                 <button
-                  onClick={() => {
-                    if (window.innerWidth < 768) {
-                      setMobileOpen(mobileOpen === i ? null : i);
-                    }
-                  }}
+                  onClick={() => handleMobileClick(i)}
                   className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
                     openIndex === i
                       ? "bg-brand-50 text-brand-800 dark:bg-brand-900/30 dark:text-brand-400"
@@ -212,7 +227,7 @@ export default function CategoryBar() {
         </div>
       </div>
 
-      {/* Mega Menu — fixed to viewport, rendered at root level */}
+      {/* Mega Menu */}
       <AnimatePresence>
         {openIndex !== null && (
           <motion.div
@@ -221,16 +236,18 @@ export default function CategoryBar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4 }}
             transition={{ duration: 0.15 }}
-            className="hidden  md:block fixed z-[100]"
-            style={{ left: menuPos.left + 200, top: menuPos.top, width: menuPos.width - 400 }}
+            className="fixed z-[100] left-0 right-0 md:left-auto md:right-auto md:w-auto"
+            style={window.innerWidth >= 768 ? { left: menuPos.left + 200, top: menuPos.top, width: menuPos.width - 400 } : { left: 0, top: menuPos.top, width: '100vw', height: 'calc(100vh - ' + menuPos.top + 'px)' }}
             onMouseEnter={() => {
-              clearTimeout(closeTimeout.current);
-              setOpenIndex(openIndex);
+              if (window.innerWidth >= 768) {
+                clearTimeout(closeTimeout.current);
+                setOpenIndex(openIndex);
+              }
             }}
             onMouseLeave={handleLeave}
           >
-              <div className="bg-white dark:bg-gray-800 rounded-b-lg  shadow-xl border border-gray-100 dark:border-gray-700 w-full overflow-hidden">
-              <div className="flex">
+              <div className="bg-white dark:bg-gray-800 rounded-b-lg shadow-xl border border-gray-100 dark:border-gray-700 w-full h-full overflow-hidden flex flex-col">
+              <div className="flex flex-1 min-h-0">
                 {/* Image gauche */}
                 <div className="hidden lg:block w-[280px] shrink-0 relative">
                   <img
@@ -247,7 +264,7 @@ export default function CategoryBar() {
                 </div>
 
                 {/* Sous-catégories */}
-                <div className="flex-1 p-5">
+                <div className="flex-1 p-5 overflow-y-auto">
                   <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3 px-1 lg:hidden">
                     {GROUPS[openIndex].label}
                   </h3>
@@ -258,6 +275,7 @@ export default function CategoryBar() {
                         <Link
                           key={sub.slug}
                           to={`/categories/${sub.slug}`}
+                          onClick={() => setOpenIndex(null)}
                           className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                         >
                           <SubIcon className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />
@@ -266,13 +284,13 @@ export default function CategoryBar() {
                       );
                     })}
                   </div>
-                  <Link
+                  {/* <Link
                     to="/categories"
                     className="mt-3 flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-brand-700 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-lg transition-colors"
                   >
-                    {/* <TbCategory className="w-3.5 h-3.5" />
-                    Toutes les catégories */}
-                  </Link>
+                    <TbCategory className="w-3.5 h-3.5" />
+                    Toutes les catégories 
+                  </Link> */}
                 </div>
               </div>
             </div>

@@ -208,7 +208,7 @@ function HeroSection() {
   ];
 
   return (
-    <section className="relative h-[600px] overflow-hidden sm:h-[650px] lg:h-[700px]">
+    <section className="relative h-100 overflow-hidden sm:h-162.5 lg:h-175">
       <style>{`
         .hero-swiper .swiper-pagination-bullet {
           width: 10px;
@@ -260,7 +260,7 @@ function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl lg:text-6xl"
+            className="text-xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl lg:text-6xl"
           >
             Achetez et vendez au Togo,{" "}
             <span className="relative">
@@ -275,7 +275,7 @@ function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="mt-6 text-base text-white/80 sm:text-lg lg:text-xl"
+            className="mt-6 text-base text-white/80 hidden sm:block sm:text-lg lg:text-xl"
           >
             La première plateforme de marketplace au Togo. Trouvez des milliers d'articles d'occasion
             à prix imbattables ou vendez les vôtres en quelques clics.
@@ -285,13 +285,13 @@ function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="mt-8 flex flex-wrap items-center justify-center gap-4"
+            className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4"
           >
             <Link to="/vendre">
               <Button
                 size="xl"
                 icon={Send}
-                className="bg-white text-black hover:bg-white  border-2 border-white/30"
+                className="bg-white text-black hover:bg-white border-2 border-white/30 text-sm sm:text-base px-4 py-2 sm:px-6 sm:py-3"
               >
                 Vendre un article
               </Button>
@@ -301,7 +301,7 @@ function HeroSection() {
                 variant="outline"
                 size="xl"
                 icon={ShoppingBag}
-                className="border-white/40 text-white hover:bg-white/30"
+                className="border-white/40 text-white hover:bg-white/30 text-sm sm:text-base px-4 py-2 sm:px-6 sm:py-3"
               >
                 Explorer les annonces
               </Button>
@@ -312,7 +312,7 @@ function HeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.7, delay: 0.6 }}
-            className="mt-10 flex flex-wrap items-center justify-center gap-6 text-sm text-white/70"
+            className="mt-6 sm:mt-10 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-white/70"
           >
             <div className="flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-brand-300" />

@@ -11,6 +11,7 @@ const ProductDetailPage = lazy(() => import("@/features/products/pages/ProductDe
 const CreateListingPage = lazy(() => import("@/features/listings/pages/CreateListingPage"));
 const EditListingPage = lazy(() => import("@/features/listings/pages/EditListingPage"));
 const SellerProfilePage = lazy(() => import("@/features/profile/pages/SellerProfilePage"));
+const SellersPage = lazy(() => import("@/features/profile/pages/SellersPage"));
 const UserProfilePage = lazy(() => import("@/features/profile/pages/UserProfilePage"));
 const SellerDashboardPage = lazy(() => import("@/features/dashboard/pages/SellerDashboardPage"));
 const MessagesPage = lazy(() => import("@/features/chat/pages/MessagesPage"));
@@ -44,6 +45,7 @@ export {
   CreateListingPage,
   EditListingPage,
   SellerProfilePage,
+  SellersPage,
   UserProfilePage,
   SellerDashboardPage,
   MessagesPage,

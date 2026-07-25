@@ -399,7 +399,7 @@ function RecentListingsSection() {
         <SectionHeader
           title="En ce moment"
           subtitle="Les annonces les plus récentes"
-          action="/search?sort=newest"
+          action="/recherche?sort=newest"
         />
 
         <div className="relative -mx-4 sm:-mx-6 lg:-mx-8">
@@ -453,7 +453,7 @@ function PopularProductsSection() {
         <SectionHeader
           title="Produits populaires"
           subtitle="Les articles les plus vus de la semaine"
-          action="/search?sort=popular"
+          action="/recherche?sort=popular"
         />
 
         <motion.div
@@ -500,7 +500,7 @@ function VerifiedSellersSection() {
         <SectionHeader
           title="Vendeurs vérifiés"
           subtitle="Nos vendeurs les mieux notés"
-          action="/sellers"
+          action="/vendeurs"
         />
 
         <div className="relative -mx-4 sm:-mx-6 lg:-mx-8">
@@ -519,7 +519,7 @@ function VerifiedSellersSection() {
           >
             {verifiedSellers.map((seller) => (
               <SwiperSlide key={seller.id}>
-                <Link to={`/profile/${seller.id}`}>
+                <Link to={`/vendeur/${seller.id}`}>
                   <motion.div
                     whileHover={{ y: -4 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}

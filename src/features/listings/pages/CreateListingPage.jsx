@@ -487,7 +487,7 @@ export default function CreateListingPage() {
                 >
                   <Button
                     icon={Eye}
-                    onClick={() => navigate("/listings/1")}
+                    onClick={() => navigate("/annonce/1")}
                   >
                     Voir l'annonce
                   </Button>

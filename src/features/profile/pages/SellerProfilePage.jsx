@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Home, ChevronRight } from "lucide-react";
 import Breadcrumb from "@/shared/ui/Breadcrumb";
@@ -15,6 +15,7 @@ import { cn } from "@/shared/utils/cn";
 
 export default function SellerProfilePage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [isFollowing, setIsFollowing] = useState(false);
 
   const seller = mockUsers.find((u) => u.id === Number(id));
@@ -60,6 +61,7 @@ export default function SellerProfilePage() {
               seller={product.seller}
               condition={product.condition}
               negotiable={product.negotiable}
+              onClick={() => navigate(`/annonce/${product.id}`)}
             />
           ))}
         </div>
@@ -118,7 +120,7 @@ export default function SellerProfilePage() {
       <Breadcrumb
         items={[
           { label: "Accueil", href: "/", icon: Home },
-          { label: "Vendeurs", href: "/sellers" },
+          { label: "Vendeurs", href: "/vendeurs" },
           { label: seller.name },
         ]}
       />

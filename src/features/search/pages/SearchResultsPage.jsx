@@ -422,7 +422,7 @@ export default function SearchResultsPage() {
                       seller={product.seller}
                       condition={product.condition}
                       negotiable={product.negotiable}
-                      onClick={() => navigate(`/listings/${product.id}`)}
+                      onClick={() => navigate(`/annonce/${product.id}`)}
                     />
                   </motion.div>
                 ))}
@@ -445,7 +445,7 @@ export default function SearchResultsPage() {
                       seller={product.seller}
                       condition={product.condition}
                       negotiable={product.negotiable}
-                      onClick={() => navigate(`/listings/${product.id}`)}
+                      onClick={() => navigate(`/annonce/${product.id}`)}
                     />
                   </motion.div>
                 ))}

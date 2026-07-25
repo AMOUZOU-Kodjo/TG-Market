@@ -24,6 +24,7 @@ import {
   CreateListingPage,
   EditListingPage,
   SellerProfilePage,
+  SellersPage,
   UserProfilePage,
   SellerDashboardPage,
   MessagesPage,
@@ -85,6 +86,7 @@ function App() {
                       <Route path="/recherche" element={<SearchResultsPage />} />
                       <Route path="/annonce/:id" element={<ProductDetailPage />} />
                       <Route path="/vendeur/:id" element={<SellerProfilePage />} />
+                      <Route path="/vendeurs" element={<SellersPage />} />
 
                       <Route
                         path="/favoris"

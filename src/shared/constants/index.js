@@ -70,14 +70,14 @@ export const NAVIGATION = [
   { label: "Accueil", to: "/" },
   { label: "Catégories", to: "/categories" },
   { label: "Annonces", to: "/listings" },
-  { label: "Publier", to: "/listings/create", authRequired: true },
+  { label: "Publier", to: "/vendre", authRequired: true },
   { label: "Messages", to: "/messages", authRequired: true },
 ];
 
 export const FOOTER_LINKS = {
   marketplace: [
     { label: "Comment ça marche", to: "/how-it-works" },
-    { label: "Publier une annonce", to: "/listings/create" },
+    { label: "Publier une annonce", to: "/vendre" },
     { label: "Catégories", to: "/categories" },
     { label: "Rechercher", to: "/listings" },
   ],

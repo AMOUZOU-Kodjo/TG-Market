@@ -75,7 +75,7 @@ export default function SimilarProducts({ products = [], title = "Produits simil
                   : undefined
               }
               onClick={() =>
-                (window.location.href = `/products/${product.id}`)
+                (window.location.href = `/annonce/${product.id}`)
               }
             />
           </div>

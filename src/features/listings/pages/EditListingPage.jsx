@@ -488,7 +488,7 @@ export default function EditListingPage() {
                   transition={{ delay: 0.6 }}
                   className="mt-8 flex flex-col gap-3 sm:flex-row"
                 >
-                  <Button icon={Eye} onClick={() => navigate(`/listings/${id}`)}>
+                  <Button icon={Eye} onClick={() => navigate(`/annonce/${id}`)}>
                     Voir l'annonce
                   </Button>
                   <Button
@@ -516,7 +516,7 @@ export default function EditListingPage() {
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => navigate(`/listings/${id}`)}
+                    onClick={() => navigate(`/annonce/${id}`)}
                   >
                     Annuler
                   </Button>

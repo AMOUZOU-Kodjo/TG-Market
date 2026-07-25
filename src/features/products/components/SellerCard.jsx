@@ -101,7 +101,7 @@ export default function SellerCard({ seller }) {
       </div>
 
       <div className="mt-5 flex gap-3">
-        <Link to={`/profile/${seller.id}`} className="flex-1">
+        <Link to={`/vendeur/${seller.id}`} className="flex-1">
           <Button
             variant="outline"
             fullWidth

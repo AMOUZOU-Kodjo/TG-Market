@@ -1,33 +1,31 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import {
   User,
   Mail,
   Phone,
-  FileText,
   Lock,
   Trash2,
   Globe,
-  DollarSign,
-  Bell,
-  BellOff,
   Eye,
   EyeOff,
-  MapPin,
-  Sun,
-  Moon,
   Save,
   Camera,
   Shield,
-  ChevronRight,
-  Smartphone,
-  MessageCircle,
+  ShieldAlert,
   ShieldCheck,
-  FileCheck,
-  Camera as CameraIcon,
+  ChevronDown,
+  ChevronUp,
+  Smartphone,
+  Monitor,
+  Key,
+  History,
+  LogOut,
   CheckCircle2,
   AlertCircle,
+  X,
+  Fingerprint,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import Button from "@/shared/ui/Button";
@@ -76,6 +74,50 @@ function Toggle({ enabled, onChange, label, description }) {
   );
 }
 
+const mockSessions = [
+  {
+    id: 1,
+    device: "iPhone 15 Pro",
+    os: "iOS 17.4",
+    browser: "Safari",
+    location: "Lomé, Togo",
+    ip: "196.xxx.xxx.42",
+    lastActive: "Maintenant",
+    isCurrent: true,
+    icon: Smartphone,
+  },
+  {
+    id: 2,
+    device: "MacBook Pro",
+    os: "macOS Sonoma",
+    browser: "Chrome 122",
+    location: "Lomé, Togo",
+    ip: "196.xxx.xxx.18",
+    lastActive: "Il y a 2 heures",
+    isCurrent: false,
+    icon: Monitor,
+  },
+  {
+    id: 3,
+    device: "Samsung Galaxy S24",
+    os: "Android 14",
+    browser: "Chrome Mobile",
+    location: "Kara, Togo",
+    ip: "102.xxx.xxx.55",
+    lastActive: "Il y a 3 jours",
+    isCurrent: false,
+    icon: Smartphone,
+  },
+];
+
+const mockLoginHistory = [
+  { id: 1, date: "25 juil. 2026 — 14:32", location: "Lomé, Togo", device: "iPhone 15 Pro", success: true },
+  { id: 2, date: "25 juil. 2026 — 09:15", location: "Lomé, Togo", device: "MacBook Pro", success: true },
+  { id: 3, date: "24 juil. 2026 — 21:08", location: "Lomé, Togo", device: "iPhone 15 Pro", success: true },
+  { id: 4, date: "24 juil. 2026 — 18:44", location: "Kara, Togo", device: "Samsung Galaxy S24", success: true },
+  { id: 5, date: "23 juil. 2026 — 07:12", location: "Lomé, Togo", device: "iPhone 15 Pro", success: false },
+];
+
 export default function SettingsPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [notifications, setNotifications] = useState({
@@ -87,6 +129,14 @@ export default function SettingsPage() {
     profileVisibility: "public",
     showPhone: false,
     showLocation: true,
+  });
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [show2FASetup, setShow2FASetup] = useState(false);
+  const [showLoginHistory, setShowLoginHistory] = useState(false);
+  const [showPassword, setShowPassword] = useState({
+    current: false,
+    new: false,
+    confirm: false,
   });
 
   const {
@@ -195,7 +245,7 @@ export default function SettingsPage() {
           </form>
         </motion.section>
 
-        {/* Password Section */}
+        {/* Sécurité Section */}
         <motion.section
           custom={1}
           variants={sectionVariants}
@@ -203,41 +253,306 @@ export default function SettingsPage() {
           animate="visible"
           className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
         >
-          <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
+          <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
             <Lock className="h-5 w-5 text-red-800" />
             Sécurité
           </h2>
+          <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
+            Protégez votre compte avec un mot de passe solide et l'authentification à deux facteurs.
+          </p>
 
-          <form onSubmit={handlePasswordSubmit(onPasswordSubmit)} className="space-y-4">
-            <Input
-              label="Mot de passe actuel"
-              type="password"
-              icon={Lock}
-              {...registerPassword("currentPassword", { required: "Le mot de passe actuel est requis" })}
-              error={passwordErrors.currentPassword?.message}
-            />
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Input
-                label="Nouveau mot de passe"
-                type="password"
-                icon={Lock}
-                {...registerPassword("newPassword", { required: "Le nouveau mot de passe est requis", minLength: { value: 8, message: "Minimum 8 caractères" } })}
-                error={passwordErrors.newPassword?.message}
-              />
-              <Input
-                label="Confirmer le mot de passe"
-                type="password"
-                icon={Lock}
-                {...registerPassword("confirmPassword", { required: "Veuillez confirmer le mot de passe" })}
-                error={passwordErrors.confirmPassword?.message}
-              />
+          {/* Mot de passe */}
+          <div className="mb-6">
+            <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+              <Key className="h-4 w-4 text-gray-400" />
+              Mot de passe
+            </h3>
+            <form onSubmit={handlePasswordSubmit(onPasswordSubmit)} className="space-y-4">
+              <div className="relative">
+                <Input
+                  label="Mot de passe actuel"
+                  type={showPassword.current ? "text" : "password"}
+                  icon={Lock}
+                  {...registerPassword("currentPassword", { required: "Le mot de passe actuel est requis" })}
+                  error={passwordErrors.currentPassword?.message}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((p) => ({ ...p, current: !p.current }))}
+                  className="absolute right-3 top-[38px] text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                >
+                  {showPassword.current ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="relative">
+                  <Input
+                    label="Nouveau mot de passe"
+                    type={showPassword.new ? "text" : "password"}
+                    icon={Lock}
+                    {...registerPassword("newPassword", {
+                      required: "Le nouveau mot de passe est requis",
+                      minLength: { value: 8, message: "Minimum 8 caractères" },
+                    })}
+                    error={passwordErrors.newPassword?.message}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((p) => ({ ...p, new: !p.new }))}
+                    className="absolute right-3 top-[38px] text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  >
+                    {showPassword.new ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                <div className="relative">
+                  <Input
+                    label="Confirmer le mot de passe"
+                    type={showPassword.confirm ? "text" : "password"}
+                    icon={Lock}
+                    {...registerPassword("confirmPassword", {
+                      required: "Veuillez confirmer le mot de passe",
+                    })}
+                    error={passwordErrors.confirmPassword?.message}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((p) => ({ ...p, confirm: !p.confirm }))}
+                    className="absolute right-3 top-[38px] text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  >
+                    {showPassword.confirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-gray-400 dark:text-gray-500">
+                  Minimum 8 caractères, avec majuscule, minuscule et chiffre.
+                </p>
+                <Button type="submit" variant="secondary" size="sm" icon={Shield}>
+                  Modifier le mot de passe
+                </Button>
+              </div>
+            </form>
+          </div>
+
+          <div className="border-t border-gray-100 dark:border-gray-800" />
+
+          {/* Authentification à deux facteurs */}
+          <div className="my-6">
+            <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+              <Fingerprint className="h-4 w-4 text-gray-400" />
+              Authentification à deux facteurs (2FA)
+            </h3>
+            <div className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800/50">
+              <div className="flex items-center gap-3">
+                <div className={`flex h-10 w-10 items-center justify-center rounded-full ${twoFactorEnabled ? "bg-green-100 dark:bg-green-900/30" : "bg-gray-200 dark:bg-gray-700"}`}>
+                  {twoFactorEnabled ? (
+                    <ShieldCheck className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  ) : (
+                    <ShieldAlert className="h-5 w-5 text-gray-400" />
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+                    {twoFactorEnabled ? "Authentification à deux facteurs activée" : "Authentification à deux facteurs désactivée"}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {twoFactorEnabled
+                      ? "Un code de vérification est requis pour se connecter."
+                      : "Ajoutez une couche de sécurité supplémentaire à votre compte."}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  if (twoFactorEnabled) {
+                    setTwoFactorEnabled(false);
+                    setShow2FASetup(false);
+                    toast.success("2FA désactivée.");
+                  } else {
+                    setShow2FASetup(true);
+                  }
+                }}
+                className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
+                  twoFactorEnabled ? "bg-green-600" : "bg-gray-300 dark:bg-gray-600"
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${
+                    twoFactorEnabled ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+              </button>
             </div>
-            <div className="flex justify-end">
-              <Button type="submit" variant="secondary" icon={Shield}>
-                Modifier le mot de passe
-              </Button>
+
+            <AnimatePresence>
+              {show2FASetup && !twoFactorEnabled && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="mt-4 rounded-xl border border-yellow-200 bg-yellow-50 p-5 dark:border-yellow-800/50 dark:bg-yellow-900/10">
+                    <h4 className="mb-2 text-sm font-semibold text-yellow-800 dark:text-yellow-300">
+                      Activer la 2FA par SMS
+                    </h4>
+                    <p className="mb-4 text-xs text-yellow-700 dark:text-yellow-400">
+                      Un code de vérification sera envoyé à votre numéro chaque tentative de connexion.
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <Input
+                        placeholder="Entrez le code reçu par SMS"
+                        className="max-w-xs bg-white dark:bg-gray-900"
+                      />
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          setTwoFactorEnabled(true);
+                          setShow2FASetup(false);
+                          toast.success("2FA activée avec succès !");
+                        }}
+                      >
+                        Vérifier
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setShow2FASetup(false)}
+                      >
+                        Annuler
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <div className="border-t border-gray-100 dark:border-gray-800" />
+
+          {/* Sessions actives */}
+          <div className="my-6">
+            <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+              <Monitor className="h-4 w-4 text-gray-400" />
+              Sessions actives
+            </h3>
+            <div className="space-y-3">
+              {mockSessions.map((session) => {
+                const Icon = session.icon;
+                return (
+                  <div
+                    key={session.id}
+                    className={`flex items-center justify-between rounded-xl border p-4 ${
+                      session.isCurrent
+                        ? "border-green-200 bg-green-50/50 dark:border-green-800/30 dark:bg-green-900/10"
+                        : "border-gray-100 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/30"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm dark:bg-gray-800">
+                        <Icon className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            {session.device}
+                          </p>
+                          {session.isCurrent && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-semibold text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                              <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                              Actuelle
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {session.os} · {session.browser} · {session.location}
+                        </p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500">
+                          IP: {session.ip} · {session.lastActive}
+                        </p>
+                      </div>
+                    </div>
+                    {!session.isCurrent && (
+                      <button
+                        onClick={() => toast.success("Session déconnectée.")}
+                        className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                        title="Déconnecter cette session"
+                      >
+                        <LogOut className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-          </form>
+            <button
+              onClick={() => {
+                toast.success("Toutes les autres sessions ont été déconnectées.");
+              }}
+              className="mt-3 text-xs font-medium text-red-700 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+            >
+              Déconnecter toutes les autres sessions
+            </button>
+          </div>
+
+          <div className="border-t border-gray-100 dark:border-gray-800" />
+
+          {/* Historique de connexion */}
+          <div className="mt-6">
+            <button
+              onClick={() => setShowLoginHistory(!showLoginHistory)}
+              className="flex w-full items-center justify-between text-sm font-semibold text-gray-900 dark:text-white"
+            >
+              <span className="flex items-center gap-2">
+                <History className="h-4 w-4 text-gray-400" />
+                Historique de connexion
+              </span>
+              {showLoginHistory ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </button>
+
+            <AnimatePresence>
+              {showLoginHistory && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="mt-3 space-y-2">
+                    {mockLoginHistory.map((entry) => (
+                      <div
+                        key={entry.id}
+                        className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50 px-4 py-3 dark:border-gray-800 dark:bg-gray-800/30"
+                      >
+                        <div className="flex items-center gap-3">
+                          {entry.success ? (
+                            <CheckCircle2 className="h-4 w-4 text-green-500" />
+                          ) : (
+                            <X className="h-4 w-4 text-red-500" />
+                          )}
+                          <div>
+                            <p className="text-sm text-gray-900 dark:text-white">{entry.date}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {entry.location} · {entry.device}
+                            </p>
+                          </div>
+                        </div>
+                        <span
+                          className={`text-xs font-medium ${
+                            entry.success
+                              ? "text-green-600 dark:text-green-400"
+                              : "text-red-600 dark:text-red-400"
+                          }`}
+                        >
+                          {entry.success ? "Réussi" : "Échoué"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </motion.section>
 
         {/* Preferences Section */}

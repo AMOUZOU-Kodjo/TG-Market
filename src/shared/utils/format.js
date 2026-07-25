@@ -147,3 +147,73 @@ export function slugify(text) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
 }
+
+/**
+ * Adaptateur Backend → Frontend
+ * Convertit le shape API (first_name/last_name) vers le shape frontend (name)
+ * Utilisation : formatUser(apiUser) → { ...apiUser, name: "Kofi Améyo", firstName: "Kofi", ... }
+ */
+export function formatUser(apiUser) {
+  if (!apiUser) return null;
+
+  const firstName = apiUser.first_name || "";
+  const lastName = apiUser.last_name || "";
+  const name = `${firstName} ${lastName}`.trim() || apiUser.name || "";
+
+  return {
+    ...apiUser,
+    firstName,
+    lastName,
+    name,
+    joinedAt: apiUser.created_at || apiUser.joinedAt || null,
+    verified: apiUser.identity_verified ?? apiUser.verified ?? false,
+    rating: apiUser.rating_avg ?? apiUser.rating ?? 0,
+    reviewCount: apiUser.review_count ?? apiUser.reviewCount ?? 0,
+    productCount: apiUser.product_count ?? apiUser.productCount ?? 0,
+    followerCount: apiUser.follower_count ?? apiUser.followerCount ?? 0,
+    followingCount: apiUser.following_count ?? apiUser.followingCount ?? 0,
+    isProfessional: apiUser.is_professional ?? false,
+    isTrusted: apiUser.is_trusted ?? false,
+    notificationsEmail: apiUser.notifications_email ?? true,
+    notificationsPush: apiUser.notifications_push ?? true,
+    notificationsSms: apiUser.notifications_sms ?? false,
+    profileVisibility: apiUser.profile_visibility ?? "public",
+    showPhone: apiUser.show_phone ?? false,
+    showLocation: apiUser.show_location ?? true,
+    preferredLanguage: apiUser.preferred_language ?? "fr",
+    preferredCurrency: apiUser.preferred_currency ?? "FCFA",
+  };
+}
+
+/**
+ * Adaptateur inversé : Frontend → Backend (pour les submits/forms)
+ */
+export function toBackendUser(frontendUser) {
+  if (!frontendUser) return null;
+
+  const [firstName = "", ...rest] = (frontendUser.name || "").split(" ");
+  const lastName = rest.join(" ");
+
+  return {
+    ...frontendUser,
+    first_name: firstName,
+    last_name: lastName,
+    identity_verified: frontendUser.verified,
+    rating_avg: frontendUser.rating,
+    review_count: frontendUser.reviewCount,
+    product_count: frontendUser.productCount,
+    follower_count: frontendUser.followerCount,
+    following_count: frontendUser.followingCount,
+    is_professional: frontendUser.isProfessional,
+    is_trusted: frontendUser.isTrusted,
+    notifications_email: frontendUser.notificationsEmail,
+    notifications_push: frontendUser.notificationsPush,
+    notifications_sms: frontendUser.notificationsSms,
+    profile_visibility: frontendUser.profileVisibility,
+    show_phone: frontendUser.showPhone,
+    show_location: frontendUser.showLocation,
+    preferred_language: frontendUser.preferredLanguage,
+    preferred_currency: frontendUser.preferredCurrency,
+    created_at: frontendUser.joinedAt,
+  };
+}

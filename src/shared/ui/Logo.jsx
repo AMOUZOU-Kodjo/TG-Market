@@ -1,4 +1,4 @@
-import tgLogo from "@/assets/Tg-removebg-preview.png";
+import tgLogo from "@/assets/logo-tg.png";
 
 const SIZES = {
   sm: "w-10 h-10",

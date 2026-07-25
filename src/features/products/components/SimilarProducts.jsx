@@ -64,7 +64,7 @@ export default function SimilarProducts({ products = [], title = "Produits simil
               originalPrice={product.originalPrice}
               location={`${product.city}${product.neighborhood ? `, ${product.neighborhood}` : ""}`}
               condition={product.condition}
-              negotiable={product.negotiable}
+              hasActiveNegotiation={product.hasActiveNegotiation}
               seller={
                 product.seller
                   ? {

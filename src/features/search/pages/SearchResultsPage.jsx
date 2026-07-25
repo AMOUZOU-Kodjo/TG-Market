@@ -421,7 +421,7 @@ export default function SearchResultsPage() {
                       location={`${product.neighborhood ? product.neighborhood + ", " : ""}${product.city}`}
                       seller={product.seller}
                       condition={product.condition}
-                      negotiable={product.negotiable}
+                      hasActiveNegotiation={product.hasActiveNegotiation}
                       onClick={() => navigate(`/annonce/${product.id}`)}
                     />
                   </motion.div>
@@ -444,7 +444,7 @@ export default function SearchResultsPage() {
                       location={`${product.neighborhood ? product.neighborhood + ", " : ""}${product.city}`}
                       seller={product.seller}
                       condition={product.condition}
-                      negotiable={product.negotiable}
+                      hasActiveNegotiation={product.hasActiveNegotiation}
                       onClick={() => navigate(`/annonce/${product.id}`)}
                     />
                   </motion.div>

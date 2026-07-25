@@ -60,7 +60,7 @@ export default function SellerProfilePage() {
               location={product.location}
               seller={product.seller}
               condition={product.condition}
-              negotiable={product.negotiable}
+              hasActiveNegotiation={product.hasActiveNegotiation}
               onClick={() => navigate(`/annonce/${product.id}`)}
             />
           ))}

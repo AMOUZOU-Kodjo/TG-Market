@@ -32,6 +32,7 @@ import {
   Play,
 } from "lucide-react";
 import Logo from "@/shared/ui/Logo";
+import CategoryBar from "@/features/home/components/CategoryBar";
 import { mockCurrentUser } from "../data/users";
 
 export default function MainLayout() {
@@ -97,10 +98,12 @@ export default function MainLayout() {
   return (
     <div className={`min-h-screen flex flex-col ${darkMode ? "dark" : ""}`}>
       <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors">
+        {/* Sticky Header + Category Bar */}
+        <div className="sticky top-0 z-50">
         {/* Header */}
         <header
-          className={`sticky top-0 z-50 transition-all duration-300 ${
-            scrolled ? "bg-brand-900/90 backdrop-blur-xl shadow-md" : "bg-brand-900"
+          className={`transition-all shadow-2xl duration-300 ${
+            scrolled ? "bg-brand-900/90 backdrop-blur-xl shadow-xl" : "bg-brand-900"
           }`}
         >
           <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
@@ -108,7 +111,7 @@ export default function MainLayout() {
               {/* Logo */}
               <Link to="/" className="flex items-center gap-2 shrink-0">
                 <Logo size="md" />
-                <span className="text-xl font-bold text-white hidden sm:block">Market</span>
+                {/* <span className="text-xl font-bold text-white hidden sm:block">Market</span> */}
               </Link>
 
               {/* Desktop Search */}
@@ -306,6 +309,10 @@ export default function MainLayout() {
           </AnimatePresence>
         </header>
 
+        {/* Category Bar */}
+        <CategoryBar />
+        </div>
+
         {/* Main Content */}
         <main className="flex-1">
           <motion.div
@@ -326,9 +333,9 @@ export default function MainLayout() {
               <div>
                 <div className="flex items-center gap-2 mb-4">
                   <Logo size="md" />
-                  <span className="text-xl font-bold text-white">Market</span>
+                  {/* <span className="text-xl font-bold text-white">Market</span> */}
                 </div>
-                <p className="text-sm text-gray-400 mb-4 leading-relaxed">
+                <p className="text-sm text-gray-100 mb-4 leading-relaxed">
                   La première plateforme de marketplace au Togo. Achetez et vendez facilement, en
                   toute confiance.
                 </p>
@@ -421,7 +428,7 @@ export default function MainLayout() {
               </div>
             </div>
 
-            <div className="mt-10 pt-8 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
+            <div className="mt-10 pt-8 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-100">
               <p>&copy; 2025 TG-Market. Tous droits réservés.</p>
               <div className="flex gap-4">
                 <Link to="/conditions" className="hover:text-white transition-colors">

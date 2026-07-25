@@ -95,7 +95,7 @@ export default function CategoryPage() {
                 location={`${product.city}${product.district ? `, ${product.district}` : ""}`}
                 seller={product.seller}
                 condition={product.condition}
-                negotiable={product.negotiable}
+                hasActiveNegotiation={product.hasActiveNegotiation}
                 onClick={() =>
                   (window.location.href = `/annonce/${product.id}`)
                 }

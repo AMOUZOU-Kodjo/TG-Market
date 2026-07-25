@@ -13,7 +13,7 @@ export default function ProductCard({
   location,
   seller,
   condition,
-  negotiable = false,
+  hasActiveNegotiation = false,
   isFavorite = false,
   onFavoriteToggle,
   onClick,
@@ -71,9 +71,15 @@ export default function ProductCard({
         </button>
         {condition && (
           <div className="absolute left-3 top-3">
-            <Badge variant={condition === "Neuf" ? "success" : "warning"}>
-              {condition}
-            </Badge>
+            <Badge variant={condition === "Neuf" ? "success" : "warning"}>{condition}</Badge>
+          </div>
+        )}
+        {hasActiveNegotiation && (
+          <div className="absolute bottom-0 left-0 right-0 bg-brand-700 backdrop-blur-sm px-3 py-1.5">
+            <span className="text-[11px] font-semibold text-white flex items-center justify-center gap-1.5">
+              <MessageCircle className="w-3.5 h-3.5" />
+              Négociation en cours
+            </span>
           </div>
         )}
       </div>
@@ -82,35 +88,19 @@ export default function ProductCard({
           {title}
         </div>
         <div className="mb-3 flex items-baseline gap-2">
-          <span className="text-lg font-bold text-brand-800">
-            {formatPrice(price)}
-          </span>
+          <span className="text-lg font-bold text-brand-800">{formatPrice(price)}</span>
           {originalPrice && (
-            <span className="text-xs text-gray-400 line-through">
-              {formatPrice(originalPrice)}
-            </span>
+            <span className="text-xs text-gray-400 line-through">{formatPrice(originalPrice)}</span>
           )}
         </div>
-        {negotiable && (
-          <span className="mb-2 inline-block rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-medium text-brand-900 dark:bg-brand-800/10 dark:text-brand-700">
-            Négociable
-          </span>
-        )}
         <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
           <MapPin className="h-3.5 w-3.5" />
           <span className="truncate">{location}</span>
         </div>
         {seller && (
           <div className="mt-3 flex items-center gap-2 border-t border-gray-100 pt-3 dark:border-gray-800">
-            <Avatar
-              src={seller.avatar}
-              name={seller.name}
-              size="xs"
-              online={seller.online}
-            />
-            <span className="text-xs text-gray-600 dark:text-gray-400">
-              {seller.name}
-            </span>
+            <Avatar src={seller.avatar} name={seller.name} size="xs" online={seller.online} />
+            <span className="text-xs text-gray-600 dark:text-gray-400">{seller.name}</span>
           </div>
         )}
       </div>

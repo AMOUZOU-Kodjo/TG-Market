@@ -167,7 +167,7 @@ export default function FavoritesPage() {
               location={product.location}
               seller={product.seller}
               condition={product.condition}
-              negotiable={product.negotiable}
+              hasActiveNegotiation={product.hasActiveNegotiation}
               isFavorite={true}
               onFavoriteToggle={(liked) => handleFavoriteToggle(product.id, liked)}
             />

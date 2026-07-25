@@ -63,7 +63,7 @@ export default function UserProfilePage() {
               location={product.location}
               seller={product.seller}
               condition={product.condition}
-              negotiable={product.negotiable}
+              hasActiveNegotiation={product.hasActiveNegotiation}
             />
           ))}
         </div>
@@ -97,7 +97,7 @@ export default function UserProfilePage() {
               location={product.location}
               seller={product.seller}
               condition={product.condition}
-              negotiable={product.negotiable}
+              hasActiveNegotiation={product.hasActiveNegotiation}
               isFavorite
             />
           ))}

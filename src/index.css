@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  /* ═══ Brand: Bleu Tiffany ═══ */
-  --brand-50: #E6FAF9;
-  --brand-100: #B3F0EE;
-  --brand-200: #80E6E3;
-  --brand-300: #4DDCD8;
-  --brand-400: #26D4CF;
-  --brand-500: #0ABAB5;
-  --brand-600: #09A8A3;
-  --brand-700: #07908C;
-  --brand-800: #067874;
-  --brand-900: #045450;
+  /* ═══ Brand: Vert Pin ═══ */
+  --brand-50: #E6F3F1;
+  --brand-100: #B3DDD8;
+  --brand-200: #80C7BE;
+  --brand-300: #4DB1A4;
+  --brand-400: #26A295;
+  --brand-500: #01796F;
+  --brand-600: #016D64;
+  --brand-700: #015D55;
+  --brand-800: #014D46;
+  --brand-900: #01353095;
 
   /* ═══ Accents: Drapeau Togo ═══ */
   --togo-red: #C8102E;

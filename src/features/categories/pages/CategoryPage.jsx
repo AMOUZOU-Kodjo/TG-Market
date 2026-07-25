@@ -93,7 +93,6 @@ export default function CategoryPage() {
                 price={product.price}
                 originalPrice={product.originalPrice}
                 location={`${product.city}${product.district ? `, ${product.district}` : ""}`}
-                seller={product.seller}
                 condition={product.condition}
                 hasActiveNegotiation={product.hasActiveNegotiation}
                 onClick={() =>

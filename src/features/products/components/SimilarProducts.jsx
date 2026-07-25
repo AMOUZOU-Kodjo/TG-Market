@@ -65,15 +65,6 @@ export default function SimilarProducts({ products = [], title = "Produits simil
               location={`${product.city}${product.neighborhood ? `, ${product.neighborhood}` : ""}`}
               condition={product.condition}
               hasActiveNegotiation={product.hasActiveNegotiation}
-              seller={
-                product.seller
-                  ? {
-                      name: product.seller.name,
-                      avatar: product.seller.avatar,
-                      online: false,
-                    }
-                  : undefined
-              }
               onClick={() =>
                 (window.location.href = `/annonce/${product.id}`)
               }

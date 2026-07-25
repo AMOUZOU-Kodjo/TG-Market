@@ -165,7 +165,6 @@ export default function FavoritesPage() {
               price={product.price}
               originalPrice={product.originalPrice}
               location={product.location}
-              seller={product.seller}
               condition={product.condition}
               hasActiveNegotiation={product.hasActiveNegotiation}
               isFavorite={true}

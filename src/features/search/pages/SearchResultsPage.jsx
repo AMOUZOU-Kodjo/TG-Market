@@ -419,7 +419,6 @@ export default function SearchResultsPage() {
                       price={product.price}
                       originalPrice={product.originalPrice}
                       location={`${product.neighborhood ? product.neighborhood + ", " : ""}${product.city}`}
-                      seller={product.seller}
                       condition={product.condition}
                       hasActiveNegotiation={product.hasActiveNegotiation}
                       onClick={() => navigate(`/annonce/${product.id}`)}
@@ -442,7 +441,6 @@ export default function SearchResultsPage() {
                       price={product.price}
                       originalPrice={product.originalPrice}
                       location={`${product.neighborhood ? product.neighborhood + ", " : ""}${product.city}`}
-                      seller={product.seller}
                       condition={product.condition}
                       hasActiveNegotiation={product.hasActiveNegotiation}
                       onClick={() => navigate(`/annonce/${product.id}`)}

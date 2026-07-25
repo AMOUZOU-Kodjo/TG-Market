@@ -61,7 +61,6 @@ export default function UserProfilePage() {
               price={product.price}
               originalPrice={product.originalPrice}
               location={product.location}
-              seller={product.seller}
               condition={product.condition}
               hasActiveNegotiation={product.hasActiveNegotiation}
             />
@@ -95,7 +94,6 @@ export default function UserProfilePage() {
               price={product.price}
               originalPrice={product.originalPrice}
               location={product.location}
-              seller={product.seller}
               condition={product.condition}
               hasActiveNegotiation={product.hasActiveNegotiation}
               isFavorite

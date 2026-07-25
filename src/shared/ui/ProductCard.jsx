@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { Heart, MapPin, MessageCircle } from "lucide-react";
 import { cn } from "@/shared/utils/cn";
 import Badge from "@/shared/ui/Badge";
-import Avatar from "@/shared/ui/Avatar";
 
 export default function ProductCard({
   image,
@@ -11,7 +10,6 @@ export default function ProductCard({
   price,
   originalPrice,
   location,
-  seller,
   condition,
   hasActiveNegotiation = false,
   isFavorite = false,
@@ -39,12 +37,12 @@ export default function ProductCard({
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       onClick={onClick}
       className={cn(
-        "group cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-lg dark:border-gray-800 dark:bg-gray-900",
+        "group cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white  transition-shadow hover:shadow-lg dark:border-gray-800 dark:bg-gray-900",
         className
       )}
       {...rest}
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800">
+      <div className="relative aspect-5/5 md:aspect-5/4 overflow-hidden bg-gray-100 dark:bg-gray-800">
         {!imageLoaded && (
           <div className="absolute inset-0 animate-pulse bg-gray-200 dark:bg-gray-700" />
         )}
@@ -76,7 +74,7 @@ export default function ProductCard({
         )}
         {hasActiveNegotiation && (
           <div className="absolute bottom-0 left-0 right-0 bg-brand-700 backdrop-blur-sm px-3 py-1.5">
-            <span className="text-[11px] font-semibold text-white flex items-center justify-center gap-1.5">
+            <span className="text-[8px] font-semibold text-white flex items-center justify-center gap-1.5">
               <MessageCircle className="w-3.5 h-3.5" />
               Négociation en cours
             </span>
@@ -88,7 +86,7 @@ export default function ProductCard({
           {title}
         </div>
         <div className="mb-3 flex items-baseline gap-2">
-          <span className="text-lg font-bold text-brand-800">{formatPrice(price)}</span>
+          <span className="text-xs font-bold text-brand-800">{formatPrice(price)}</span>
           {originalPrice && (
             <span className="text-xs text-gray-400 line-through">{formatPrice(originalPrice)}</span>
           )}
@@ -97,12 +95,6 @@ export default function ProductCard({
           <MapPin className="h-3.5 w-3.5" />
           <span className="truncate">{location}</span>
         </div>
-        {seller && (
-          <div className="mt-3 flex items-center gap-2 border-t border-gray-100 pt-3 dark:border-gray-800">
-            <Avatar src={seller.avatar} name={seller.name} size="xs" online={seller.online} />
-            <span className="text-xs text-gray-600 dark:text-gray-400">{seller.name}</span>
-          </div>
-        )}
       </div>
     </motion.div>
   );

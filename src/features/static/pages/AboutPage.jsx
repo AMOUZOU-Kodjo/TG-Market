@@ -67,10 +67,20 @@ const values = [
 ];
 
 const teamMembers = [
-  { name: "Kofi Mensah", role: "CEO & Co-fondateur", avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&facepad=2", bio: "15 ans d\u2019expérience dans le digital en Afrique de l\u2019Ouest." },
-  { name: "Ama Kossi", role: "CTO & Co-fondatrice", avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&facepad=2", bio: "Ex-ingénieure chez MTN, spécialiste fintech mobile." },
-  { name: "Yao Agbéké", role: "Directeur Marketing", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&facepad=2", bio: "Ex-Google Nigeria, expert en growth marketing Afrique." },
-  { name: "Efua Tossou", role: "Chef de Produit", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&facepad=2", bio: "Passionnée d\u2019UX, ancienne lead produit chez Jumia." },
+  {
+    name: "Amouzou Kodjo",
+    role: "Co-fondateur & Développeur Frontend",
+    initials: "AK",
+    color: "bg-red-100 text-red-800 dark:bg-red-900/30",
+    bio: "Architecte de l\u2019interface AK Market. Passionné par les interfaces fluides et l\u2019expérience utilisateur mobile.",
+  },
+  {
+    name: "Awougno Kofi Yosua",
+    role: "Co-fondateur & Développeur Backend",
+    initials: "AY",
+    color: "bg-green-100 text-green-800 dark:bg-green-900/30",
+    bio: "Cerveau technique derrière l\u2019API, la sécurité et l\u2019infrastructure. Garant de la fiabilité du système.",
+  },
 ];
 
 const timeline = [
@@ -409,24 +419,22 @@ export default function AboutPage() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="grid grid-cols-2 gap-6 lg:grid-cols-4"
+            className="mx-auto grid max-w-2xl grid-cols-1 gap-6 sm:grid-cols-2"
           >
             {teamMembers.map((member, i) => (
               <motion.div
                 key={i}
                 variants={itemVariants}
-                className="rounded-2xl border border-gray-100 bg-white p-6 text-center dark:border-gray-800 dark:bg-gray-900"
+                className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900"
               >
-                <img
-                  src={member.avatar}
-                  alt={member.name}
-                  className="mx-auto h-24 w-24 rounded-full object-cover ring-4 ring-red-50 dark:ring-gray-800"
-                />
-                <h3 className="mt-4 text-sm font-semibold text-gray-900 dark:text-white">
+                <div className={`mx-auto flex h-24 w-24 items-center justify-center rounded-full text-2xl font-bold ring-4 ring-gray-100 dark:ring-gray-800 ${member.color}`}>
+                  {member.initials}
+                </div>
+                <h3 className="mt-4 text-base font-semibold text-gray-900 dark:text-white">
                   {member.name}
                 </h3>
-                <p className="mt-0.5 text-xs font-medium text-red-800">{member.role}</p>
-                <p className="mt-2 text-xs leading-relaxed text-gray-500 dark:text-gray-400">
+                <p className="mt-1 text-sm font-medium text-green-800 dark:text-green-400">{member.role}</p>
+                <p className="mt-3 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
                   {member.bio}
                 </p>
               </motion.div>

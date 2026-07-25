@@ -23,6 +23,11 @@ import {
   ChevronRight,
   Smartphone,
   MessageCircle,
+  ShieldCheck,
+  FileCheck,
+  Camera as CameraIcon,
+  CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import Button from "@/shared/ui/Button";
@@ -30,7 +35,12 @@ import Input from "@/shared/ui/Input";
 import Textarea from "@/shared/ui/Textarea";
 import Avatar from "@/shared/ui/Avatar";
 import { mockCurrentUser } from "@/data/users";
+import { mockKycStatus, mockVerificationSteps, mockBadges } from "@/data/verification";
 import toast from "react-hot-toast";
+import KycProgress from "@/features/verification/components/KycProgress";
+import BadgeGrid from "@/features/verification/components/BadgeGrid";
+import DocumentUpload from "@/features/verification/components/DocumentUpload";
+import PhoneVerification from "@/features/verification/components/PhoneVerification";
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 12 },
@@ -339,9 +349,74 @@ export default function SettingsPage() {
           </div>
         </motion.section>
 
-        {/* Danger Zone */}
+        {/* Verification / KYC Section */}
         <motion.section
           custom={4}
+          variants={sectionVariants}
+          initial="hidden"
+          animate="visible"
+          className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
+        >
+          <h2 className="mb-2 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
+            <ShieldCheck className="h-5 w-5 text-red-800" />
+            Vérification du compte (KYC)
+          </h2>
+          <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
+            Vérifiez votre identité pour obtenir un badge de confiance et accéder à plus de fonctionnalités.
+          </p>
+
+          <KycProgress steps={mockVerificationSteps} />
+
+          <div className="mt-6 space-y-6">
+            <PhoneVerification />
+
+            <div>
+              <h3 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">
+                Document d'identité
+              </h3>
+              {mockKycStatus.documentStatus === "none" ? (
+                <DocumentUpload
+                  onUpload={(file) => toast.success("Document téléchargé avec succès !")}
+                />
+              ) : mockKycStatus.documentStatus === "pending" ? (
+                <div className="flex items-center gap-3 rounded-xl border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
+                  <AlertCircle className="h-5 w-5 text-yellow-600" />
+                  <div>
+                    <p className="text-sm font-medium text-yellow-800 dark:text-yellow-300">Document en cours de vérification</p>
+                    <p className="text-xs text-yellow-600 dark:text-yellow-400">Nous examinerons votre document sous 24-48h.</p>
+                  </div>
+                </div>
+              ) : mockKycStatus.documentStatus === "approved" ? (
+                <div className="flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
+                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <p className="text-sm font-medium text-green-800 dark:text-green-300">Document vérifié avec succès</p>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+                  <AlertCircle className="h-5 w-5 text-red-600" />
+                  <div>
+                    <p className="text-sm font-medium text-red-800 dark:text-red-300">Document rejeté</p>
+                    <p className="text-xs text-red-600 dark:text-red-400">{mockKycStatus.rejectionReason || "Veuillez soumettre un nouveau document."}</p>
+                    <DocumentUpload
+                      onUpload={(file) => toast.success("Nouveau document téléchargé !")}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <h3 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">
+                Vos badges
+              </h3>
+              <BadgeGrid badges={mockBadges} />
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Danger Zone */}
+        <motion.section
+          custom={5}
           variants={sectionVariants}
           initial="hidden"
           animate="visible"

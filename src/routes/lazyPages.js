@@ -29,6 +29,8 @@ const LegalNoticesPage = lazy(() => import("@/features/static/pages/LegalNotices
 const NotFoundPage = lazy(() => import("@/features/static/pages/NotFoundPage"));
 const ErrorPage = lazy(() => import("@/features/static/pages/ErrorPage"));
 const MaintenancePage = lazy(() => import("@/features/static/pages/MaintenancePage"));
+const VehicleListingsPage = lazy(() => import("@/features/vehicles/pages/VehicleListingsPage"));
+const HowItWorksPage = lazy(() => import("@/features/static/pages/HowItWorksPage"));
 
 export {
   HomePage,
@@ -60,4 +62,6 @@ export {
   NotFoundPage,
   ErrorPage,
   MaintenancePage,
+  VehicleListingsPage,
+  HowItWorksPage,
 };

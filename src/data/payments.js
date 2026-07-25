@@ -1,0 +1,95 @@
+export const mockPaymentMethods = [
+  { id: "flooz", name: "Flooz", color: "#FF6600", bgClass: "bg-orange-50 dark:bg-orange-900/20", available: true },
+  { id: "tmoney", name: "TMoney", color: "#E30613", bgClass: "bg-red-50 dark:bg-red-900/20", available: true },
+  { id: "mobile_money", name: "Mobile Money", color: "#00A651", bgClass: "bg-green-50 dark:bg-green-900/20", available: true },
+  { id: "card", name: "Carte bancaire", color: "#1A1F71", bgClass: "bg-blue-50 dark:bg-blue-900/20", available: true },
+];
+
+export const mockEscrowTransactions = [
+  {
+    id: 1,
+    buyerName: "Mathieu Tossou",
+    sellerName: "Kofi Améyo",
+    productTitle: "Samsung Galaxy S24 Ultra 256GB",
+    productImage: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=100&h=100&fit=crop",
+    amount: 850000,
+    fee: 42500,
+    status: "pending_delivery",
+    createdAt: "2025-07-20T10:30:00Z",
+    confirmedAt: null,
+    releasedAt: null,
+  },
+  {
+    id: 2,
+    buyerName: "Yao Agbeko",
+    sellerName: "Efua Semonu",
+    productTitle: "Canapé 3 places en cuir véritable",
+    productImage: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=100&h=100&fit=crop",
+    amount: 450000,
+    fee: 22500,
+    status: "delivered",
+    createdAt: "2025-07-18T14:20:00Z",
+    confirmedAt: "2025-07-19T09:00:00Z",
+    releasedAt: null,
+  },
+  {
+    id: 3,
+    buyerName: "Kossi Mensah",
+    sellerName: "Gad Koffi",
+    productTitle: "TV Samsung 55 pouces Smart 4K",
+    productImage: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=100&h=100&fit=crop",
+    amount: 280000,
+    fee: 14000,
+    status: "completed",
+    createdAt: "2025-07-15T16:45:00Z",
+    confirmedAt: "2025-07-16T11:30:00Z",
+    releasedAt: "2025-07-16T12:00:00Z",
+  },
+  {
+    id: 4,
+    buyerName: "Abra Povi",
+    sellerName: "Bénédicte Amoussou",
+    productTitle: "Robe Bazin brodée - Taille 40",
+    productImage: "https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=100&h=100&fit=crop",
+    amount: 85000,
+    fee: 4250,
+    status: "disputed",
+    createdAt: "2025-07-17T08:00:00Z",
+    confirmedAt: null,
+    releasedAt: null,
+  },
+  {
+    id: 5,
+    buyerName: "Dédé Afi",
+    sellerName: "Nana Akua",
+    productTitle: "Sac à main cuir véritable - Cognac",
+    productImage: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=100&h=100&fit=crop",
+    amount: 65000,
+    fee: 3250,
+    status: "refunded",
+    createdAt: "2025-07-10T13:00:00Z",
+    confirmedAt: null,
+    releasedAt: null,
+  },
+];
+
+export const mockWalletBalance = {
+  available: 1250000,
+  pending: 350000,
+  totalEarned: 5678000,
+};
+
+export const mockWalletTransactions = [
+  { id: 1, type: "sale", description: "Vente Samsung Galaxy S24 Ultra", amount: 850000, status: "completed", date: "2025-07-20T10:30:00Z", counterparty: "Mathieu Tossou" },
+  { id: 2, type: "purchase", description: "Achat PS5 + 2 Manettes + 3 Jeux", amount: -380000, status: "completed", date: "2025-07-19T14:20:00Z", counterparty: "Kévin Agbéké" },
+  { id: 3, type: "withdrawal", description: "Retrait vers Flooz +228 90 12 34 56", amount: -200000, status: "completed", date: "2025-07-18T09:00:00Z", counterparty: "Flooz" },
+  { id: 4, type: "deposit", description: "Rechargement TMoney", amount: 150000, status: "completed", date: "2025-07-17T16:30:00Z", counterparty: "TMoney" },
+  { id: 5, type: "refund", description: "Remboursement - Commande #1234", amount: 65000, status: "completed", date: "2025-07-16T11:00:00Z", counterparty: "AK Market" },
+  { id: 6, type: "sale", description: "Vente Pagne Wax Hollandais 6 yards", amount: 45000, status: "completed", date: "2025-07-15T14:00:00Z", counterparty: "Ama Dzidzornu" },
+  { id: 7, type: "withdrawal", description: "Retrait vers Mobile Money +228 91 23 45 67", amount: -100000, status: "pending", date: "2025-07-14T10:15:00Z", counterparty: "Mobile Money" },
+  { id: 8, type: "sale", description: "Vente MacBook Air M2", amount: 650000, status: "completed", date: "2025-07-13T09:00:00Z", counterparty: "Prosper Degan" },
+  { id: 9, type: "purchase", description: "Achat Kit Panneaux Solaires 300W", amount: -750000, status: "completed", date: "2025-07-12T15:45:00Z", counterparty: "Kwame Dogbo" },
+  { id: 10, type: "deposit", description: "Rechargement Flooz", amount: 500000, status: "completed", date: "2025-07-11T08:30:00Z", counterparty: "Flooz" },
+];
+
+export default mockPaymentMethods;

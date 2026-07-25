@@ -183,7 +183,7 @@ export default function LoginPage() {
         <p className="text-sm text-gray-500 dark:text-gray-400">
           Pas encore de compte ?{" "}
           <Link
-            to="/auth/register"
+            to="/inscription"
             className="font-semibold text-red-800 hover:text-red-900 dark:text-red-700 dark:hover:text-red-400 transition-colors"
           >
             S'inscrire

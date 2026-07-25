@@ -210,7 +210,7 @@ export default function DashboardLayout() {
                   </span>
                 )}
               </Link>
-              <Link to="/sell" className="hidden sm:flex items-center gap-2 px-4 py-2 bg-green-900 text-white rounded-xl text-sm font-medium hover:bg-green-950 transition-colors shadow-md shadow-green-700/25">
+              <Link to="/vendre" className="hidden sm:flex items-center gap-2 px-4 py-2 bg-green-900 text-white rounded-xl text-sm font-medium hover:bg-green-950 transition-colors shadow-md shadow-green-700/25">
                 + Nouvelle annonce
               </Link>
             </div>

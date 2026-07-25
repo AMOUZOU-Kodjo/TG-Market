@@ -51,7 +51,7 @@ export default function ForgotPasswordPage() {
           >
             <div className="mb-8">
               <Link
-                to="/auth/login"
+                to="/connexion"
                 className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 transition-colors hover:text-red-800 dark:text-gray-400 dark:hover:text-red-700"
               >
                 <ArrowLeft className="h-4 w-4" />

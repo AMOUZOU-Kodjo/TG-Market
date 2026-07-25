@@ -291,7 +291,7 @@ function HeroSection() {
               <Button
                 size="xl"
                 icon={Send}
-                className="bg-white text-black hover:bg-red-50 shadow-xl border-2 border-white/30"
+                className="bg-white text-black hover:bg-white  border-2 border-white/30"
               >
                 Vendre un article
               </Button>
@@ -301,7 +301,7 @@ function HeroSection() {
                 variant="outline"
                 size="xl"
                 icon={ShoppingBag}
-                className="border-white/40 text-white hover:bg-white"
+                className="border-white/40 text-white hover:bg-white/30"
               >
                 Explorer les annonces
               </Button>

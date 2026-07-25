@@ -1,99 +1,95 @@
 import { motion } from "framer-motion";
-import { Shield, Lock, Eye, UserCheck, Database, Share2, Mail, Phone, MapPin } from "lucide-react";
+import { Shield, Lock, Eye, UserCheck, Database, Share2, Mail, Phone, MapPin, FileText, Clock, Globe, AlertTriangle, Cookie } from "lucide-react";
 
 const sections = [
   {
     icon: Database,
-    title: "Collecte des informations",
-    content: `Nous collectons les informations que vous nous fournissez directement lors de votre inscription ou de l'utilisation de nos services. Ces informations incluent :
+    title: "1. Informations que nous recueillons",
+    content: `Nous collectons différents types de informations selon ton utilisation de l'application AK Market, afin d'assurer le bon fonctionnement du service et de t'offrir une expérience optimale.
 
-• Votre nom, adresse email et numéro de téléphone
-• Votre photo de profil et vos préférences
-• Les informations relatives à vos annonces (description, prix, photos, localisation)
-• Les données de transaction (achats, ventes, paiements)
-• Les données de navigation (pages visitées, recherches effectuées)
-• Les informations de votre appareil (type, système d'exploitation, adresse IP)`,
+A. Données personnelles que tu fournis directement
+
+Données d'identification : Nom, prénom, numéro de téléphone, adresse e-mail.
+Vérification de profil (KYC) : Pièces d'identité (carte nationale d'identité, permis de conduire ou passeport), selfie de vérification, registre du commerce pour les professionnels.
+Contenus et échanges : Photos des annonces, descriptions, messages échangés dans la messagerie intégrée, offres et contre-offres, rendez-vous planifiés.
+Données transactionnelles : Historique des transactions, montants, récapitulatifs des frais (service, paiement, livraison), validations par QR code (incluant horodatage, lieu et identifiants des parties).
+Données de connexion : Identifiants de connexion (hachés), adresses IP, journaux d'accès et informations sur les appareils utilisés.
+
+B. Données collectées indirectement
+
+Traceurs techniques : Identifiants d'appareil et journaux de connexion nécessaires au fonctionnement et à la sécurité de l'application (note : il n'y a pas de cookies sur l'application mobile ; seuls des cookies essentiels peuvent être utilisés sur notre site web).
+Données de prestataires : Informations limitées provenant de nos prestataires d'hébergement et de stockage, ainsi que de nos prestataires de paiement, exclusivement pour exécuter ou valider une opération.
+
+Précision concernant le « Portefeuille » : L'affichage du « Portefeuille » ou du « Solde » dans l'application est purement informatif. AK Market ne détient jamais tes fonds et n'exécute aucune transaction financière. Les flux sont gérés exclusivement par les prestataires de paiement.`,
   },
   {
     icon: Eye,
-    title: "Utilisation des informations",
-    content: `Nous utilisons vos informations pour :
+    title: "2. Utilisation de tes données",
+    content: `Gestion du compte et exécution du contrat : Création de profil, publication d'annonces, messagerie, gestion des offres, validation par QR code, organisation de RDV sécurisés, et gestion de la livraison ou des retours lorsqu'ils sont proposés.
 
-• Fournir, maintenir et améliorer nos services
-• Faciliter les transactions entre vendeurs et acheteurs
-• Vous envoyer des notifications pertinentes concernant vos annonces et transactions
-• Personnaliser votre expérience utilisateur
-• Prévenir la fraude et assurer la sécurité de la plateforme
-• Communiquer avec vous concernant votre compte et nos services
-• Respecter nos obligations légales`,
+Vérification et sécurité : Procédures KYC, prévention de la fraude, du recel et des contournements, modération des contenus et journalisation technique.
+
+Amélioration du service : Analyses agrégées, statistiques d'usage, suivi de la qualité et support utilisateur.
+
+Communications : Envoi de notifications de service essentielles au fonctionnement de l'application. Les communications commerciales ne sont envoyées qu'avec ton consentement explicite (opt-in).
+
+Obligations légales : Réponse aux demandes des autorités, respect des durées de conservation légales, et participation à la lutte contre le blanchiment d'argent et le financement du terrorisme (AML/CFT) via nos PSP.`,
   },
   {
     icon: Share2,
-    title: "Partage des informations",
-    content: `Nous ne vendons pas vos informations personnelles à des tiers. Nous pouvons partager vos informations dans les cas suivants :
+    title: "3. Partage de tes données",
+    content: `Nos prestataires : Hébergement, stockage, prestataires de paiement, services de vérification d'identité et outils de support ou de lutte anti-fraude. Ce partage est limité à ce qui est contractuellement nécessaire et est encadré par des accords de traitement de données (DPA) ou des clauses contractuelles appropriées.
 
-• Avec les autres utilisateurs : votre nom et photo de profil sont visibles sur vos annonces
-• Avec les vendeurs/acheteurs : les coordonnées sont partagées uniquement après un accord de transaction
-• Avec nos prestataires de services : hébergement, paiement, livraison
-• Pour des raisons légales : en réponse à une demande judiciaire ou pour protéger nos droits`,
+Autorités publiques et judiciaires : Uniquement sur réquisition légale.
+
+Autres utilisateurs : Uniquement les informations minimales nécessaires à la réalisation d'une transaction en fonction des actions que tu réalises dans l'application.`,
   },
   {
-    icon: Lock,
-    title: "Sécurité des données",
-    content: `Nous mettons en œuvre des mesures de sécurité techniques et organisationnelles pour protéger vos données :
+    icon: Clock,
+    title: "4. Durées de conservation",
+    content: `Données de vérification de profil (KYC) : La pièce d'identité et le selfie sont conservés 14 jours après la vérification, sauf obligation légale contraire, gestion d'un litige ou prévention de la fraude, auquel cas la conservation est limitée au strict nécessaire.
 
-• Chiffrement SSL/TLS pour toutes les communications
-• Authentification sécurisée et gestion des mots de passe
-• Surveillance continue des activités suspectes
-• Accès limité aux données personnelles par notre personnel
-• Sauvegardes régulières et plan de reprise d'activité
-• Conformité aux normes de sécurité internationales`,
+Données de transaction : Conservées pendant toute la durée d'utilisation de nos services. Si des obligations comptables ou fiscales s'appliquent, elles sont archivées pour la durée légale applicable.
+
+Autres données personnelles : Conservées tant que ton compte est actif. Elles sont ensuite supprimées ou anonymisées dans un délai de 12 mois après la désactivation de ton compte, sauf obligation légale ou nécessité pour la défense de nos droits.
+
+Journaux de connexion et de sécurité : Conservés pour une durée maximale de 12 mois, sauf en cas d'incident de sécurité où ils sont conservés le temps nécessaire à la résolution de l'incident.`,
   },
   {
     icon: UserCheck,
-    title: "Vos droits",
-    content: `Conformément à la réglementation en vigueur, vous disposez des droits suivants :
+    title: "5. Tes droits",
+    content: `Conformément à la réglementation en vigueur, tu disposes des droits suivants : accès, rectification, effacement, opposition, limitation du traitement, portabilité de tes données et retrait de ton consentement (sans que cela n'affecte la licéité des traitements antérieurs).
 
-• Droit d'accès : obtenir une copie de vos données personnelles
-• Droit de rectification : corriger les informations inexactes
-• Droit à l'effacement : demander la suppression de vos données
-• Droit à la portabilité : recevoir vos données dans un format structuré
-• Droit d'opposition : vous opposer au traitement de vos données
-• Droit de limitation : demander la limitation du traitement
+Pour exercer tes droits, contacte-nous à support@akmarket.tg. Tu peux également déposer une réclamation auprès de l'autorité de protection des données compétente dans ton pays de résidence.`,
+  },
+  {
+    icon: Lock,
+    title: "6. Sécurité des données",
+    content: `Nous mettons en œuvre des mesures techniques et organizationnelles pour protéger tes données : chiffrement des données en transit et au repos, contrôles d'accès stricts, journalisation des activités, revue des permissions, segmentation des environnements, sauvegardes régulières et politique de mots de passe renforcée. Les données de paiement sensibles sont traitées directement par nos prestataires conformes aux normes de sécurité (ex. : PCI DSS).`,
+  },
+  {
+    icon: Globe,
+    title: "7. Transferts internationaux",
+    content: `Nos prestataires peuvent être situés en dehors du Togo. Tout transfert de données en dehors de ton territoire est encadré par des garanties adéquates.`,
+  },
+  {
+    icon: Cookie,
+    title: "8. Cookies et traceurs",
+    content: `Application mobile : Nous n'utilisons pas de cookies, mais des identifiants techniques d'appareil et des journaux essentiels à son fonctionnement peuvent être collectés.
 
-Pour exercer ces droits, contactez-nous à privacy@akmarket.tg.`,
+Site web : Nous utilisons actuellement des cookies essentiels (sécurité, gestion de session).`,
+  },
+  {
+    icon: Shield,
+    title: "9. Modifications",
+    content: `Cette politique de confidentialité peut évoluer. En cas de changement significatif, nous t'en informerons via l'application et/ou par e-mail, et nous solliciterons un nouveau consentement si la loi l'exige.`,
   },
   {
     icon: Mail,
-    title: "Conservation des données",
-    content: `Nous conservons vos données personnelles aussi longtemps que nécessaire pour fournir nos services et respecter nos obligations légales.
+    title: "10. Contact",
+    content: `Pour toute question relative à cette politique ou à la gestion de tes données, contacte-nous à l'adresse suivante : support@akmarket.tg.
 
-• Données de compte : conservées tant que votre compte est actif
-• Données de transaction : conservées pendant 5 ans conformément à la législation fiscale
-• Données de navigation : conservées pendant 12 mois
-• Données supprimées : effacées définitivement dans un délai de 30 jours`,
-  },
-  {
-    icon: Phone,
-    title: "Cookies et technologies similaires",
-    content: `Nous utilisons des cookies et technologies similaires pour :
-
-• Assurer le bon fonctionnement de la plateforme
-• Mémoriser vos préférences et paramètres
-• Analyser l'utilisation de nos services pour les améliorer
-• Vous proposer des contenus et publicités pertinents
-
-Vous pouvez gérer vos préférences de cookies dans les paramètres de votre navigateur.`,
-  },
-  {
-    icon: MapPin,
-    title: "Contact",
-    content: `Pour toute question relative à cette politique de confidentialité ou à la protection de vos données, vous pouvez nous contacter :
-
-Email : privacy@akmarket.tg
-Téléphone : +228 90 00 00 00
-Adresse : Lomé, Togo
-Délégué à la protection des données : dpo@akmarket.tg`,
+Un délégué à la protection des données (DPO) ou un point de contact spécifique pourra être désigné et ses coordonnées seront communiquées dans l'application.`,
   },
 ];
 
@@ -118,9 +114,9 @@ export default function PrivacyPage() {
             animate={{ opacity: 1, y: 0 }}
           >
             <Shield className="mx-auto mb-4 h-12 w-12 text-white/80" />
-            <h1 className="text-3xl font-bold sm:text-4xl">Politique de confidentialité</h1>
+            <h1 className="text-3xl font-bold sm:text-4xl">Politique de confidentialité et Cookies</h1>
             <p className="mt-3 text-white/80">
-              Dernière mise à jour : 15 juillet 2025
+              Date de mise à jour : 10 octobre 2025
             </p>
           </motion.div>
         </div>
@@ -133,9 +129,7 @@ export default function PrivacyPage() {
           className="mb-8 rounded-2xl border border-red-300 bg-red-50 p-5 dark:border-red-800/20 dark:bg-red-800/5"
         >
           <p className="text-sm leading-relaxed text-red-950 dark:text-red-400">
-            Chez AK Market, la protection de vos données personnelles est une priorité.
-            Cette politique de confidentialité décrit comment nous collectons, utilisons
-            et protégeons vos informations lorsque vous utilisez notre plateforme.
+            Cette politique explique comment nous recueillons, utilisons, conservons et partageons tes données lorsque tu utilises nos services AK Market.
           </p>
         </motion.div>
 

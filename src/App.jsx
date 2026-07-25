@@ -42,6 +42,8 @@ import {
   NotFoundPage,
   ErrorPage,
   MaintenancePage,
+  VehicleListingsPage,
+  HowItWorksPage,
 } from "@/routes/lazyPages";
 
 const queryClient = new QueryClient({
@@ -79,6 +81,7 @@ function App() {
                       <Route path="/" element={<HomePage />} />
                       <Route path="/categories/:slug" element={<CategoryPage />} />
                       <Route path="/categories" element={<CategoriesPage />} />
+                      <Route path="/vehicules" element={<VehicleListingsPage />} />
                       <Route path="/recherche" element={<SearchResultsPage />} />
                       <Route path="/annonce/:id" element={<ProductDetailPage />} />
                       <Route path="/vendeur/:id" element={<SellerProfilePage />} />
@@ -159,6 +162,7 @@ function App() {
                       />
 
                       <Route path="/a-propos" element={<AboutPage />} />
+                      <Route path="/comment-ca-marche" element={<HowItWorksPage />} />
                       <Route path="/faq" element={<FAQPage />} />
                       <Route path="/confidentialite" element={<PrivacyPage />} />
                       <Route path="/conditions" element={<TermsPage />} />

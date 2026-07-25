@@ -192,7 +192,7 @@ export default function AdminLayout() {
                   7
                 </span>
               </button>
-              <Link to="/help" className="p-2 rounded-lg hover:bg-gray-800 text-gray-400 transition-colors">
+              <Link to="/faq" className="p-2 rounded-lg hover:bg-gray-800 text-gray-400 transition-colors">
                 <HelpCircle className="w-5 h-5" />
               </Link>
             </div>

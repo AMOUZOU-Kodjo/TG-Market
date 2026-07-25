@@ -144,7 +144,7 @@ export default function NotFoundPage() {
               explorer les annonces
             </Link>
             {" "}ou{" "}
-            <Link to="/sell" className="font-medium text-red-800 hover:underline">
+            <Link to="/vendre" className="font-medium text-red-800 hover:underline">
               publier une annonce
             </Link>
             ?

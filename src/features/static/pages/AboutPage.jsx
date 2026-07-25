@@ -253,12 +253,12 @@ export default function AboutPage() {
               plateforme pour vos Ã©changes au Togo.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Link to="/register">
+              <Link to="/inscription">
                 <Button size="lg" className="bg-white text-red-900 hover:bg-gray-100">
                   CrÃ©er un compte gratuit
                 </Button>
               </Link>
-              <Link to="/sell">
+              <Link to="/vendre">
                 <Button variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10">
                   Commencer Ã  vendre
                 </Button>

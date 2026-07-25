@@ -20,12 +20,15 @@ import {
   Search,
   ChevronRight,
   ExternalLink,
+  FileCheck,
+  Camera,
 } from "lucide-react";
 import Button from "@/shared/ui/Button";
 import Badge from "@/shared/ui/Badge";
 import Avatar from "@/shared/ui/Avatar";
 import { mockUsers } from "@/data/users";
 import { mockCategories } from "@/data/categories";
+import { mockPendingVerifications } from "@/data/verification";
 import { formatCFA, formatRelativeTime } from "@/shared/utils/format";
 import toast from "react-hot-toast";
 
@@ -301,6 +304,64 @@ export default function AdminDashboardPage() {
             </div>
           </motion.div>
         </div>
+
+        {/* KYC Moderation */}
+        {mockPendingVerifications.length > 0 && (
+          <motion.div
+            variants={itemVariants}
+            className="rounded-2xl border border-gray-800 bg-gray-900"
+          >
+            <div className="flex items-center justify-between border-b border-gray-800 px-6 py-4">
+              <h2 className="text-lg font-semibold text-white">Vérifications KYC en attente</h2>
+              <Badge variant="warning" dot>{mockPendingVerifications.length}</Badge>
+            </div>
+            <div className="divide-y divide-gray-800">
+              {mockPendingVerifications.map((verification) => (
+                <div key={verification.id} className="px-6 py-4">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium text-white">{verification.name}</p>
+                        <Badge variant="secondary" size="sm">{verification.documentType}</Badge>
+                      </div>
+                      <p className="mt-1 text-xs text-gray-500">
+                        Soumis {formatRelativeTime(verification.submittedAt)}
+                      </p>
+                      <div className="mt-3 flex gap-2">
+                        <img
+                          src={verification.selfieUrl}
+                          alt="Selfie"
+                          className="h-16 w-16 rounded-lg object-cover"
+                        />
+                        <img
+                          src={verification.docFrontUrl}
+                          alt="Document"
+                          className="h-16 w-16 rounded-lg object-cover"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => toast.success(`Identité de ${verification.name} vérifiée`)}
+                        className="rounded-lg bg-green-700/10 p-2 text-green-600 transition-colors hover:bg-green-700/20"
+                        title="Approuver"
+                      >
+                        <Check className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => toast.error(`Identité de ${verification.name} rejetée`)}
+                        className="rounded-lg bg-red-700/10 p-2 text-red-400 transition-colors hover:bg-red-700/20"
+                        title="Rejeter"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Revenue Chart Placeholder */}

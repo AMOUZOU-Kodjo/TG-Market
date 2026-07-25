@@ -225,7 +225,7 @@ export default function MainLayout() {
                           ))}
                           <div className="my-1 border-t border-gray-100 dark:border-gray-700" />
                           <Link
-                            to="/help"
+                            to="/faq"
                             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                           >
                             <HelpCircle className="w-4 h-4 text-gray-400" />
@@ -354,7 +354,7 @@ export default function MainLayout() {
                   {[
                     { to: "/categories", label: "Toutes les catégories" },
                     { to: "/vendre", label: "Vendre un produit" },
-                    { to: "/a-propos", label: "Comment ça marche" },
+                    { to: "/comment-ca-marche", label: "Comment ça marche" },
                     { to: "/a-propos", label: "Sécurité" },
                   ].map((link) => (
                     <li key={link.label}>

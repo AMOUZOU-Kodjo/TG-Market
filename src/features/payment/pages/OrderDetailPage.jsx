@@ -1,0 +1,372 @@
+import { useState, useCallback } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ArrowLeft,
+  ShoppingCart,
+  CheckCircle2,
+  AlertTriangle,
+  XCircle,
+  ExternalLink,
+  MessageCircle,
+  Truck,
+  QrCode,
+  ScanLine,
+  Loader2,
+} from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
+import QrScanner from "@/features/payment/components/QrScanner";
+import { useEscrow, useConfirmDelivery, useMarkAsShipped } from "@/features/wallet/hooks/useWallet";
+import { escrowApi } from "@/features/wallet/services/wallet.api";
+import { useAuth } from "@/shared/contexts/AuthContext";
+import { formatCFA, formatDate } from "@/shared/utils/format";
+import EscrowTimeline from "@/features/payment/components/EscrowTimeline";
+import Badge from "@/shared/ui/Badge";
+import toast from "react-hot-toast";
+
+const statusConfig = {
+  pending: { label: "En attente de paiement", variant: "warning" },
+  paid: { label: "Payée", variant: "primary" },
+  pending_delivery: { label: "Expédiée", variant: "info" },
+  delivered: { label: "Livrée", variant: "info" },
+  completed: { label: "Terminée", variant: "success" },
+  disputed: { label: "Litige", variant: "danger" },
+  refunded: { label: "Remboursée", variant: "secondary" },
+  cancelled: { label: "Annulée", variant: "danger" },
+};
+
+export default function OrderDetailPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { data: escrow, isLoading, refetch } = useEscrow(id);
+  const { mutateAsync: confirmDelivery } = useConfirmDelivery();
+  const { mutateAsync: markAsShipped } = useMarkAsShipped();
+  const [disputeReason, setDisputeReason] = useState("");
+  const [showDispute, setShowDispute] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
+  const [showQrCode, setShowQrCode] = useState(false);
+  const [actionLoading, setActionLoading] = useState(null);
+
+  const handleScan = useCallback(async (token) => {
+    setShowScanner(false);
+    setActionLoading("scan");
+    try {
+      await escrowApi.scanConfirm(token);
+      toast.success("Livraison confirmée ! QR code scanné avec succès.");
+      refetch();
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "QR code invalide");
+    } finally {
+      setActionLoading(null);
+    }
+  }, [refetch]);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-brand-800" />
+      </div>
+    );
+  }
+
+  if (!escrow) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center px-4">
+        <p className="text-gray-500">Commande introuvable</p>
+        <Link to="/dashboard/orders" className="mt-4 text-sm text-brand-800 hover:underline">Voir mes commandes</Link>
+      </div>
+    );
+  }
+
+  const isBuyer = escrow.buyerId === user?.id;
+  const statusInfo = statusConfig[escrow.status] || { label: escrow.status, variant: "neutral" };
+
+  const handleConfirm = async () => {
+    setActionLoading("confirm");
+    try {
+      await confirmDelivery(escrow.id);
+      toast.success("Livraison confirmée !");
+      refetch();
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Erreur");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleMarkShipped = async () => {
+    setActionLoading("ship");
+    try {
+      await markAsShipped(escrow.id);
+      toast.success("Commande marquée comme envoyée");
+      refetch();
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Erreur");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleCancel = async () => {
+    setActionLoading("cancel");
+    try {
+      await escrowApi.cancel(escrow.id);
+      toast.success("Commande annulée");
+      refetch();
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Erreur");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleDispute = async () => {
+    if (!disputeReason || disputeReason.length < 10) {
+      toast.error("Veuillez décrire le problème (min. 10 caractères)");
+      return;
+    }
+    setActionLoading("dispute");
+    try {
+      await escrowApi.dispute(escrow.id, { reason: disputeReason });
+      toast.success("Litige ouvert");
+      setShowDispute(false);
+      refetch();
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Erreur");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <div className="mx-auto max-w-2xl px-4 py-6 sm:px-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-4 flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Retour
+        </button>
+
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Commande #{escrow.id}</h1>
+            <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{formatDate(escrow.createdAt)}</p>
+          </div>
+          <Badge variant={statusInfo.variant} dot>{statusInfo.label}</Badge>
+        </div>
+
+        <div className="space-y-5">
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
+          >
+            <Link
+              to={`/annonce/${escrow.productId}`}
+              className="flex items-center gap-4 hover:opacity-80 transition-opacity"
+            >
+              <img
+                src={escrow.productImage}
+                alt={escrow.productTitle}
+                className="h-16 w-16 rounded-xl object-cover"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                  {escrow.productTitle}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {isBuyer ? `Vendu par ${escrow.sellerName}` : `Acheté par ${escrow.buyerName}`}
+                </p>
+                <p className="mt-0.5 text-sm font-bold text-brand-800">{formatCFA(escrow.amount)}</p>
+              </div>
+              <ExternalLink className="h-4 w-4 text-gray-400 shrink-0" />
+            </Link>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
+          >
+            <h2 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">Détails</h2>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                <span>Prix</span>
+                <span className="font-medium text-gray-900 dark:text-white">{formatCFA(escrow.amount)}</span>
+              </div>
+              <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                <span>Frais de service (5%)</span>
+                <span className="font-medium text-gray-900 dark:text-white">{formatCFA(escrow.fee)}</span>
+              </div>
+              <hr className="border-gray-200 dark:border-gray-700" />
+              <div className="flex justify-between text-base font-bold text-gray-900 dark:text-white">
+                <span>Total</span>
+                <span>{formatCFA(escrow.amount + escrow.fee)}</span>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
+          >
+            <h2 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">Suivi</h2>
+            <EscrowTimeline transaction={escrow} />
+          </motion.div>
+
+          {escrow.status === "pending" && isBuyer && (
+            <button
+              onClick={handleCancel}
+              disabled={actionLoading === "cancel"}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-6 py-3 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 disabled:opacity-50 dark:border-red-800 dark:bg-gray-900 dark:text-red-400 dark:hover:bg-red-900/20"
+            >
+              {actionLoading === "cancel" ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
+              Annuler la commande
+            </button>
+          )}
+
+          {escrow.status === "paid" && !isBuyer && (
+            <div className="space-y-2">
+              <div className="rounded-xl bg-amber-50 p-3 dark:bg-amber-900/10">
+                <p className="text-xs text-amber-700 dark:text-amber-500">
+                  L'acheteur a payé <strong>{formatCFA(escrow.amount + escrow.fee)}</strong>. Préparez la commande et marquez-la comme envoyée.
+                </p>
+              </div>
+              <button
+                onClick={handleMarkShipped}
+                disabled={actionLoading === "ship"}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-800 px-6 py-3 text-sm font-semibold text-white shadow-sm shadow-brand-800/25 transition-colors hover:bg-brand-900 disabled:opacity-50"
+              >
+                {actionLoading === "ship" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Truck className="h-4 w-4" />}
+                Marquer comme envoyé
+              </button>
+            </div>
+          )}
+
+          {escrow.status === "pending_delivery" && isBuyer && (
+            <div className="space-y-3">
+              <div className="rounded-xl bg-blue-50 p-3 dark:bg-blue-900/10">
+                <p className="text-xs text-blue-700 dark:text-blue-400">
+                  Scannez le QR code du vendeur pour confirmer la réception et libérer les fonds.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowScanner(true)}
+                disabled={actionLoading === "scan"}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-800 px-6 py-3 text-sm font-semibold text-white shadow-sm shadow-brand-800/25 transition-colors hover:bg-brand-900 disabled:opacity-50"
+              >
+                {actionLoading === "scan" ? <Loader2 className="h-4 w-4 animate-spin" /> : <ScanLine className="h-4 w-4" />}
+                Scanner le QR code
+              </button>
+            </div>
+          )}
+
+          {escrow.status === "pending_delivery" && !isBuyer && (
+            <div className="space-y-3">
+              <div className="rounded-xl bg-green-50 p-3 text-center dark:bg-green-900/10">
+                <p className="text-xs font-medium text-green-700 dark:text-green-400">
+                  Faites scanner ce QR code par l'acheteur pour confirmer la livraison
+                </p>
+              </div>
+              {showQrCode ? (
+                <div className="flex flex-col items-center rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+                  <QRCodeSVG value={escrow.confirmationToken} size={200} />
+                  <p className="mt-3 text-xs text-gray-400">
+                    ID: #{escrow.id}
+                  </p>
+                  <button
+                    onClick={() => setShowQrCode(false)}
+                    className="mt-3 text-xs text-gray-500 hover:text-gray-700 underline"
+                  >
+                    Masquer le QR code
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowQrCode(true)}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                >
+                  <QrCode className="h-4 w-4" />
+                  Afficher le QR code
+                </button>
+              )}
+            </div>
+          )}
+
+          {(escrow.status === "pending" || escrow.status === "paid" || escrow.status === "pending_delivery") && (
+            <div className="space-y-3">
+              {showDispute ? (
+                <div className="rounded-2xl border border-red-100 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/10">
+                  <p className="mb-2 text-sm font-medium text-red-800 dark:text-red-400">
+                    Décrivez le problème
+                  </p>
+                  <textarea
+                    value={disputeReason}
+                    onChange={(e) => setDisputeReason(e.target.value)}
+                    rows={3}
+                    placeholder="Expliquez le problème (min. 10 caractères)..."
+                    className="w-full rounded-xl border border-red-200 bg-white p-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:border-red-800 dark:bg-gray-900 dark:text-white"
+                  />
+                  <div className="mt-3 flex gap-2">
+                    <button
+                      onClick={() => { setShowDispute(false); setDisputeReason(""); }}
+                      className="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      onClick={handleDispute}
+                      disabled={actionLoading === "dispute" || disputeReason.length < 10}
+                      className="flex-1 rounded-xl bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+                    >
+                      {actionLoading === "dispute" ? <Loader2 className="mx-auto h-4 w-4 animate-spin" /> : "Ouvrir un litige"}
+                    </button>
+                  </div>
+                </div>
+              ) : escrow.status === "disputed" ? (
+                <div className="rounded-2xl border border-red-100 bg-red-50 p-4 text-center dark:border-red-800 dark:bg-red-900/10">
+                  <AlertTriangle className="mx-auto mb-2 h-6 w-6 text-red-600" />
+                  <p className="text-sm font-medium text-red-800 dark:text-red-400">Litige en cours</p>
+                  <p className="mt-1 text-xs text-red-600 dark:text-red-500">Notre équipe va examiner votre dossier</p>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowDispute(true)}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-6 py-3 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 dark:border-red-800 dark:bg-gray-900 dark:text-red-400 dark:hover:bg-red-900/20"
+                >
+                  <AlertTriangle className="h-4 w-4" />
+                  Signaler un problème
+                </button>
+              )}
+            </div>
+          )}
+
+          {escrow.status === "completed" && (
+            <div className="rounded-2xl border border-green-100 bg-green-50 p-4 text-center dark:border-green-800 dark:bg-green-900/10">
+              <CheckCircle2 className="mx-auto mb-2 h-8 w-8 text-green-600" />
+              <p className="text-sm font-medium text-green-800 dark:text-green-400">Transaction terminée</p>
+              <p className="mt-1 text-xs text-green-600 dark:text-green-500">
+                Les fonds ont été libérés au vendeur
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {showScanner && (
+          <QrScanner
+            onScan={handleScan}
+            onClose={() => setShowScanner(false)}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}

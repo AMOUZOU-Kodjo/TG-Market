@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -7,22 +7,28 @@ import {
   MessageSquare,
   ArrowLeft,
   X,
+  Loader2,
+  LayoutDashboard,
 } from "lucide-react";
 import ConversationItem from "@/features/chat/components/ConversationItem";
-import ConversationPage from "@/features/chat/pages/ConversationPage";
+import ConversationPanel from "@/features/chat/components/ConversationPanel";
 import EmptyState from "@/shared/ui/EmptyState";
-import { useConversations } from "@/features/chat/hooks/useConversations";
+import { useConversations, useMessages, useDeleteConversation } from "@/features/chat/hooks/useConversations";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { cn } from "@/shared/utils/cn";
 
 export default function MessagesPage() {
-  const { user } = useAuth();
+  const { user, setUser, refreshUser } = useAuth();
   const { data: conversationsData = [] } = useConversations();
   const conversations = conversationsData?.data || conversationsData || [];
 
   const [selectedId, setSelectedId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showMobileList, setShowMobileList] = useState(true);
+  const { mutate: deleteConversation } = useDeleteConversation();
+
+  const selectedConversation = conversations.find((c) => c.id === selectedId);
+  const { data: messagesData, isLoading: messagesLoading } = useMessages(selectedId, {});
 
   const filteredConversations = useMemo(() => {
     if (!searchQuery.trim()) return conversations;
@@ -35,32 +41,44 @@ export default function MessagesPage() {
     );
   }, [searchQuery, conversations]);
 
-  const selectedConversation = conversations.find((c) => c.id === selectedId);
+  useEffect(() => {
+    refreshUser();
+    const interval = setInterval(refreshUser, 30000);
+    return () => clearInterval(interval);
+  }, [refreshUser]);
 
-  const handleSelect = (id) => {
+  const handleSelect = useCallback((id) => {
     setSelectedId(id);
     setShowMobileList(false);
-  };
+  }, []);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     setShowMobileList(true);
     setSelectedId(null);
-  };
+  }, []);
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900">
+    <div className="flex h-dvh min-h-0 overflow-hidden bg-white dark:bg-gray-900">
       {/* Conversation List Sidebar */}
       <div
         className={cn(
-          "flex w-full flex-col border-r border-gray-100 dark:border-gray-800 sm:w-80 lg:w-96",
+          "flex w-full min-h-0 flex-col border-r border-gray-100 dark:border-gray-800 sm:w-80 lg:w-96",
           showMobileList ? "flex" : "hidden sm:flex"
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3 dark:border-gray-800">
+        <div className="flex items-center gap-2 border-b border-gray-100 px-3 py-3 dark:border-gray-800">
+          <Link
+            to="/tableau-de-bord"
+            className="flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
+            title="Retour au tableau de bord"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Link>
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">
             Messages
           </h2>
+          <div className="flex-1" />
           <button className="rounded-lg bg-brand-800 p-2 text-white shadow-sm shadow-brand-800/25 hover:bg-brand-900 transition-colors">
             <Plus className="h-4 w-4" />
           </button>
@@ -104,6 +122,7 @@ export default function MessagesPage() {
                   conversation={conversation}
                   isSelected={selectedId === conversation.id}
                   onClick={() => handleSelect(conversation.id)}
+                  onDelete={() => deleteConversation(conversation.id)}
                 />
               ))}
             </div>
@@ -114,7 +133,7 @@ export default function MessagesPage() {
       {/* Conversation Panel */}
       <div
         className={cn(
-          "flex flex-1 flex-col",
+          "flex flex-1 flex-col min-h-0",
           showMobileList ? "hidden sm:flex" : "flex"
         )}
       >
@@ -130,10 +149,16 @@ export default function MessagesPage() {
                 Retour
               </button>
             </div>
-            <ConversationPage
-              conversation={selectedConversation}
-              messages={selectedConversation?.messages || []}
-            />
+            {messagesLoading ? (
+              <div className="flex flex-1 items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-brand-800" />
+              </div>
+            ) : (
+              <ConversationPanel
+                conversation={selectedConversation}
+                messages={messagesData?.data || []}
+              />
+            )}
           </>
         ) : (
           <EmptyState

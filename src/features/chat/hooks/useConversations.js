@@ -47,3 +47,11 @@ export function useMarkAsRead() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["conversations"] }),
   });
 }
+
+export function useDeleteConversation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: conversationsApi.remove,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["conversations"] }),
+  });
+}

@@ -47,12 +47,15 @@ export function SocketProvider({ children }) {
   }, []);
 
   useEffect(() => {
+    const token = localStorage.getItem("ak_access_token");
+    if (token) connect(token);
+
     return () => {
       disconnectSocket();
       socketRef.current = null;
       setConnected(false);
     };
-  }, []);
+  }, [connect]);
 
   return (
     <SocketContext.Provider

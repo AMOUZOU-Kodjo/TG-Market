@@ -11,6 +11,7 @@ import AuthLayout from "@/layouts/AuthLayout";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import AdminLayout from "@/layouts/AdminLayout";
 import { AuthGuard, GuestGuard, AdminGuard } from "@/guards/AuthGuard";
+import { AuthLogoutHandler } from "@/shared/contexts/AuthContext";
 
 import {
   HomePage,
@@ -46,6 +47,8 @@ import {
   VehicleListingsPage,
   HowItWorksPage,
   ContactPage,
+  CheckoutPage,
+  OrderDetailPage,
 } from "@/routes/lazyPages";
 
 const queryClient = new QueryClient({
@@ -77,6 +80,7 @@ function App() {
           <SocketProvider>
             <NotificationProvider>
               <BrowserRouter>
+                <AuthLogoutHandler />
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
                     <Route element={<MainLayout />}>
@@ -102,22 +106,6 @@ function App() {
                         element={
                           <AuthGuard>
                             <Navigate to="/dashboard/notifications" replace />
-                          </AuthGuard>
-                        }
-                      />
-                      <Route
-                        path="/messages"
-                        element={
-                          <AuthGuard>
-                            <MessagesPage />
-                          </AuthGuard>
-                        }
-                      />
-                      <Route
-                        path="/messages/:conversationId"
-                        element={
-                          <AuthGuard>
-                            <ConversationPage />
                           </AuthGuard>
                         }
                       />
@@ -173,7 +161,16 @@ function App() {
                       <Route path="/mentions-legales" element={<LegalNoticesPage />} />
                     </Route>
 
+                    <Route path="/messages" element={<AuthGuard><MessagesPage /></AuthGuard>} />
+                    <Route path="/messages/:conversationId" element={<AuthGuard><ConversationPage /></AuthGuard>} />
+                    <Route path="/acheter/:productId" element={<AuthGuard><CheckoutPage /></AuthGuard>} />
+                    <Route path="/commandes/:id" element={<AuthGuard><OrderDetailPage /></AuthGuard>} />
+
                     <Route element={<AuthLayout />}>
+                      <Route
+                        path="/login"
+                        element={<Navigate to="/connexion" replace />}
+                      />
                       <Route
                         path="/connexion"
                         element={

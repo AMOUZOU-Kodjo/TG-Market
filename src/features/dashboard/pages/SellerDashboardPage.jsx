@@ -15,13 +15,16 @@ import DashboardStats from "@/features/dashboard/components/DashboardStats";
 import ProductTable from "@/features/dashboard/components/ProductTable";
 import { useMyProducts } from "@/features/products/hooks/useProducts";
 import { useEscrowList, useWalletBalance } from "@/features/wallet/hooks/useWallet";
+import { useNavigate } from "react-router-dom";
 import UserProfilePage from "@/features/profile/pages/UserProfilePage";
 import NotificationsPage from "@/features/notifications/pages/NotificationsPage";
 
 const escrowStatusConfig = {
-  completed: { label: "Livrée", variant: "success" },
+  completed: { label: "Terminée", variant: "success" },
   pending: { label: "En attente", variant: "warning" },
-  confirmed: { label: "Confirmée", variant: "primary" },
+  paid: { label: "Payée", variant: "primary" },
+  pending_delivery: { label: "Expédiée", variant: "info" },
+  delivered: { label: "Livrée", variant: "info" },
   disputed: { label: "Litige", variant: "danger" },
   cancelled: { label: "Annulée", variant: "danger" },
 };
@@ -62,6 +65,7 @@ function ProductsTab() {
 }
 
 function OrdersTab() {
+  const navigate = useNavigate();
   const { data: escrowData, isLoading } = useEscrowList();
   const escrows = escrowData?.data ?? escrowData?.escrows ?? [];
 
@@ -113,9 +117,9 @@ function OrdersTab() {
                     variant: "neutral",
                   };
                   return (
-                    <tr key={order.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/30">
+                    <tr key={order.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/30 cursor-pointer" onClick={() => navigate(`/commandes/${order.id}`)}>
                       <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
-                        #{order.id.slice(0, 8)}
+                        #{order.id.toString().slice(0, 8)}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
                         {order.productTitle}

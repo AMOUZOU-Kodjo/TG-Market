@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
-import { Package, Truck, CheckCircle2, AlertTriangle, RotateCcw, XCircle } from "lucide-react";
+import { Package, Truck, CheckCircle2, AlertTriangle, RotateCcw, DollarSign } from "lucide-react";
 import { formatCFA } from "@/shared/utils/format";
 
 const statusIcons = {
+  pending: DollarSign,
+  paid: CheckCircle2,
   pending_delivery: Package,
   delivered: Truck,
   completed: CheckCircle2,
@@ -11,31 +13,36 @@ const statusIcons = {
 };
 
 const statusColors = {
+  pending: "text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20",
+  paid: "text-brand-500 bg-brand-50 dark:bg-brand-900/20",
   pending_delivery: "text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20",
   delivered: "text-blue-500 bg-blue-50 dark:bg-blue-900/20",
-  completed: "text-brand-500 bg-brand-50 dark:bg-brand-900/20",
+  completed: "text-green-500 bg-green-50 dark:bg-green-900/20",
   disputed: "text-red-500 bg-red-50 dark:bg-red-900/20",
   refunded: "text-gray-500 bg-gray-50 dark:bg-gray-800",
 };
 
 const statusLabels = {
-  pending_delivery: "En attente de livraison",
+  pending: "En attente de paiement",
+  paid: "Paiement confirmé",
+  pending_delivery: "Expédiée",
   delivered: "Livrée — Confirmation requise",
-  completed: "Transaction complétée",
+  completed: "Transaction terminée",
   disputed: "Litige en cours",
   refunded: "Remboursée",
 };
 
 const steps = [
-  { key: "created", label: "Paiement reçu", icon: Package },
-  { key: "pending_delivery", label: "En attente de livraison", icon: Truck },
-  { key: "confirmed", label: "Confirmé par l'acheteur", icon: CheckCircle2 },
-  { key: "released", label: "Fonds libérés au vendeur", icon: CheckCircle2 },
+  { key: "paid", label: "Paiement reçu", icon: DollarSign },
+  { key: "pending_delivery", label: "Expédiée", icon: Package },
+  { key: "delivered", label: "Livrée", icon: Truck },
+  { key: "completed", label: "Fonds libérés au vendeur", icon: CheckCircle2 },
 ];
 
 const completedSteps = {
-  pending_delivery: [0],
-  delivered: [0, 1],
+  paid: [0],
+  pending_delivery: [0, 1],
+  delivered: [0, 1, 2],
   completed: [0, 1, 2, 3],
   disputed: [0],
   refunded: [0],

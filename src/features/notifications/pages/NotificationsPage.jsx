@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Bell,
@@ -22,7 +23,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 const notificationTypes = {
-  message: { icon: MessageCircle, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
+  message: { icon: MessageCircle, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10", link: true },
   price_drop: { icon: TrendingDown, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
   review: { icon: Star, color: "text-yellow-500", bg: "bg-yellow-50 dark:bg-yellow-500/10" },
   sold: { icon: Package, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
@@ -172,19 +173,11 @@ export default function NotificationsPage() {
             const typeConfig = notificationTypes[notification.type] || notificationTypes.system;
             const IconComponent = typeConfig.icon;
 
-            return (
-              <motion.div
-                key={notification.id}
-                variants={itemVariants}
-                exit={{ opacity: 0, x: -20, height: 0 }}
-                layout
-                onClick={() => !notification.read && handleMarkAsRead(notification.id)}
-                className={`relative flex cursor-pointer gap-4 px-4 py-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50 ${
-                  !notification.read
-                    ? "bg-brand-50/50 dark:bg-brand-800/5"
-                    : ""
-                }`}
-              >
+            const convId = notification.metadata?.conversationId;
+            const isMessage = notification.type === "message" && convId;
+
+            const mainContent = (
+              <>
                 {!notification.read && (
                   <div className="absolute left-1.5 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-brand-800" />
                 )}
@@ -213,6 +206,37 @@ export default function NotificationsPage() {
                     {formatRelativeTime(notification.createdAt)}
                   </p>
                 </div>
+              </>
+            );
+
+            return (
+              <motion.div
+                key={notification.id}
+                variants={itemVariants}
+                exit={{ opacity: 0, x: -20, height: 0 }}
+                layout
+                className={`relative flex cursor-pointer gap-4 px-4 py-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50 ${
+                  !notification.read
+                    ? "bg-brand-50/50 dark:bg-brand-800/5"
+                    : ""
+                }`}
+              >
+                {isMessage ? (
+                  <Link
+                    to={`/messages/${convId}`}
+                    className="flex flex-1 items-center gap-4 min-w-0"
+                    onClick={() => !notification.read && handleMarkAsRead(notification.id)}
+                  >
+                    {mainContent}
+                  </Link>
+                ) : (
+                  <div
+                    className="flex flex-1 items-center gap-4 min-w-0"
+                    onClick={() => !notification.read && handleMarkAsRead(notification.id)}
+                  >
+                    {mainContent}
+                  </div>
+                )}
 
                 <div className="flex shrink-0 items-start gap-1">
                   <div className={`rounded-lg p-1.5 ${typeConfig.bg}`}>

@@ -4,9 +4,11 @@ import Badge from "@/shared/ui/Badge";
 import Avatar from "@/shared/ui/Avatar";
 
 const statusBadge = {
-  pending_delivery: { label: "En attente", variant: "warning" },
+  pending: { label: "En attente", variant: "warning" },
+  paid: { label: "Payée", variant: "primary" },
+  pending_delivery: { label: "Expédiée", variant: "info" },
   delivered: { label: "Livrée", variant: "info" },
-  completed: { label: "Complétée", variant: "success" },
+  completed: { label: "Terminée", variant: "success" },
   disputed: { label: "Litige", variant: "danger" },
   refunded: { label: "Remboursée", variant: "secondary" },
 };

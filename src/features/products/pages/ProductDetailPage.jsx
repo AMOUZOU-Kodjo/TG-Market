@@ -229,7 +229,7 @@ export default function ProductDetailPage() {
 
           <div className="space-y-5">
             <div className="lg:sticky lg:top-24">
-              <SellerCard seller={product.seller} />
+              <SellerCard seller={product.seller} productId={product.id} />
 
               <motion.div
                 {...fadeUp}

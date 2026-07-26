@@ -2,21 +2,22 @@ import { motion } from "framer-motion";
 import { cn } from "@/shared/utils/cn";
 import Avatar from "@/shared/ui/Avatar";
 import { formatRelativeTime } from "@/shared/utils/format";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, X } from "lucide-react";
 
 export default function ConversationItem({
   conversation,
   isSelected = false,
   onClick,
+  onDelete,
 }) {
   const { participant, lastMessage, lastMessageAt, unreadCount, product } = conversation;
 
   return (
-    <motion.button
+    <motion.div
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
       className={cn(
-        "flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left transition-colors",
+        "group relative flex w-full cursor-pointer items-start gap-3 rounded-xl px-3 py-3 text-left transition-colors",
         isSelected
           ? "bg-brand-50 dark:bg-brand-800/10"
           : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
@@ -81,6 +82,18 @@ export default function ConversationItem({
           {unreadCount}
         </span>
       )}
-    </motion.button>
+
+      {onDelete && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(conversation.id);
+          }}
+          className="absolute right-2 top-2 hidden rounded-full p-1 text-gray-400 opacity-0 transition-all hover:bg-red-50 hover:text-red-600 group-hover:opacity-100 group-hover:block dark:hover:bg-red-950/20 dark:hover:text-red-400"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
+      )}
+    </motion.div>
   );
 }

@@ -1,150 +1,91 @@
-import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import {
-  ShieldCheck,
-  MoreVertical,
-  Phone,
-  ExternalLink,
-} from "lucide-react";
-import Avatar from "@/shared/ui/Avatar";
-import Badge from "@/shared/ui/Badge";
-import MessageBubble from "@/features/chat/components/MessageBubble";
-import MessageInput from "@/features/chat/components/MessageInput";
-import { useAuth } from "@/shared/contexts/AuthContext";
-import { formatCFA } from "@/shared/utils/format";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, Loader2, LayoutDashboard } from "lucide-react";
+import { useConversations, useMessages, useDeleteConversation } from "@/features/chat/hooks/useConversations";
+import ConversationPanel from "@/features/chat/components/ConversationPanel";
+import ConversationItem from "@/features/chat/components/ConversationItem";
 
-export default function ConversationPage({ conversation, messages: initialMessages }) {
-  const { user } = useAuth();
-  const [messages, setMessages] = useState(initialMessages || []);
-  const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef(null);
+export default function ConversationPage() {
+  const { conversationId } = useParams();
+  const convId = Number(conversationId);
+  const navigate = useNavigate();
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const { data: conversationsData = [], isLoading: conversationsLoading } = useConversations();
+  const conversations = conversationsData?.data || conversationsData || [];
+  const { mutate: deleteConversation } = useDeleteConversation();
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  const { data: messagesData, isLoading: messagesLoading } = useMessages(convId, {});
 
-  const handleSend = (text) => {
-    const newMessage = {
-      id: Date.now(),
-      senderId: user?.id,
-      text,
-      createdAt: new Date().toISOString(),
-      read: false,
-    };
-    setMessages((prev) => [...prev, newMessage]);
+  const selectedConversation = conversations.find((c) => c.id === convId);
 
-    setIsTyping(true);
-    setTimeout(() => {
-      setIsTyping(false);
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now() + 1,
-          senderId: conversation.participant?.id,
-          text: "Merci pour votre message, je vous réponds rapidement !",
-          createdAt: new Date().toISOString(),
-          read: true,
-        },
-      ]);
-    }, 2000);
-  };
+  if (messagesLoading || conversationsLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-brand-800" />
+      </div>
+    );
+  }
 
-  const participant = conversation.participant;
-  const product = conversation.product;
+  if (!selectedConversation) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p className="text-gray-500">Conversation introuvable</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-1 flex-col">
-      {/* Conversation Header */}
-      <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3 dark:border-gray-800">
-        <div className="flex items-center gap-3">
-          <Avatar
-            src={participant?.avatar}
-            name={participant?.name}
-            size="md"
-            online={participant?.online}
-          />
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                {participant?.name}
-              </span>
-              {participant?.verified && (
-                <ShieldCheck className="h-3.5 w-3.5 text-red-700" />
-              )}
+    <div className="flex h-dvh min-h-0 overflow-hidden bg-white dark:bg-gray-900">
+      <div className="hidden sm:flex w-80 min-h-0 flex-col border-r border-gray-200 dark:border-gray-700">
+        <div className="flex items-center gap-2 border-b border-gray-200 px-3 py-3 dark:border-gray-700">
+          <Link
+            to="/tableau-de-bord"
+            className="flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
+            title="Retour au tableau de bord"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Link>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+            Messages
+          </h2>
+        </div>
+        <div className="flex-1 overflow-y-auto">
+          {conversations.length === 0 ? (
+            <div className="px-4 py-8">
+              <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+                Aucune conversation
+              </p>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              {participant?.online ? "En ligne" : "Hors ligne"}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-1">
-          <button className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300">
-            <Phone className="h-4 w-4" />
-          </button>
-          <button className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300">
-            <MoreVertical className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
-
-      {/* Product Card Header */}
-      {product && (
-        <div className="flex items-center gap-3 border-b border-gray-100 bg-gray-50/50 px-4 py-2.5 dark:border-gray-800 dark:bg-gray-800/50">
-          <img
-            src={product.image}
-            alt={product.title}
-            className="h-10 w-10 rounded-lg object-cover"
-          />
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
-              {product.title}
-            </p>
-            <p className="text-sm font-bold text-red-800">
-              {formatCFA(product.price)}
-            </p>
-          </div>
-          <button className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800">
-            <ExternalLink className="h-4 w-4" />
-          </button>
-        </div>
-      )}
-
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4">
-        <div className="space-y-3">
-          {messages.map((msg) => (
-            <MessageBubble
-              key={msg.id}
-              message={msg}
-              isOwn={msg.senderId === user?.id}
-            />
-          ))}
-
-          {isTyping && (
-            <motion.div
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex justify-start"
-            >
-              <div className="rounded-2xl rounded-bl-md bg-gray-100 px-4 py-3 dark:bg-gray-800">
-                <div className="flex items-center gap-1">
-                  <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.3s]" />
-                  <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.15s]" />
-                  <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400" />
-                </div>
-              </div>
-            </motion.div>
+          ) : (
+            <div className="px-2 space-y-0.5">
+              {conversations.map((conv) => (
+                <ConversationItem
+                  key={conv.id}
+                  conversation={conv}
+                  isSelected={conv.id === convId}
+                  onClick={() => navigate(`/messages/${conv.id}`)}
+                  onDelete={() => deleteConversation(conv.id)}
+                />
+              ))}
+            </div>
           )}
-          <div ref={messagesEndRef} />
         </div>
       </div>
 
-      {/* Message Input */}
-      <MessageInput onSend={handleSend} />
+      <div className="flex flex-1 flex-col min-h-0">
+        <div className="flex items-center border-b border-gray-200 px-2 py-2 sm:hidden dark:border-gray-700">
+          <Link
+            to="/messages"
+            className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Retour
+          </Link>
+        </div>
+        <ConversationPanel
+          conversation={selectedConversation}
+          messages={messagesData?.data || []}
+        />
+      </div>
     </div>
   );
 }

@@ -26,10 +26,11 @@ const emojiCategories = [
   },
 ];
 
-export default function MessageInput({ onSend, disabled = false, className }) {
+export default function MessageInput({ onSend, onTyping, disabled = false, className }) {
   const [text, setText] = useState("");
   const [showEmojis, setShowEmojis] = useState(false);
   const inputRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -38,6 +39,23 @@ export default function MessageInput({ onSend, disabled = false, className }) {
     onSend(trimmed);
     setText("");
     setShowEmojis(false);
+    if (onTyping) onTyping(false);
+  };
+
+  const handleTextChange = (e) => {
+    const newText = e.target.value;
+    setText(newText);
+
+    if (!onTyping) return;
+
+    if (newText.trim()) {
+      onTyping(true);
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = setTimeout(() => onTyping(false), 2000);
+    } else {
+      onTyping(false);
+      clearTimeout(typingTimeoutRef.current);
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -136,7 +154,7 @@ export default function MessageInput({ onSend, disabled = false, className }) {
           <textarea
             ref={inputRef}
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={handleTextChange}
             onKeyDown={handleKeyDown}
             placeholder="Écrire un message..."
             rows={1}

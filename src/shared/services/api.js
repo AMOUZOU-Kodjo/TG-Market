@@ -1,5 +1,6 @@
 import axios from "axios";
 import { API_BASE_URL } from "../constants";
+import { dispatchLogout } from "./navigation";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -60,7 +61,7 @@ api.interceptors.response.use(
         isRefreshing = false;
         localStorage.removeItem("ak_access_token");
         localStorage.removeItem("ak_refresh_token");
-        window.location.href = "/login";
+        dispatchLogout();
         return Promise.reject(error);
       }
 
@@ -85,7 +86,7 @@ api.interceptors.response.use(
         processQueue(refreshError, null);
         localStorage.removeItem("ak_access_token");
         localStorage.removeItem("ak_refresh_token");
-        window.location.href = "/login";
+        dispatchLogout();
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

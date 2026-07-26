@@ -45,6 +45,7 @@ export default function MainLayout() {
   const mobileMenuRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
+
   const { user, logout } = useAuth();
 
   useEffect(() => {
@@ -395,7 +396,6 @@ export default function MainLayout() {
           </motion.div>
         </main>
 
-        {/* Footer */}
         <footer className="bg-brand-900 dark:bg-brand-950 text-gray-300">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             {/* Mobile: centered layout | Desktop: 3-column grid */}

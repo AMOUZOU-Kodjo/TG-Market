@@ -33,6 +33,8 @@ const MaintenancePage = lazy(() => import("@/features/static/pages/MaintenancePa
 const VehicleListingsPage = lazy(() => import("@/features/vehicles/pages/VehicleListingsPage"));
 const HowItWorksPage = lazy(() => import("@/features/static/pages/HowItWorksPage"));
 const ContactPage = lazy(() => import("@/features/static/pages/ContactPage"));
+const CheckoutPage = lazy(() => import("@/features/payment/pages/CheckoutPage"));
+const OrderDetailPage = lazy(() => import("@/features/payment/pages/OrderDetailPage"));
 
 export {
   HomePage,
@@ -68,4 +70,6 @@ export {
   VehicleListingsPage,
   HowItWorksPage,
   ContactPage,
+  CheckoutPage,
+  OrderDetailPage,
 };

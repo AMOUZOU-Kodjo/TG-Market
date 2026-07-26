@@ -45,6 +45,22 @@ export function useEscrow(id) {
   });
 }
 
+export function useConfirmPayment() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: escrowApi.confirmPayment,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["escrow"] }),
+  });
+}
+
+export function useMarkAsShipped() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: escrowApi.markAsShipped,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["escrow"] }),
+  });
+}
+
 export function useConfirmDelivery() {
   const qc = useQueryClient();
   return useMutation({

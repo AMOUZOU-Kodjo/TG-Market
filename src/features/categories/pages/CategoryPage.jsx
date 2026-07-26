@@ -9,11 +9,19 @@ import EmptyState from "@/shared/ui/EmptyState";
 export default function CategoryPage() {
   const { slug } = useParams();
 
-  const { data: category } = useCategory(slug);
+  const { data: category, isLoading } = useCategory(slug);
   const { data: productsData } = useCategoryProducts(slug, { page: 1, perPage: 20 });
 
   const categoryName = category?.name || slug;
   const products = productsData?.data || productsData || [];
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-600 border-t-transparent" />
+      </div>
+    );
+  }
 
   if (!category) {
     return <Navigate to="/404" replace />;
@@ -74,7 +82,7 @@ export default function CategoryPage() {
               <ProductCard
                 key={product.id}
                 productId={product.id}
-                image={product.images?.[0]}
+                image={product.image}
                 title={product.title}
                 price={product.price}
                 originalPrice={product.originalPrice}

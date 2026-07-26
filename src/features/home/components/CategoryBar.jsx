@@ -33,119 +33,92 @@ import {
   FaWrench,
   FaBoxOpen,
   FaPersonWalking,
+  FaShoePrints,
+  FaBolt,
+  FaSackDollar,
+  FaGraduationCap,
+  FaCalendarDays,
+  FaBottleWater,
+  FaKitchenSet,
+  FaDog,
+  FaCartShopping,
+  FaScissors,
+  FaTractor,
+  FaIndustry,
+  FaWeightScale,
+  FaEye,
+  FaGem,
+  FaGlasses,
+  FaTruckMoving,
+  FaMotorcycle,
 } from "react-icons/fa6";
-import { TbLayoutGrid, TbCategory } from "react-icons/tb";
+import { TbCategory } from "react-icons/tb";
+import { useCategories } from "@/features/categories/hooks/useCategories";
 
-const GROUPS = [
-  {
-    label: "Multimédia",
-    icon: FaLaptop,
-    slug: "telephones",
-    image: "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=400&h=300&fit=crop",
-    subs: [
-      { name: "Téléphones", slug: "telephones", icon: FaMobileScreen },
-      { name: "Électronique", slug: "electronique", icon: FaLaptop },
-      { name: "Multimédia", slug: "multimedia", icon: FaGamepad },
-      { name: "Tablettes", slug: "tablettes", icon: FaTabletScreenButton },
-      { name: "Accessoires tech", slug: "accessoires-tech", icon: FaHeadphones },
-    ],
-  },
-  {
-    label: "Véhicules",
-    icon: FaCar,
-    slug: "vehicules",
-    image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=300&fit=crop",
-    subs: [
-      { name: "Véhicules", slug: "vehicules", icon: FaCar },
-    ],
-  },
-  {
-    label: "Maison",
-    icon: FaHouse,
-    slug: "maison",
-    image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop",
-    subs: [
-      { name: "Maison & Décoration", slug: "maison", icon: FaCouch },
-      { name: "Meubles", slug: "meubles", icon: FaCouch },
-      { name: "Électroménager", slug: "electromenager", icon: FaBlender },
-    ],
-  },
-  {
-    label: "Mode & Beauté",
-    icon: FaShirt,
-    slug: "vetements",
-    image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=400&h=300&fit=crop",
-    subs: [
-      { name: "Vêtements", slug: "vetements", icon: FaShirt },
-      { name: "Vêtements Homme", slug: "vetements-homme", icon: FaShirt },
-      { name: "Vêtements Femme", slug: "vetements-femme", icon: FaShirt },
-      { name: "Chaussures", slug: "chaussures", icon: FaPersonWalking },
-      { name: "Maroquinerie", slug: "maroquinerie", icon: FaBagShopping },
-      { name: "Montres & Bijoux", slug: "montres", icon: FaClock },
-      { name: "Beauté & Santé", slug: "beaute", icon: FaStar },
-    ],
-  },
-  {
-    label: "Loisirs",
-    icon: FaDumbbell,
-    slug: "sports",
-    image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop",
-    subs: [
-      { name: "Sports & Loisirs", slug: "sports", icon: FaDumbbell },
-      { name: "Livres & Médias", slug: "livres", icon: FaBookOpen },
-      { name: "Musique & Instruments", slug: "musique", icon: FaGuitar },
-      { name: "Art & Artisanat", slug: "art", icon: FaPaintbrush },
-    ],
-  },
-  {
-    label: "Famille",
-    icon: FaBaby,
-    slug: "enfants",
-    image: "https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=400&h=300&fit=crop",
-    subs: [
-      { name: "Enfants & Bébé", slug: "enfants", icon: FaBaby },
-      { name: "Animaux", slug: "animaux", icon: FaPaw },
-      { name: "Jeux & Jouets", slug: "jouets", icon: FaGamepad },
-    ],
-  },
-  {
-    label: "Bricolage & Jardin",
-    icon: FaHammer,
-    slug: "jardin",
-    image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=300&fit=crop",
-    subs: [
-      { name: "Outils & Bricolage", slug: "outils", icon: FaHammer },
-      { name: "Jardin & Extérieur", slug: "jardin", icon: FaTree },
-    ],
-  },
-  {
-    label: "Immobilier",
-    icon: FaBuilding,
-    slug: "immobilier",
-    image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=300&fit=crop",
-    subs: [
-      { name: "Immobilier", slug: "immobilier", icon: FaBuilding },
-    ],
-  },
-  {
-    label: "Pro & Services",
-    icon: FaBriefcase,
-    slug: "services",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
-    subs: [
-      { name: "Services", slug: "services", icon: FaWrench },
-      { name: "Emploi & Formation", slug: "emploi", icon: FaBriefcase },
-      { name: "Événementiel", slug: "evenements", icon: FaBoxOpen },
-      { name: "Alimentation", slug: "alimentation", icon: FaBoxOpen },
-    ],
-  },
-];
+const faIconMap = {
+  Smartphone: FaMobileScreen,
+  Laptop: FaLaptop,
+  Tablet: FaTabletScreenButton,
+  Gamepad2: FaGamepad,
+  Tv: FaTv,
+  Cable: FaHeadphones,
+  Camera: FaCamera,
+  Glasses: FaGlasses,
+  Car: FaCar,
+  Bike: FaBicycle,
+  Home: FaHouse,
+  Sofa: FaCouch,
+  Refrigerator: FaBlender,
+  Shirt: FaShirt,
+  User: FaPersonWalking,
+  Heart: FaStar,
+  Footprints: FaShoePrints,
+  BaggageClaim: FaBagShopping,
+  Watch: FaClock,
+  Sparkles: FaStar,
+  Dumbbell: FaDumbbell,
+  BookOpen: FaBookOpen,
+  Music: FaMusic,
+  Palette: FaPaintbrush,
+  Baby: FaBaby,
+  PawPrint: FaPaw,
+  Wrench: FaWrench,
+  TreePine: FaTree,
+  Sun: FaBolt,
+  Building: FaBuilding,
+  Building2: FaIndustry,
+  Briefcase: FaBriefcase,
+  GraduationCap: FaGraduationCap,
+  Calendar: FaCalendarDays,
+  Coffee: FaBottleWater,
+  Package: FaBoxOpen,
+  Armchair: FaCouch,
+  Blocks: FaGamepad,
+  Dog: FaDog,
+  Wallet: FaSackDollar,
+  Watch: FaClock,
+};
+
+const groupImages = {
+  multimedia: "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=400&h=300&fit=crop",
+  vehicules: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=300&fit=crop",
+  maison: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop",
+  mode: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=400&h=300&fit=crop",
+  loisirs: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop",
+  famille: "https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=400&h=300&fit=crop",
+  "bricolage-jardin": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=300&fit=crop",
+  immobilier: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=300&fit=crop",
+  "pro-services": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
+};
 
 export default function CategoryBar() {
+  const { data: categories = [] } = useCategories();
   const [openIndex, setOpenIndex] = useState(null);
   const [menuPos, setMenuPos] = useState({ left: 0, top: 0, width: 0 });
   const closeTimeout = useRef(null);
   const containerRef = useRef(null);
+
+  const parents = categories.filter((c) => c.parentId === null);
 
   const handleEnter = useCallback((i) => {
     clearTimeout(closeTimeout.current);
@@ -189,20 +162,14 @@ export default function CategoryBar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openIndex]);
 
+  if (parents.length === 0) return null;
+
   return (
     <div ref={containerRef} className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 z-50">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center gap-1 overflow-x-auto hide-scrollbar px-4 sm:px-6 lg:px-8 py-2">
-          {/* <Link
-            to="/categories"
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-brand-800 text-white text-xs font-semibold whitespace-nowrap shrink-0 hover:bg-brand-900 transition-colors"
-          >
-             <TbLayoutGrid className="w-3.5 h-3.5" />
-            Tout 
-          </Link> */}
-
-          {GROUPS.map((group, i) => {
-            const Icon = group.icon;
+          {parents.map((group, i) => {
+            const Icon = faIconMap[group.icon] || FaLaptop;
             return (
               <div
                 key={group.slug}
@@ -219,7 +186,7 @@ export default function CategoryBar() {
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5" />
-                  {group.label}
+                  {group.name}
                 </button>
               </div>
             );
@@ -227,11 +194,10 @@ export default function CategoryBar() {
         </div>
       </div>
 
-      {/* Mega Menu */}
       <AnimatePresence>
-        {openIndex !== null && (
+        {openIndex !== null && parents[openIndex] && (
           <motion.div
-            key={openIndex}
+            key={parents[openIndex].slug}
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4 }}
@@ -246,13 +212,12 @@ export default function CategoryBar() {
             }}
             onMouseLeave={handleLeave}
           >
-              <div className="bg-white dark:bg-gray-800 rounded-b-lg shadow-xl border border-gray-100 dark:border-gray-700 w-full h-full overflow-hidden flex flex-col">
+            <div className="bg-white dark:bg-gray-800 rounded-b-lg shadow-xl border border-gray-100 dark:border-gray-700 w-full h-full overflow-hidden flex flex-col">
               <div className="flex flex-col lg:flex-row flex-1 min-h-0">
-                {/* Image: top on mobile, side on desktop */}
                 <div className="relative w-full h-40 lg:w-[280px] lg:h-full shrink-0">
                   <img
-                    src={GROUPS[openIndex].image}
-                    alt={GROUPS[openIndex].label}
+                    src={groupImages[parents[openIndex].slug] || groupImages.multimedia}
+                    alt={parents[openIndex].name}
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-white/80 lg:dark:to-gray-800/80" />
@@ -266,19 +231,15 @@ export default function CategoryBar() {
                   </button>
                   <div className="absolute bottom-3 left-4 lg:bottom-4">
                     <h3 className="text-lg font-bold text-white lg:text-gray-900 lg:dark:text-white drop-shadow">
-                      {GROUPS[openIndex].label}
+                      {parents[openIndex].name}
                     </h3>
                   </div>
                 </div>
 
-                {/* Sous-catégories */}
                 <div className="flex-1 p-5 overflow-y-auto">
-                  <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3 px-1 hidden">
-                    {GROUPS[openIndex].label}
-                  </h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1">
-                    {GROUPS[openIndex].subs.map((sub) => {
-                      const SubIcon = sub.icon;
+                    {parents[openIndex].children?.map((sub) => {
+                      const SubIcon = faIconMap[sub.icon] || FaBoxOpen;
                       return (
                         <Link
                           key={sub.slug}
@@ -292,14 +253,14 @@ export default function CategoryBar() {
                       );
                     })}
                   </div>
-                   <Link
-                    to={`/categories/${GROUPS[openIndex].slug}`}
+                  <Link
+                    to={`/categories/${parents[openIndex].slug}`}
                     onClick={() => setOpenIndex(null)}
                     className="mt-3 flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-brand-700 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-lg transition-colors"
                   >
                     <TbCategory className="w-3.5 h-3.5" />
                     Voir tous les produits
-                  </Link> 
+                  </Link>
                 </div>
               </div>
             </div>

@@ -35,8 +35,19 @@ import {
   Flower2,
   Sun,
   Package,
+  Building2,
+  Cable,
+  Calendar,
+  Coffee,
+  Glasses,
+  Heart,
   LayoutGrid,
+  BaggageClaim,
   ChevronRight,
+  Tablet,
+  Tv,
+  User,
+  Watch,
 } from "lucide-react";
 import { useCategories } from "@/features/categories/hooks/useCategories";
 import Breadcrumb from "@/shared/ui/Breadcrumb";
@@ -76,6 +87,17 @@ const iconMap = {
   Flower2,
   Sun,
   Package,
+  Building2,
+  Cable,
+  Calendar,
+  Coffee,
+  Glasses,
+  Heart,
+  BaggageClaim,
+  Tablet,
+  Tv,
+  User,
+  Watch,
 };
 
 const hexToBg = (hex) => {
@@ -154,7 +176,7 @@ export default function CategoriesPage() {
       result = result.filter(
         (c) =>
           c.name.toLowerCase().includes(q) ||
-          c.description.toLowerCase().includes(q)
+          (c.description && c.description.toLowerCase().includes(q))
       );
     }
 

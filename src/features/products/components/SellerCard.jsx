@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   MapPin,
@@ -8,12 +8,20 @@ import {
   Star,
   ShieldCheck,
   ExternalLink,
+  ShoppingCart,
 } from "lucide-react";
 import Avatar from "@/shared/ui/Avatar";
 import Button from "@/shared/ui/Button";
 import { formatRelativeTime } from "@/shared/utils/format";
+import { useCreateConversation } from "@/features/chat/hooks/useConversations";
+import { useAuth } from "@/shared/contexts/AuthContext";
 
-export default function SellerCard({ seller }) {
+export default function SellerCard({ seller, productId }) {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const isOwn = user?.id === seller?.id;
+  const { mutateAsync: createConversation, isPending } = useCreateConversation();
+
   if (!seller) return null;
 
   return (
@@ -111,17 +119,39 @@ export default function SellerCard({ seller }) {
             Voir profil
           </Button>
         </Link>
-        <Button
-          variant="primary"
-          fullWidth
-          size="md"
-          icon={MessageCircle}
-          onClick={() => {
-            window.location.href = `/messages?seller=${seller.id}`;
-          }}
-        >
-          Contacter
-        </Button>
+        {!isOwn && (
+          <>
+            <Button
+              variant="primary"
+              fullWidth
+              size="md"
+              icon={ShoppingCart}
+              onClick={() => navigate(`/acheter/${productId}`)}
+            >
+              Acheter
+            </Button>
+            <Button
+              variant="outline"
+              fullWidth
+              size="md"
+              icon={MessageCircle}
+              loading={isPending}
+              onClick={async () => {
+                try {
+                  const conv = await createConversation({
+                    participantId: seller.id,
+                    productId,
+                  });
+                  navigate(`/messages/${conv.id}`);
+                } catch {
+                  // silently ignore — user can retry
+                }
+              }}
+            >
+              Contacter
+            </Button>
+          </>
+        )}
       </div>
     </motion.div>
   );

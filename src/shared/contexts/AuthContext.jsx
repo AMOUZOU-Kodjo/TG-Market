@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import api, { setAuthTokens, clearAuthTokens } from "../services/api";
+import { onLogout } from "../services/navigation";
 
 const AuthContext = createContext(undefined);
 
@@ -10,22 +12,32 @@ export function AuthProvider({ children }) {
   const isAuthenticated = !!user;
   const isAdmin = user?.role === "admin";
 
-  const initializeAuth = useCallback(async () => {
+  const initializeAuth = useCallback(async (retries = 3) => {
     const token = localStorage.getItem("ak_access_token");
     if (!token) {
       setIsLoading(false);
       return;
     }
 
-    try {
-      const { data } = await api.get("/auth/me");
-      setUser(data.user || data);
-    } catch {
-      clearAuthTokens();
-      setUser(null);
-    } finally {
-      setIsLoading(false);
+    for (let attempt = 0; attempt < retries; attempt++) {
+      try {
+        const { data } = await api.get("/auth/me");
+        setUser(data.user || data);
+        setIsLoading(false);
+        return;
+      } catch (error) {
+        if (error.response?.status === 401) {
+          clearAuthTokens();
+          setUser(null);
+          setIsLoading(false);
+          return;
+        }
+        if (attempt < retries - 1) {
+          await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+        }
+      }
     }
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
@@ -84,7 +96,7 @@ export function AuthProvider({ children }) {
   const refreshUser = useCallback(async () => {
     try {
       const { data } = await api.get("/auth/me");
-      setUser(data.user);
+      setUser(data.user || data);
     } catch {
       // Silent fail
     }
@@ -119,4 +131,20 @@ export function useAuth() {
   }
 
   return context;
+}
+
+export function AuthLogoutHandler() {
+  const navigate = useNavigate();
+  const { setUser } = useAuth();
+
+  useEffect(() => {
+    const unsub = onLogout(() => {
+      clearAuthTokens();
+      setUser(null);
+      navigate("/connexion");
+    });
+    return unsub;
+  }, [navigate, setUser]);
+
+  return null;
 }

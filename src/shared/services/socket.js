@@ -122,6 +122,10 @@ export function markAllNotificationsRead() {
   return emit("notifications_read_all");
 }
 
+export function deleteMessage(messageId, scope = "me") {
+  return emit("delete_message", { messageId, scope });
+}
+
 export function isConnected() {
   return socket?.connected ?? false;
 }

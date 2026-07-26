@@ -47,7 +47,7 @@ async function uploadToCloudinary(buffer, folder) {
   });
 }
 
-const BASE_URL = 'https://tg-market-api-production.up.railway.app';
+const BASE_URL = process.env.FRONTEND_URL || process.env.RAILWAY_PUBLIC_DOMAIN ? `https://tg-market-api-production.up.railway.app` : 'http://localhost:3000';
 
 export async function uploadImage(file, userId) {
   const baseName = generateFilename(file.originalname);

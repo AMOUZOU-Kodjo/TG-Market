@@ -11,4 +11,4 @@ if (isProd) {
 }
 
 export { cloudinary };
-export const STORAGE_MODE = 'local';
+export const STORAGE_MODE = process.env.STORAGE_MODE || 'cloudinary';

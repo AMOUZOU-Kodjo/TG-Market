@@ -182,7 +182,7 @@ export default function MainLayout() {
                   /* User Menu (connected) */
                   <div className="relative" ref={desktopMenuRef}>
                     <button
-                      onClick={() => setUserMenuOpen(!userMenuOpen)}
+                      onClick={() => navigate("/dashboard")}
                       className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-white/10 transition-colors"
                     >
                       <img
@@ -301,10 +301,10 @@ export default function MainLayout() {
                   </button>
                   {user ? (
                   <div className="relative" ref={mobileMenuRef}>
-                    <button
-                      onClick={() => setUserMenuOpen(!userMenuOpen)}
-                      className="p-1 rounded-full hover:bg-white/10 transition-colors"
-                    >
+                  <button
+                    onClick={() => navigate("/dashboard")}
+                    className="p-1 rounded-full hover:bg-white/10 transition-colors"
+                  >
                       <img
                         src={user?.avatar}
                         alt={user?.name}

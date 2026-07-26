@@ -84,7 +84,8 @@ export default function CreateListingPage() {
   const createProduct = useCreateProduct();
   const [currentStep, setCurrentStep] = useState(0);
   const [photos, setPhotos] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedParentCategory, setSelectedParentCategory] = useState(null);
+  const [selectedSubCategory, setSelectedSubCategory] = useState(null);
   const [isPublished, setIsPublished] = useState(false);
   const [publishedProductId, setPublishedProductId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -114,8 +115,8 @@ export default function CreateListingPage() {
     async (step) => {
       switch (step) {
         case 0:
-          if (!selectedCategory) {
-            toast.error("Veuillez sélectionner une catégorie");
+          if (!selectedSubCategory) {
+            toast.error("Veuillez sélectionner une sous-catégorie");
             return false;
           }
           return true;
@@ -135,7 +136,7 @@ export default function CreateListingPage() {
           return true;
       }
     },
-    [selectedCategory, photos.length, trigger]
+    [selectedSubCategory, photos.length, trigger]
   );
 
   const handleNext = useCallback(async () => {
@@ -152,7 +153,7 @@ export default function CreateListingPage() {
   }, [currentStep]);
 
   const handlePublish = useCallback(async () => {
-    if (!selectedCategory) {
+    if (!selectedSubCategory) {
       toast.error("Veuillez sélectionner une catégorie");
       return;
     }
@@ -174,7 +175,7 @@ export default function CreateListingPage() {
       const allImages = [...existingUrls, ...uploadedUrls];
 
       const payload = {
-        categoryId: selectedCategory.id,
+        categoryId: selectedSubCategory.id,
         title: formValues.title,
         description: formValues.description,
         condition: formValues.condition,
@@ -201,7 +202,7 @@ export default function CreateListingPage() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [selectedCategory, photos, formValues, createProduct]);
+  }, [selectedSubCategory, photos, formValues, createProduct]);
 
   const handleSaveDraft = useCallback(() => {
     toast.success("Brouillon sauvegardé !");
@@ -214,53 +215,50 @@ export default function CreateListingPage() {
   const renderStep = () => {
     switch (currentStep) {
       case 0:
+        const parentCategories = categories.filter((c) => !c.parentId);
+        const availableSubCategories = selectedParentCategory?.children ?? [];
         return (
           <ListingFormStep
             title="Choisissez une catégorie"
-            description="Sélectionnez la catégorie qui correspond le mieux à votre article"
+            description="Sélectionnez d'abord une catégorie principale, puis une sous-catégorie"
           >
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-6">
-              {categories.map((cat) => {
-                const Icon = getIconComponent(cat.icon);
-                const isSelected = selectedCategory?.id === cat.id;
-                return (
-                  <motion.button
-                    key={cat.id}
-                    type="button"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => {
-                      setSelectedCategory(cat);
-                      setValue("category", cat.slug);
-                    }}
-                    className={cn(
-                      "flex flex-col items-center gap-2 rounded-xl  p-4 text-center transition-all",
-                      isSelected
-                        ? "border-brand-800 bg-brand-50 shadow-md shadow-brand-800/10 dark:bg-brand-800/10"
-                        : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:hover:border-gray-600"
-                    )}
-                  >
-                    <div
-                      className="flex h-12 w-12 items-center justify-center rounded-xl"
-                      style={{ backgroundColor: cat.color + "15" }}
-                    >
-                      {Icon && <Icon className="h-6 w-6" style={{ color: cat.color }} />}
-                    </div>
-                    <span className="text-xs font-semibold text-gray-800 dark:text-gray-200">
-                      {cat.name}
-                    </span>
-                    {isSelected && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-800"
-                      >
-                        <CheckCircle2 className="h-3.5 w-3.5 text-white" />
-                      </motion.div>
-                    )}
-                  </motion.button>
-                );
-              })}
+            <div className="space-y-4">
+              <Select
+                label="Catégorie principale"
+                placeholder="Sélectionnez une catégorie"
+                options={parentCategories.map((cat) => ({
+                  value: cat.id,
+                  label: cat.name,
+                }))}
+                value={selectedParentCategory?.id ?? ""}
+                onChange={(val) => {
+                  const parent = categories.find((c) => c.id === Number(val));
+                  setSelectedParentCategory(parent ?? null);
+                  setSelectedSubCategory(null);
+                  setValue("category", "");
+                }}
+                error={errors.category?.message}
+              />
+
+              {availableSubCategories.length > 0 && (
+                <Select
+                  label="Sous-catégorie"
+                  placeholder="Sélectionnez une sous-catégorie"
+                  options={availableSubCategories.map((cat) => ({
+                    value: cat.id,
+                    label: cat.name,
+                  }))}
+                  value={selectedSubCategory?.id ?? ""}
+                  onChange={(val) => {
+                    const sub = availableSubCategories.find(
+                      (c) => c.id === Number(val)
+                    );
+                    setSelectedSubCategory(sub ?? null);
+                    setValue("category", sub?.slug ?? "");
+                  }}
+                  error={errors.category?.message}
+                />
+              )}
             </div>
           </ListingFormStep>
         );

@@ -47,6 +47,10 @@ async function uploadToCloudinary(buffer, folder) {
   });
 }
 
+const BASE_URL = process.env.FRONTEND_URL || process.env.RAILWAY_PUBLIC_DOMAIN
+  ? `https://tg-market-api-production.up.railway.app`
+  : 'http://localhost:3000';
+
 export async function uploadImage(file, userId) {
   const baseName = generateFilename(file.originalname);
 
@@ -85,9 +89,9 @@ export async function uploadImage(file, userId) {
   const relativeDir = toRelative(dir);
 
   return {
-    url: `http://localhost:3000/uploads/${relativeDir}/${originalFilename}`,
-    medium: `http://localhost:3000/uploads/${relativeDir}/${mediumFilename}`,
-    thumbnail: `http://localhost:3000/uploads/${relativeDir}/${thumbFilename}`,
+    url: `${BASE_URL}/uploads/${relativeDir}/${originalFilename}`,
+    medium: `${BASE_URL}/uploads/${relativeDir}/${mediumFilename}`,
+    thumbnail: `${BASE_URL}/uploads/${relativeDir}/${thumbFilename}`,
     key: path.join(relativeDir, originalFilename),
   };
 }

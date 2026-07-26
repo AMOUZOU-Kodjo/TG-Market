@@ -22,8 +22,8 @@ import StepIndicator from "@/shared/ui/StepIndicator";
 import ListingFormStep from "@/features/listings/components/ListingFormStep";
 import PhotoUploader from "@/features/listings/components/PhotoUploader";
 import ListingPreview from "@/features/listings/components/ListingPreview";
-import { mockCategories } from "@/data/categories";
-import { mockProducts } from "@/data/products";
+import { useProduct } from "@/features/products/hooks/useProducts";
+import { useCategories } from "@/features/categories/hooks/useCategories";
 import { CITIES, PRODUCT_CONDITIONS, MAX_IMAGES_PER_LISTING } from "@/shared/constants";
 import { createListingSchema } from "@/shared/utils/validators";
 
@@ -60,13 +60,15 @@ function getIconComponent(iconName) {
 export default function EditListingPage() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { data: product } = useProduct(id);
+  const { data: categories = [] } = useCategories();
   const [currentStep, setCurrentStep] = useState(0);
   const [photos, setPhotos] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const existingProduct = mockProducts.find((p) => p.id === Number(id));
+  const existingProduct = product;
 
   const {
     register,
@@ -83,7 +85,7 @@ export default function EditListingPage() {
 
   useEffect(() => {
     if (existingProduct) {
-      const cat = mockCategories.find((c) => c.name === existingProduct.category);
+      const cat = categories.find((c) => c.name === existingProduct.category);
       if (cat) setSelectedCategory(cat);
 
       const productPhotos = existingProduct.images.map((url, i) => ({
@@ -186,7 +188,7 @@ export default function EditListingPage() {
             description="Modifiez la catégorie de votre annonce"
           >
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-              {mockCategories.map((cat) => {
+              {categories.map((cat) => {
                 const Icon = getIconComponent(cat.icon);
                 const isSelected = selectedCategory?.id === cat.id;
                 return (

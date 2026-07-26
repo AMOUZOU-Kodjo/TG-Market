@@ -5,7 +5,7 @@ import VehicleCard from "@/features/vehicles/components/VehicleCard";
 import VehicleFilterBar from "@/features/vehicles/components/VehicleFilterBar";
 import Breadcrumb from "@/shared/ui/Breadcrumb";
 import EmptyState from "@/shared/ui/EmptyState";
-import { mockVehicleListings } from "@/data/vehicles";
+import { useVehicles } from "@/features/vehicles/hooks/useVehicles";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -21,8 +21,11 @@ export default function VehicleListingsPage() {
   const [vehicleType, setVehicleType] = useState("all");
   const [filters, setFilters] = useState({});
 
+  const { data: vehiclesData, isLoading } = useVehicles(filters);
+  const allVehicles = vehiclesData?.data || vehiclesData || [];
+
   const filtered = useMemo(() => {
-    let list = mockVehicleListings;
+    let list = allVehicles;
     if (vehicleType !== "all") list = list.filter((v) => v.type === vehicleType);
     if (filters.search) {
       const q = filters.search.toLowerCase();
@@ -34,7 +37,7 @@ export default function VehicleListingsPage() {
     if (filters.minYear) list = list.filter((v) => v.year >= Number(filters.minYear));
     if (filters.maxPrice) list = list.filter((v) => v.price <= Number(filters.maxPrice));
     return list;
-  }, [vehicleType, filters]);
+  }, [vehicleType, filters, allVehicles]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
@@ -57,9 +60,9 @@ export default function VehicleListingsPage() {
       {/* Type Tabs */}
       <div className="mb-4 flex gap-2">
         {[
-          { id: "all", label: "Tous", count: mockVehicleListings.length },
-          { id: "car", label: "Voitures", count: mockVehicleListings.filter(v => v.type === "car").length },
-          { id: "moto", label: "Motos", count: mockVehicleListings.filter(v => v.type === "moto").length },
+          { id: "all", label: "Tous", count: allVehicles.length },
+          { id: "car", label: "Voitures", count: allVehicles.filter(v => v.type === "car").length },
+          { id: "moto", label: "Motos", count: allVehicles.filter(v => v.type === "moto").length },
         ].map((tab) => (
           <button
             key={tab.id}

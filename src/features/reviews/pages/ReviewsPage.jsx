@@ -6,7 +6,8 @@ import Avatar from "@/shared/ui/Avatar";
 import Badge from "@/shared/ui/Badge";
 import Button from "@/shared/ui/Button";
 import Textarea from "@/shared/ui/Textarea";
-import { mockReviews } from "@/data/reviews";
+import { useMyReviews } from "@/features/reviews/hooks/useReviews";
+import { useAuth } from "@/shared/contexts/AuthContext";
 import { formatRelativeTime } from "@/shared/utils/format";
 import toast from "react-hot-toast";
 
@@ -50,12 +51,14 @@ function RatingDistribution({ reviews }) {
 }
 
 export default function ReviewsPage() {
+  const { user } = useAuth();
+  const { data: reviewsData = [] } = useMyReviews();
   const [filter, setFilter] = useState("all");
   const [newRating, setNewRating] = useState(0);
   const [newComment, setNewComment] = useState("");
   const [hoverRating, setHoverRating] = useState(0);
 
-  const reviews = mockReviews;
+  const reviews = reviewsData?.data || reviewsData || [];
   const avgRating = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
 
   const filteredReviews = reviews.filter((r) => {

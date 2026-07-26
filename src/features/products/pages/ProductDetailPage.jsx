@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -15,9 +14,8 @@ import {
   ArrowLeft,
   AlertTriangle,
 } from "lucide-react";
-import { mockProducts } from "@/data/products";
-import { mockCategories } from "@/data/categories";
-import { mockReviews } from "@/data/reviews";
+import { useProduct, useSimilarProducts } from "@/features/products/hooks/useProducts";
+import { useCategories } from "@/features/categories/hooks/useCategories";
 import { formatCFA, formatRelativeTime, formatNumber } from "@/shared/utils/format";
 import Breadcrumb from "@/shared/ui/Breadcrumb";
 import Badge from "@/shared/ui/Badge";
@@ -36,21 +34,17 @@ export default function ProductDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const product = useMemo(
-    () => mockProducts.find((p) => String(p.id) === String(id)),
-    [id]
-  );
+  const { data: product, isLoading } = useProduct(id);
+  const { data: similarProducts = [] } = useSimilarProducts(id);
+  const { data: categories = [] } = useCategories();
 
-  const similarProducts = useMemo(() => {
-    if (!product) return [];
-    return mockProducts
-      .filter(
-        (p) =>
-          p.id !== product.id &&
-          (p.category === product.category || p.subcategory === product.subcategory)
-      )
-      .slice(0, 8);
-  }, [product]);
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-800 border-t-transparent" />
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -73,14 +67,12 @@ export default function ProductDetailPage() {
     );
   }
 
-  const categorySlug = mockCategories.find(
-    (c) => c.name.toLowerCase() === product.category?.toLowerCase()
-  )?.slug;
+  const categorySlug = product.category?.slug;
 
   const breadcrumbItems = [
     { label: "Accueil", href: "/", icon: Home },
     ...(categorySlug
-      ? [{ label: product.category, href: `/categories/${categorySlug}` }]
+      ? [{ label: product.category.name, href: `/categories/${categorySlug}` }]
       : []),
     { label: product.title },
   ];
@@ -278,7 +270,7 @@ export default function ProductDetailPage() {
                       Catégorie
                     </span>
                     <span className="font-medium text-gray-900 dark:text-white">
-                      {product.category}
+                      {product.category?.name || product.category}
                     </span>
                   </div>
                 </div>
@@ -294,7 +286,7 @@ export default function ProductDetailPage() {
         )}
 
         <div className="mt-12">
-          <ProductReviews productId={product.id} reviews={mockReviews} />
+          <ProductReviews productId={product.id} sellerId={product.seller?.id} />
         </div>
       </div>
     </div>

@@ -47,7 +47,9 @@ import StepIndicator from "@/shared/ui/StepIndicator";
 import ListingFormStep from "@/features/listings/components/ListingFormStep";
 import PhotoUploader from "@/features/listings/components/PhotoUploader";
 import ListingPreview from "@/features/listings/components/ListingPreview";
-import { mockCategories } from "@/data/categories";
+import { useCategories } from "@/features/categories/hooks/useCategories";
+import { useCreateProduct } from "@/features/products/hooks/useProducts";
+import api from "@/shared/services/api";
 import { CITIES, PRODUCT_CONDITIONS, MAX_IMAGES_PER_LISTING } from "@/shared/constants";
 import { createListingSchema } from "@/shared/utils/validators";
 
@@ -78,10 +80,14 @@ const defaultFormValues = {
 
 export default function CreateListingPage() {
   const navigate = useNavigate();
+  const { data: categories = [] } = useCategories();
+  const createProduct = useCreateProduct();
   const [currentStep, setCurrentStep] = useState(0);
   const [photos, setPhotos] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isPublished, setIsPublished] = useState(false);
+  const [publishedProductId, setPublishedProductId] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -96,6 +102,15 @@ export default function CreateListingPage() {
   });
 
   const formValues = watch();
+
+  async function uploadImages(files) {
+    const formData = new FormData();
+    files.forEach((file) => formData.append("files", file));
+    const res = await api.post("/upload/images", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return res.data.data.map((img) => img.url);
+  }
 
   const validateStep = useCallback(
     async (step) => {
@@ -138,10 +153,57 @@ export default function CreateListingPage() {
     }
   }, [currentStep]);
 
-  const handlePublish = useCallback(() => {
-    setIsPublished(true);
-    toast.success("Votre annonce a été publiée !");
-  }, []);
+  const handlePublish = useCallback(async () => {
+    if (!selectedCategory) {
+      toast.error("Veuillez sélectionner une catégorie");
+      return;
+    }
+    if (photos.length === 0) {
+      toast.error("Ajoutez au moins une photo");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const filesToUpload = photos.filter((p) => p.file).map((p) => p.file);
+      const existingUrls = photos.filter((p) => !p.file).map((p) => p.url);
+
+      let uploadedUrls = [];
+      if (filesToUpload.length > 0) {
+        uploadedUrls = await uploadImages(filesToUpload);
+      }
+
+      const allImages = [...existingUrls, ...uploadedUrls];
+
+      const payload = {
+        categoryId: selectedCategory.id,
+        title: formValues.title,
+        description: formValues.description,
+        condition: formValues.condition,
+        brand: formValues.brand || undefined,
+        tags: formValues.tags || [],
+        images: allImages,
+        price: Math.round(Number(formValues.price)),
+        negotiable: formValues.negotiable,
+        deliveryAvailable: formValues.deliveryAvailable,
+        deliveryPrice: formValues.deliveryAvailable
+          ? Math.round(Number(formValues.deliveryPrice) || 0) || undefined
+          : undefined,
+        city: formValues.city,
+        neighborhood: formValues.neighborhood || undefined,
+      };
+
+      const result = await createProduct.mutateAsync(payload);
+      setPublishedProductId(result?.id);
+      setIsPublished(true);
+      toast.success("Votre annonce a été publiée !");
+    } catch (err) {
+      const msg = err?.response?.data?.message || err?.message || "Erreur lors de la publication";
+      toast.error(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [selectedCategory, photos, formValues, createProduct]);
 
   const handleSaveDraft = useCallback(() => {
     toast.success("Brouillon sauvegardé !");
@@ -159,8 +221,8 @@ export default function CreateListingPage() {
             title="Choisissez une catégorie"
             description="Sélectionnez la catégorie qui correspond le mieux à votre article"
           >
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-              {mockCategories.map((cat) => {
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-6">
+              {categories.map((cat) => {
                 const Icon = getIconComponent(cat.icon);
                 const isSelected = selectedCategory?.id === cat.id;
                 return (
@@ -169,9 +231,12 @@ export default function CreateListingPage() {
                     type="button"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => setSelectedCategory(cat)}
+                    onClick={() => {
+                      setSelectedCategory(cat);
+                      setValue("category", cat.slug);
+                    }}
                     className={cn(
-                      "flex flex-col items-center gap-2 rounded-2xl border-2 p-4 text-center transition-all",
+                      "flex flex-col items-center gap-2 rounded-xl  p-4 text-center transition-all",
                       isSelected
                         ? "border-brand-800 bg-brand-50 shadow-md shadow-brand-800/10 dark:bg-brand-800/10"
                         : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:hover:border-gray-600"
@@ -283,12 +348,15 @@ export default function CreateListingPage() {
             <div className="space-y-6">
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Prix (FCFA)
+                  Prix (FCFA) <span className="text-red-600">*</span>
                 </label>
                 <div className="relative">
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     placeholder="0"
+                    required
                     className={cn(
                       "w-full rounded-xl border bg-white py-2.5 pl-4 pr-24 text-lg font-bold text-gray-900 transition-colors",
                       "placeholder:text-gray-400 focus:border-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20",
@@ -297,7 +365,14 @@ export default function CreateListingPage() {
                         ? "border-red-700"
                         : "border-gray-300 dark:border-gray-700"
                     )}
-                    {...register("price", { valueAsNumber: true })}
+                    {...register("price", {
+                      valueAsNumber: true,
+                      setValueAs: (v) => {
+                        if (v === "" || v === null || v === undefined) return NaN;
+                        const n = Number(String(v).replace(/[^0-9]/g, ""));
+                        return isNaN(n) ? NaN : n;
+                      },
+                    })}
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-lg font-bold text-gray-400">
                     FCFA
@@ -377,8 +452,16 @@ export default function CreateListingPage() {
                     <Input
                       label="Frais de livraison (FCFA)"
                       placeholder="0"
-                      type="number"
-                      {...register("deliveryPrice", { valueAsNumber: true })}
+                      type="text"
+                      inputMode="numeric"
+                      {...register("deliveryPrice", {
+                        valueAsNumber: true,
+                        setValueAs: (v) => {
+                          if (v === "" || v === null || v === undefined) return 0;
+                          const n = Number(String(v).replace(/[^0-9]/g, ""));
+                          return isNaN(n) ? 0 : n;
+                        },
+                      })}
                     />
                   </motion.div>
                 )}
@@ -487,7 +570,7 @@ export default function CreateListingPage() {
                 >
                   <Button
                     icon={Eye}
-                    onClick={() => navigate("/annonce/1")}
+                    onClick={() => navigate(`/annonce/${publishedProductId}`)}
                   >
                     Voir l'annonce
                   </Button>
@@ -549,8 +632,14 @@ export default function CreateListingPage() {
                   Votre annonce sera visible immédiatement après la publication.
                 </p>
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                  <Button icon={Send} size="lg" onClick={handlePublish}>
-                    Publier l'annonce
+                  <Button
+                    icon={Send}
+                    size="lg"
+                    onClick={handlePublish}
+                    disabled={isSubmitting}
+                    loading={isSubmitting}
+                  >
+                    {isSubmitting ? "Publication en cours..." : "Publier l'annonce"}
                   </Button>
                   <Button
                     variant="outline"
@@ -572,7 +661,7 @@ export default function CreateListingPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
+      <div className="mx-auto max-w-8xl px-4 py-6 sm:px-6">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             Nouvelle annonce

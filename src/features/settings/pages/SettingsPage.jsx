@@ -33,7 +33,7 @@ import Input from "@/shared/ui/Input";
 import Textarea from "@/shared/ui/Textarea";
 import Avatar from "@/shared/ui/Avatar";
 import { useAuth } from "@/shared/contexts/AuthContext";
-import { mockKycStatus, mockVerificationSteps, mockBadges } from "@/data/verification";
+import { useKycStatus, useKycBadges } from "@/features/verification/hooks/useKyc";
 import toast from "react-hot-toast";
 import KycProgress from "@/features/verification/components/KycProgress";
 import BadgeGrid from "@/features/verification/components/BadgeGrid";
@@ -120,6 +120,16 @@ const mockLoginHistory = [
 
 export default function SettingsPage() {
   const { user } = useAuth();
+  const { data: kycStatus } = useKycStatus();
+  const { data: badgesResponse } = useKycBadges();
+  const badges = badgesResponse?.data ?? [];
+
+  const verificationSteps = [
+    { id: 1, title: "Téléphone", description: "Vérifier votre numéro +228", status: kycStatus?.phoneVerified ? "completed" : "pending", icon: "Phone" },
+    { id: 2, title: "Email", description: "Confirmer votre adresse email", status: kycStatus?.emailVerified ? "completed" : "pending", icon: "Mail" },
+    { id: 3, title: "Document d'identité", description: "Carte d'identité, passeport ou permis", status: kycStatus?.documentStatus === "approved" ? "completed" : kycStatus?.documentStatus === "pending" ? "pending" : "pending", icon: "FileCheck" },
+    { id: 4, title: "Selfie", description: "Photo de vous avec le document", status: kycStatus?.selfieStatus === "approved" ? "completed" : "pending", icon: "Camera" },
+  ];
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [notifications, setNotifications] = useState({
     email: true,
@@ -681,7 +691,7 @@ export default function SettingsPage() {
             Vérifiez votre identité pour obtenir un badge de confiance et accéder à plus de fonctionnalités.
           </p>
 
-          <KycProgress steps={mockVerificationSteps} />
+          <KycProgress steps={verificationSteps} />
 
           <div className="mt-6 space-y-6">
             <PhoneVerification />
@@ -690,11 +700,11 @@ export default function SettingsPage() {
               <h3 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">
                 Document d'identité
               </h3>
-              {mockKycStatus.documentStatus === "none" ? (
+              {kycStatus?.documentStatus === "none" || !kycStatus?.documentStatus ? (
                 <DocumentUpload
                   onUpload={(file) => toast.success("Document téléchargé avec succès !")}
                 />
-              ) : mockKycStatus.documentStatus === "pending" ? (
+              ) : kycStatus?.documentStatus === "pending" ? (
                 <div className="flex items-center gap-3 rounded-xl border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
                   <AlertCircle className="h-5 w-5 text-yellow-600" />
                   <div>
@@ -702,7 +712,7 @@ export default function SettingsPage() {
                     <p className="text-xs text-yellow-600 dark:text-yellow-400">Nous examinerons votre document sous 24-48h.</p>
                   </div>
                 </div>
-              ) : mockKycStatus.documentStatus === "approved" ? (
+              ) : kycStatus?.documentStatus === "approved" ? (
                 <div className="flex items-center gap-3 rounded-xl border border-brand-200 bg-brand-50 p-4 dark:border-brand-800 dark:bg-brand-900/20">
                   <CheckCircle2 className="h-5 w-5 text-brand-600" />
                   <p className="text-sm font-medium text-brand-800 dark:text-brand-300">Document vérifié avec succès</p>
@@ -712,7 +722,7 @@ export default function SettingsPage() {
                   <AlertCircle className="h-5 w-5 text-red-600" />
                   <div>
                     <p className="text-sm font-medium text-red-800 dark:text-red-300">Document rejeté</p>
-                    <p className="text-xs text-red-600 dark:text-red-400">{mockKycStatus.rejectionReason || "Veuillez soumettre un nouveau document."}</p>
+                    <p className="text-xs text-red-600 dark:text-red-400">{kycStatus?.rejectionReason || "Veuillez soumettre un nouveau document."}</p>
                     <DocumentUpload
                       onUpload={(file) => toast.success("Nouveau document téléchargé !")}
                     />
@@ -725,7 +735,7 @@ export default function SettingsPage() {
               <h3 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">
                 Vos badges
               </h3>
-              <BadgeGrid badges={mockBadges} />
+              <BadgeGrid badges={badges} />
             </div>
           </div>
         </motion.section>

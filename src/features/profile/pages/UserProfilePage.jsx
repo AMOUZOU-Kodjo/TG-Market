@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   Edit3,
@@ -11,7 +11,9 @@ import {
   Shield,
   Bell,
   Trash2,
+  Loader2,
 } from "lucide-react";
+import toast from "react-hot-toast";
 import Tabs from "@/shared/ui/Tabs";
 import Button from "@/shared/ui/Button";
 import Badge from "@/shared/ui/Badge";
@@ -23,13 +25,18 @@ import ReviewList from "@/features/profile/components/ReviewList";
 import ProductCard from "@/shared/ui/ProductCard";
 import EmptyState from "@/shared/ui/EmptyState";
 import { useAuth } from "@/shared/contexts/AuthContext";
-import { mockProducts } from "@/data/products";
-import { mockReviews } from "@/data/reviews";
+import { useMyProducts } from "@/features/products/hooks/useProducts";
+import { useMyReviews } from "@/features/reviews/hooks/useReviews";
+import { usersApi } from "@/features/profile/services/users.api";
 import { cn } from "@/shared/utils/cn";
 
 export default function UserProfilePage() {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
+  const { data: myProductsData } = useMyProducts();
+  const { data: myReviewsData } = useMyReviews();
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const avatarInputRef = useRef(null);
   const [formData, setFormData] = useState({
     name: user?.name || "",
     email: user?.email || "",
@@ -38,12 +45,33 @@ export default function UserProfilePage() {
     avatar: user?.avatar || "",
   });
 
-  const myProducts = mockProducts.filter((p) => p.seller?.id === user?.id);
-  const favoriteProducts = mockProducts.slice(0, 3);
-  const myReviews = mockReviews.filter((r) => r.reviewer?.id === user?.id);
+  const myProducts = (myProductsData?.data || myProductsData || []).filter((p) => p.seller?.id === user?.id);
+  const favoriteProducts = (myProductsData?.data || myProductsData || []).slice(0, 3);
+  const myReviews = (myReviewsData?.data || myReviewsData || []).filter((r) => r.reviewer?.id === user?.id);
 
   const handleSave = () => {
     setEditModalOpen(false);
+  };
+
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Veuillez sélectionner une image");
+      return;
+    }
+    setIsUploadingAvatar(true);
+    try {
+      const result = await usersApi.uploadAvatar(file);
+      setFormData((prev) => ({ ...prev, avatar: result.avatar }));
+      setUser((prev) => ({ ...prev, avatar: result.avatar }));
+      toast.success("Photo de profil mise à jour !");
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Erreur lors de l'upload");
+    } finally {
+      setIsUploadingAvatar(false);
+      if (avatarInputRef.current) avatarInputRef.current.value = "";
+    }
   };
 
   const tabs = [
@@ -57,6 +85,7 @@ export default function UserProfilePage() {
           {myProducts.map((product) => (
             <ProductCard
               key={product.id}
+              productId={product.id}
               image={product.images?.[0]}
               title={product.title}
               price={product.price}
@@ -90,6 +119,7 @@ export default function UserProfilePage() {
           {favoriteProducts.map((product) => (
             <ProductCard
               key={product.id}
+              productId={product.id}
               image={product.images?.[0]}
               title={product.title}
               price={product.price}
@@ -235,15 +265,37 @@ export default function UserProfilePage() {
         }
       >
         <div className="space-y-4">
+          <input
+            ref={avatarInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleAvatarUpload}
+          />
           <div className="flex justify-center">
             <div className="relative">
-              <img
-                src={formData.avatar}
-                alt={formData.name}
-                className="h-20 w-20 rounded-full object-cover"
-              />
-              <button className="absolute bottom-0 right-0 flex h-7 w-7 items-center justify-center rounded-full bg-brand-800 text-white shadow-md hover:bg-brand-900 transition-colors">
-                <Camera className="h-3.5 w-3.5" />
+              {user?.avatar || formData.avatar ? (
+                <img
+                  src={formData.avatar || user?.avatar}
+                  alt={formData.name}
+                  className="h-20 w-20 rounded-full object-cover"
+                />
+              ) : (
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-brand-100 text-2xl font-bold text-brand-800 dark:bg-brand-800/20 dark:text-brand-400">
+                  {formData.name?.charAt(0)?.toUpperCase() || "?"}
+                </div>
+              )}
+              <button
+                type="button"
+                disabled={isUploadingAvatar}
+                onClick={() => avatarInputRef.current?.click()}
+                className="absolute bottom-0 right-0 flex h-7 w-7 items-center justify-center rounded-full bg-brand-800 text-white shadow-md hover:bg-brand-900 transition-colors disabled:opacity-50"
+              >
+                {isUploadingAvatar ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Camera className="h-3.5 w-3.5" />
+                )}
               </button>
             </div>
           </div>

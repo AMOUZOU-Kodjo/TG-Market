@@ -82,8 +82,8 @@ export const createListingSchema = z.object({
     .min(20, "La description doit contenir au moins 20 caractères")
     .max(5000, "La description ne peut pas dépasser 5000 caractères"),
   price: z
-    .number({ invalid_type_error: "Le prix doit être un nombre" })
-    .min(0, "Le prix ne peut pas être négatif")
+    .number({ required_error: "Le prix est requis", invalid_type_error: "Le prix doit être un nombre" })
+    .min(1, "Le prix doit être supérieur à 0")
     .max(100_000_000, "Le prix est trop élevé"),
   negotiable: z.boolean().default(false),
   category: z.string().min(1, "La catégorie est requise"),

@@ -8,9 +8,9 @@ import Tabs from "@/shared/ui/Tabs";
 import ProfileHeader from "@/features/profile/components/ProfileHeader";
 import ReviewList from "@/features/profile/components/ReviewList";
 import EmptyState from "@/shared/ui/EmptyState";
-import { mockUsers } from "@/data/users";
-import { mockProducts } from "@/data/products";
-import { mockReviews } from "@/data/reviews";
+import { useSellerProfile } from "@/features/profile/hooks/useUsers";
+import { useProducts } from "@/features/products/hooks/useProducts";
+import { useSellerReviews } from "@/features/reviews/hooks/useReviews";
 import { cn } from "@/shared/utils/cn";
 
 export default function SellerProfilePage() {
@@ -18,13 +18,11 @@ export default function SellerProfilePage() {
   const navigate = useNavigate();
   const [isFollowing, setIsFollowing] = useState(false);
 
-  const seller = mockUsers.find((u) => u.id === Number(id));
-  const sellerProducts = mockProducts.filter(
-    (p) => p.seller?.id === Number(id)
-  );
-  const sellerReviews = mockReviews.filter(
-    (r) => r.reviewer?.id === Number(id)
-  );
+  const { data: seller, isLoading } = useSellerProfile(id);
+  const { data: sellerProductsRaw = [] } = useProducts({ sellerId: id });
+  const sellerProducts = sellerProductsRaw?.data || sellerProductsRaw || [];
+  const { data: sellerReviewsRaw = [] } = useSellerReviews(id);
+  const sellerReviews = sellerReviewsRaw?.data || sellerReviewsRaw || [];
 
   if (!seller) {
     return (
@@ -53,6 +51,7 @@ export default function SellerProfilePage() {
           {sellerProducts.map((product) => (
             <ProductCard
               key={product.id}
+              productId={product.id}
               image={product.images?.[0]}
               title={product.title}
               price={product.price}

@@ -23,12 +23,11 @@ import {
   FileCheck,
   Camera,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import Button from "@/shared/ui/Button";
 import Badge from "@/shared/ui/Badge";
 import Avatar from "@/shared/ui/Avatar";
-import { mockUsers } from "@/data/users";
-import { mockCategories } from "@/data/categories";
-import { mockPendingVerifications } from "@/data/verification";
+import api from "@/shared/services/api";
 import { formatCFA, formatRelativeTime } from "@/shared/utils/format";
 import toast from "react-hot-toast";
 
@@ -41,45 +40,6 @@ const itemVariants = {
   hidden: { opacity: 0, y: 12 },
   visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 260, damping: 20 } },
 };
-
-const pendingListings = [
-  {
-    id: 101,
-    title: "iPhone 14 Pro Max 256GB - Neuf scellé",
-    price: 750000,
-    category: "Téléphones",
-    seller: mockUsers[0],
-    submittedAt: "2025-07-20T08:00:00Z",
-    images: 1,
-  },
-  {
-    id: 102,
-    title: "Terrain 500m² à Kpéme - Titre foncier",
-    price: 15000000,
-    category: "Immobilier",
-    seller: mockUsers[2],
-    submittedAt: "2025-07-19T16:30:00Z",
-    images: 1,
-  },
-  {
-    id: 103,
-    title: "Set complète de batterie Pearl Export",
-    price: 850000,
-    category: "Musique",
-    seller: mockUsers[7],
-    submittedAt: "2025-07-19T14:00:00Z",
-    images: 1,
-  },
-  {
-    id: 104,
-    title: "Lot de 50 pagnes wax assorted",
-    price: 125000,
-    category: "Mode & Vêtements",
-    seller: mockUsers[1],
-    submittedAt: "2025-07-19T10:15:00Z",
-    images: 1,
-  },
-];
 
 const recentActivity = [
   { type: "sale", text: "Samsung Galaxy S24 vendu par Kofi Améyo", time: "Il y a 2h", amount: 850000 },
@@ -99,10 +59,62 @@ const activityIcons = {
 };
 
 export default function AdminDashboardPage() {
-  const users = mockUsers.slice(0, 10);
+  const { data: users = [] } = useQuery({
+    queryKey: ["adminUsers"],
+    queryFn: () => api.get("/admin/users").then((r) => r.data),
+  });
+  const { data: categories = [] } = useQuery({
+    queryKey: ["adminCategories"],
+    queryFn: () => api.get("/admin/categories").then((r) => r.data),
+  });
+  const { data: pendingVerifications = [] } = useQuery({
+    queryKey: ["adminPendingVerifications"],
+    queryFn: () => api.get("/admin/verifications/pending").then((r) => r.data),
+  });
+
+  const displayedUsers = users.slice(0, 10);
   const [userStatuses, setUserStatuses] = useState(
-    Object.fromEntries(users.map((u) => [u.id, u.verified ? "verified" : "active"]))
+    Object.fromEntries(displayedUsers.map((u) => [u.id, u.verified ? "verified" : "active"]))
   );
+
+  const pendingListings = [
+    {
+      id: 101,
+      title: "iPhone 14 Pro Max 256GB - Neuf scellé",
+      price: 750000,
+      category: "Téléphones",
+      seller: displayedUsers[0],
+      submittedAt: "2025-07-20T08:00:00Z",
+      images: 1,
+    },
+    {
+      id: 102,
+      title: "Terrain 500m² à Kpéme - Titre foncier",
+      price: 15000000,
+      category: "Immobilier",
+      seller: displayedUsers[2],
+      submittedAt: "2025-07-19T16:30:00Z",
+      images: 1,
+    },
+    {
+      id: 103,
+      title: "Set complète de batterie Pearl Export",
+      price: 850000,
+      category: "Musique",
+      seller: displayedUsers[7],
+      submittedAt: "2025-07-19T14:00:00Z",
+      images: 1,
+    },
+    {
+      id: 104,
+      title: "Lot de 50 pagnes wax assorted",
+      price: 125000,
+      category: "Mode & Vêtements",
+      seller: displayedUsers[1],
+      submittedAt: "2025-07-19T10:15:00Z",
+      images: 1,
+    },
+  ];
 
   const handleBanUser = (userId) => {
     setUserStatuses((prev) => ({ ...prev, [userId]: "banned" }));
@@ -137,7 +149,7 @@ export default function AdminDashboardPage() {
         >
           <div className="flex items-center justify-between border-b border-gray-800 px-6 py-4">
             <h2 className="text-lg font-semibold text-white">Gestion des utilisateurs</h2>
-            <Badge variant="primary">{users.length}</Badge>
+            <Badge variant="primary">{displayedUsers.length}</Badge>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -152,7 +164,7 @@ export default function AdminDashboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800">
-                {users.map((user) => (
+                {displayedUsers.map((user) => (
                   <tr key={user.id} className="transition-colors hover:bg-gray-800/50">
                     <td className="px-6 py-3">
                       <div className="flex items-center gap-3">
@@ -272,10 +284,10 @@ export default function AdminDashboardPage() {
           >
             <div className="flex items-center justify-between border-b border-gray-800 px-6 py-4">
               <h2 className="text-lg font-semibold text-white">Catégories</h2>
-              <Badge variant="secondary">{mockCategories.length}</Badge>
+              <Badge variant="secondary">{categories.length}</Badge>
             </div>
             <div className="max-h-[360px] divide-y divide-gray-800 overflow-y-auto">
-              {mockCategories.slice(0, 12).map((cat) => (
+              {categories.slice(0, 12).map((cat) => (
                 <div key={cat.id} className="flex items-center justify-between px-6 py-3 transition-colors hover:bg-gray-800/50">
                   <div className="flex items-center gap-3">
                     <div
@@ -306,17 +318,17 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* KYC Moderation */}
-        {mockPendingVerifications.length > 0 && (
+        {pendingVerifications.length > 0 && (
           <motion.div
             variants={itemVariants}
             className="rounded-2xl border border-gray-800 bg-gray-900"
           >
             <div className="flex items-center justify-between border-b border-gray-800 px-6 py-4">
               <h2 className="text-lg font-semibold text-white">Vérifications KYC en attente</h2>
-              <Badge variant="warning" dot>{mockPendingVerifications.length}</Badge>
+              <Badge variant="warning" dot>{pendingVerifications.length}</Badge>
             </div>
             <div className="divide-y divide-gray-800">
-              {mockPendingVerifications.map((verification) => (
+              {pendingVerifications.map((verification) => (
                 <div key={verification.id} className="px-6 py-4">
                   <div className="flex items-start gap-4">
                     <div className="flex-1">

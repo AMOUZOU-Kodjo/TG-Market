@@ -3,6 +3,10 @@ import { motion } from "framer-motion";
 import { Heart, MapPin, MessageCircle } from "lucide-react";
 import { cn } from "@/shared/utils/cn";
 import Badge from "@/shared/ui/Badge";
+import { useCheckFavorite, useToggleFavorite } from "@/features/favorites/hooks/useFavorites";
+import { useAuth } from "@/shared/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function ProductCard({
   image,
@@ -12,19 +16,34 @@ export default function ProductCard({
   location,
   condition,
   hasActiveNegotiation = false,
-  isFavorite = false,
-  onFavoriteToggle,
+  productId,
+  isFavorite: isFavoriteProp,
   onClick,
   className,
   ...rest
 }) {
-  const [liked, setLiked] = useState(isFavorite);
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const { data: favData } = useCheckFavorite(productId);
+  const toggleFav = useToggleFavorite();
+
+  const isFavorite = favData?.isFavorite ?? isFavoriteProp ?? false;
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  const handleFavorite = (e) => {
+  const handleFavorite = async (e) => {
     e.stopPropagation();
-    setLiked(!liked);
-    onFavoriteToggle?.(!liked);
+    if (!isAuthenticated) {
+      toast.error("Connectez-vous pour ajouter aux favoris");
+      navigate("/connexion");
+      return;
+    }
+    if (!productId) return;
+    try {
+      await toggleFav.mutateAsync(productId);
+      toast.success(isFavorite ? "Retiré des favoris" : "Ajouté aux favoris");
+    } catch {
+      toast.error("Erreur lors de la modification du favori");
+    }
   };
 
   const formatPrice = (p) => {
@@ -56,20 +75,25 @@ export default function ProductCard({
             imageLoaded ? "opacity-100" : "opacity-0"
           )}
         />
-        <button
-          onClick={handleFavorite}
-          className="absolute right-3 top-3 rounded-full bg-white/90 p-2 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:shadow-md dark:bg-gray-900/90 dark:hover:bg-gray-900"
-        >
-          <Heart
-            className={cn(
-              "h-5 w-5 transition-colors",
-              liked ? "fill-red-700 text-red-700" : "text-gray-600 dark:text-gray-400"
-            )}
-          />
-        </button>
+        {productId && (
+          <button
+            onClick={handleFavorite}
+            disabled={toggleFav.isPending}
+            className="absolute right-3 top-3 rounded-full bg-white/90 p-2 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:shadow-md dark:bg-gray-900/90 dark:hover:bg-gray-900"
+          >
+            <Heart
+              className={cn(
+                "h-5 w-5 transition-colors",
+                isFavorite ? "fill-red-700 text-red-700" : "text-gray-600 dark:text-gray-400"
+              )}
+            />
+          </button>
+        )}
         {condition && (
           <div className="absolute left-3 top-3">
-            <Badge variant={condition === "Neuf" ? "success" : "warning"}>{condition}</Badge>
+            <Badge variant={condition === "new" ? "success" : "warning"}>
+              {condition === "new" ? "Neuf" : condition === "like_new" ? "Très bon état" : condition === "good" ? "Bon état" : condition === "fair" ? "Usé" : condition}
+            </Badge>
           </div>
         )}
         {hasActiveNegotiation && (

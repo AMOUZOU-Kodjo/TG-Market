@@ -56,12 +56,8 @@ import {
   MessageSquare,
   Heart,
 } from "lucide-react";
-import { mockCategories } from "@/data/categories";
-import { mockProducts } from "@/data/products";
-const recentProducts = mockProducts;
-const popularProducts = [...mockProducts].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-import { mockUsersFormatted as mockUsers } from "@/data/users";
-import { mockReviews } from "@/data/reviews";
+import { useProducts } from "@/features/products/hooks/useProducts";
+import { useCategories } from "@/features/categories/hooks/useCategories";
 import Button from "@/shared/ui/Button";
 import CategoryCard from "@/shared/ui/CategoryCard";
 import ProductCard from "@/shared/ui/ProductCard";
@@ -441,6 +437,18 @@ function HeroSection() {
 // }
 
 function PopularProductsSection() {
+  const { data: productsData, isLoading: productsLoading } = useProducts({ perPage: 30, sort: "newest" });
+  const products = productsData?.data || productsData || [];
+  const popularProducts = [...products].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  if (productsLoading) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-600 border-t-transparent" />
+      </div>
+    );
+  }
+
   return (
     <motion.section
       variants={sectionVariants}
@@ -453,7 +461,7 @@ function PopularProductsSection() {
         <SectionHeader
           title="Dernières annonces"
           subtitle="Les 30 produits les plus récemment publiés"
-          action="/recherche?sort=recent"
+          action="/recherche?sort=newest"
         />
 
         <motion.div
@@ -467,6 +475,7 @@ function PopularProductsSection() {
             <motion.div key={product.id} variants={staggerItem}>
               <Link to={`/annonce/${product.id}`}>
                 <ProductCard
+                  productId={product.id}
                   image={product.images?.[0]}
                   title={product.title}
                   price={product.price}

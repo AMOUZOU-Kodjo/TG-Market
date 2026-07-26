@@ -1,72 +1,20 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import {
-  MoreHorizontal,
   Edit3,
   Trash2,
   Eye,
   EyeOff,
-  ExternalLink,
-  ChevronDown,
-  ChevronUp,
+  Package,
 } from "lucide-react";
 import Badge from "@/shared/ui/Badge";
-import Button from "@/shared/ui/Button";
 import { cn } from "@/shared/utils/cn";
 import { formatCFA, formatRelativeTime } from "@/shared/utils/format";
-
-const mockSellerProducts = [
-  {
-    id: 1,
-    title: "Samsung Galaxy S24 Ultra 256GB",
-    price: 850000,
-    image: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=100&h=100&fit=crop",
-    status: "active",
-    views: 234,
-    favorites: 45,
-    createdAt: "2025-07-10T08:00:00Z",
-  },
-  {
-    id: 5,
-    title: "PS5 + 2 Manettes + 3 Jeux",
-    price: 380000,
-    image: "https://images.unsplash.com/photo-1606722590583-6951b5ea92ad?w=100&h=100&fit=crop",
-    status: "active",
-    views: 445,
-    favorites: 67,
-    createdAt: "2025-07-01T16:45:00Z",
-  },
-  {
-    id: 12,
-    title: "Canon EOS R6 Mark II",
-    price: 1200000,
-    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=100&h=100&fit=crop",
-    status: "active",
-    views: 423,
-    favorites: 61,
-    createdAt: "2025-06-12T16:00:00Z",
-  },
-  {
-    id: 14,
-    title: "DJI Mini 4 Pro - Drone",
-    price: 650000,
-    image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=100&h=100&fit=crop",
-    status: "paused",
-    views: 345,
-    favorites: 48,
-    createdAt: "2025-06-08T10:15:00Z",
-  },
-  {
-    id: 20,
-    title: "MacBook Air M2",
-    price: 650000,
-    image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=100&h=100&fit=crop",
-    status: "sold",
-    views: 312,
-    favorites: 56,
-    createdAt: "2025-07-03T09:15:00Z",
-  },
-];
+import { useMyProducts, useDeleteProduct } from "@/features/products/hooks/useProducts";
+import { productsApi } from "@/features/products/services/products.api";
+import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 const statusConfig = {
   active: { label: "En ligne", variant: "success" },
@@ -75,15 +23,57 @@ const statusConfig = {
   draft: { label: "Brouillon", variant: "neutral" },
 };
 
-export default function ProductTable({ products = mockSellerProducts, onEdit, onDelete }) {
-  const [expandedId, setExpandedId] = useState(null);
-  const [visibilityMap, setVisibilityMap] = useState(() =>
-    Object.fromEntries(products.map((p) => [p.id, p.status === "active"]))
-  );
+export default function ProductTable() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { data, isLoading } = useMyProducts();
+  const deleteProduct = useDeleteProduct();
+  const products = data?.data ?? [];
 
-  const toggleVisibility = (id) => {
-    setVisibilityMap((prev) => ({ ...prev, [id]: !prev[id] }));
+  const handleDelete = async (product) => {
+    if (!window.confirm(`Supprimer « ${product.title} » ?`)) return;
+    try {
+      await deleteProduct.mutateAsync(product.id);
+      toast.success("Annonce supprimée");
+    } catch {
+      toast.error("Erreur lors de la suppression");
+    }
   };
+
+  const handleToggleStatus = async (product) => {
+    const newStatus = product.status === "active" ? "paused" : "active";
+    try {
+      await productsApi.updateStatus(product.id, newStatus);
+      queryClient.invalidateQueries({ queryKey: ["myProducts"] });
+      toast.success(newStatus === "active" ? "Annonce réactivée" : "Annonce mise en pause");
+    } catch {
+      toast.error("Erreur lors du changement de statut");
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900">
+        <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-800" />
+        <p className="mt-3 text-sm text-gray-500">Chargement des annonces...</p>
+      </div>
+    );
+  }
+
+  if (products.length === 0) {
+    return (
+      <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900">
+        <Package className="mx-auto h-10 w-10 text-gray-300" />
+        <p className="mt-3 text-sm text-gray-500">Aucune annonce publiée</p>
+        <button
+          onClick={() => navigate("/publier")}
+          className="mt-3 text-sm font-medium text-brand-800 hover:underline"
+        >
+          Créer une annonce
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900">
@@ -112,84 +102,97 @@ export default function ProductTable({ products = mockSellerProducts, onEdit, on
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
-            {products.map((product) => (
-              <motion.tr
-                key={product.id}
-                layout
-                className="group"
-              >
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={product.image}
-                      alt={product.title}
-                      className="h-12 w-12 rounded-lg object-cover"
-                    />
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
-                        {product.title}
-                      </p>
-                      <p className="mt-0.5 text-xs text-gray-400 sm:hidden">
-                        {formatCFA(product.price)}
-                      </p>
-                      <p className="mt-0.5 text-xs text-gray-400 md:hidden">
-                        <span className={cn(
-                          "inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium",
-                          statusConfig[product.status]?.variant === "success" && "bg-brand-100 text-brand-700",
-                          statusConfig[product.status]?.variant === "warning" && "bg-yellow-50 text-yellow-600",
-                          statusConfig[product.status]?.variant === "secondary" && "bg-gray-100 text-gray-700"
-                        )}>
-                          {statusConfig[product.status]?.label}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                </td>
-                <td className="hidden whitespace-nowrap px-4 py-3 text-sm font-semibold text-gray-900 dark:text-white sm:table-cell">
-                  {formatCFA(product.price)}
-                </td>
-                <td className="hidden px-4 py-3 md:table-cell">
-                  <Badge variant={statusConfig[product.status]?.variant || "neutral"}>
-                    {statusConfig[product.status]?.label}
-                  </Badge>
-                </td>
-                <td className="hidden whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400 lg:table-cell">
-                  {product.views}
-                </td>
-                <td className="hidden whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400 lg:table-cell">
-                  {product.favorites}
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center justify-end gap-1">
-                    <button
-                      onClick={() => toggleVisibility(product.id)}
-                      className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
-                      title={visibilityMap[product.id] ? "Masquer" : "Afficher"}
-                    >
-                      {visibilityMap[product.id] ? (
-                        <Eye className="h-4 w-4" />
+            {products.map((product) => {
+              const productImage = product.images?.[0] || null;
+              const st = statusConfig[product.status] || { label: product.status, variant: "neutral" };
+              return (
+                <motion.tr
+                  key={product.id}
+                  layout
+                  className="group"
+                >
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      {productImage ? (
+                        <img
+                          src={productImage}
+                          alt={product.title}
+                          className="h-12 w-12 rounded-lg object-cover"
+                        />
                       ) : (
-                        <EyeOff className="h-4 w-4" />
+                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800">
+                          <span className="text-xs text-gray-400">📷</span>
+                        </div>
                       )}
-                    </button>
-                    <button
-                      onClick={() => onEdit?.(product)}
-                      className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-red-800 dark:hover:bg-gray-800 dark:hover:text-red-400"
-                      title="Modifier"
-                    >
-                      <Edit3 className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => onDelete?.(product)}
-                      className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-800 dark:hover:bg-red-950/20 dark:hover:text-red-400"
-                      title="Supprimer"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                </td>
-              </motion.tr>
-            ))}
+                      <div className="min-w-0">
+                        <p
+                          className="cursor-pointer truncate text-sm font-medium text-gray-900 hover:text-brand-800 dark:text-white dark:hover:text-brand-400"
+                          onClick={() => navigate(`/annonces/${product.id}`)}
+                        >
+                          {product.title}
+                        </p>
+                        <p className="mt-0.5 text-xs text-gray-400 sm:hidden">
+                          {formatCFA(product.price)}
+                        </p>
+                        <p className="mt-0.5 text-xs text-gray-400 md:hidden">
+                          <span className={cn(
+                            "inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium",
+                            st.variant === "success" && "bg-brand-100 text-brand-700",
+                            st.variant === "warning" && "bg-yellow-50 text-yellow-600",
+                            st.variant === "secondary" && "bg-gray-100 text-gray-700"
+                          )}>
+                            {st.label}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="hidden whitespace-nowrap px-4 py-3 text-sm font-semibold text-gray-900 dark:text-white sm:table-cell">
+                    {formatCFA(product.price)}
+                  </td>
+                  <td className="hidden px-4 py-3 md:table-cell">
+                    <Badge variant={st.variant}>
+                      {st.label}
+                    </Badge>
+                  </td>
+                  <td className="hidden whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400 lg:table-cell">
+                    {product.views ?? 0}
+                  </td>
+                  <td className="hidden whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400 lg:table-cell">
+                    {product.favorites ?? 0}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-end gap-1">
+                      <button
+                        onClick={() => handleToggleStatus(product)}
+                        className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                        title={product.status === "active" ? "Mettre en pause" : "Réactiver"}
+                      >
+                        {product.status === "active" ? (
+                          <Eye className="h-4 w-4" />
+                        ) : (
+                          <EyeOff className="h-4 w-4" />
+                        )}
+                      </button>
+                      <button
+                        onClick={() => navigate(`/annonces/${product.id}/modifier`)}
+                        className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-brand-800 dark:hover:bg-gray-800 dark:hover:text-brand-400"
+                        title="Modifier"
+                      >
+                        <Edit3 className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(product)}
+                        className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-800 dark:hover:bg-red-950/20 dark:hover:text-red-400"
+                        title="Supprimer"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </motion.tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

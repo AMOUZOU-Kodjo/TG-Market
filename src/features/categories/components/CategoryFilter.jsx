@@ -38,7 +38,7 @@ import {
   Flower2,
   Sun,
 } from "lucide-react";
-import { mockCategories } from "@/data/categories";
+import { useCategories } from "@/features/categories/hooks/useCategories";
 import Badge from "@/shared/ui/Badge";
 import { cn } from "@/shared/utils/cn";
 
@@ -130,12 +130,13 @@ export default function CategoryFilter({
   const [expanded, setExpanded] = useState(!collapsible);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { data: categories = [] } = useCategories();
 
   const filteredCategories = searchQuery
-    ? mockCategories.filter((c) =>
+    ? categories.filter((c) =>
         c.name.toLowerCase().includes(searchQuery.toLowerCase())
       )
-    : mockCategories;
+    : categories;
 
   const visibleCategories = expanded
     ? filteredCategories
@@ -327,7 +328,7 @@ export default function CategoryFilter({
           </div>
           <div className="flex flex-wrap gap-1.5">
             {selectedCategories.map((catId) => {
-              const cat = mockCategories.find((c) => c.id === catId);
+              const cat = categories.find((c) => c.id === catId);
               if (!cat) return null;
               return (
                 <button

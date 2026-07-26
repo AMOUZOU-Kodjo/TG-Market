@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/shared/utils/cn";
 import Button from "@/shared/ui/Button";
-import { mockCategories } from "@/data/categories";
+import { useCategories } from "@/features/categories/hooks/useCategories";
 import { CITIES, PRODUCT_CONDITIONS } from "@/shared/constants";
 
 function CollapsibleSection({ title, icon: Icon, defaultOpen = true, children }) {
@@ -90,6 +90,7 @@ export default function FilterSidebar({
   mobile = false,
   onClose,
 }) {
+  const { data: allCategories = [] } = useCategories();
   const {
     categories = [],
     minPrice = "",
@@ -167,20 +168,27 @@ export default function FilterSidebar({
       <div className="flex-1 overflow-y-auto">
         <CollapsibleSection title="Catégorie" icon={Tag}>
           <div className="max-h-56 space-y-1 overflow-y-auto pr-1">
-            {mockCategories.slice(0, 15).map((cat) => (
+            {allCategories.slice(0, 15).map((cat) => (
               <label
                 key={cat.id}
                 className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
+                onClick={() => {
+                  const id = String(cat.id);
+                  const next = categories.includes(id)
+                    ? categories.filter((c) => c !== id)
+                    : [...categories, id];
+                  updateFilter("categories", next);
+                }}
               >
                 <div
                   className={cn(
                     "flex h-4 w-4 items-center justify-center rounded border transition-colors",
-                    categories.includes(cat.slug)
+                    categories.includes(String(cat.id))
                       ? "border-brand-800 bg-brand-800"
                       : "border-gray-300 dark:border-gray-600"
                   )}
                 >
-                  {categories.includes(cat.slug) && (
+                  {categories.includes(String(cat.id)) && (
                     <svg className="h-3 w-3 text-white" viewBox="0 0 12 12" fill="none">
                       <path d="M2 6L5 9L10 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
@@ -250,6 +258,12 @@ export default function FilterSidebar({
               <label
                 key={cond.value}
                 className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
+                onClick={() => {
+                  const next = conditions.includes(cond.value)
+                    ? conditions.filter((c) => c !== cond.value)
+                    : [...conditions, cond.value];
+                  updateFilter("conditions", next);
+                }}
               >
                 <div
                   className={cn(

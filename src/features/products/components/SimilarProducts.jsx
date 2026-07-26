@@ -58,6 +58,7 @@ export default function SimilarProducts({ products = [], title = "Produits simil
             className="w-[260px] min-w-[260px] sm:w-[280px] sm:min-w-[280px]"
           >
             <ProductCard
+              productId={product.id}
               image={product.images?.[0]}
               title={product.title}
               price={product.price}

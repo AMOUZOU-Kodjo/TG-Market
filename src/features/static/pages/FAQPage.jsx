@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Search, HelpCircle, MessageCircle, Shield, Tag, Truck, CreditCard, UserCheck, Settings, AlertTriangle, BookOpen } from "lucide-react";
-import { mockFaqs } from "@/data/faqs";
+import { useFaqs } from "@/features/static/hooks/useFaqs";
 import { Link } from "react-router-dom";
 import Button from "@/shared/ui/Button";
 
@@ -89,16 +89,17 @@ function AccordionItem({ faq, isOpen, onToggle }) {
 }
 
 export default function FAQPage() {
+  const { data: faqs = [], isLoading } = useFaqs();
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [openId, setOpenId] = useState(null);
 
   const categories = useMemo(() => {
-    const cats = [...new Set(mockFaqs.map((f) => f.category))];
+    const cats = [...new Set(faqs.map((f) => f.category))];
     return ["all", ...cats];
-  }, []);
+  }, [faqs]);
 
-  const filteredFaqs = mockFaqs.filter((faq) => {
+  const filteredFaqs = faqs.filter((faq) => {
     const matchesSearch =
       search === "" ||
       faq.question.toLowerCase().includes(search.toLowerCase()) ||
@@ -152,7 +153,7 @@ export default function FAQPage() {
             >
               {cat === "all" ? "Toutes" : cat}
               <span className="ml-1 text-[10px] opacity-70">
-                ({cat === "all" ? mockFaqs.length : mockFaqs.filter((f) => f.category === cat).length})
+                ({cat === "all" ? faqs.length : faqs.filter((f) => f.category === cat).length})
               </span>
             </button>
           ))}

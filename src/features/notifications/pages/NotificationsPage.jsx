@@ -8,16 +8,18 @@ import {
   Package,
   Megaphone,
   UserPlus,
-  Check,
   CheckCheck,
   Trash2,
-  Filter,
+  Heart,
+  ShoppingCart,
 } from "lucide-react";
 import Button from "@/shared/ui/Button";
-import Badge from "@/shared/ui/Badge";
 import EmptyState from "@/shared/ui/EmptyState";
-import Avatar from "@/shared/ui/Avatar";
+import { useNotifications, useMarkNotificationRead, useMarkAllNotificationsRead } from "@/features/notifications/hooks/useNotifications";
 import { formatRelativeTime } from "@/shared/utils/format";
+import { notificationsApi } from "@/features/notifications/services/notifications.api";
+import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 const notificationTypes = {
   message: { icon: MessageCircle, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
@@ -26,101 +28,11 @@ const notificationTypes = {
   sold: { icon: Package, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
   system: { icon: Megaphone, color: "text-brand-800", bg: "bg-brand-50 dark:bg-brand-800/10" },
   follower: { icon: UserPlus, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
+  sale: { icon: ShoppingCart, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
+  favorite: { icon: Heart, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
+  order: { icon: ShoppingCart, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
+  view: { icon: TrendingDown, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
 };
-
-const initialNotifications = [
-  {
-    id: 1,
-    type: "message",
-    title: "Nouveau message de Kofi AmÃ©yo",
-    description: "Oui, je peux vous l'envoyer demain matin. Quel est votre adresse ?",
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    read: false,
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&facepad=2",
-    productName: "Samsung Galaxy S24 Ultra 256GB",
-  },
-  {
-    id: 2,
-    type: "price_drop",
-    title: "Baisse de prix !",
-    description: "Le prix de Â« PS5 + 2 Manettes + 3 Jeux Â» a baissÃ© de 450 000 Ã  380 000 FCFA.",
-    timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-    read: false,
-    image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=100&h=100&fit=crop",
-  },
-  {
-    id: 3,
-    type: "review",
-    title: "Nouvel avis reÃ§u",
-    description: "KÃ©vin AgbÃ©kÃ© a laissÃ© un avis 5 Ã©toiles sur votre annonce Â« PS5 + 2 Manettes + 3 Jeux Â».",
-    timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
-    read: false,
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&facepad=3",
-  },
-  {
-    id: 4,
-    type: "sold",
-    title: "Annonce vendue !",
-    description: "FÃ©licitations ! Votre Â« iPhone 15 Pro Max Â» a Ã©tÃ© marquÃ© comme vendu.",
-    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-    read: true,
-    image: "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=100&h=100&fit=crop",
-  },
-  {
-    id: 5,
-    type: "system",
-    title: "Mise Ã  jour d'TG-Market",
-    description: "Nouvelle fonctionnalitÃ© : paiement sÃ©curisÃ© via T-Money et Moov Money. DÃ©couvrez-le !",
-    timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    read: true,
-  },
-  {
-    id: 6,
-    type: "follower",
-    title: "Nouvel abonnÃ©",
-    description: "Efua Semonu suit maintenant votre profil.",
-    timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    read: true,
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&facepad=2",
-  },
-  {
-    id: 7,
-    type: "message",
-    title: "Nouveau message de Yao Agbeko",
-    description: "Merci pour l'info. Je vais visiter le weekend prochain.",
-    timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-    read: true,
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&facepad=2",
-    productName: "Appartement 3 chambres",
-  },
-  {
-    id: 8,
-    type: "price_drop",
-    title: "Baisse de prix !",
-    description: "Le prix de Â« Kit Panneaux Solaires 300W Â» a baissÃ© de 750 000 Ã  650 000 FCFA.",
-    timestamp: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-    read: true,
-    image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=100&h=100&fit=crop",
-  },
-  {
-    id: 9,
-    type: "review",
-    title: "Nouvel avis reÃ§u",
-    description: "Abra Povi a laissÃ© un avis 4 Ã©toiles sur Â« Pagne Wax Hollandais 6 yards Â».",
-    timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    read: true,
-    avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&facepad=2",
-  },
-  {
-    id: 10,
-    type: "follower",
-    title: "Nouvel abonnÃ©",
-    description: "Massa Houndjro suit maintenant votre profil.",
-    timestamp: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-    read: true,
-    avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=200&h=200&fit=crop&facepad=3",
-  },
-];
 
 const listVariants = {
   hidden: { opacity: 0 },
@@ -133,8 +45,14 @@ const itemVariants = {
 };
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState(initialNotifications);
+  const queryClient = useQueryClient();
   const [filter, setFilter] = useState("all");
+
+  const { data: notificationsData, isLoading } = useNotifications();
+  const markRead = useMarkNotificationRead();
+  const markAllRead = useMarkAllNotificationsRead();
+
+  const notifications = notificationsData?.data ?? [];
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -144,19 +62,47 @@ export default function NotificationsPage() {
     return true;
   });
 
-  const markAsRead = (id) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+  const handleMarkAsRead = (id) => {
+    markRead.mutate(id);
+  };
+
+  const handleMarkAllAsRead = () => {
+    markAllRead.mutate();
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await notificationsApi.delete(id);
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["unreadNotificationCount"] });
+      toast.success("Notification supprimée");
+    } catch {
+      toast.error("Erreur lors de la suppression");
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-[60vh]">
+        <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Notifications</h1>
+          </div>
+          <div className="space-y-3">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+                <div className="h-10 w-10 animate-pulse rounded-xl bg-gray-200 dark:bg-gray-700" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-48 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+                  <div className="h-3 w-72 animate-pulse rounded bg-gray-100 dark:bg-gray-800" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     );
-  };
-
-  const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-  };
-
-  const deleteNotification = (id) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
-  };
+  }
 
   if (notifications.length === 0) {
     return (
@@ -164,7 +110,7 @@ export default function NotificationsPage() {
         <EmptyState
           icon={Bell}
           title="Aucune notification"
-          description="Vous Ãªtes Ã  jour ! Les nouvelles activitÃ©s apparaÃ®tront ici."
+          description="Vous êtes à jour ! Les nouvelles activités apparaîtront ici."
         />
       </div>
     );
@@ -184,7 +130,7 @@ export default function NotificationsPage() {
           )}
         </div>
         {unreadCount > 0 && (
-          <Button variant="ghost" size="sm" icon={CheckCheck} onClick={markAllAsRead}>
+          <Button variant="ghost" size="sm" icon={CheckCheck} onClick={handleMarkAllAsRead}>
             Tout marquer comme lu
           </Button>
         )}
@@ -223,7 +169,7 @@ export default function NotificationsPage() {
       >
         <AnimatePresence mode="popLayout">
           {filteredNotifications.map((notification) => {
-            const typeConfig = notificationTypes[notification.type];
+            const typeConfig = notificationTypes[notification.type] || notificationTypes.system;
             const IconComponent = typeConfig.icon;
 
             return (
@@ -232,7 +178,7 @@ export default function NotificationsPage() {
                 variants={itemVariants}
                 exit={{ opacity: 0, x: -20, height: 0 }}
                 layout
-                onClick={() => markAsRead(notification.id)}
+                onClick={() => !notification.read && handleMarkAsRead(notification.id)}
                 className={`relative flex cursor-pointer gap-4 px-4 py-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50 ${
                   !notification.read
                     ? "bg-brand-50/50 dark:bg-brand-800/5"
@@ -244,35 +190,27 @@ export default function NotificationsPage() {
                 )}
 
                 <div className="shrink-0">
-                  {notification.avatar ? (
-                    <Avatar src={notification.avatar} size="md" />
-                  ) : notification.image ? (
-                    <img
-                      src={notification.image}
-                      alt=""
-                      className="h-10 w-10 rounded-xl object-cover"
-                    />
-                  ) : (
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${typeConfig.bg}`}>
-                      <IconComponent className={`h-5 w-5 ${typeConfig.color}`} />
-                    </div>
-                  )}
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${typeConfig.bg}`}>
+                    <IconComponent className={`h-5 w-5 ${typeConfig.color}`} />
+                  </div>
                 </div>
 
                 <div className="min-w-0 flex-1">
                   <p className={`text-sm ${!notification.read ? "font-semibold text-gray-900 dark:text-white" : "text-gray-700 dark:text-gray-300"}`}>
                     {notification.title}
                   </p>
-                  <p className="mt-0.5 line-clamp-2 text-xs text-gray-500 dark:text-gray-400">
-                    {notification.description}
-                  </p>
+                  {notification.description && (
+                    <p className="mt-0.5 line-clamp-2 text-xs text-gray-500 dark:text-gray-400">
+                      {notification.description}
+                    </p>
+                  )}
                   {notification.productName && (
                     <p className="mt-1 text-xs text-brand-800">
                       {notification.productName}
                     </p>
                   )}
                   <p className="mt-1 text-[11px] text-gray-400 dark:text-gray-500">
-                    {formatRelativeTime(notification.timestamp)}
+                    {formatRelativeTime(notification.createdAt)}
                   </p>
                 </div>
 
@@ -283,10 +221,9 @@ export default function NotificationsPage() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      deleteNotification(notification.id);
+                      handleDelete(notification.id);
                     }}
-                    className="rounded-lg p-1.5 text-gray-400 opacity-0 transition-opacity hover:bg-brand-50 hover:text-brand-700 group-hover:opacity-100 dark:hover:bg-brand-700/10 dark:hover:text-brand-400"
-                    style={{ opacity: 1 }}
+                    className="rounded-lg p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-800 dark:hover:bg-red-950/20 dark:hover:text-red-400"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>

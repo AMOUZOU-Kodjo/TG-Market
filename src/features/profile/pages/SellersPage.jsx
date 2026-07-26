@@ -1,10 +1,10 @@
-import { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Home, Star, MapPin, Package, ShieldCheck } from "lucide-react";
 import Breadcrumb from "@/shared/ui/Breadcrumb";
 import Avatar from "@/shared/ui/Avatar";
-import { mockUsersFormatted as mockUsers } from "@/data/users";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/shared/services/api";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -23,9 +23,12 @@ const stagger = {
 export default function SellersPage() {
   const navigate = useNavigate();
 
-  const sellers = useMemo(
-    () => mockUsers.filter((u) => u.verified),
-    []
+  const { data: sellersRaw = [], isLoading } = useQuery({
+    queryKey: ["sellers"],
+    queryFn: () => api.get("/users").then((r) => r.data),
+  });
+  const sellers = (sellersRaw?.data || sellersRaw || []).filter(
+    (u) => u.verified
   );
 
   return (

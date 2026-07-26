@@ -1,15 +1,8 @@
-import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Star, MessageSquarePlus, Send, TrendingUp } from "lucide-react";
-import toast from "react-hot-toast";
-import { reviewSchema } from "@/shared/utils/validators";
-import { mockReviews } from "@/data/reviews";
-import { useAuth } from "@/shared/contexts/AuthContext";
+import { useMemo } from "react";
+import { motion } from "framer-motion";
+import { Star, Lock } from "lucide-react";
+import { useSellerReviews } from "@/features/reviews/hooks/useReviews";
 import Avatar from "@/shared/ui/Avatar";
-import Button from "@/shared/ui/Button";
-import Textarea from "@/shared/ui/Textarea";
 import Rating from "@/shared/ui/Rating";
 import { formatRelativeTime } from "@/shared/utils/format";
 
@@ -35,16 +28,13 @@ function RatingBar({ star, count, total }) {
   );
 }
 
-export default function ProductReviews({ productId, reviews: propReviews }) {
-  const reviews = propReviews || mockReviews;
-  const { user, isAuthenticated } = useAuth();
-  const [showForm, setShowForm] = useState(false);
-  const [newRating, setNewRating] = useState(0);
+export default function ProductReviews({ productId, sellerId }) {
+  const { data: reviewsData } = useSellerReviews(sellerId);
+  const reviews = reviewsData?.data || reviewsData || [];
 
-  const productReviews = useMemo(
-    () => reviews.filter((r) => r.productTitle && r.id),
-    [reviews]
-  );
+  const productReviews = useMemo(() => {
+    return reviews.filter((r) => r.id);
+  }, [reviews]);
 
   const distribution = useMemo(() => {
     const dist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
@@ -61,31 +51,6 @@ export default function ProductReviews({ productId, reviews: propReviews }) {
     return sum / totalReviews;
   }, [productReviews, totalReviews]);
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm({
-    resolver: zodResolver(reviewSchema),
-    defaultValues: {
-      rating: 0,
-      comment: "",
-    },
-  });
-
-  const onSubmit = async (data) => {
-    if (newRating === 0) {
-      toast.error("Veuillez sélectionner une note");
-      return;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    toast.success("Votre avis a été envoyé !");
-    reset();
-    setNewRating(0);
-    setShowForm(false);
-  };
-
   return (
     <motion.section
       initial={{ opacity: 0, y: 20 }}
@@ -96,16 +61,6 @@ export default function ProductReviews({ productId, reviews: propReviews }) {
         <h2 className="text-xl font-bold text-gray-900 dark:text-white">
           Avis ({totalReviews})
         </h2>
-        {isAuthenticated && (
-          <Button
-            variant="outline"
-            size="sm"
-            icon={MessageSquarePlus}
-            onClick={() => setShowForm(!showForm)}
-          >
-            Laisser un avis
-          </Button>
-        )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
@@ -144,75 +99,19 @@ export default function ProductReviews({ productId, reviews: propReviews }) {
         </div>
 
         <div className="space-y-4">
-          <AnimatePresence>
-            {showForm && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="overflow-hidden"
-              >
-                <form
-                  onSubmit={handleSubmit(onSubmit)}
-                  className="rounded-2xl border border-red-300 bg-red-50/50 p-5 dark:border-red-800/20 dark:bg-red-800/5"
-                >
-                  <h3 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">
-                    Votre avis
-                  </h3>
-
-                  <div className="mb-4">
-                    <label className="mb-2 block text-sm text-gray-700 dark:text-gray-300">
-                      Note
-                    </label>
-                    <Rating
-                      value={newRating}
-                      size="lg"
-                      interactive
-                      onChange={(val) => setNewRating(val)}
-                    />
-                    {newRating === 0 && (
-                      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                        Cliquez sur une étoile
-                      </p>
-                    )}
-                  </div>
-
-                  <Textarea
-                    label="Votre commentaire"
-                    placeholder="Partagez votre expérience avec ce produit..."
-                    rows={3}
-                    maxLength={1000}
-                    showCount
-                    error={errors.comment?.message}
-                    {...register("comment")}
-                  />
-
-                  <div className="mt-3 flex gap-3">
-                    <Button
-                      type="submit"
-                      size="sm"
-                      loading={isSubmitting}
-                      icon={Send}
-                    >
-                      Envoyer
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setShowForm(false);
-                        setNewRating(0);
-                        reset();
-                      }}
-                    >
-                      Annuler
-                    </Button>
-                  </div>
-                </form>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 dark:border-blue-800/30 dark:bg-blue-900/10">
+            <div className="flex items-start gap-3">
+              <Lock className="mt-0.5 h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400" />
+              <div>
+                <p className="text-sm font-medium text-blue-900 dark:text-blue-300">
+                  Avis réservés aux acheteurs vérifiés
+                </p>
+                <p className="mt-1 text-xs text-blue-700 dark:text-blue-400">
+                  Seuls les acheteurs ayant finalisé un achat via la plateforme peuvent laisser un avis.
+                </p>
+              </div>
+            </div>
+          </div>
 
           {productReviews.slice(0, 8).map((review, index) => (
             <motion.div
@@ -250,9 +149,9 @@ export default function ProductReviews({ productId, reviews: propReviews }) {
 
           {totalReviews === 0 && (
             <div className="rounded-2xl border border-dashed border-gray-200 p-8 text-center dark:border-gray-700">
-              <TrendingUp className="mx-auto mb-3 h-8 w-8 text-gray-400" />
+              <Star className="mx-auto mb-3 h-8 w-8 text-gray-400" />
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Aucun avis pour ce produit. Soyez le premier !
+                Aucun avis pour ce vendeur pour le moment.
               </p>
             </div>
           )}

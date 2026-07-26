@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@/shared/contexts/ThemeContext";
@@ -101,7 +101,7 @@ function App() {
                         path="/notifications"
                         element={
                           <AuthGuard>
-                            <NotificationsPage />
+                            <Navigate to="/dashboard/notifications" replace />
                           </AuthGuard>
                         }
                       />
@@ -125,7 +125,7 @@ function App() {
                         path="/profil"
                         element={
                           <AuthGuard>
-                            <UserProfilePage />
+                            <Navigate to="/dashboard/profile" replace />
                           </AuthGuard>
                         }
                       />
@@ -205,7 +205,9 @@ function App() {
                       <Route path="/dashboard/products" element={<SellerDashboardPage defaultTab="products" />} />
                       <Route path="/dashboard/orders" element={<SellerDashboardPage defaultTab="orders" />} />
                       <Route path="/dashboard/messages" element={<MessagesPage />} />
+                      <Route path="/dashboard/notifications" element={<SellerDashboardPage defaultTab="notifications" />} />
                       <Route path="/dashboard/analytics" element={<SellerDashboardPage defaultTab="analytics" />} />
+                      <Route path="/dashboard/profile" element={<SellerDashboardPage defaultTab="profile" />} />
                       <Route path="/dashboard/promotions" element={<SellerDashboardPage defaultTab="promotions" />} />
                       <Route path="/dashboard/settings" element={<SettingsPage />} />
                     </Route>

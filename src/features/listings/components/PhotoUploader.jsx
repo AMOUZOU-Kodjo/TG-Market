@@ -4,19 +4,6 @@ import { Camera, X, Plus, GripVertical, Upload } from "lucide-react";
 import { cn } from "@/shared/utils/cn";
 import { MAX_IMAGES_PER_LISTING } from "@/shared/constants";
 
-const PLACEHOLDER_PHOTOS = [
-  "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=600&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1606722590583-6951b5ea92ad?w=600&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=600&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=600&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1590735213920-68192a487bc2?w=600&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1541643600914-78b084683601?w=600&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=600&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&h=400&fit=crop",
-];
-
 export default function PhotoUploader({
   photos = [],
   onPhotosChange,
@@ -24,21 +11,47 @@ export default function PhotoUploader({
   error,
 }) {
   const [isDragOver, setIsDragOver] = useState(false);
-  const placeholderIndex = useRef(0);
+  const fileInputRef = useRef(null);
 
-  const addPhoto = useCallback(() => {
-    if (photos.length >= maxPhotos) return;
-    const newPhoto = {
-      id: `photo-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-      url: PLACEHOLDER_PHOTOS[placeholderIndex.current % PLACEHOLDER_PHOTOS.length],
-      name: `Photo ${photos.length + 1}`,
-    };
-    placeholderIndex.current++;
-    onPhotosChange?.([...photos, newPhoto]);
-  }, [photos, maxPhotos, onPhotosChange]);
+  const processFiles = useCallback(
+    (files) => {
+      const remaining = maxPhotos - photos.length;
+      const imageFiles = Array.from(files)
+        .filter((f) => f.type.startsWith("image/"))
+        .slice(0, remaining);
+
+      if (imageFiles.length === 0) return;
+
+      const newPhotos = imageFiles.map((file) => ({
+        id: `photo-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        url: URL.createObjectURL(file),
+        file,
+        name: file.name,
+      }));
+
+      onPhotosChange?.([...photos, ...newPhotos]);
+    },
+    [photos, maxPhotos, onPhotosChange]
+  );
+
+  const handleFileChange = useCallback(
+    (e) => {
+      processFiles(e.target.files);
+      e.target.value = "";
+    },
+    [processFiles]
+  );
+
+  const openFilePicker = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
 
   const removePhoto = useCallback(
     (id) => {
+      const photo = photos.find((p) => p.id === id);
+      if (photo?.url?.startsWith("blob:")) {
+        URL.revokeObjectURL(photo.url);
+      }
       onPhotosChange?.(photos.filter((p) => p.id !== id));
     },
     [photos, onPhotosChange]
@@ -57,9 +70,9 @@ export default function PhotoUploader({
     (e) => {
       e.preventDefault();
       setIsDragOver(false);
-      addPhoto();
+      processFiles(e.dataTransfer.files);
     },
-    [addPhoto]
+    [processFiles]
   );
 
   const reorderPhotos = useCallback(
@@ -71,11 +84,20 @@ export default function PhotoUploader({
 
   return (
     <div className="space-y-4">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        onClick={() => photos.length < maxPhotos && addPhoto()}
+        onClick={openFilePicker}
         className={cn(
           "relative cursor-pointer rounded-2xl border-2 border-dashed p-8 text-center transition-all",
           isDragOver
@@ -95,7 +117,7 @@ export default function PhotoUploader({
                 : "Ajoutez des photos à votre annonce"}
             </p>
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              Glissez-déposez ou cliquez pour ajouter • {photos.length}/{maxPhotos}{" "}
+              Glissez-déposez ou cliquez pour ajouter &bull; {photos.length}/{maxPhotos}{" "}
               photos
             </p>
           </div>
@@ -104,7 +126,7 @@ export default function PhotoUploader({
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                addPhoto();
+                openFilePicker();
               }}
               className="inline-flex items-center gap-1.5 rounded-lg bg-brand-800 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-900"
             >
@@ -175,7 +197,7 @@ export default function PhotoUploader({
           {photos.length < maxPhotos && (
             <button
               type="button"
-              onClick={addPhoto}
+              onClick={openFilePicker}
               className="flex h-28 w-28 shrink-0 items-center justify-center rounded-xl border-2 border-dashed border-gray-300 transition-colors hover:border-brand-700 hover:bg-brand-50 dark:border-gray-700 dark:hover:border-brand-800 dark:hover:bg-gray-800/50"
             >
               <Plus className="h-6 w-6 text-gray-400" />

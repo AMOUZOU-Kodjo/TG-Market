@@ -17,12 +17,18 @@ import {
   HelpCircle,
   TrendingUp,
   Wallet,
+  ArrowLeft,
   Eye,
   Heart,
   X,
+  User,
 } from "lucide-react";
 import Logo from "@/shared/ui/Logo";
 import { useAuth } from "@/shared/contexts/AuthContext";
+import { useMyProducts } from "@/features/products/hooks/useProducts";
+import { useEscrowList, useWalletBalance } from "@/features/wallet/hooks/useWallet";
+import { useFavorites } from "@/features/favorites/hooks/useFavorites";
+import { formatCFA } from "@/shared/utils/format";
 
 export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -30,6 +36,16 @@ export default function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+
+  const { data: myProductsData } = useMyProducts();
+  const { data: escrowData } = useEscrowList();
+  const { data: walletData } = useWalletBalance();
+  const { data: favoritesData } = useFavorites();
+
+  const totalViews = myProductsData?.data?.reduce((s, p) => s + (p.views || 0), 0) ?? 0;
+  const totalFavorites = favoritesData?.meta?.total ?? favoritesData?.total ?? 0;
+  const completedSales = escrowData?.data?.filter((e) => e.status === "completed").length ?? 0;
+  const totalEarned = walletData?.totalEarned ?? 0;
 
   useEffect(() => {
     setMobileSidebarOpen(false);
@@ -40,16 +56,17 @@ export default function DashboardLayout() {
     { to: "/dashboard/products", label: "Mes annonces", icon: Package },
     { to: "/dashboard/orders", label: "Mes commandes", icon: ShoppingBag },
     { to: "/dashboard/messages", label: "Messages", icon: MessageCircle, badge: user?.unreadMessages },
+    { to: "/dashboard/notifications", label: "Notifications", icon: Bell, badge: user?.unreadNotifications },
     { to: "/dashboard/analytics", label: "Statistiques", icon: BarChart3 },
-    { to: "/dashboard/promotions", label: "Promotions", icon: Megaphone },
+    { to: "/dashboard/profile", label: "Profil", icon: User },
     { to: "/dashboard/settings", label: "Parametres", icon: Settings },
   ];
 
   const quickStats = [
-    { label: "Vues totales", value: "3 456", icon: Eye, color: "blue" },
-    { label: "Favoris", value: "89", icon: Heart, color: "pink" },
-    { label: "Ventes", value: "12", icon: TrendingUp, color: "green" },
-    { label: "Revenus", value: "1.2M", icon: Wallet, color: "purple" },
+    { label: "Vues totales", value: totalViews.toLocaleString("fr-FR"), icon: Eye, color: "blue" },
+    { label: "Favoris", value: totalFavorites.toLocaleString("fr-FR"), icon: Heart, color: "pink" },
+    { label: "Ventes", value: completedSales.toLocaleString("fr-FR"), icon: TrendingUp, color: "green" },
+    { label: "Revenus", value: formatCFA(totalEarned), icon: Wallet, color: "purple" },
   ];
 
   return (
@@ -101,18 +118,24 @@ export default function DashboardLayout() {
           {/* User Info */}
           <div className={`p-4 border-b border-gray-100 dark:border-gray-700 ${!sidebarOpen ? "px-2" : ""}`}>
             <div className={`flex items-center gap-3 ${!sidebarOpen ? "justify-center" : ""}`}>
-              <img
-                src={user.avatar}
-                alt={user.name}
-                className="w-10 h-10 rounded-full object-cover ring-2 ring-brand-700/20 shrink-0"
-              />
+              {user?.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt={user.name}
+                  className="w-10 h-10 rounded-full object-cover ring-2 ring-brand-700/20 shrink-0"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-brand-100 dark:bg-brand-800/20 flex items-center justify-center text-brand-800 dark:text-brand-400 font-bold shrink-0">
+                  {user?.name?.charAt(0)?.toUpperCase() || "?"}
+                </div>
+              )}
               {sidebarOpen && (
                 <div className="min-w-0">
                   <p className="font-semibold text-gray-900 dark:text-white text-sm truncate">
-                    {user.name}
+                    {user?.name}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                    {user.productCount} annonces
+                    {user?.productCount ?? 0} annonces
                   </p>
                 </div>
               )}
@@ -152,6 +175,13 @@ export default function DashboardLayout() {
 
           {/* Sidebar Footer */}
           <div className="p-3 border-t border-gray-100 dark:border-gray-700 space-y-1">
+            <Link
+              to="/"
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+            >
+              <ArrowLeft className="w-5 h-5 shrink-0" />
+              {sidebarOpen && <span>Retour au site</span>}
+            </Link>
             <Link
               to="/faq"
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
@@ -195,7 +225,7 @@ export default function DashboardLayout() {
                 className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition-colors"
               >
                 <MessageCircle className="w-5 h-5" />
-                {user.unreadMessages > 0 && (
+                {user?.unreadMessages > 0 && (
                   <span className="absolute top-1 right-1 w-4 h-4 bg-brand-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                     {user.unreadMessages}
                   </span>

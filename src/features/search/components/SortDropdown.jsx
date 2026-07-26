@@ -8,7 +8,6 @@ const SORT_OPTIONS = [
   { value: "price_asc", label: "Prix croissant" },
   { value: "price_desc", label: "Prix décroissant" },
   { value: "popular", label: "Plus populaire" },
-  { value: "distance", label: "Plus proche" },
 ];
 
 export default function SortDropdown({ value = "newest", onChange, className }) {

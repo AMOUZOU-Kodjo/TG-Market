@@ -3,17 +3,33 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Share2, Flag, Copy, Check } from "lucide-react";
 import toast from "react-hot-toast";
 import { cn } from "@/shared/utils/cn";
+import { useCheckFavorite, useToggleFavorite } from "@/features/favorites/hooks/useFavorites";
+import { useAuth } from "@/shared/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function ProductActions({ product }) {
-  const [isFavorite, setIsFavorite] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const { data: favData } = useCheckFavorite(product?.id);
+  const toggleFav = useToggleFavorite();
+
+  const isFavorite = favData?.isFavorite ?? false;
+
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const handleFavorite = () => {
-    setIsFavorite(!isFavorite);
-    toast.success(
-      isFavorite ? "Retiré des favoris" : "Ajouté aux favoris ❤️"
-    );
+  const handleFavorite = async () => {
+    if (!isAuthenticated) {
+      toast.error("Connectez-vous pour ajouter aux favoris");
+      navigate("/connexion");
+      return;
+    }
+    try {
+      await toggleFav.mutateAsync(product.id);
+      toast.success(isFavorite ? "Retiré des favoris" : "Ajouté aux favoris");
+    } catch {
+      toast.error("Erreur lors de la modification du favori");
+    }
   };
 
   const handleShare = () => {
@@ -68,6 +84,7 @@ export default function ProductActions({ product }) {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={handleFavorite}
+        disabled={toggleFav.isPending}
         className={cn(
           "relative flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all",
           isFavorite

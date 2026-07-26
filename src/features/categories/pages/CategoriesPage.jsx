@@ -38,7 +38,7 @@ import {
   LayoutGrid,
   ChevronRight,
 } from "lucide-react";
-import { mockCategories } from "@/data/categories";
+import { useCategories } from "@/features/categories/hooks/useCategories";
 import Breadcrumb from "@/shared/ui/Breadcrumb";
 import Badge from "@/shared/ui/Badge";
 import { cn } from "@/shared/utils/cn";
@@ -135,18 +135,19 @@ const staggerItem = {
 };
 
 export default function CategoriesPage() {
+  const { data: categories = [], isLoading } = useCategories();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLetter, setSelectedLetter] = useState(null);
 
   const alphabet = useMemo(() => {
     const letters = new Set(
-      mockCategories.map((c) => c.name.charAt(0).toUpperCase())
+      categories.map((c) => c.name.charAt(0).toUpperCase())
     );
     return [...letters].sort();
   }, []);
 
   const filteredCategories = useMemo(() => {
-    let result = mockCategories;
+    let result = categories;
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -166,7 +167,7 @@ export default function CategoriesPage() {
     return result;
   }, [searchQuery, selectedLetter]);
 
-  const totalProducts = mockCategories.reduce(
+  const totalProducts = categories.reduce(
     (sum, c) => sum + c.productCount,
     0
   );
@@ -193,7 +194,7 @@ export default function CategoriesPage() {
                 Toutes les catégories
               </h1>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {mockCategories.length} catégories ·{" "}
+                {categories.length} catégories ·{" "}
                 {new Intl.NumberFormat("fr-FR").format(totalProducts)} annonces au total
               </p>
             </div>

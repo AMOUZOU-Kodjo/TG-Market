@@ -1,43 +1,28 @@
-import { useMemo } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronRight, Package } from "lucide-react";
-import { mockCategories } from "@/data/categories";
-import { mockProducts } from "@/data/products";
+import { useCategory, useCategoryProducts } from "@/features/categories/hooks/useCategories";
 import ProductCard from "@/shared/ui/ProductCard";
 import Breadcrumb from "@/shared/ui/Breadcrumb";
 import EmptyState from "@/shared/ui/EmptyState";
 
-const slugToCategoryName = Object.fromEntries(
-  mockCategories.map((c) => [c.slug, c.name])
-);
-
 export default function CategoryPage() {
   const { slug } = useParams();
 
-  const category = useMemo(
-    () => mockCategories.find((c) => c.slug === slug),
-    [slug]
-  );
+  const { data: category } = useCategory(slug);
+  const { data: productsData } = useCategoryProducts(slug, { page: 1, perPage: 20 });
 
-  const categoryName = category?.name || slugToCategoryName[slug] || slug;
+  const categoryName = category?.name || slug;
+  const products = productsData?.data || productsData || [];
 
-  const products = useMemo(
-    () =>
-      mockProducts.filter(
-        (p) => p.category?.toLowerCase() === categoryName.toLowerCase()
-      ),
-    [categoryName]
-  );
-
-  if (!category && !slugToCategoryName[slug]) {
+  if (!category) {
     return <Navigate to="/404" replace />;
   }
 
   const breadcrumbItems = [
     { label: "Accueil", href: "/" },
     { label: "Catégories", href: "/categories" },
-    { label: category?.name || categoryName },
+    { label: categoryName },
   ];
 
   return (
@@ -52,7 +37,7 @@ export default function CategoryPage() {
           className="mb-8"
         >
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
-            {category?.name || categoryName}
+            {categoryName}
           </h1>
           {category?.description && (
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -88,6 +73,7 @@ export default function CategoryPage() {
             {products.map((product) => (
               <ProductCard
                 key={product.id}
+                productId={product.id}
                 image={product.images?.[0]}
                 title={product.title}
                 price={product.price}

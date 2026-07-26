@@ -16,7 +16,8 @@ import SearchBar from "@/shared/ui/SearchBar";
 import SortDropdown from "@/features/search/components/SortDropdown";
 import FilterSidebar from "@/features/search/components/FilterSidebar";
 import ActiveFilters from "@/features/search/components/ActiveFilters";
-import { mockProducts } from "@/data/products";
+import { useSearch } from "@/features/search/hooks/useSearch";
+import { useCategories } from "@/features/categories/hooks/useCategories";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -79,7 +80,6 @@ const initialFilters = {
 export default function SearchResultsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [isLoading] = useState(false);
   const [view, setView] = useState("grid");
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
@@ -205,77 +205,24 @@ export default function SearchResultsPage() {
     return chips;
   }, [filters]);
 
-  const filteredProducts = useMemo(() => {
-    let result = [...mockProducts];
+  const searchParamsObj = useMemo(() => {
+    const params = {
+      q: query || undefined,
+      sort,
+      perPage: ITEMS_PER_PAGE,
+    };
+    if (filters.categories.length > 0) params.categories = filters.categories.join(",");
+    if (filters.minPrice) params.minPrice = Number(filters.minPrice);
+    if (filters.maxPrice) params.maxPrice = Number(filters.maxPrice);
+    if (filters.conditions.length > 0) params.conditions = filters.conditions.join(",");
+    if (filters.city) params.city = filters.city;
+    return params;
+  }, [query, sort, page, filters]);
 
-    if (query) {
-      const q = query.toLowerCase();
-      result = result.filter(
-        (p) =>
-          p.title.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q) ||
-          p.category.toLowerCase().includes(q) ||
-          (p.brand && p.brand.toLowerCase().includes(q)) ||
-          p.tags?.some((t) => t.toLowerCase().includes(q))
-      );
-    }
-
-    if (filters.categories.length > 0) {
-      result = result.filter((p) =>
-        filters.categories.includes(p.categorySlug)
-      );
-    }
-
-    if (filters.conditions.length > 0) {
-      result = result.filter((p) =>
-        filters.conditions.some((c) => {
-          const condMap = { new: "Neuf", like_new: "Comme neuf", good: "Bon état", fair: "État correct", poor: "Usé" };
-          return condMap[c] === p.condition || c === p.condition;
-        })
-      );
-    }
-
-    if (filters.minPrice) {
-      result = result.filter((p) => p.price >= Number(filters.minPrice));
-    }
-    if (filters.maxPrice) {
-      result = result.filter((p) => p.price <= Number(filters.maxPrice));
-    }
-
-    if (filters.city) {
-      result = result.filter((p) => p.city === filters.city);
-    }
-
-    if (filters.verifiedSeller) result = result.filter((p) => p.seller?.verified);
-    if (filters.deliveryAvailable) result = result.filter((p) => p.deliveryAvailable);
-    if (filters.negotiable) result = result.filter((p) => p.negotiable);
-    if (filters.urgent) result = result.filter((p) => p.urgent);
-    if (filters.onPromotion) result = result.filter((p) => p.onPromotion);
-
-    switch (sort) {
-      case "price_asc":
-        result.sort((a, b) => a.price - b.price);
-        break;
-      case "price_desc":
-        result.sort((a, b) => b.price - a.price);
-        break;
-      case "popular":
-        result.sort((a, b) => b.views - a.views);
-        break;
-      case "newest":
-      default:
-        result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        break;
-    }
-
-    return result;
-  }, [query, filters, sort]);
-
-  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / ITEMS_PER_PAGE));
-  const paginatedProducts = filteredProducts.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE
-  );
+  const { data: searchData, isLoading } = useSearch(searchParamsObj);
+  const filteredProducts = searchData?.data || [];
+  const totalPages = searchData?.meta?.lastPage || Math.max(1, Math.ceil((searchData?.meta?.total || 0) / ITEMS_PER_PAGE));
+  const paginatedProducts = filteredProducts;
 
   const containerVariants = {
     hidden: {},
@@ -320,7 +267,7 @@ export default function SearchResultsPage() {
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-gray-600 dark:text-gray-400">
             <span className="font-semibold text-gray-900 dark:text-white">
-              {filteredProducts.length}
+              {searchData?.total || filteredProducts.length}
             </span>{" "}
             annonce{filteredProducts.length !== 1 ? "s" : ""} trouvée
             {filteredProducts.length !== 1 ? "s" : ""}
@@ -414,6 +361,7 @@ export default function SearchResultsPage() {
                     transition={{ delay: index * 0.04 }}
                   >
                     <ProductCard
+                      productId={product.id}
                       image={product.images[0]}
                       title={product.title}
                       price={product.price}
@@ -436,6 +384,7 @@ export default function SearchResultsPage() {
                 {paginatedProducts.map((product) => (
                   <motion.div key={product.id} variants={itemVariants}>
                     <ProductCard
+                      productId={product.id}
                       image={product.images[0]}
                       title={product.title}
                       price={product.price}

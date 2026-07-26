@@ -11,26 +11,31 @@ import {
 import ConversationItem from "@/features/chat/components/ConversationItem";
 import ConversationPage from "@/features/chat/pages/ConversationPage";
 import EmptyState from "@/shared/ui/EmptyState";
-import { mockConversations, mockMessages } from "@/data/messages";
+import { useConversations } from "@/features/chat/hooks/useConversations";
+import { useAuth } from "@/shared/contexts/AuthContext";
 import { cn } from "@/shared/utils/cn";
 
 export default function MessagesPage() {
+  const { user } = useAuth();
+  const { data: conversationsData = [] } = useConversations();
+  const conversations = conversationsData?.data || conversationsData || [];
+
   const [selectedId, setSelectedId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showMobileList, setShowMobileList] = useState(true);
 
   const filteredConversations = useMemo(() => {
-    if (!searchQuery.trim()) return mockConversations;
+    if (!searchQuery.trim()) return conversations;
     const q = searchQuery.toLowerCase();
-    return mockConversations.filter(
+    return conversations.filter(
       (c) =>
         c.participant?.name?.toLowerCase().includes(q) ||
         c.lastMessage?.toLowerCase().includes(q) ||
         c.product?.title?.toLowerCase().includes(q)
     );
-  }, [searchQuery]);
+  }, [searchQuery, conversations]);
 
-  const selectedConversation = mockConversations.find((c) => c.id === selectedId);
+  const selectedConversation = conversations.find((c) => c.id === selectedId);
 
   const handleSelect = (id) => {
     setSelectedId(id);
@@ -127,7 +132,7 @@ export default function MessagesPage() {
             </div>
             <ConversationPage
               conversation={selectedConversation}
-              messages={mockMessages}
+              messages={selectedConversation?.messages || []}
             />
           </>
         ) : (

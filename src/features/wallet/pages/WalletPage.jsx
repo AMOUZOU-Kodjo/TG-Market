@@ -25,7 +25,7 @@ import Badge from "@/shared/ui/Badge";
 import StatCard from "@/shared/ui/StatCard";
 import Tabs from "@/shared/ui/Tabs";
 import { formatCFA, formatRelativeTime } from "@/shared/utils/format";
-import { mockWalletBalance, mockWalletTransactions, mockEscrowTransactions } from "@/data/payments";
+import { useWalletBalance, useWalletTransactions, useEscrowList } from "@/features/wallet/hooks/useWallet";
 import WalletBalance from "@/features/payment/components/WalletBalance";
 import EscrowCard from "@/features/payment/components/EscrowCard";
 import EscrowTimeline from "@/features/payment/components/EscrowTimeline";
@@ -51,6 +51,14 @@ const txTypeIcons = {
 };
 
 export default function WalletPage() {
+  const { data: balanceData } = useWalletBalance();
+  const { data: txData } = useWalletTransactions();
+  const { data: escrowData } = useEscrowList();
+
+  const walletBalance = balanceData?.data || balanceData || { available: 0, hold: 0, total: 0 };
+  const walletTransactions = txData?.data || txData || [];
+  const escrowTransactions = escrowData?.data || escrowData || [];
+
   const [activeTab, setActiveTab] = useState("transactions");
   const [showBalance, setShowBalance] = useState(true);
   const [selectedEscrow, setSelectedEscrow] = useState(null);
@@ -58,7 +66,7 @@ export default function WalletPage() {
 
   const tabs = [
     { id: "transactions", label: "Transactions" },
-    { id: "escrow", label: "Séquestre", badge: mockEscrowTransactions.filter(t => t.status !== "completed").length },
+    { id: "escrow", label: "Séquestre", badge: escrowTransactions.filter(t => t.status !== "completed").length },
     { id: "methods", label: "Moyens de paiement" },
   ];
 
@@ -97,7 +105,7 @@ export default function WalletPage() {
               </div>
               <div className="mb-6">
                 <span className="text-3xl font-bold sm:text-4xl">
-                  {showBalance ? formatCFA(mockWalletBalance.available) : "•••••••"}
+                  {showBalance ? formatCFA(walletBalance.available) : "•••••••"}
                 </span>
               </div>
               <div className="flex gap-3">
@@ -126,7 +134,7 @@ export default function WalletPage() {
 
         {/* Stats */}
         <motion.div variants={itemVariants}>
-          <WalletBalance balance={mockWalletBalance} />
+          <WalletBalance balance={walletBalance} />
         </motion.div>
 
         {/* Tabs */}
@@ -144,10 +152,10 @@ export default function WalletPage() {
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Historique des transactions
               </h2>
-              <Badge variant="secondary">{mockWalletTransactions.length}</Badge>
+              <Badge variant="secondary">{walletTransactions.length}</Badge>
             </div>
             <div className="divide-y divide-gray-100 dark:divide-gray-800">
-              {mockWalletTransactions.map((tx, i) => {
+              {walletTransactions.map((tx, i) => {
                 const config = txTypeIcons[tx.type] || txTypeIcons.sale;
                 const Icon = config.icon;
                 return (
@@ -212,7 +220,7 @@ export default function WalletPage() {
               </div>
             ) : (
               <>
-                {mockEscrowTransactions.length === 0 ? (
+                {escrowTransactions.length === 0 ? (
                   <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900">
                     <Shield className="mx-auto h-12 w-12 text-gray-300 dark:text-gray-600" />
                     <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">
@@ -224,7 +232,7 @@ export default function WalletPage() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {mockEscrowTransactions.map((tx) => (
+                    {escrowTransactions.map((tx) => (
                       <EscrowCard
                         key={tx.id}
                         transaction={tx}
@@ -283,7 +291,7 @@ export default function WalletPage() {
       <WithdrawModal
         isOpen={showWithdraw}
         onClose={() => setShowWithdraw(false)}
-        balance={mockWalletBalance.available}
+        balance={walletBalance.available}
         method="flooz"
       />
     </div>

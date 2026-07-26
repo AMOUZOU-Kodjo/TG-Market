@@ -72,7 +72,7 @@ export default function ProductCard({
             imageLoaded ? "opacity-100" : "opacity-0"
           )}
         />
-        <div className="absolute inset-0 bg-black/0 hover:bg-black/20" />
+        <div className="absolute inset-0 bg-transparent hover:bg-black/20" />
         {productId && (
           <button
             onClick={handleFavorite}

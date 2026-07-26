@@ -106,9 +106,7 @@ export default function CreateListingPage() {
   async function uploadImages(files) {
     const formData = new FormData();
     files.forEach((file) => formData.append("files", file));
-    const res = await api.post("/upload/images", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const res = await api.post("/upload/images", formData);
     return res.data.data.map((img) => img.url);
   }
 

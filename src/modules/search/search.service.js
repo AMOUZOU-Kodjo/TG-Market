@@ -52,7 +52,7 @@ function buildILIKEWhere(filters) {
 
   const where = { status: 'active' };
 
-  if (q) {
+  if (q && q.trim().length > 0) {
     where.OR = [
       { title: { contains: q, mode: 'insensitive' } },
       { description: { contains: q, mode: 'insensitive' } },
@@ -97,12 +97,8 @@ function buildILIKEWhere(filters) {
 export async function search(filters, userId = null) {
   const { q, categories, conditions, minPrice, maxPrice, city, sort, page, perPage } = filters;
 
-  if (!q || q.trim().length === 0) {
-    return { products: [], total: 0 };
-  }
-
-  const searchTerm = q.trim();
-  const where = buildILIKEWhere(filters);
+  const searchTerm = q?.trim() || null;
+  const where = buildILIKEWhere({ ...filters, q: searchTerm });
   const orderBy = buildSortOption(sort);
   const skip = (page - 1) * perPage;
 

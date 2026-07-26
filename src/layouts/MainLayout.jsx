@@ -84,7 +84,7 @@ export default function MainLayout() {
   ];
 
   const userMenuItems = [
-    { to: "/profil", label: "Mon profil", icon: User },
+    { to: "/dashboard", label: "Mon profil", icon: User },
     { to: "/tableau-de-bord", label: "Tableau de bord", icon: LayoutDashboard },
     {
       to: "/messages",

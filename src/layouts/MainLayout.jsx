@@ -379,9 +379,7 @@ export default function MainLayout() {
           </header>
 
           {/* Category Bar */}
- <div className="flex justify-center">
-            <CategoryBar />
-          </div>
+         <CategoryBar />
         </div>
 
         {/* Main Content */}

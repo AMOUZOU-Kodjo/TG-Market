@@ -56,7 +56,7 @@ export default function ProductCard({
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       onClick={onClick}
       className={cn(
-        "group cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white  transition-shadow hover:shadow-lg dark:border-gray-800 dark:bg-gray-900",
+        "group cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white  dark:border-gray-800 dark:bg-gray-900",
         className
       )}
       {...rest}

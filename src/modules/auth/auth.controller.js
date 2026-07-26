@@ -1,0 +1,82 @@
+import * as authService from './auth.service.js';
+
+export async function register(req, res, next) {
+  try {
+    const result = await authService.register(req.validated.body, req);
+    res.status(201).json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function login(req, res, next) {
+  try {
+    const result = await authService.login(req.validated.body, req);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function logout(req, res, next) {
+  try {
+    const result = await authService.logout(req.user.id);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function refresh(req, res, next) {
+  try {
+    const result = await authService.refresh(req.validated.body.refreshToken, req);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getMe(req, res, next) {
+  try {
+    const result = await authService.getMe(req.user.id);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function updateProfile(req, res, next) {
+  try {
+    const result = await authService.updateProfile(req.user.id, req.validated.body);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function changePassword(req, res, next) {
+  try {
+    const result = await authService.changePassword(req.user.id, req.validated.body, req);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function forgotPassword(req, res, next) {
+  try {
+    const result = await authService.forgotPassword(req.validated.body.email);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function resetPassword(req, res, next) {
+  try {
+    const result = await authService.resetPassword(req.validated.body);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}

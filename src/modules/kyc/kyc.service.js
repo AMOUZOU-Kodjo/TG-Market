@@ -1,0 +1,124 @@
+import prisma from '../../config/database.js';
+import redis from '../../config/redis.js';
+import { generateOtp } from '../../utils/helpers.js';
+
+export async function getStatus(userId) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      phone_verified_at: true,
+      email_verified_at: true,
+      identity_verified: true,
+      is_professional: true,
+      is_trusted: true,
+    },
+  });
+
+  if (!user) {
+    const error = new Error('Utilisateur introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  const latestKyc = await prisma.kycVerification.findFirst({
+    where: { user_id: userId },
+    orderBy: { created_at: 'desc' },
+    select: {
+      document_type: true,
+      status: true,
+      submitted_at: true,
+      reviewed_at: true,
+      rejection_reason: true,
+    },
+  });
+
+  return {
+    phoneVerified: user.phone_verified_at !== null,
+    emailVerified: user.email_verified_at !== null,
+    identityVerified: user.identity_verified,
+    professionalSeller: user.is_professional,
+    trustedSeller: user.is_trusted,
+    documentType: latestKyc?.document_type ?? null,
+    documentStatus: latestKyc?.status ?? 'none',
+    selfieStatus: latestKyc?.status ?? 'none',
+    submittedAt: latestKyc?.submitted_at ?? null,
+    verifiedAt: latestKyc?.reviewed_at ?? null,
+    rejectionReason: latestKyc?.rejection_reason ?? null,
+  };
+}
+
+export async function submitKyc(userId, data) {
+  const existing = await prisma.kycVerification.findFirst({
+    where: {
+      user_id: userId,
+      status: 'pending',
+    },
+    select: { id: true },
+  });
+
+  if (existing) {
+    const error = new Error('Une demande de vérification est déjà en cours');
+    error.status = 409;
+    throw error;
+  }
+
+  const kyc = await prisma.kycVerification.create({
+    data: {
+      user_id: userId,
+      document_type: data.documentType,
+      document_front_url: data.documentFrontUrl,
+      document_back_url: data.documentBackUrl ?? null,
+      selfie_url: data.selfieUrl,
+      status: 'pending',
+      submitted_at: new Date(),
+    },
+  });
+
+  return {
+    id: kyc.id,
+    status: kyc.status,
+    submittedAt: kyc.submitted_at,
+  };
+}
+
+export async function sendOtp(userId) {
+  const otp = generateOtp();
+  await redis.set(`otp:${userId}`, otp, 'EX', 300);
+
+  return { message: 'Code OTP envoyé' };
+}
+
+export async function verifyOtp(userId, otp) {
+  const storedOtp = await redis.get(`otp:${userId}`);
+
+  if (!storedOtp || storedOtp !== otp) {
+    const error = new Error('Code OTP invalide ou expiré');
+    error.status = 400;
+    throw error;
+  }
+
+  await redis.del(`otp:${userId}`);
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { phone_verified_at: new Date() },
+  });
+
+  return { message: 'Téléphone vérifié avec succès' };
+}
+
+export async function getBadges(userId) {
+  const badges = await prisma.userBadge.findMany({
+    where: { user_id: userId },
+    orderBy: { earned_at: 'desc' },
+    select: {
+      badge_key: true,
+      earned_at: true,
+    },
+  });
+
+  return badges.map((b) => ({
+    key: b.badge_key,
+    earnedAt: b.earned_at,
+  }));
+}

@@ -4,41 +4,79 @@ import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-const categories = [
-  { name: "Téléphones & Accessoires", slug: "telephones", icon: "Smartphone", color: "#3B82F6", sort_order: 1 },
-  { name: "Informatique", slug: "informatique", icon: "Laptop", color: "#8B5CF6", sort_order: 2 },
-  { name: "Électronique", slug: "electronique", icon: "Tv", color: "#EC4899", sort_order: 3 },
-  { name: "Vêtements & Mode", slug: "vetements", icon: "Shirt", color: "#F59E0B", sort_order: 4 },
-  { name: "Maison & Décoration", slug: "maison", icon: "Home", color: "#10B981", sort_order: 5 },
-  { name: "Multimédia", slug: "multimedia", icon: "Gamepad2", color: "#EF4444", sort_order: 6 },
-  { name: "Véhicules", slug: "vehicules", icon: "Car", color: "#6366F1", sort_order: 7 },
-  { name: "Beauté & Santé", slug: "beaute", icon: "Sparkles", color: "#F472B6", sort_order: 8 },
-  { name: "Sports & Loisirs", slug: "sports", icon: "Dumbbell", color: "#14B8A6", sort_order: 9 },
-  { name: "Enfants & Bébé", slug: "enfants", icon: "Baby", color: "#F97316", sort_order: 10 },
-  { name: "Jeux & Jouets", slug: "jouets", icon: "Blocks", color: "#A855F7", sort_order: 11 },
-  { name: "Livres & Médias", slug: "livres", icon: "BookOpen", color: "#0EA5E9", sort_order: 12 },
-  { name: "Instruments de musique", slug: "musique", icon: "Music", color: "#D946EF", sort_order: 13 },
-  { name: "Animaux", slug: "animaux", icon: "Dog", color: "#84CC16", sort_order: 14 },
-  { name: "Outillage & Bricolage", slug: "outils", icon: "Wrench", color: "#78716C", sort_order: 15 },
-  { name: "Art & Artisanat", slug: "art", icon: "Palette", color: "#E11D48", sort_order: 16 },
-  { name: "Jardin & Extérieur", slug: "jardin", icon: "TreePine", color: "#059669", sort_order: 17 },
-  { name: "Alimentation & Boissons", slug: "alimentation", icon: "Coffee", color: "#CA8A04", sort_order: 18 },
-  { name: "Immobilier", slug: "immobilier", icon: "Building", color: "#2563EB", sort_order: 19 },
-  { name: "Services", slug: "services", icon: "Briefcase", color: "#7C3AED", sort_order: 20 },
-  { name: "Emploi & Formation", slug: "emploi", icon: "GraduationCap", color: "#0D9488", sort_order: 21 },
-  { name: "Événementiel", slug: "evenements", icon: "Calendar", color: "#DC2626", sort_order: 22 },
-  { name: "Vêtements Homme", slug: "vetements-homme", icon: "User", color: "#3B82F6", sort_order: 23 },
-  { name: "Vêtements Femme", slug: "vetements-femme", icon: "Heart", color: "#EC4899", sort_order: 24 },
-  { name: "Chaussures", slug: "chaussures", icon: "Footprints", color: "#F59E0B", sort_order: 25 },
-  { name: "Maroquinerie", slug: "maroquinerie", icon: "Wallet", color: "#92400E", sort_order: 26 },
-  { name: "Montres & Bijoux", slug: "montres", icon: "Watch", color: "#D4AF37", sort_order: 27 },
-  { name: "Lunettes", slug: "lunettes", icon: "Glasses", color: "#1E293B", sort_order: 28 },
-  { name: "Téléphonie portable", slug: "telephonie", icon: "Smartphone", color: "#2563EB", sort_order: 29 },
-  { name: "Tablettes", slug: "tablettes", icon: "Tablet", color: "#7C3AED", sort_order: 30 },
-  { name: "Accessoires tech", slug: "accessoires-tech", icon: "Cable", color: "#64748B", sort_order: 31 },
-  { name: "Meubles", slug: "meubles", icon: "Armchair", color: "#B45309", sort_order: 32 },
-  { name: "Électroménager", slug: "electromenager", icon: "Refrigerator", color: "#0891B2", sort_order: 33 },
-  { name: "Bébé & Puériculture", slug: "bebe", icon: "Heart", color: "#F472B6", sort_order: 34 },
+// Mega-catégories (parents)
+const megaCategories = [
+  { name: "Multimédia", slug: "multimedia", icon: "Smartphone", color: "#3B82F6", sort_order: 1 },
+  { name: "Véhicules", slug: "vehicules", icon: "Car", color: "#6366F1", sort_order: 2 },
+  { name: "Maison", slug: "maison", icon: "Home", color: "#10B981", sort_order: 3 },
+  { name: "Mode & Beauté", slug: "mode", icon: "Shirt", color: "#F59E0B", sort_order: 4 },
+  { name: "Loisirs", slug: "loisirs", icon: "Gamepad2", color: "#EF4444", sort_order: 5 },
+  { name: "Famille", slug: "famille", icon: "Baby", color: "#F97316", sort_order: 6 },
+  { name: "Bricolage & Jardin", slug: "bricolage-jardin", icon: "Wrench", color: "#78716C", sort_order: 7 },
+  { name: "Immobilier", slug: "immobilier", icon: "Building", color: "#2563EB", sort_order: 8 },
+  { name: "Pro & Services", slug: "pro-services", icon: "Briefcase", color: "#7C3AED", sort_order: 9 },
+];
+
+// Sous-catégories (enfants) liées à leur parent par slug
+const subCategories = [
+  // ── Multimédia ──
+  { name: "Téléphones & Accessoires", slug: "telephones", icon: "Smartphone", color: "#2563EB", sort_order: 1, parentSlug: "multimedia" },
+  { name: "Téléphonie portable", slug: "telephonie", icon: "Smartphone", color: "#1D4ED8", sort_order: 2, parentSlug: "multimedia" },
+  { name: "Informatique", slug: "informatique", icon: "Laptop", color: "#8B5CF6", sort_order: 3, parentSlug: "multimedia" },
+  { name: "Tablettes", slug: "tablettes", icon: "Tablet", color: "#7C3AED", sort_order: 4, parentSlug: "multimedia" },
+  { name: "Électronique", slug: "electronique", icon: "Tv", color: "#EC4899", sort_order: 5, parentSlug: "multimedia" },
+  { name: "Accessoires tech", slug: "accessoires-tech", icon: "Cable", color: "#64748B", sort_order: 6, parentSlug: "multimedia" },
+  { name: "Appareils Photo & Vidéo", slug: "photo-video", icon: "Camera", color: "#D946EF", sort_order: 7, parentSlug: "multimedia" },
+  { name: "Lunettes", slug: "lunettes", icon: "Glasses", color: "#1E293B", sort_order: 8, parentSlug: "multimedia" },
+
+  // ── Véhicules ──
+  { name: "Voitures", slug: "voitures", icon: "Car", color: "#2563EB", sort_order: 1, parentSlug: "vehicules" },
+  { name: "Motos & Scooters", slug: "motos", icon: "Bike", color: "#F97316", sort_order: 2, parentSlug: "vehicules" },
+  { name: "Vélos", slug: "velos", icon: "Bike", color: "#10B981", sort_order: 3, parentSlug: "vehicules" },
+
+  // ── Maison ──
+  { name: "Maison & Décoration", slug: "maison-decoration", icon: "Home", color: "#059669", sort_order: 1, parentSlug: "maison" },
+  { name: "Meubles", slug: "meubles", icon: "Sofa", color: "#B45309", sort_order: 2, parentSlug: "maison" },
+  { name: "Électroménager", slug: "electromenager", icon: "Refrigerator", color: "#0891B2", sort_order: 3, parentSlug: "maison" },
+
+  // ── Mode & Beauté ──
+  { name: "Vêtements & Mode", slug: "vetements", icon: "Shirt", color: "#F59E0B", sort_order: 1, parentSlug: "mode" },
+  { name: "Vêtements Homme", slug: "vetements-homme", icon: "User", color: "#3B82F6", sort_order: 2, parentSlug: "mode" },
+  { name: "Vêtements Femme", slug: "vetements-femme", icon: "Heart", color: "#EC4899", sort_order: 3, parentSlug: "mode" },
+  { name: "Chaussures", slug: "chaussures", icon: "Footprints", color: "#F59E0B", sort_order: 4, parentSlug: "mode" },
+  { name: "Maroquinerie & Sacs", slug: "maroquinerie", icon: "BaggageClaim", color: "#92400E", sort_order: 5, parentSlug: "mode" },
+  { name: "Montres & Bijoux", slug: "montres", icon: "Watch", color: "#D4AF37", sort_order: 6, parentSlug: "mode" },
+  { name: "Beauté & Santé", slug: "beaute", icon: "Sparkles", color: "#F472B6", sort_order: 7, parentSlug: "mode" },
+
+  // ── Loisirs ──
+  { name: "Sports & Loisirs", slug: "sports", icon: "Dumbbell", color: "#14B8A6", sort_order: 1, parentSlug: "loisirs" },
+  { name: "Jeux & Jouets", slug: "jouets", icon: "Gamepad2", color: "#A855F7", sort_order: 2, parentSlug: "loisirs" },
+  { name: "Livres & Médias", slug: "livres", icon: "BookOpen", color: "#0EA5E9", sort_order: 3, parentSlug: "loisirs" },
+  { name: "Instruments de musique", slug: "musique", icon: "Music", color: "#D946EF", sort_order: 4, parentSlug: "loisirs" },
+  { name: "Art & Artisanat", slug: "art", icon: "Palette", color: "#E11D48", sort_order: 5, parentSlug: "loisirs" },
+
+  // ── Famille ──
+  { name: "Enfants & Bébé", slug: "enfants", icon: "Baby", color: "#F97316", sort_order: 1, parentSlug: "famille" },
+  { name: "Bébé & Puériculture", slug: "bebe", icon: "Heart", color: "#F472B6", sort_order: 2, parentSlug: "famille" },
+  { name: "Animaux", slug: "animaux", icon: "PawPrint", color: "#84CC16", sort_order: 3, parentSlug: "famille" },
+
+  // ── Bricolage & Jardin ──
+  { name: "Outillage & Bricolage", slug: "outils", icon: "Wrench", color: "#78716C", sort_order: 1, parentSlug: "bricolage-jardin" },
+  { name: "Jardin & Extérieur", slug: "jardin", icon: "TreePine", color: "#059669", sort_order: 2, parentSlug: "bricolage-jardin" },
+  { name: "Énergie & Solaire", slug: "energie-solaire", icon: "Sun", color: "#CA8A04", sort_order: 3, parentSlug: "bricolage-jardin" },
+
+  // ── Immobilier ──
+  { name: "Appartements & Maisons", slug: "appartements", icon: "Building", color: "#2563EB", sort_order: 1, parentSlug: "immobilier" },
+  { name: "Terrains", slug: "terrains", icon: "TreePine", color: "#059669", sort_order: 2, parentSlug: "immobilier" },
+  { name: "Bureaux & Commerces", slug: "bureaux", icon: "Building2", color: "#6366F1", sort_order: 3, parentSlug: "immobilier" },
+
+  // ── Pro & Services ──
+  { name: "Services", slug: "services", icon: "Briefcase", color: "#7C3AED", sort_order: 1, parentSlug: "pro-services" },
+  { name: "Emploi & Formation", slug: "emploi", icon: "GraduationCap", color: "#0D9488", sort_order: 2, parentSlug: "pro-services" },
+  { name: "Équipement Professionnel", slug: "equipement-pro", icon: "Briefcase", color: "#475569", sort_order: 3, parentSlug: "pro-services" },
+  { name: "Alimentation & Boissons", slug: "alimentation", icon: "Coffee", color: "#CA8A04", sort_order: 4, parentSlug: "pro-services" },
+  { name: "Événementiel", slug: "evenements", icon: "Calendar", color: "#DC2626", sort_order: 5, parentSlug: "pro-services" },
+  { name: "Divers", slug: "divers", icon: "Package", color: "#6B7280", sort_order: 6, parentSlug: "pro-services" },
 ];
 
 const faqs = [
@@ -78,17 +116,33 @@ async function main() {
   });
   console.log('✓ Admin user created');
 
-  // 2. Categories
-  for (const cat of categories) {
+  // 2. Mega-categories (parents)
+  for (const cat of megaCategories) {
     await prisma.category.upsert({
       where: { slug: cat.slug },
-      update: {},
+      update: { name: cat.name, icon: cat.icon, color: cat.color, sort_order: cat.sort_order },
       create: cat,
     });
   }
-  console.log(`✓ ${categories.length} categories seeded`);
+  console.log(`✓ ${megaCategories.length} mega-categories seeded`);
 
-  // 3. FAQs
+  // 3. Sub-categories (children)
+  for (const sub of subCategories) {
+    const parent = await prisma.category.findUnique({ where: { slug: sub.parentSlug } });
+    if (!parent) {
+      console.warn(`⚠ Parent not found for slug "${sub.parentSlug}", skipping "${sub.name}"`);
+      continue;
+    }
+    const { parentSlug, ...data } = sub;
+    await prisma.category.upsert({
+      where: { slug: data.slug },
+      update: { ...data, parent_id: parent.id },
+      create: { ...data, parent_id: parent.id },
+    });
+  }
+  console.log(`✓ ${subCategories.length} sub-categories seeded`);
+
+  // 4. FAQs
   for (const faq of faqs) {
     await prisma.faq.create({ data: faq });
   }

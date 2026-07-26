@@ -13,7 +13,7 @@ export function setupSocketIO(io) {
       const decoded = jwt.verify(token, jwtConfig.secret);
       const user = await prisma.user.findUnique({
         where: { id: decoded.userId },
-        select: { id: true, first_name: true, last_name: true, avatar: true, identity_verified: true },
+        select: { id: true, first_name: true, last_name: true, avatar: true, identity_verified: true, is_active: true },
       });
 
       if (!user || !user.is_active) return next(new Error('Authentication error'));
@@ -65,7 +65,7 @@ export function setupSocketIO(io) {
 
         await prisma.conversationParticipant.updateMany({
           where: { conversation_id: conversationId, user_id: { not: userId } },
-          data: { unread_count: { increment: 1 } },
+          data: { unread_count: { increment: 1 }, deleted_at: null },
         });
 
         const formattedMessage = {
@@ -82,8 +82,123 @@ export function setupSocketIO(io) {
           conversationId,
           message: formattedMessage,
         });
+
+        const otherParticipant = await prisma.conversationParticipant.findFirst({
+          where: { conversation_id: conversationId, user_id: { not: userId } },
+          select: { user_id: true, conversation: { select: { product_id: true } } },
+        });
+        if (otherParticipant) {
+          getUserSockets(otherParticipant.user_id).forEach((sid) => {
+            io.to(sid).emit('message_notification', { conversationId });
+          });
+
+          await prisma.notification.create({
+            data: {
+              user_id: otherParticipant.user_id,
+              type: 'message',
+              title: `Nouveau message de ${socket.user.name}`,
+              description: content.substring(0, 120),
+              product_id: otherParticipant.conversation?.product_id || null,
+              metadata: { conversationId },
+            },
+          });
+        }
       } catch (err) {
         console.error('Error sending message:', err.message);
+      }
+    });
+
+    socket.on('bulk_delete_messages', async ({ messageIds, scope = 'me' }) => {
+      try {
+        if (!Array.isArray(messageIds) || messageIds.length === 0) return;
+
+        if (scope === 'everyone') {
+          const messages = await prisma.message.findMany({
+            where: { id: { in: messageIds } },
+            select: { id: true, sender_id: true, conversation_id: true },
+          });
+
+          const ownIds = messages.filter((m) => m.sender_id === userId).map((m) => m.id);
+          if (ownIds.length === 0) return;
+
+          await prisma.message.updateMany({
+            where: { id: { in: ownIds } },
+            data: { deleted_at: new Date() },
+          });
+
+          const convIds = [...new Set(messages.filter((m) => ownIds.includes(m.id)).map((m) => m.conversation_id))];
+          convIds.forEach((convId) => {
+            io.to(`conversation:${convId}`).emit('messages_deleted', {
+              conversationId: convId,
+              messageIds: ownIds,
+            });
+          });
+        } else {
+          const existing = await prisma.message.findMany({
+            where: { id: { in: messageIds } },
+            select: { id: true, deleted_by_ids: true },
+          });
+
+          const toUpdate = existing.filter((m) => !m.deleted_by_ids.includes(userId)).map((m) => m.id);
+          if (toUpdate.length > 0) {
+            await prisma.message.updateMany({
+              where: { id: { in: toUpdate } },
+              data: { deleted_by_ids: { push: userId } },
+            });
+          }
+
+          getUserSockets(userId).forEach((sid) => {
+            io.to(sid).emit('messages_deleted', { messageIds });
+          });
+        }
+      } catch (err) {
+        console.error('Error bulk deleting messages:', err.message);
+      }
+    });
+
+    socket.on('delete_message', async ({ messageId, scope = 'me' }) => {
+      try {
+        if (scope === 'everyone') {
+          const message = await prisma.message.findUnique({
+            where: { id: messageId },
+            select: { id: true, sender_id: true, conversation_id: true },
+          });
+          if (!message || message.sender_id !== userId) return;
+
+          await prisma.message.update({
+            where: { id: messageId },
+            data: { deleted_at: new Date() },
+          });
+
+          io.to(`conversation:${message.conversation_id}`).emit('message_deleted', {
+            messageId: message.id,
+            conversationId: message.conversation_id,
+            deleted: true,
+          });
+        } else {
+          const message = await prisma.message.findUnique({
+            where: { id: messageId },
+            select: { id: true, deleted_by_ids: true, conversation_id: true },
+          });
+          if (!message) return;
+
+          if (!message.deleted_by_ids.includes(userId)) {
+            await prisma.message.update({
+              where: { id: messageId },
+              data: { deleted_by_ids: { push: userId } },
+            });
+          }
+
+          getUserSockets(userId).forEach((sid) => {
+            io.to(sid).emit('message_deleted', {
+              messageId: message.id,
+              conversationId: message.conversation_id,
+              deleted: true,
+            });
+          });
+        }
+      } catch (err) {
+        console.error('Error deleting message:', err.message);
       }
     });
 
@@ -136,4 +251,8 @@ export function isUserOnline(userId) {
 
 export function getOnlineUsers() {
   return Array.from(onlineUsers.keys());
+}
+
+export function getUserSockets(userId) {
+  return onlineUsers.get(userId) || new Set();
 }

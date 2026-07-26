@@ -19,6 +19,7 @@ const io = new Server(server, {
 });
 
 setupSocketIO(io);
+app.set('io', io);
 
 server.listen(PORT, () => {
   console.log(`

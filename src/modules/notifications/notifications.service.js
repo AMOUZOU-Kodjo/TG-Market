@@ -10,6 +10,7 @@ function formatNotification(notification) {
     productId: notification.product_id,
     read: notification.read,
     createdAt: notification.created_at,
+    metadata: notification.metadata,
   };
 }
 

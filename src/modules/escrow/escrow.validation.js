@@ -14,6 +14,12 @@ export const getEscrowSchema = z.object({
   }),
 });
 
+export const scanConfirmSchema = z.object({
+  body: z.object({
+    token: z.string().min(1, 'Token requis'),
+  }),
+});
+
 export const disputeEscrowSchema = z.object({
   params: z.object({
     id: z.coerce.number().int().positive(),

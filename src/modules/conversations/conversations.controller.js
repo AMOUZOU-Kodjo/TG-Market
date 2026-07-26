@@ -58,3 +58,12 @@ export async function markAsRead(req, res, next) {
     next(err);
   }
 }
+
+export async function deleteConversation(req, res, next) {
+  try {
+    const result = await conversationsService.deleteConversation(Number(req.params.id), req.user.id);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}

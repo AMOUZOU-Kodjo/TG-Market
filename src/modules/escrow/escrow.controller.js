@@ -33,6 +33,36 @@ export async function getEscrowById(req, res, next) {
   }
 }
 
+export async function scanConfirm(req, res, next) {
+  try {
+    const { token } = req.validated.body;
+    const escrow = await escrowService.scanConfirm(token, req.user.id);
+    res.json(escrow);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function confirmPayment(req, res, next) {
+  try {
+    const id = Number(req.params.id);
+    const escrow = await escrowService.confirmPayment(id, req.user.id);
+    res.json(escrow);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function markAsShipped(req, res, next) {
+  try {
+    const id = Number(req.params.id);
+    const escrow = await escrowService.markAsShipped(id, req.user.id);
+    res.json(escrow);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function confirmDelivery(req, res, next) {
   try {
     const id = Number(req.params.id);

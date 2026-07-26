@@ -57,6 +57,7 @@ enum TransactionStatus {
 
 enum EscrowStatus {
   pending
+  paid
   pending_delivery
   delivered
   completed
@@ -174,15 +175,19 @@ model Category {
   color         String    @db.VarChar(7)
   description   String?   @db.Text
   image         String?   @db.VarChar(500)
+  parent_id     Int?
   product_count Int       @default(0)
   sort_order    Int       @default(0)
   is_active     Boolean   @default(true)
   created_at    DateTime  @default(now())
   updated_at    DateTime  @updatedAt
 
-  products      Product[]
+  parent    Category?  @relation("CategoryTree", fields: [parent_id], references: [id])
+  children  Category[] @relation("CategoryTree")
+  products  Product[]
 
   @@index([slug])
+  @@index([parent_id])
   @@index([is_active, sort_order])
 }
 
@@ -314,9 +319,11 @@ model ConversationParticipant {
   id              Int          @id @default(autoincrement())
   conversation_id Int
   user_id         Int
-  last_read_at    DateTime?
-  unread_count    Int          @default(0)
-  created_at      DateTime     @default(now())
+  last_read_at     DateTime?
+  unread_count     Int          @default(0)
+  deleted_at       DateTime?
+  last_cleared_at  DateTime?
+  created_at       DateTime     @default(now())
 
   conversation    Conversation @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
   user            User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
@@ -332,6 +339,8 @@ model Message {
   text            String           @db.Text
   type            ConversationType @default(text)
   metadata        Json?
+  deleted_at      DateTime?
+  deleted_by_ids  Int[]            @default([])
   created_at      DateTime         @default(now())
 
   conversation    Conversation     @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
@@ -386,9 +395,10 @@ model EscrowTransaction {
   payment_method String?      @db.VarChar(30)
   confirmed_at   DateTime?
   released_at    DateTime?
-  disputed_at    DateTime?
-  dispute_reason String?      @db.Text
-  created_at     DateTime     @default(now())
+  disputed_at       DateTime?
+  dispute_reason    String?      @db.Text
+  confirmation_token String?     @db.VarChar(64)
+  created_at        DateTime     @default(now())
   updated_at     DateTime     @updatedAt
 
   product        Product      @relation(fields: [product_id], references: [id])

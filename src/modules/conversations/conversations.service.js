@@ -84,7 +84,7 @@ export async function listConversations(userId, { page, perPage }) {
 
   const [participations, total] = await Promise.all([
     prisma.conversationParticipant.findMany({
-      where: { user_id: userId },
+      where: { user_id: userId, deleted_at: null },
       include: {
         conversation: {
           include: {
@@ -113,7 +113,7 @@ export async function listConversations(userId, { page, perPage }) {
       skip,
       take: perPage,
     }),
-    prisma.conversationParticipant.count({ where: { user_id: userId } }),
+    prisma.conversationParticipant.count({ where: { user_id: userId, deleted_at: null } }),
   ]);
 
   return {
@@ -134,8 +134,8 @@ export async function getConversationById(id, userId) {
     throw error;
   }
 
-  const isParticipant = conversation.participants.some((p) => p.user_id === userId);
-  if (!isParticipant) {
+  const myParticipation = conversation.participants.find((p) => p.user_id === userId);
+  if (!myParticipation) {
     const error = new Error('Non autorisé à accéder à cette conversation');
     error.status = 403;
     throw error;
@@ -162,10 +162,16 @@ export async function createConversation(userId, participantId, productId = null
     throw error;
   }
 
+  let productData = null;
   if (productId) {
     const product = await prisma.product.findUnique({
       where: { id: productId },
-      select: { id: true },
+      select: {
+        id: true,
+        title: true,
+        price: true,
+        images: { select: { url: true }, orderBy: { sort_order: 'asc' }, take: 1 },
+      },
     });
 
     if (!product) {
@@ -173,6 +179,13 @@ export async function createConversation(userId, participantId, productId = null
       error.status = 404;
       throw error;
     }
+
+    productData = {
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      image: product.images[0]?.url || null,
+    };
   }
 
   const existing = await prisma.conversation.findFirst({
@@ -181,13 +194,49 @@ export async function createConversation(userId, participantId, productId = null
         { participants: { some: { user_id: userId } } },
         { participants: { some: { user_id: participantId } } },
       ],
-      product_id: productId,
     },
     include: conversationDetailInclude,
+    orderBy: { updated_at: 'desc' },
   });
 
+  const insertedMessageSelect = { id: true, text: true, type: true, metadata: true, created_at: true, sender_id: true };
+
+  async function insertProductMessage(convId) {
+    if (!productData) return;
+    await prisma.message.create({
+      data: {
+        conversation_id: convId,
+        sender_id: participantId,
+        text: productData.title,
+        type: 'system',
+        metadata: productData,
+      },
+    });
+  }
+
   if (existing) {
-    return formatConversationDetail(existing);
+    if (productId) {
+      await prisma.product.update({
+        where: { id: productId },
+        data: { has_active_negotiation: true },
+      });
+      if (existing.product_id !== productId) {
+        await prisma.conversation.update({
+          where: { id: existing.id },
+          data: { product_id: productId, updated_at: new Date() },
+        });
+        await insertProductMessage(existing.id);
+      }
+    }
+    await prisma.conversationParticipant.updateMany({
+      where: { conversation_id: existing.id, deleted_at: { not: null } },
+      data: { deleted_at: null, last_cleared_at: null },
+    });
+    const updated = await prisma.conversation.findUnique({
+      where: { id: existing.id },
+      include: conversationDetailInclude,
+    });
+    return formatConversationDetail(updated);
   }
 
   const conversation = await prisma.conversation.create({
@@ -199,6 +248,15 @@ export async function createConversation(userId, participantId, productId = null
     },
     include: conversationDetailInclude,
   });
+
+  if (productId) {
+    await prisma.product.update({
+      where: { id: productId },
+      data: { has_active_negotiation: true },
+    });
+  }
+
+  await insertProductMessage(conversation.id);
 
   return formatConversationDetail(conversation);
 }
@@ -233,4 +291,41 @@ export async function markAsRead(conversationId, userId) {
   });
 
   return { message: 'Conversation marquée comme lue' };
+}
+
+export async function deleteConversation(conversationId, userId) {
+  const participant = await prisma.conversationParticipant.findUnique({
+    where: {
+      conversation_id_user_id: {
+        conversation_id: conversationId,
+        user_id: userId,
+      },
+    },
+    include: { conversation: { select: { product_id: true } } },
+  });
+
+  if (!participant) {
+    const error = new Error('Non autorisé');
+    error.status = 403;
+    throw error;
+  }
+
+  await prisma.conversationParticipant.update({
+    where: {
+      conversation_id_user_id: {
+        conversation_id: conversationId,
+        user_id: userId,
+      },
+    },
+    data: { deleted_at: new Date(), last_cleared_at: new Date() },
+  });
+
+  if (participant.conversation.product_id) {
+    await prisma.product.update({
+      where: { id: participant.conversation.product_id },
+      data: { has_active_negotiation: false },
+    });
+  }
+
+  return { message: 'Conversation supprimée' };
 }

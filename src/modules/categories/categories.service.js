@@ -11,12 +11,28 @@ export async function getAllCategories() {
       color: true,
       description: true,
       image: true,
+      parent_id: true,
       product_count: true,
+      children: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          icon: true,
+          color: true,
+          product_count: true,
+        },
+        orderBy: { sort_order: 'asc' },
+      },
     },
     orderBy: { sort_order: 'asc' },
   });
 
-  return categories.map((c) => ({
+  return categories.map(formatCategory);
+}
+
+function formatCategory(c) {
+  return {
     id: c.id,
     name: c.name,
     slug: c.slug,
@@ -24,8 +40,17 @@ export async function getAllCategories() {
     color: c.color,
     description: c.description,
     image: c.image,
+    parentId: c.parent_id ?? null,
     productCount: c.product_count,
-  }));
+    ...(c.children ? { children: c.children.map((ch) => ({
+      id: ch.id,
+      name: ch.name,
+      slug: ch.slug,
+      icon: ch.icon,
+      color: ch.color,
+      productCount: ch.product_count,
+    })) } : {}),
+  };
 }
 
 export async function getCategoryBySlug(slug) {
@@ -39,8 +64,23 @@ export async function getCategoryBySlug(slug) {
       color: true,
       description: true,
       image: true,
+      parent_id: true,
       product_count: true,
       is_active: true,
+      parent: {
+        select: { id: true, name: true, slug: true },
+      },
+      children: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          icon: true,
+          color: true,
+          product_count: true,
+        },
+        orderBy: { sort_order: 'asc' },
+      },
     },
   });
 
@@ -58,6 +98,16 @@ export async function getCategoryBySlug(slug) {
     color: category.color,
     description: category.description,
     image: category.image,
+    parentId: category.parent_id ?? null,
+    parent: category.parent ?? null,
+    children: (category.children ?? []).map((ch) => ({
+      id: ch.id,
+      name: ch.name,
+      slug: ch.slug,
+      icon: ch.icon,
+      color: ch.color,
+      productCount: ch.product_count,
+    })),
     productCount: category.product_count,
   };
 }
@@ -73,7 +123,7 @@ const sortOptions = {
 export async function getCategoryProducts(slug, { page, perPage, condition, minPrice, maxPrice, city, sort }) {
   const category = await prisma.category.findUnique({
     where: { slug },
-    select: { id: true, is_active: true },
+    select: { id: true, parent_id: true, is_active: true },
   });
 
   if (!category || !category.is_active) {
@@ -82,8 +132,18 @@ export async function getCategoryProducts(slug, { page, perPage, condition, minP
     throw error;
   }
 
+  // If it's a mega-category (no parent), include products from all children
+  const categoryIds = [category.id];
+  if (category.parent_id === null) {
+    const children = await prisma.category.findMany({
+      where: { parent_id: category.id, is_active: true },
+      select: { id: true },
+    });
+    children.forEach((ch) => categoryIds.push(ch.id));
+  }
+
   const where = {
-    category_id: category.id,
+    category_id: { in: categoryIds },
     status: 'active',
   };
 

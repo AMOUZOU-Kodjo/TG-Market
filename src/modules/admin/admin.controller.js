@@ -1,5 +1,8 @@
 import * as adminService from './admin.service.js';
 import { buildPaginationMeta } from '../../utils/pagination.js';
+import { execSync } from 'child_process';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 export async function getStats(req, res, next) {
   try {
@@ -112,6 +115,17 @@ export async function getRecentActivity(req, res, next) {
   try {
     const activity = await adminService.getRecentActivity();
     res.json(activity);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function runSeed(req, res, next) {
+  try {
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    const seedPath = path.resolve(__dirname, '../../prisma/seed.js');
+    execSync(`node ${seedPath}`, { stdio: 'pipe' });
+    res.json({ success: true, message: 'Seed exécuté avec succès' });
   } catch (err) {
     next(err);
   }

@@ -143,6 +143,7 @@ async function main() {
   console.log(`✓ ${subCategories.length} sub-categories seeded`);
 
   // 4. FAQs
+  await prisma.faq.deleteMany({});
   for (const faq of faqs) {
     await prisma.faq.create({ data: faq });
   }

@@ -17,5 +17,6 @@ router.put('/kyc/:id/approve', adminController.approveKyc);
 router.put('/kyc/:id/reject', adminController.rejectKyc);
 router.get('/escrow', pagination, adminController.getEscrowTransactions);
 router.get('/activity', adminController.getRecentActivity);
+router.post('/seed', adminController.runSeed);
 
 export default router;

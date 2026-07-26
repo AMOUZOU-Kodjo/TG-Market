@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
 import { Heart, MapPin, MessageCircle } from "lucide-react";
 import { cn } from "@/shared/utils/cn";
 import Badge from "@/shared/ui/Badge";
@@ -51,16 +49,14 @@ export default function ProductCard({
   };
 
   return (
-    <motion.div
-      whileHover={{ y: -4 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      onClick={onClick}
-      className={cn(
-        "group cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white  dark:border-gray-800 dark:bg-gray-900",
-        className
-      )}
-      {...rest}
-    >
+  <div
+    onClick={onClick}
+    className={cn(
+      "cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900",
+      className
+    )}
+    {...rest}
+  >
       <div className="relative aspect-5/5 md:aspect-5/4 overflow-hidden bg-gray-100 dark:bg-gray-800">
         {!imageLoaded && (
           <div className="absolute inset-0  bg-gray-200 dark:bg-gray-700" />
@@ -71,10 +67,11 @@ export default function ProductCard({
           loading="lazy"
           onLoad={() => setImageLoaded(true)}
           className={cn(
-            "h-full w-full object-cover transition-transform duration-300 group-hover:scale-105",
+            "h-full w-full object-cover",
             imageLoaded ? "opacity-100" : "opacity-0"
           )}
         />
+        <div className="absolute inset-0 bg-black/0 hover:bg-black/20 pointer-events-none" />
         {productId && (
           <button
             onClick={handleFavorite}

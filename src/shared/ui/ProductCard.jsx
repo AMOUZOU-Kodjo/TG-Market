@@ -63,7 +63,7 @@ export default function ProductCard({
     >
       <div className="relative aspect-5/5 md:aspect-5/4 overflow-hidden bg-gray-100 dark:bg-gray-800">
         {!imageLoaded && (
-          <div className="absolute inset-0 animate-pulse bg-gray-200 dark:bg-gray-700" />
+          <div className="absolute inset-0  bg-gray-200 dark:bg-gray-700" />
         )}
         <img
           src={image}

@@ -5,9 +5,6 @@ import { dispatchLogout } from "./navigation";
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 15000,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 let isRefreshing = false;

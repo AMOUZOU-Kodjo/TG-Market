@@ -1,9 +1,9 @@
 export const APP_NAME = "TG-Market";
 export const APP_DESCRIPTION = "La marketplace n°1 au Togo";
 export const CURRENCY = "FCFA";
+export const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
-export const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
-export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
+export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3000";
 
 export const CITIES = [
   "Lomé",

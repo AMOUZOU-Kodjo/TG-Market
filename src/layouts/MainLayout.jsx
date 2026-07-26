@@ -33,7 +33,7 @@ import { FaLinkedinIn, FaFacebookF, FaTiktok } from "react-icons/fa6";
 import Logo from "@/shared/ui/Logo";
 import BottomNav from "@/shared/ui/BottomNav";
 import CategoryBar from "@/features/home/components/CategoryBar";
-import { mockCurrentUser } from "../data/users";
+import { useAuth } from "@/shared/contexts/AuthContext";
 
 export default function MainLayout() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -41,9 +41,11 @@ export default function MainLayout() {
   const [searchQuery, setSearchQuery] = useState("");
   const [darkMode, setDarkMode] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const userMenuRef = useRef(null);
+  const desktopMenuRef = useRef(null);
+  const mobileMenuRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -58,7 +60,9 @@ export default function MainLayout() {
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+      const clickedDesktop = desktopMenuRef.current?.contains(e.target);
+      const clickedMobile = mobileMenuRef.current?.contains(e.target);
+      if (!clickedDesktop && !clickedMobile) {
         setUserMenuOpen(false);
       }
     };
@@ -87,7 +91,7 @@ export default function MainLayout() {
       to: "/messages",
       label: "Messages",
       icon: MessageCircle,
-      badge: mockCurrentUser.unreadMessages,
+      badge: user?.unreadMessages,
     },
     { to: "/favoris", label: "Mes favoris", icon: Heart },
     { to: "/parametres", label: "Paramètres", icon: Settings },
@@ -168,20 +172,23 @@ export default function MainLayout() {
                     className="relative p-2 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors"
                   >
                     <Bell className="w-5 h-5" />
-                    <span className="absolute top-1 right-1 w-4 h-4 bg-brand-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                      {mockCurrentUser.notifications}
-                    </span>
+                    {user?.unreadNotifications > 0 && (
+                      <span className="absolute top-1 right-1 w-4 h-4 bg-brand-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                        {user?.unreadNotifications}
+                      </span>
+                    )}
                   </Link>
 
-                  {/* User Menu */}
-                  <div className="relative" ref={userMenuRef}>
+                  {user ? (
+                  /* User Menu (connected) */
+                  <div className="relative" ref={desktopMenuRef}>
                     <button
                       onClick={() => setUserMenuOpen(!userMenuOpen)}
                       className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-white/10 transition-colors"
                     >
                       <img
-                        src={mockCurrentUser.avatar}
-                        alt={mockCurrentUser.name}
+                        src={user?.avatar}
+                        alt={user?.name}
                         className="w-8 h-8 rounded-full object-cover ring-2 ring-white/30"
                       />
                       <ChevronDown
@@ -202,10 +209,10 @@ export default function MainLayout() {
                         >
                           <div className="p-4 border-b border-gray-100 dark:border-gray-700">
                             <p className="font-semibold text-gray-900 dark:text-white text-sm">
-                              {mockCurrentUser.name}
+                              {user?.name}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                              {mockCurrentUser.email}
+                              {user?.email}
                             </p>
                           </div>
                           <div className="p-2">
@@ -217,7 +224,7 @@ export default function MainLayout() {
                               >
                                 <item.icon className="w-4 h-4 text-gray-400" />
                                 <span className="flex-1">{item.label}</span>
-                                {item.badge && (
+                                {item.badge > 0 && (
                                   <span className="px-2 py-0.5 bg-brand-700 text-white text-[10px] font-bold rounded-full">
                                     {item.badge}
                                   </span>
@@ -232,7 +239,10 @@ export default function MainLayout() {
                               <HelpCircle className="w-4 h-4 text-gray-400" />
                               Aide et support
                             </Link>
-                            <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-800 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors">
+                            <button
+                              onClick={async () => { await logout(); navigate("/"); setUserMenuOpen(false); }}
+                              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-800 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+                            >
                               <LogOut className="w-4 h-4" />
                               Deconnexion
                             </button>
@@ -241,6 +251,23 @@ export default function MainLayout() {
                       )}
                     </AnimatePresence>
                   </div>
+                  ) : (
+                  /* Login/Register buttons (guest) */
+                  <div className="flex items-center gap-2">
+                    <Link
+                      to="/connexion"
+                      className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                    >
+                      Connexion
+                    </Link>
+                    <Link
+                      to="/inscription"
+                      className="px-3 py-2 rounded-lg text-sm font-medium bg-white text-brand-900 hover:bg-white/90 transition-colors"
+                    >
+                      Inscription
+                    </Link>
+                  </div>
+                  )}
                 </div>
               </div>
 
@@ -273,14 +300,15 @@ export default function MainLayout() {
                   >
                     {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                   </button>
-                  <div className="relative" ref={userMenuRef}>
+                  {user ? (
+                  <div className="relative" ref={mobileMenuRef}>
                     <button
                       onClick={() => setUserMenuOpen(!userMenuOpen)}
                       className="p-1 rounded-full hover:bg-white/10 transition-colors"
                     >
                       <img
-                        src={mockCurrentUser.avatar}
-                        alt={mockCurrentUser.name}
+                        src={user?.avatar}
+                        alt={user?.name}
                         className="w-8 h-8 rounded-full object-cover ring-2 ring-white/30"
                       />
                     </button>
@@ -296,10 +324,10 @@ export default function MainLayout() {
                         >
                           <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
                             <p className="font-semibold text-gray-900 dark:text-white text-sm">
-                              {mockCurrentUser.name}
+                              {user?.name}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {mockCurrentUser.email}
+                              {user?.email}
                             </p>
                           </div>
                           <div className="p-2">
@@ -311,7 +339,7 @@ export default function MainLayout() {
                               >
                                 <item.icon className="w-4 h-4 text-gray-400" />
                                 <span className="flex-1">{item.label}</span>
-                                {item.badge && (
+                                {item.badge > 0 && (
                                   <span className="px-2 py-0.5 bg-brand-700 text-white text-[10px] font-bold rounded-full">
                                     {item.badge}
                                   </span>
@@ -326,7 +354,10 @@ export default function MainLayout() {
                               <HelpCircle className="w-4 h-4 text-gray-400" />
                               Aide et support
                             </Link>
-                            <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-800 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors">
+                            <button
+                              onClick={async () => { await logout(); navigate("/"); setUserMenuOpen(false); }}
+                              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-800 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+                            >
                               <LogOut className="w-4 h-4" />
                               Deconnexion
                             </button>
@@ -335,6 +366,14 @@ export default function MainLayout() {
                       )}
                     </AnimatePresence>
                   </div>
+                  ) : (
+                  <Link
+                    to="/connexion"
+                    className="p-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                  >
+                    <User className="w-5 h-5" />
+                  </Link>
+                  )}
                 </div>
               </div>
             </div>
@@ -359,116 +398,108 @@ export default function MainLayout() {
         {/* Footer */}
         <footer className="bg-brand-900 dark:bg-brand-950 text-gray-300">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            {/* Logo centré */}
-            <div className="flex justify-center mb-4">
-              <Logo size="md" />
-            </div>
+            {/* Mobile: centered layout | Desktop: 3-column grid */}
+            <div className="flex flex-col items-center lg:grid lg:grid-cols-3 lg:items-start lg:gap-8">
 
-            {/* Télécharger l'app */}
-            <div className="text-center mb-8">
-              <h4 className="text-white font-semibold text-sm mb-3">Télécharger l'app</h4>
-              <div className="flex gap-2 justify-center">
-                <button className="flex items-center gap-2 px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors">
-                  <Apple className="w-5 h-5" />
-                  <div className="text-left">
-                    <p className="text-[10px] text-gray-400">Disponible sur</p>
-                    <p className="text-xs font-medium text-white">App Store</p>
-                  </div>
-                </button>
-                <button className="flex items-center gap-2 px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors">
-                  <Play className="w-5 h-5" />
-                  <div className="text-left">
-                    <p className="text-[10px] text-gray-400">Disponible sur</p>
-                    <p className="text-xs font-medium text-white">Google Play</p>
-                  </div>
-                </button>
+              {/* Col 1 — Logo + Télécharger */}
+              <div className="text-center mb-8 lg:mb-0 w-full">
+                <div className="flex justify-center mb-4">
+                  <Logo size="md" />
+                </div>
+                <h4 className="text-white font-semibold text-sm mb-3">Télécharger l'app</h4>
+                <div className="flex gap-2 justify-center">
+                  <button className="flex items-center gap-2 px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors">
+                    <Apple className="w-5 h-5" />
+                    <div className="text-left">
+                      <p className="text-[10px] text-gray-400">Disponible sur</p>
+                      <p className="text-xs font-medium text-white">App Store</p>
+                    </div>
+                  </button>
+                  <button className="flex items-center gap-2 px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors">
+                    <Play className="w-5 h-5" />
+                    <div className="text-left">
+                      <p className="text-[10px] text-gray-400">Disponible sur</p>
+                      <p className="text-xs font-medium text-white">Google Play</p>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Col 2 — À propos */}
+              <div className="text-center mb-8 lg:mb-0 w-full">
+                <h3 className="text-white font-semibold mb-4">À propos</h3>
+                <ul className="space-y-2.5 text-sm">
+                  {[
+                    { to: "/confidentialite", label: "Politique de confidentialité" },
+                    { to: "/mentions-legales", label: "Mentions légales" },
+                    { to: "/a-propos", label: "Sécurité" },
+                    { to: "/conditions", label: "CGU" },
+                  ].map((link) => (
+                    <li key={link.label}>
+                      <Link to={link.to} className="hover:text-white transition-colors">
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                  <li>
+                    <Link
+                      to="/faq"
+                      className="px-3 py-1 bg-gray-800 hover:bg-brand-900 rounded-full text-xs font-medium transition-colors"
+                    >
+                      Questions fréquentes
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Col 3 — Contact + Réseaux sociaux */}
+              <div className="text-center w-full">
+                <h3 className="text-white font-semibold mb-4">Contact</h3>
+                <ul className="space-y-3 text-sm mb-8">
+                  <li className="flex items-center justify-center gap-2">
+                    <MapPin className="w-4 h-4 text-red-400 shrink-0" />
+                    <span>Lomé, Togo</span>
+                  </li>
+                  {/* <li className="flex items-center justify-center gap-2">
+                    <Phone className="w-4 h-4 text-red-400 shrink-0" />
+                    <span>+228 90 00 00 00</span>
+                  </li> */}
+                  <li className="flex items-center justify-center gap-2">
+                    <Mail className="w-4 h-4 text-red-400 shrink-0" />
+                    <span>contact@akmarket.tg</span>
+                  </li>
+                </ul>
+
+                <h3 className="text-white font-semibold mb-4">Suivez-nous</h3>
+                <div className="flex justify-center gap-4">
+                  <a
+                    href="#"
+                    className="w-9 h-9 rounded-lg bg-gray-800 text-gray-300 hover:bg-brand-800 hover:text-white flex items-center justify-center transition-colors"
+                    aria-label="LinkedIn"
+                  >
+                    <FaLinkedinIn className="w-4 h-4" />
+                  </a>
+                  <a
+                    href="#"
+                    className="w-9 h-9 rounded-lg bg-gray-800 text-gray-300 hover:bg-brand-800 hover:text-white flex items-center justify-center transition-colors"
+                    aria-label="Facebook"
+                  >
+                    <FaFacebookF className="w-4 h-4" />
+                  </a>
+                  <a
+                    href="#"
+                    className="w-9 h-9 rounded-lg bg-gray-800 text-gray-300 hover:bg-brand-800 hover:text-white flex items-center justify-center transition-colors"
+                    aria-label="TikTok"
+                  >
+                    <FaTiktok className="w-4 h-4" />
+                  </a>
+                </div>
               </div>
             </div>
 
-            {/* Liens à propos */}
-            <div className="text-center mb-8">
-              <h3 className="text-white font-semibold mb-4">À propos</h3>
-              <ul className="space-y-2.5 text-center text-sm inline-block ">
-                {[
-                  // { to: "/contact", label: "Nous contacter" },
-                  { to: "/confidentialite", label: "Politique de confidentialité" },
-                  { to: "/mentions-legales", label: "Mentions légales" },
-                  { to: "/a-propos", label: "Sécurité" },
-                  { to: "/conditions", label: "CGU" },
-                ].map((link) => (
-                  <li key={link.label}>
-                    <Link to={link.to} className="hover:text-white transition-colors">
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-                <Link
-                  to="/faq"
-                  className="px-3 py-1 bg-gray-800 hover:bg-brand-900 rounded-full text-xs font-medium transition-colors"
-                >
-                  Questions fréquentes
-                </Link>
-              </ul>
-            </div>
-
-            {/* Contact */}
-            <div className="text-center mb-6">
-              <h3 className="text-white font-semibold mb-4">Contact</h3>
-              <ul className="space-y-3 text-sm inline-block text-center">
-                <li className="flex items-center justify-center gap-2">
-                  <MapPin className="w-4 h-4 text-red-400 shrink-0" />
-                  <span>Lomé, Togo</span>
-                </li>
-                <li className="flex items-center justify-center gap-2">
-                  <Phone className="w-4 h-4 text-red-400 shrink-0" />
-                  <span>+228 90 00 00 00</span>
-                </li>
-                <li className="flex items-center justify-center gap-2">
-                  <Mail className="w-4 h-4 text-red-400 shrink-0" />
-                  <span>contact@akmarket.tg</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Réseaux sociaux */}
-            <div className="flex justify-center gap-4 mb-8">
-              <a
-                href="#"
-                className="w-9 h-9 rounded-lg  text-gray-900 hover:bg-brand-900 flex items-center justify-center transition-colors"
-                aria-label="LinkedIn"
-              >
-                <FaLinkedinIn className="w-4 h-4" />
-              </a>
-              <a
-                href="#"
-                className="w-9 h-9 rounded-lg text-gray-900 hover:bg-brand-900 flex items-center justify-center transition-colors"
-                aria-label="Facebook"
-              >
-                <FaFacebookF className="w-4 h-4" />
-              </a>
-              <a
-                href="#"
-                className="w-9 h-9  text-gray-900 rounded-lg hover:bg-brand-900 flex items-center justify-center transition-colors"
-                aria-label="TikTok"
-              >
-                <FaTiktok className="w-4 h-4" />
-              </a>
-            </div>
-
-            <div className="mt-10 pt-4 pb-2 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-100">
+            {/* Copyright */}
+            <div className="mt-10 pt-4 pb-2 border-t text-center border-gray-800  items-center justify-between gap-4 text-sm text-gray-100">
               <p>&copy; 2025 TG-Market. Tous droits réservés.</p>
-              {/* <div className="flex gap-3 items-center flex-wrap justify-center">
-                <Link to="/conditions" className="hover:text-white transition-colors">
-                  CGU
-                </Link>
-                
-                <Link to="/confidentialite" className="hover:text-white transition-colors">
-                  Confidentialité
-                </Link>
-                <Link to="/mentions-legales" className="hover:text-white transition-colors">
-                  Mentions légales
-                </Link>
-              </div> */}
             </div>
           </div>
         </footer>

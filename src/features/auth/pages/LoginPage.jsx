@@ -15,7 +15,7 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const [socialLoading, setSocialLoading] = useState(null);
   const navigate = useNavigate();
-  const { login, loginWithMock } = useAuth();
+  const { login } = useAuth();
 
   const {
     register,
@@ -36,14 +36,6 @@ export default function LoginPage() {
       navigate("/");
     } else {
       toast.error(result.error || "Erreur lors de la connexion");
-    }
-  };
-
-  const handleMockLogin = () => {
-    const result = loginWithMock("user");
-    if (result.success) {
-      toast.success("Connexion mock réussie ! (mode développement)");
-      navigate("/");
     }
   };
 
@@ -189,21 +181,6 @@ export default function LoginPage() {
             S'inscrire
           </Link>
         </p>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="mt-4 text-center"
-      >
-        <button
-          type="button"
-          onClick={handleMockLogin}
-          className="text-xs text-gray-400 hover:text-red-800 dark:text-gray-600 dark:hover:text-red-700 transition-colors"
-        >
-          ⚡ Connexion rapide (dev mode)
-        </button>
       </motion.div>
     </div>
   );

@@ -10,10 +10,11 @@ import Avatar from "@/shared/ui/Avatar";
 import Badge from "@/shared/ui/Badge";
 import MessageBubble from "@/features/chat/components/MessageBubble";
 import MessageInput from "@/features/chat/components/MessageInput";
-import { mockCurrentUser } from "@/data/users";
+import { useAuth } from "@/shared/contexts/AuthContext";
 import { formatCFA } from "@/shared/utils/format";
 
 export default function ConversationPage({ conversation, messages: initialMessages }) {
+  const { user } = useAuth();
   const [messages, setMessages] = useState(initialMessages || []);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
@@ -29,7 +30,7 @@ export default function ConversationPage({ conversation, messages: initialMessag
   const handleSend = (text) => {
     const newMessage = {
       id: Date.now(),
-      senderId: mockCurrentUser.id,
+      senderId: user?.id,
       text,
       createdAt: new Date().toISOString(),
       read: false,
@@ -119,7 +120,7 @@ export default function ConversationPage({ conversation, messages: initialMessag
             <MessageBubble
               key={msg.id}
               message={msg}
-              isOwn={msg.senderId === mockCurrentUser.id}
+              isOwn={msg.senderId === user?.id}
             />
           ))}
 

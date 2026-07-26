@@ -324,8 +324,8 @@ const tabs = [
   { id: "promotions", label: "Promotions", icon: Megaphone },
 ];
 
-export default function SellerDashboardPage() {
-  const [activeTab, setActiveTab] = useState("overview");
+export default function SellerDashboardPage({ defaultTab = "overview" }) {
+  const [activeTab, setActiveTab] = useState(defaultTab);
 
   const tabContent = {
     overview: <OverviewTab />,

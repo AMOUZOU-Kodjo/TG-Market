@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Home, Heart, PlusCircle, MessageCircle, User } from "lucide-react";
-import { mockCurrentUser } from "../../data/users";
+import { useAuth } from "@/shared/contexts/AuthContext";
 
 const tabs = [
   { to: "/", label: "Accueil", icon: Home },
@@ -12,6 +12,7 @@ const tabs = [
 
 export default function BottomNav() {
   const location = useLocation();
+  const { user } = useAuth();
 
   return (
     <nav className="md:hidden fixed bottom-0 inset-x-0 z-[200] bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 safe-area-pb">
@@ -32,9 +33,9 @@ export default function BottomNav() {
             >
               <div className="relative">
                 <tab.icon className="w-6 h-6" strokeWidth={isActive ? 2.2 : 1.5} />
-                {tab.to === "/messages" && mockCurrentUser.unreadMessages > 0 && (
+                {tab.to === "/messages" && user?.unreadMessages > 0 && (
                   <span className="absolute -top-1.5 -right-2 w-4 h-4 bg-brand-700 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                    {mockCurrentUser.unreadMessages}
+                    {user.unreadMessages}
                   </span>
                 )}
               </div>

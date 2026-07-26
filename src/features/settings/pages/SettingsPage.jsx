@@ -32,7 +32,7 @@ import Button from "@/shared/ui/Button";
 import Input from "@/shared/ui/Input";
 import Textarea from "@/shared/ui/Textarea";
 import Avatar from "@/shared/ui/Avatar";
-import { mockCurrentUser } from "@/data/users";
+import { useAuth } from "@/shared/contexts/AuthContext";
 import { mockKycStatus, mockVerificationSteps, mockBadges } from "@/data/verification";
 import toast from "react-hot-toast";
 import KycProgress from "@/features/verification/components/KycProgress";
@@ -119,6 +119,7 @@ const mockLoginHistory = [
 ];
 
 export default function SettingsPage() {
+  const { user } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [notifications, setNotifications] = useState({
     email: true,
@@ -145,10 +146,10 @@ export default function SettingsPage() {
     formState: { errors, isDirty },
   } = useForm({
     defaultValues: {
-      name: mockCurrentUser.name,
-      email: mockCurrentUser.email,
-      phone: mockCurrentUser.phone,
-      bio: mockCurrentUser.bio,
+      name: user?.name || "",
+      email: user?.email || "",
+      phone: user?.phone || "",
+      bio: user?.bio || "",
     },
   });
 
@@ -193,14 +194,14 @@ export default function SettingsPage() {
 
           <div className="mb-6 flex items-center gap-4">
             <div className="relative">
-              <Avatar src={mockCurrentUser.avatar} name={mockCurrentUser.name} size="xl" />
+              <Avatar src={user?.avatar} name={user?.name} size="xl" />
               <button className="absolute bottom-0 right-0 rounded-full bg-red-800 p-1.5 text-white shadow-lg transition-transform hover:scale-110">
                 <Camera className="h-3.5 w-3.5" />
               </button>
             </div>
             <div>
-              <p className="font-medium text-gray-900 dark:text-white">{mockCurrentUser.name}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{mockCurrentUser.email}</p>
+              <p className="font-medium text-gray-900 dark:text-white">{user?.name}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{user?.email}</p>
               <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                 Membre depuis janvier 2023
               </p>

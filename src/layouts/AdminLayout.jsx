@@ -23,12 +23,13 @@ import {
   AlertCircle,
 } from "lucide-react";
 import Logo from "@/shared/ui/Logo";
-import { mockCurrentUser } from "../data/users";
+import { useAuth } from "@/shared/contexts/AuthContext";
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
 
   useEffect(() => {
     setMobileSidebarOpen(false);
@@ -107,15 +108,15 @@ export default function AdminLayout() {
             <div className={`flex items-center gap-3 ${!sidebarOpen ? "justify-center" : ""}`}>
               <div className="relative shrink-0">
                 <img
-                  src={mockCurrentUser.avatar}
-                  alt={mockCurrentUser.name}
+                  src={user.avatar}
+                  alt={user.name}
                   className="w-10 h-10 rounded-full object-cover ring-2 ring-brand-700/30"
                 />
                 <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-brand-700 rounded-full border-2 border-gray-900" />
               </div>
               {sidebarOpen && (
                 <div className="min-w-0">
-                  <p className="font-semibold text-white text-sm truncate">{mockCurrentUser.name}</p>
+                  <p className="font-semibold text-white text-sm truncate">{user.name}</p>
                   <p className="text-xs text-brand-400 font-medium">Administrateur</p>
                 </div>
               )}

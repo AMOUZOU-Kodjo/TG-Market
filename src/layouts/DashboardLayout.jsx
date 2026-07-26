@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
@@ -22,12 +22,14 @@ import {
   X,
 } from "lucide-react";
 import Logo from "@/shared/ui/Logo";
-import { mockCurrentUser } from "../data/users";
+import { useAuth } from "@/shared/contexts/AuthContext";
 
 export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     setMobileSidebarOpen(false);
@@ -37,7 +39,7 @@ export default function DashboardLayout() {
     { to: "/dashboard", label: "Vue d'ensemble", icon: LayoutDashboard },
     { to: "/dashboard/products", label: "Mes annonces", icon: Package },
     { to: "/dashboard/orders", label: "Mes commandes", icon: ShoppingBag },
-    { to: "/dashboard/messages", label: "Messages", icon: MessageCircle, badge: mockCurrentUser.unreadMessages },
+    { to: "/dashboard/messages", label: "Messages", icon: MessageCircle, badge: user?.unreadMessages },
     { to: "/dashboard/analytics", label: "Statistiques", icon: BarChart3 },
     { to: "/dashboard/promotions", label: "Promotions", icon: Megaphone },
     { to: "/dashboard/settings", label: "Parametres", icon: Settings },
@@ -100,17 +102,17 @@ export default function DashboardLayout() {
           <div className={`p-4 border-b border-gray-100 dark:border-gray-700 ${!sidebarOpen ? "px-2" : ""}`}>
             <div className={`flex items-center gap-3 ${!sidebarOpen ? "justify-center" : ""}`}>
               <img
-                src={mockCurrentUser.avatar}
-                alt={mockCurrentUser.name}
+                src={user.avatar}
+                alt={user.name}
                 className="w-10 h-10 rounded-full object-cover ring-2 ring-brand-700/20 shrink-0"
               />
               {sidebarOpen && (
                 <div className="min-w-0">
                   <p className="font-semibold text-gray-900 dark:text-white text-sm truncate">
-                    {mockCurrentUser.name}
+                    {user.name}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                    {mockCurrentUser.productCount} annonces
+                    {user.productCount} annonces
                   </p>
                 </div>
               )}
@@ -151,14 +153,15 @@ export default function DashboardLayout() {
           {/* Sidebar Footer */}
           <div className="p-3 border-t border-gray-100 dark:border-gray-700 space-y-1">
             <Link
-              to="/help"
+              to="/faq"
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
             >
               <HelpCircle className="w-5 h-5 shrink-0" />
               {sidebarOpen && <span>Aide</span>}
             </Link>
             <button
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-brand-800 hover:bg-brand-50 dark:hover:bg-brand-950/20 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+              onClick={async () => { await logout(); navigate("/"); }}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-800 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
             >
               <LogOut className="w-5 h-5 shrink-0" />
               {sidebarOpen && <span>Deconnexion</span>}
@@ -192,9 +195,9 @@ export default function DashboardLayout() {
                 className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition-colors"
               >
                 <MessageCircle className="w-5 h-5" />
-                {mockCurrentUser.unreadMessages > 0 && (
+                {user.unreadMessages > 0 && (
                   <span className="absolute top-1 right-1 w-4 h-4 bg-brand-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                    {mockCurrentUser.unreadMessages}
+                    {user.unreadMessages}
                   </span>
                 )}
               </Link>
@@ -203,9 +206,9 @@ export default function DashboardLayout() {
                 className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition-colors"
               >
                 <Bell className="w-5 h-5" />
-                {mockCurrentUser.notifications > 0 && (
+                {user?.unreadNotifications > 0 && (
                   <span className="absolute top-1 right-1 w-4 h-4 bg-brand-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                    {mockCurrentUser.notifications}
+                    {user?.unreadNotifications}
                   </span>
                 )}
               </Link>

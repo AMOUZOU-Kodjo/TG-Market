@@ -1,33 +1,7 @@
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, useEffect } from "react";
 import api, { setAuthTokens, clearAuthTokens } from "../services/api";
 
 const AuthContext = createContext(undefined);
-
-const MOCK_USER = {
-  id: "user_1",
-  firstName: "Kofi",
-  lastName: "Mensah",
-  email: "kofi@example.com",
-  phone: "90123456",
-  city: "Lomé",
-  neighborhood: "Agbalepedogan",
-  bio: "Vendeur passionné depuis 5 ans sur TG-Market.",
-  avatar: null,
-  role: "user",
-  createdAt: "2024-01-15T00:00:00.000Z",
-  listingsCount: 12,
-  rating: 4.7,
-  reviewCount: 23,
-};
-
-const MOCK_ADMIN = {
-  ...MOCK_USER,
-  id: "admin_1",
-  firstName: "Admin",
-  lastName: "TG-Market",
-  email: "admin@akmarket.tg",
-  role: "admin",
-};
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -45,7 +19,7 @@ export function AuthProvider({ children }) {
 
     try {
       const { data } = await api.get("/auth/me");
-      setUser(data.user);
+      setUser(data.user || data);
     } catch {
       clearAuthTokens();
       setUser(null);
@@ -53,6 +27,10 @@ export function AuthProvider({ children }) {
       setIsLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    initializeAuth();
+  }, [initializeAuth]);
 
   const login = useCallback(async (email, password) => {
     try {
@@ -65,13 +43,6 @@ export function AuthProvider({ children }) {
         error.response?.data?.message || "Erreur lors de la connexion";
       return { success: false, error: message };
     }
-  }, []);
-
-  const loginWithMock = useCallback((type = "user") => {
-    const mockUser = type === "admin" ? MOCK_ADMIN : MOCK_USER;
-    setAuthTokens("mock_access_token", "mock_refresh_token");
-    setUser(mockUser);
-    return { success: true };
   }, []);
 
   const register = useCallback(async (userData) => {
@@ -127,7 +98,6 @@ export function AuthProvider({ children }) {
         isAuthenticated,
         isAdmin,
         login,
-        loginWithMock,
         register,
         logout,
         updateProfile,

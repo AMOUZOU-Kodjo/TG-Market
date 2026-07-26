@@ -22,24 +22,25 @@ import ProfileHeader from "@/features/profile/components/ProfileHeader";
 import ReviewList from "@/features/profile/components/ReviewList";
 import ProductCard from "@/shared/ui/ProductCard";
 import EmptyState from "@/shared/ui/EmptyState";
-import { mockCurrentUser } from "@/data/users";
+import { useAuth } from "@/shared/contexts/AuthContext";
 import { mockProducts } from "@/data/products";
 import { mockReviews } from "@/data/reviews";
 import { cn } from "@/shared/utils/cn";
 
 export default function UserProfilePage() {
+  const { user } = useAuth();
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [formData, setFormData] = useState({
-    name: mockCurrentUser.name,
-    email: mockCurrentUser.email,
-    phone: mockCurrentUser.phone,
-    bio: mockCurrentUser.bio,
-    avatar: mockCurrentUser.avatar,
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    bio: user?.bio || "",
+    avatar: user?.avatar || "",
   });
 
-  const myProducts = mockProducts.filter((p) => p.seller?.id === 100);
+  const myProducts = mockProducts.filter((p) => p.seller?.id === user?.id);
   const favoriteProducts = mockProducts.slice(0, 3);
-  const myReviews = mockReviews.filter((r) => r.reviewer?.id === 100);
+  const myReviews = mockReviews.filter((r) => r.reviewer?.id === user?.id);
 
   const handleSave = () => {
     setEditModalOpen(false);
@@ -50,7 +51,7 @@ export default function UserProfilePage() {
       id: "products",
       label: "Mes annonces",
       icon: Package,
-      count: mockCurrentUser.productCount,
+      count: user?.productCount,
       content: myProducts.length > 0 ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {myProducts.map((product) => (
@@ -130,14 +131,14 @@ export default function UserProfilePage() {
               <div className="flex items-center justify-between rounded-xl bg-gray-50 p-3 dark:bg-gray-800">
                 <div>
                   <p className="text-sm font-medium text-gray-900 dark:text-white">Email</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{mockCurrentUser.email}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email}</p>
                 </div>
                 <Badge variant="success">Vérifié</Badge>
               </div>
               <div className="flex items-center justify-between rounded-xl bg-gray-50 p-3 dark:bg-gray-800">
                 <div>
                   <p className="text-sm font-medium text-gray-900 dark:text-white">Téléphone</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{mockCurrentUser.phone}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{user?.phone}</p>
                 </div>
                 <Badge variant="success">Vérifié</Badge>
               </div>
@@ -203,7 +204,7 @@ export default function UserProfilePage() {
         transition={{ duration: 0.3 }}
       >
         <ProfileHeader
-          user={mockCurrentUser}
+          user={user}
           isOwnProfile
           onEdit={() => setEditModalOpen(true)}
         />

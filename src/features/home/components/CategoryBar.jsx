@@ -167,7 +167,7 @@ export default function CategoryBar() {
   return (
     <div ref={containerRef} className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 z-50">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-center gap-1 overflow-x-auto hide-scrollbar px-4 sm:px-6 lg:px-8 py-2">
+        <div className="flex items-center justify-start md:justify-center gap-1 overflow-x-auto hide-scrollbar px-4 sm:px-6 lg:px-8 py-2">
           {parents.map((group, i) => {
             const Icon = faIconMap[group.icon] || FaLaptop;
             return (

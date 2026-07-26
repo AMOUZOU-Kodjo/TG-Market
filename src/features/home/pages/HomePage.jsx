@@ -292,16 +292,6 @@ function HeroSection() {
                 Vendre un article
               </Button>
             </Link>
-            <Link to="/categories">
-              <Button
-                variant="outline"
-                size="xl"
-                icon={ShoppingBag}
-                className="border-white/40 text-white hover:bg-white/30 text-sm sm:text-base px-4 py-2 sm:px-6 sm:py-3"
-              >
-                Explorer les annonces
-              </Button>
-            </Link>
           </motion.div>
 
           <motion.div

@@ -18,7 +18,6 @@ import {
   LoginPage,
   RegisterPage,
   ForgotPasswordPage,
-  CategoriesPage,
   CategoryPage,
   SearchResultsPage,
   ProductDetailPage,
@@ -85,8 +84,7 @@ function App() {
                   <Routes>
                     <Route element={<MainLayout />}>
                       <Route path="/" element={<HomePage />} />
-                      <Route path="/categories/:slug" element={<CategoryPage />} />
-                      <Route path="/categories" element={<CategoriesPage />} />
+                     <Route path="/categories/:slug" element={<CategoryPage />} />
                       <Route path="/vehicules" element={<VehicleListingsPage />} />
                       <Route path="/recherche" element={<SearchResultsPage />} />
                       <Route path="/annonce/:id" element={<ProductDetailPage />} />

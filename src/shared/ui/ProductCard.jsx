@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Heart, MapPin, MessageCircle } from "lucide-react";
 import { cn } from "@/shared/utils/cn";
 import Badge from "@/shared/ui/Badge";
@@ -117,6 +118,6 @@ export default function ProductCard({
           <span className="truncate">{location}</span>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

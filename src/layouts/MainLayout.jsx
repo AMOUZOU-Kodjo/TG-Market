@@ -14,7 +14,6 @@ import {
   Sun,
   Moon,
   Home,
-  Grid3X3,
   PlusCircle,
   HelpCircle,
   Shield,
@@ -81,7 +80,6 @@ export default function MainLayout() {
 
   const navLinks = [
     { to: "/", label: "Accueil", icon: Home },
-    { to: "/categories", label: "Catégories", icon: Grid3X3 },
     { to: "/vendre", label: "Vendre", icon: PlusCircle },
   ];
 

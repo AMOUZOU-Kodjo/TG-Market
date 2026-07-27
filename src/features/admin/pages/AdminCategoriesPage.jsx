@@ -22,6 +22,7 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/shared/services/api";
 import toast from "react-hot-toast";
+import Badge from "@/shared/ui/Badge";
 
 const ICONS = [
   "Smartphone", "Car", "Laptop", "Sofa", "Shirt", "Home",

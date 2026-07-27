@@ -1,6 +1,7 @@
 import prisma from '../../config/database.js';
 import redis from '../../config/redis.js';
 import { generateOtp } from '../../utils/helpers.js';
+import { sendEmail, passwordResetEmail } from '../../utils/email.js';
 
 export async function getStatus(userId) {
   const user = await prisma.user.findUnique({
@@ -121,4 +122,68 @@ export async function getBadges(userId) {
     key: b.badge_key,
     earnedAt: b.earned_at,
   }));
+}
+
+function emailOtpTemplate(otp) {
+  return `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #01796F;">TG-Market — Vérification de votre email</h2>
+      <p>Vous avez demandé la vérification de votre adresse email.</p>
+      <div style="background: #f4f4f4; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
+        <p style="font-size: 14px; color: #666;">Votre code de vérification :</p>
+        <p style="font-size: 32px; font-weight: bold; color: #01796F; letter-spacing: 8px;">${otp}</p>
+      </div>
+      <p style="color: #999; font-size: 12px;">Ce code expire dans 5 minutes. Ne partagez ce code avec personne.</p>
+      <p style="color: #999; font-size: 12px;">Si vous n'avez pas demandé cette vérification, ignorez cet email.</p>
+    </div>
+  `;
+}
+
+export async function sendEmailOtp(userId) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { email: true, email_verified_at: true },
+  });
+
+  if (!user) {
+    const error = new Error('Utilisateur introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  if (user.email_verified_at) {
+    const error = new Error('Email déjà vérifié');
+    error.status = 400;
+    throw error;
+  }
+
+  const otp = generateOtp();
+  await redis.set(`otp:email:${userId}`, otp, 'EX', 300);
+
+  await sendEmail({
+    to: user.email,
+    subject: 'TG-Market — Code de vérification',
+    html: emailOtpTemplate(otp),
+  });
+
+  return { message: 'Code de vérification envoyé par email' };
+}
+
+export async function verifyEmailOtp(userId, otp) {
+  const storedOtp = await redis.get(`otp:email:${userId}`);
+
+  if (!storedOtp || storedOtp !== otp) {
+    const error = new Error('Code OTP invalide ou expiré');
+    error.status = 400;
+    throw error;
+  }
+
+  await redis.del(`otp:email:${userId}`);
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { email_verified_at: new Date() },
+  });
+
+  return { message: 'Email vérifié avec succès' };
 }

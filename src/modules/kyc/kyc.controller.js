@@ -36,6 +36,24 @@ export async function verifyOtp(req, res, next) {
   }
 }
 
+export async function sendEmailOtp(req, res, next) {
+  try {
+    const result = await kycService.sendEmailOtp(req.user.id);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function verifyEmailOtp(req, res, next) {
+  try {
+    const result = await kycService.verifyEmailOtp(req.user.id, req.validated.body.otp);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function getBadges(req, res, next) {
   try {
     const badges = await kycService.getBadges(req.user.id);

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import {
@@ -34,6 +35,8 @@ import Textarea from "@/shared/ui/Textarea";
 import Avatar from "@/shared/ui/Avatar";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useKycStatus, useKycBadges } from "@/features/verification/hooks/useKyc";
+import { usersApi } from "@/features/profile/services/users.api";
+import { authApi } from "@/features/auth/services/auth.api";
 import toast from "react-hot-toast";
 import KycProgress from "@/features/verification/components/KycProgress";
 import BadgeGrid from "@/features/verification/components/BadgeGrid";
@@ -120,9 +123,56 @@ const mockLoginHistory = [
 
 export default function SettingsPage() {
   const { user } = useAuth();
+  const qc = useQueryClient();
+  const userId = user?.id;
+
   const { data: kycStatus } = useKycStatus();
   const { data: badgesResponse } = useKycBadges();
   const badges = badgesResponse?.data ?? [];
+
+  const { data: sessions = [] } = useQuery({
+    queryKey: ["sessions"],
+    queryFn: authApi.getSessions,
+    enabled: !!userId,
+  });
+
+  const { data: loginHistory = [] } = useQuery({
+    queryKey: ["loginHistory"],
+    queryFn: authApi.getLoginHistory,
+    enabled: !!userId,
+  });
+
+  const { mutate: updateProfile, isPending: updatingProfile } = useMutation({
+    mutationFn: usersApi.updateProfile,
+    onSuccess: () => {
+      toast.success("Profil mis à jour avec succès !");
+      qc.invalidateQueries({ queryKey: ["authMe"] });
+    },
+    onError: () => {
+      toast.error("Erreur lors de la mise à jour du profil");
+    },
+  });
+
+  const { mutate: changePassword, isPending: changingPassword } = useMutation({
+    mutationFn: usersApi.changePassword,
+    onSuccess: () => {
+      toast.success("Mot de passe modifié avec succès !");
+      resetPassword();
+    },
+    onError: () => {
+      toast.error("Erreur lors du changement de mot de passe");
+    },
+  });
+
+  const { mutate: revokeOtherSessions, isPending: revokingSessions } = useMutation({
+    mutationFn: authApi.revokeOtherSessions,
+    onSuccess: () => {
+      toast.success("Toutes les autres sessions ont été déconnectées.");
+    },
+    onError: () => {
+      toast.error("Erreur lors de la déconnexion des autres sessions");
+    },
+  });
 
   const verificationSteps = [
     { id: 1, title: "Téléphone", description: "Vérifier votre numéro +228", status: kycStatus?.phoneVerified ? "completed" : "pending", icon: "Phone" },
@@ -171,12 +221,11 @@ export default function SettingsPage() {
   } = useForm();
 
   const onProfileSubmit = (data) => {
-    toast.success("Profil mis à jour avec succès !");
+    updateProfile(data);
   };
 
   const onPasswordSubmit = (data) => {
-    toast.success("Mot de passe modifié avec succès !");
-    resetPassword();
+    changePassword(data);
   };
 
   return (
@@ -448,7 +497,7 @@ export default function SettingsPage() {
               Sessions actives
             </h3>
             <div className="space-y-3">
-              {mockSessions.map((session) => {
+              {sessions.map((session) => {
                 const Icon = session.icon;
                 return (
                   <div
@@ -497,9 +546,8 @@ export default function SettingsPage() {
               })}
             </div>
             <button
-              onClick={() => {
-                toast.success("Toutes les autres sessions ont été déconnectées.");
-              }}
+              onClick={() => revokeOtherSessions()}
+              disabled={revokingSessions}
               className="mt-3 text-xs font-medium text-red-700 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
             >
               Déconnecter toutes les autres sessions
@@ -530,7 +578,7 @@ export default function SettingsPage() {
                   className="overflow-hidden"
                 >
                   <div className="mt-3 space-y-2">
-                    {mockLoginHistory.map((entry) => (
+                    {loginHistory.map((entry) => (
                       <div
                         key={entry.id}
                         className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50 px-4 py-3 dark:border-gray-800 dark:bg-gray-800/30"

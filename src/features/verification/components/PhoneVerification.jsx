@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Phone, Edit3, CheckCircle2 } from "lucide-react";
 import Button from "@/shared/ui/Button";
+import { useSendOtp, useVerifyOtp } from "@/features/verification/hooks/useKyc";
+import toast from "react-hot-toast";
 
 export default function PhoneVerification({ phone = "+228 90 12 34 56", onVerify }) {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
-  const [verifying, setVerifying] = useState(false);
   const [verified, setVerified] = useState(false);
   const [countdown, setCountdown] = useState(0);
 
@@ -18,9 +18,22 @@ export default function PhoneVerification({ phone = "+228 90 12 34 56", onVerify
     }
   }, [countdown]);
 
+  const { mutate: sendOtp, isPending: sendingOtp } = useSendOtp();
+  const { mutate: verifyOtp, isPending: verifyingOtp } = useVerifyOtp();
+
   const handleSendCode = () => {
-    setSending(true);
-    setTimeout(() => { setSending(false); setSent(true); setCountdown(60); }, 1500);
+    sendOtp(
+      { phone: phone.replace(/\D/g, "") },
+      {
+        onSuccess: () => {
+          setSent(true);
+          setCountdown(60);
+        },
+        onError: () => {
+          toast.error("Erreur lors de l'envoi du code");
+        },
+      }
+    );
   };
 
   const handleOtpChange = (index, value) => {
@@ -32,8 +45,20 @@ export default function PhoneVerification({ phone = "+228 90 12 34 56", onVerify
       document.getElementById(`otp-${index + 1}`)?.focus();
     }
     if (newOtp.every((d) => d !== "")) {
-      setVerifying(true);
-      setTimeout(() => { setVerifying(false); setVerified(true); onVerify?.(); }, 2000);
+      const otpCode = newOtp.join("");
+      verifyOtp(
+        { phone: phone.replace(/\D/g, ""), otp: otpCode },
+        {
+          onSuccess: () => {
+            setVerified(true);
+            onVerify?.();
+          },
+          onError: (err) => {
+            toast.error(err?.response?.data?.message || "Code OTP invalide");
+            setOtp(["", "", "", "", "", ""]);
+          },
+        }
+      );
     }
   };
 
@@ -68,7 +93,7 @@ export default function PhoneVerification({ phone = "+228 90 12 34 56", onVerify
       </div>
 
       {!sent ? (
-        <Button onClick={handleSendCode} loading={sending} variant="secondary" className="w-full">
+        <Button onClick={handleSendCode} loading={sendingOtp} variant="secondary" className="w-full">
           Envoyer le code de vérification
         </Button>
       ) : (
@@ -94,7 +119,7 @@ export default function PhoneVerification({ phone = "+228 90 12 34 56", onVerify
               />
             ))}
           </div>
-          {verifying && (
+          {verifyingOtp && (
             <div className="flex justify-center">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-red-800 border-t-transparent" />
             </div>

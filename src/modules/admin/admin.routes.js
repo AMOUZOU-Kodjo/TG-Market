@@ -12,6 +12,7 @@ router.get('/users', pagination, adminController.getUsers);
 router.put('/users/:id/status', adminController.updateUserStatus);
 router.get('/products', pagination, adminController.getProducts);
 router.put('/products/:id/status', adminController.updateProductStatus);
+router.get('/categories', adminController.getCategories);
 router.get('/kyc/pending', pagination, adminController.getKycPending);
 router.put('/kyc/:id/approve', adminController.approveKyc);
 router.put('/kyc/:id/reject', adminController.rejectKyc);

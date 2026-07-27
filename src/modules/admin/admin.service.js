@@ -256,6 +256,26 @@ export async function getProducts({ page, perPage, skip }) {
   };
 }
 
+export async function getCategories() {
+  const categories = await prisma.category.findMany({
+    include: {
+      _count: { select: { products: true } },
+    },
+    orderBy: { sort_order: 'asc' },
+  });
+
+  return categories.map((c) => ({
+    id: c.id,
+    name: c.name,
+    slug: c.slug,
+    icon: c.icon,
+    color: c.color,
+    sortOrder: c.sort_order,
+    productCount: c._count.products,
+    parentId: c.parent_id,
+  }));
+}
+
 export async function updateProductStatus(productId, status) {
   const product = await prisma.product.findUnique({
     where: { id: productId },

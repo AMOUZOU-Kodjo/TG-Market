@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { auth, admin as adminMiddleware } from '../../middleware/auth.js';
-import { pagination, validate } from '../../utils/pagination.js';
+import { pagination } from '../../utils/pagination.js';
+import { validate } from '../../middleware/validate.js';
 import * as adminController from './admin.controller.js';
 
 const createCategorySchema = z.object({

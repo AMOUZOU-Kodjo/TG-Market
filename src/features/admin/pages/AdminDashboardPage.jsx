@@ -76,9 +76,7 @@ export default function AdminDashboardPage() {
   const categories = categoriesData?.data ?? (Array.isArray(categoriesData) ? categoriesData : []);
 
   const displayedUsers = users.slice(0, 10);
-  const [userStatuses, setUserStatuses] = useState(
-    Object.fromEntries(displayedUsers.map((u) => [u.id, u.verified ? "verified" : "active"]))
-  );
+  const [userStatuses, setUserStatuses] = useState({});
 
   const pendingListings = [
     {
@@ -86,7 +84,7 @@ export default function AdminDashboardPage() {
       title: "iPhone 14 Pro Max 256GB - Neuf scellé",
       price: 750000,
       category: "Téléphones",
-      seller: displayedUsers[0],
+      seller: displayedUsers[0] ?? { name: "Inconnu", avatar: null },
       submittedAt: "2025-07-20T08:00:00Z",
       images: 1,
     },
@@ -95,7 +93,7 @@ export default function AdminDashboardPage() {
       title: "Terrain 500m² à Kpéme - Titre foncier",
       price: 15000000,
       category: "Immobilier",
-      seller: displayedUsers[2],
+      seller: displayedUsers[1] ?? { name: "Inconnu", avatar: null },
       submittedAt: "2025-07-19T16:30:00Z",
       images: 1,
     },
@@ -104,8 +102,8 @@ export default function AdminDashboardPage() {
       title: "Set complète de batterie Pearl Export",
       price: 850000,
       category: "Musique",
-      seller: displayedUsers[7],
-      submittedAt: "2025-07-19T14:00:00Z",
+      seller: displayedUsers[2] ?? { name: "Inconnu", avatar: null },
+      submittedAt: "2025-07-19T14:30:00Z",
       images: 1,
     },
     {
@@ -113,7 +111,7 @@ export default function AdminDashboardPage() {
       title: "Lot de 50 pagnes wax assorted",
       price: 125000,
       category: "Mode & Vêtements",
-      seller: displayedUsers[1],
+      seller: displayedUsers[3] ?? { name: "Inconnu", avatar: null },
       submittedAt: "2025-07-19T10:15:00Z",
       images: 1,
     },
@@ -255,7 +253,7 @@ export default function AdminDashboardPage() {
                         {formatCFA(listing.price)} · {listing.category}
                       </p>
                       <p className="mt-1 text-xs text-gray-500">
-                        par {listing.seller.name} · {formatRelativeTime(listing.submittedAt)}
+                        par {listing.seller?.name ?? "Inconnu"} · {formatRelativeTime(listing.submittedAt)}
                       </p>
                     </div>
                     <div className="flex items-center gap-1">

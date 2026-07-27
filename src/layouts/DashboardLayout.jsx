@@ -81,17 +81,15 @@ export default function DashboardLayout() {
           <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100 dark:border-gray-700">
             <Link to="/" className="flex items-center gap-2">
               <Logo size="sm" />
-              {sidebarOpen && (
-                <span className="text-lg font-bold text-brand-900">
-                  Market
-                </span>
-              )}
+              {sidebarOpen && <span className="text-lg font-bold text-brand-900">Market</span>}
             </Link>
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="hidden lg:flex p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 transition-colors"
             >
-              <ChevronLeft className={`w-4 h-4 transition-transform ${!sidebarOpen ? "rotate-180" : ""}`} />
+              <ChevronLeft
+                className={`w-4 h-4 transition-transform ${!sidebarOpen ? "rotate-180" : ""}`}
+              />
             </button>
             <button
               onClick={() => setMobileSidebarOpen(false)}
@@ -109,7 +107,7 @@ export default function DashboardLayout() {
           </div>
 
           {/* Wallet green band */}
-          <div className="mx-3 rounded-xl bg-brand-600 p-4 text-white">
+          {/* <div className="mx-3 rounded-xl bg-brand-600 p-4 text-white">
             <p className="text-sm font-semibold">Portefeuille TGM</p>
             <div className="flex justify-between items-center gap-2">
               <p className="text-2xl font-bold">{formatCFA(totalEarned)}</p>
@@ -120,6 +118,30 @@ export default function DashboardLayout() {
                 Voir →
               </button>
            </div>
+          </div> */}
+          <div className="mx-3 rounded-3xl bg-brand-600 p-5 text-white shadow-lg">
+            <div className="flex items-end justify-between">
+              {/* Partie gauche */}
+              <div>
+                <div className="mb-3 flex items-center gap-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
+                    <Wallet size={18} className="text-amber-300" />
+                  </div>
+
+                  <span className="text-lg font-semibold text-white/80">Portefeuille TGM</span>
+                </div>
+
+                <h2 className="text-5xl font-bold tracking-tight">{formatCFA(totalEarned)}</h2>
+              </div>
+
+              {/* Bouton */}
+              <button
+                onClick={() => navigate("/dashboard/analytics")}
+                className="rounded-2xl border border-white/25 bg-white/15 px-7 py-4 text-lg font-semibold text-white backdrop-blur transition-all hover:bg-white/20"
+              >
+                Voir →
+              </button>
+            </div>
           </div>
 
           {/* Devenir membre certifié */}
@@ -136,7 +158,11 @@ export default function DashboardLayout() {
             className="mx-3 mt-4 flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
           >
             {user?.avatar ? (
-              <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full object-cover shrink-0" />
+              <img
+                src={user.avatar}
+                alt={user.name}
+                className="w-8 h-8 rounded-full object-cover shrink-0"
+              />
             ) : (
               <div className="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-800/20 flex items-center justify-center text-brand-800 font-bold text-sm shrink-0">
                 {user?.name?.charAt(0)?.toUpperCase() || "?"}
@@ -192,7 +218,10 @@ export default function DashboardLayout() {
               Aide
             </Link>
             <button
-              onClick={async () => { await logout(); navigate("/"); }}
+              onClick={async () => {
+                await logout();
+                navigate("/");
+              }}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-800 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
             >
               <LogOut className="w-4 h-4 shrink-0" />
@@ -244,7 +273,10 @@ export default function DashboardLayout() {
                   </span>
                 )}
               </Link>
-              <Link to="/vendre" className="hidden sm:flex items-center gap-2 px-4 py-2 bg-brand-900 text-white rounded-xl text-sm font-medium hover:bg-brand-950 transition-colors shadow-md shadow-brand-700/25">
+              <Link
+                to="/vendre"
+                className="hidden sm:flex items-center gap-2 px-4 py-2 bg-brand-900 text-white rounded-xl text-sm font-medium hover:bg-brand-950 transition-colors shadow-md shadow-brand-700/25"
+              >
                 + Nouvelle annonce
               </Link>
             </div>
@@ -259,12 +291,18 @@ export default function DashboardLayout() {
                   className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700"
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-${stat.color}-50 dark:bg-${stat.color}-900/30`}>
-                      <stat.icon className={`w-5 h-5 text-${stat.color}-600 dark:text-${stat.color}-400`} />
+                    <div
+                      className={`w-10 h-10 rounded-lg flex items-center justify-center bg-${stat.color}-50 dark:bg-${stat.color}-900/30`}
+                    >
+                      <stat.icon
+                        className={`w-5 h-5 text-${stat.color}-600 dark:text-${stat.color}-400`}
+                      />
                     </div>
                     <div>
                       <p className="text-xs text-gray-500 dark:text-gray-400">{stat.label}</p>
-                      <p className="text-lg font-bold text-gray-900 dark:text-white">{stat.value}</p>
+                      <p className="text-lg font-bold text-gray-900 dark:text-white">
+                        {stat.value}
+                      </p>
                     </div>
                   </div>
                 </div>

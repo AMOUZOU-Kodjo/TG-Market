@@ -66,12 +66,15 @@ async function storeRefreshToken(userId, token, req) {
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 30);
 
+  const forwardedFor = req?.headers?.['x-forwarded-for'];
+  const ip = forwardedFor ? forwardedFor.split(',')[0].trim() : req?.ip || null;
+
   await prisma.refreshToken.create({
     data: {
       user_id: userId,
       token,
       user_agent: req?.headers?.['user-agent'] || null,
-      ip_address: req?.ip || null,
+      ip_address: ip,
       expires_at: expiresAt,
     },
   });

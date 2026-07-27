@@ -165,7 +165,7 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
 
 export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [mobileView, setMobileView] = useState("page");
+  const [mobileView, setMobileView] = useState("sidebar");
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -181,10 +181,21 @@ export default function DashboardLayout() {
   const totalEarned = walletData?.totalEarned ?? 0;
 
   useEffect(() => {
-    setMobileView("page");
+    setMobileView(location.pathname === "/dashboard" ? "sidebar" : "page");
   }, [location]);
 
   const handleMobileLinkClick = () => setMobileView("page");
+
+  const pageTitles = {
+    "/dashboard/profile": "Mon Profil",
+    "/dashboard/history": "Ventes et Achats",
+    "/dashboard/messages": "Messages",
+    "/dashboard/notifications": "Notifications",
+    "/dashboard/settings": "Paramètres",
+    "/dashboard/analytics": "Statistiques",
+    "/dashboard/promotions": "Promotions",
+  };
+  const pageTitle = pageTitles[location.pathname] ?? "Tableau de bord";
 
   const quickStats = [
     { label: "Vues totales", value: totalViews.toLocaleString("fr-FR"), icon: Eye, color: "blue" },
@@ -245,18 +256,26 @@ export default function DashboardLayout() {
         {/* ===== MAIN CONTENT ===== */}
         <div className="flex-1 min-w-0">
           {/* Dashboard Header */}
-          <header className="sticky top-0 z-30 h-16 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 sm:px-6">
+          <header className={`${mobileView === "sidebar" ? "hidden lg:flex" : "flex"} sticky top-0 z-30 h-16 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-700 items-center justify-between px-4 sm:px-6`}>
             <div className="flex items-center gap-3">
-              {/* Mobile: back arrow or hamburger */}
+              {/* Mobile: back arrow */}
               <button
                 onClick={() => setMobileView("sidebar")}
-                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500"
+                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
               >
-                {mobileView === "page" ? (
-                  <Menu className="w-5 h-5" />
-                ) : null}
+                <ArrowLeft className="w-5 h-5" />
               </button>
-              <div className="relative hidden sm:block">
+              {/* Desktop: hamburger */}
+              <button
+                onClick={() => setMobileView("sidebar")}
+                className="hidden lg:flex p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+              {/* Mobile: page title */}
+              <span className="lg:hidden text-sm font-semibold text-gray-900 dark:text-white">{pageTitle}</span>
+              {/* Desktop: search */}
+              <div className="relative hidden lg:block">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   type="text"
@@ -297,8 +316,8 @@ export default function DashboardLayout() {
             </div>
           </header>
 
-          {/* Quick Stats Bar */}
-          <div className="px-4 sm:px-6 py-4">
+          {/* Quick Stats Bar - desktop only */}
+          <div className={`${mobileView === "sidebar" ? "hidden lg:block" : ""} px-4 sm:px-6 py-4`}>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               {quickStats.map((stat, i) => (
                 <div

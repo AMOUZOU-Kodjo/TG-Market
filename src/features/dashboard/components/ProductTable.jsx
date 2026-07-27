@@ -106,11 +106,7 @@ export default function ProductTable() {
               const productImage = product.images?.[0] || null;
               const st = statusConfig[product.status] || { label: product.status, variant: "neutral" };
               return (
-                <motion.tr
-                  key={product.id}
-                  layout
-                  className="group"
-                >
+                <motion.tr key={product.id} layout className="group">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       {productImage ? (
@@ -135,12 +131,14 @@ export default function ProductTable() {
                           {formatCFA(product.price)}
                         </p>
                         <p className="mt-0.5 text-xs text-gray-400 md:hidden">
-                          <span className={cn(
-                            "inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium",
-                            st.variant === "success" && "bg-brand-100 text-brand-700",
-                            st.variant === "warning" && "bg-yellow-50 text-yellow-600",
-                            st.variant === "secondary" && "bg-gray-100 text-gray-700"
-                          )}>
+                          <span
+                            className={cn(
+                              "inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium",
+                              st.variant === "success" && "bg-brand-100 text-brand-700",
+                              st.variant === "warning" && "bg-yellow-50 text-yellow-600",
+                              st.variant === "secondary" && "bg-gray-100 text-gray-700"
+                            )}
+                          >
                             {st.label}
                           </span>
                         </p>
@@ -151,9 +149,7 @@ export default function ProductTable() {
                     {formatCFA(product.price)}
                   </td>
                   <td className="hidden px-4 py-3 md:table-cell">
-                    <Badge variant={st.variant}>
-                      {st.label}
-                    </Badge>
+                    <Badge variant={st.variant}>{st.label}</Badge>
                   </td>
                   <td className="hidden whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400 lg:table-cell">
                     {product.views ?? 0}
@@ -175,7 +171,8 @@ export default function ProductTable() {
                         )}
                       </button>
                       <button
-                        onClick={() => navigate(`/annonces/${product.id}/modifier`)}
+                        // onClick={() => navigate(`/annonces/${product.id}/modifier`)}
+                        onClick={() => navigate(`/modifier/${product.id}`)}
                         className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-brand-800 dark:hover:bg-gray-800 dark:hover:text-brand-400"
                         title="Modifier"
                       >

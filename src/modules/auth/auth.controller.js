@@ -92,8 +92,7 @@ export async function getSessions(req, res, next) {
 
 export async function revokeOtherSessions(req, res, next) {
   try {
-    const refreshToken = req.headers.authorization?.split(' ')[1] || '';
-    const result = await authService.revokeOtherSessions(req.user.id, refreshToken);
+    const result = await authService.revokeOtherSessions(req.user.id);
     res.json(result);
   } catch (err) {
     next(err);

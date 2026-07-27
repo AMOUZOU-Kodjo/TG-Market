@@ -428,3 +428,61 @@ export async function resetPassword(data) {
 
   return { message: 'Mot de passe réinitialisé avec succès' };
 }
+
+export async function getSessions(userId) {
+  const tokens = await prisma.refreshToken.findMany({
+    where: { user_id: userId },
+    orderBy: { created_at: 'desc' },
+    take: 20,
+  });
+
+  const sessions = tokens.map((t) => ({
+    id: t.id,
+    device: t.user_agent || 'Appareil inconnu',
+    ip: t.ip_address || 'Inconnu',
+    location: 'Togo',
+    lastActive: t.created_at.toISOString(),
+    isCurrent: false,
+  }));
+
+  return sessions;
+}
+
+export async function revokeOtherSessions(userId, currentToken) {
+  await prisma.refreshToken.deleteMany({
+    where: {
+      user_id: userId,
+      token: { not: currentToken },
+    },
+  });
+
+  return { message: 'Autres sessions déconnectées avec succès' };
+}
+
+export async function getLoginHistory(userId) {
+  const tokens = await prisma.refreshToken.findMany({
+    where: { user_id: userId },
+    orderBy: { created_at: 'desc' },
+    take: 50,
+    select: {
+      id: true,
+      user_agent: true,
+      ip_address: true,
+      created_at: true,
+    },
+  });
+
+  return tokens.map((t) => ({
+    id: t.id,
+    date: t.created_at.toLocaleString('fr-FR', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }),
+    location: 'Togo',
+    device: t.user_agent || 'Appareil inconnu',
+    success: true,
+  }));
+}

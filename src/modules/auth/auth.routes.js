@@ -24,5 +24,8 @@ router.put('/profile', auth, validate(updateProfileSchema), authController.updat
 router.put('/change-password', auth, validate(changePasswordSchema), authLimiter, authController.changePassword);
 router.post('/forgot-password', otpLimiter, validate(forgotPasswordSchema), authController.forgotPassword);
 router.post('/reset-password', authLimiter, validate(resetPasswordSchema), authController.resetPassword);
+router.get('/sessions', auth, authController.getSessions);
+router.delete('/sessions/others', auth, authController.revokeOtherSessions);
+router.get('/login-history', auth, authController.getLoginHistory);
 
 export default router;

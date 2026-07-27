@@ -80,3 +80,31 @@ export async function resetPassword(req, res, next) {
     next(err);
   }
 }
+
+export async function getSessions(req, res, next) {
+  try {
+    const result = await authService.getSessions(req.user.id);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function revokeOtherSessions(req, res, next) {
+  try {
+    const refreshToken = req.headers.authorization?.split(' ')[1] || '';
+    const result = await authService.revokeOtherSessions(req.user.id, refreshToken);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getLoginHistory(req, res, next) {
+  try {
+    const result = await authService.getLoginHistory(req.user.id);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}

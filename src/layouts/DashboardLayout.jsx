@@ -111,7 +111,7 @@ export default function DashboardLayout() {
           {/* Wallet green band */}
           <div className="mx-3 rounded-xl bg-brand-600 p-4 text-white">
             <p className="text-sm font-semibold">Portefeuille TGM</p>
-            <div className="flex justify-center items-center gap-2">
+            <div className="flex justify-between items-center gap-2">
               <p className="text-2xl font-bold">{formatCFA(totalEarned)}</p>
               <button
                 onClick={() => navigate("/dashboard/analytics")}

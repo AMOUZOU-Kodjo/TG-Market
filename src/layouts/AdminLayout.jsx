@@ -186,7 +186,7 @@ export default function AdminLayout() {
             <div className="flex items-center gap-2">
               <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-brand-700/10 text-brand-400 text-xs font-medium rounded-lg">
                 <Shield className="w-3.5 h-3.5" />
-                Mode Admin
+                Mode Adminnistrateur
               </span>
               <button className="relative p-2 rounded-lg hover:bg-gray-800 text-gray-400 transition-colors">
                 <Bell className="w-5 h-5" />

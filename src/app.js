@@ -46,7 +46,6 @@ app.use(apiLimiter);
 
 // ─── Static uploads ──────────────────────────────────
 app.use('/uploads', express.static(UPLOADS_DIR));
-
 // ─── Health check ────────────────────────────────────
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

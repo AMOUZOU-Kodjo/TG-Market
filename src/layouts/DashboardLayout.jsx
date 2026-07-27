@@ -119,7 +119,7 @@ export default function DashboardLayout() {
               </button>
            </div>
           </div> */}
-          <div className="mx-3 rounded-3xl bg-brand-600 p-5 text-white shadow-lg">
+          <div className="mx-3 rounded-xl bg-brand-600 p-4 text-white shadow-lg">
             <div className="flex items-end justify-between">
               {/* Partie gauche */}
               <div>
@@ -128,16 +128,16 @@ export default function DashboardLayout() {
                     <Wallet size={18} className="text-amber-300" />
                   </div>
 
-                  <span className="text-lg font-semibold text-white/80">Portefeuille TGM</span>
+                  <span className="text-sm font-semibold text-white/80">Portefeuille TGM</span>
                 </div>
 
-                <h2 className="text-5xl font-bold tracking-tight">{formatCFA(totalEarned)}</h2>
+                <h2 className="text-2xl font-bold tracking-tight">{formatCFA(totalEarned)}</h2>
               </div>
 
               {/* Bouton */}
               <button
                 onClick={() => navigate("/dashboard/analytics")}
-                className="rounded-2xl border border-white/25 bg-white/15 px-7 py-4 text-lg font-semibold text-white backdrop-blur transition-all hover:bg-white/20"
+                className="rounded-xl border border-white/25 bg-white/15 px-4 py-3 text-sm font-semibold text-white backdrop-blur transition-all hover:bg-white/20"
               >
                 Voir →
               </button>

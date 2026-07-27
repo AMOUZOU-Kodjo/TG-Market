@@ -115,86 +115,100 @@ export default function DashboardLayout() {
             </button>
           </div>
 
-          {/* User Info */}
-          <div className={`p-4 border-b border-gray-100 dark:border-gray-700 ${!sidebarOpen ? "px-2" : ""}`}>
-            <div className={`flex items-center gap-3 ${!sidebarOpen ? "justify-center" : ""}`}>
-              {user?.avatar ? (
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="w-10 h-10 rounded-full object-cover ring-2 ring-brand-700/20 shrink-0"
-                />
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-brand-100 dark:bg-brand-800/20 flex items-center justify-center text-brand-800 dark:text-brand-400 font-bold shrink-0">
-                  {user?.name?.charAt(0)?.toUpperCase() || "?"}
-                </div>
-              )}
-              {sidebarOpen && (
-                <div className="min-w-0">
-                  <p className="font-semibold text-gray-900 dark:text-white text-sm truncate">
-                    {user?.name}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                    {user?.productCount ?? 0} annonces
-                  </p>
-                </div>
-              )}
-            </div>
+          {/* Mon espace */}
+          <div className="px-4 pt-4 pb-2">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+              Mon espace
+            </h3>
           </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-            {navItems.map((item) => {
-              const isActive = location.pathname === item.to;
-              return (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                    isActive
-                      ? "bg-brand-50 dark:bg-brand-950/30 text-brand-800 dark:text-brand-400"
-                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50"
-                  } ${!sidebarOpen ? "justify-center" : ""}`}
-                  title={!sidebarOpen ? item.label : undefined}
-                >
-                  <item.icon className={`w-5 h-5 shrink-0 ${isActive ? "text-brand-800 dark:text-brand-400" : ""}`} />
-                  {sidebarOpen && (
-                    <>
-                      <span className="flex-1">{item.label}</span>
-                      {item.badge && (
-                        <span className="px-2 py-0.5 bg-brand-700 text-white text-[10px] font-bold rounded-full">
-                          {item.badge}
-                        </span>
-                      )}
-                    </>
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
+          {/* Wallet green band */}
+          <div className="mx-3 rounded-xl bg-green-600 p-4 text-white">
+            <p className="text-sm font-semibold">Portefeuille TGM</p>
+            <p className="text-2xl font-bold mt-1">{formatCFA(totalEarned)}</p>
+            <button
+              onClick={() => navigate("/dashboard/analytics")}
+              className="mt-3 block text-sm font-medium underline decoration-white/50 hover:underline-offset-2"
+            >
+              Voir →
+            </button>
+          </div>
 
-          {/* Sidebar Footer */}
-          <div className="p-3 border-t border-gray-100 dark:border-gray-700 space-y-1">
+          {/* Devenir membre certifié */}
+          <Link
+            to="/dashboard/settings"
+            className="mx-3 mt-3 block rounded-xl bg-green-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-green-700 transition-colors"
+          >
+            Devenir un membre certifié
+          </Link>
+
+          {/* Profile */}
+          <Link
+            to="/dashboard/profile"
+            className="mx-3 mt-4 flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          >
+            {user?.avatar ? (
+              <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full object-cover shrink-0" />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-800/20 flex items-center justify-center text-brand-800 font-bold text-sm shrink-0">
+                {user?.name?.charAt(0)?.toUpperCase() || "?"}
+              </div>
+            )}
+            <span className="text-sm font-medium text-gray-900 dark:text-white">Mon Profil</span>
+          </Link>
+
+          {/* Mes Ventes et Achats */}
+          <Link
+            to="/dashboard/history"
+            className="mx-3 mt-1 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          >
+            <Package className="w-4 h-4 shrink-0" />
+            Mes Ventes et Achats
+          </Link>
+
+          {/* Separator */}
+          <div className="mx-3 mt-4 border-t border-gray-100 dark:border-gray-700" />
+
+          {/* Messages */}
+          <Link
+            to="/dashboard/messages"
+            className="mx-3 mt-2 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          >
+            <MessageCircle className="w-4 h-4 shrink-0" />
+            Messages
+          </Link>
+
+          {/* Notifications */}
+          <Link
+            to="/dashboard/notifications"
+            className="mx-3 mt-1 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          >
+            <Bell className="w-4 h-4 shrink-0" />
+            Notifications
+          </Link>
+
+          {/* Footer */}
+          <div className="mx-3 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 space-y-1 pb-4">
             <Link
               to="/"
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors"
             >
-              <ArrowLeft className="w-5 h-5 shrink-0" />
-              {sidebarOpen && <span>Retour au site</span>}
+              <ArrowLeft className="w-4 h-4 shrink-0" />
+              Retour au site
             </Link>
             <Link
               to="/faq"
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors"
             >
-              <HelpCircle className="w-5 h-5 shrink-0" />
-              {sidebarOpen && <span>Aide</span>}
+              <HelpCircle className="w-4 h-4 shrink-0" />
+              Aide
             </Link>
             <button
               onClick={async () => { await logout(); navigate("/"); }}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-800 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-800 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
             >
-              <LogOut className="w-5 h-5 shrink-0" />
-              {sidebarOpen && <span>Deconnexion</span>}
+              <LogOut className="w-4 h-4 shrink-0" />
+              Déconnexion
             </button>
           </div>
         </aside>

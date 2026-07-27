@@ -48,6 +48,7 @@ import {
   ContactPage,
   CheckoutPage,
   OrderDetailPage,
+  HistoryPage,
 } from "@/routes/lazyPages";
 
 const queryClient = new QueryClient({
@@ -205,6 +206,7 @@ function App() {
                       <Route path="/dashboard/profile" element={<SellerDashboardPage defaultTab="profile" />} />
                       <Route path="/dashboard/promotions" element={<SellerDashboardPage defaultTab="promotions" />} />
                       <Route path="/dashboard/settings" element={<SettingsPage />} />
+                      <Route path="/dashboard/history" element={<HistoryPage />} />
                     </Route>
 
                     <Route

@@ -317,6 +317,7 @@ export default function DashboardLayout() {
           </header>
 
           {/* Quick Stats Bar - desktop only */}
+          {/*
           <div className={`${mobileView === "sidebar" ? "hidden lg:block" : ""} px-4 sm:px-6 py-4`}>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               {quickStats.map((stat, i) => (
@@ -343,6 +344,7 @@ export default function DashboardLayout() {
               ))}
             </div>
           </div>
+          */}
 
           {/* Page Content */}
           <main className="px-4 sm:px-6 pb-8">

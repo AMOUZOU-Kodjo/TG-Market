@@ -930,6 +930,37 @@ function Toggle({ enabled, onChange, label, description }) {
   );
 }
 
+function parseUserAgent(ua) {
+  if (!ua) return { browser: "Inconnu", os: "Inconnu", device: "Appareil inconnu" };
+
+  let browser = "Autre";
+  if (ua.includes("Edg/")) browser = "Edge";
+  else if (ua.includes("OPR/") || ua.includes("Opera")) browser = "Opera";
+  else if (ua.includes("Chrome") && !ua.includes("Edg/")) browser = "Chrome";
+  else if (ua.includes("Safari") && !ua.includes("Chrome")) browser = "Safari";
+  else if (ua.includes("Firefox")) browser = "Firefox";
+
+  let os = "Autre";
+  if (ua.includes("Android")) {
+    const version = ua.match(/Android\s([\d.]+)/);
+    os = `Android${version ? " " + version[1] : ""}`;
+  } else if (ua.includes("iPhone") || ua.includes("iPad")) {
+    const version = ua.match(/OS\s([\d_]+)/);
+    os = `iOS${version ? " " + version[1].replace(/_/g, ".") : ""}`;
+  } else if (ua.includes("Windows NT 10")) os = "Windows 10";
+  else if (ua.includes("Windows NT 11") || ua.includes("Windows NT 10.0")) os = "Windows 11";
+  else if (ua.includes("Mac OS X")) {
+    const version = ua.match(/Mac OS X ([\d_]+)/);
+    os = `macOS${version ? " " + version[1].replace(/_/g, ".") : ""}`;
+  } else if (ua.includes("Linux")) os = "Linux";
+
+  let device = "Desktop";
+  if (ua.includes("Mobile") || ua.includes("Android") || ua.includes("iPhone")) device = "Mobile";
+  else if (ua.includes("iPad") || ua.includes("Tablet")) device = "Tablette";
+
+  return { browser, os, device };
+}
+
 function getDeviceIcon(userAgent) {
   if (!userAgent) return Smartphone;
   const ua = userAgent.toLowerCase();
@@ -1423,6 +1454,7 @@ export default function SettingsPage() {
               <div className="space-y-3">
                 {sessions.map((session) => {
                   const Icon = getDeviceIcon(session.device);
+                  const { browser, os, device } = parseUserAgent(session.device);
                   return (
                     <div
                       key={session.id}
@@ -1439,7 +1471,7 @@ export default function SettingsPage() {
                         <div>
                           <div className="flex items-center gap-2">
                             <p className="text-sm font-medium text-gray-900 dark:text-white">
-                              {session.device}
+                              {browser} · {device}
                             </p>
                             {session.isCurrent && (
                               <span className="inline-flex items-center gap-1 rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-semibold text-brand-700 dark:bg-brand-900/30 dark:text-brand-400">
@@ -1449,7 +1481,7 @@ export default function SettingsPage() {
                             )}
                           </div>
                           <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {session.device} · {session.location}
+                            {browser} · {os} · {session.location}
                           </p>
                           <p className="text-xs text-gray-400 dark:text-gray-500">
                             IP: {session.ip} · {session.lastActive}

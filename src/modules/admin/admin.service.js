@@ -264,7 +264,7 @@ export async function getCategories() {
     orderBy: { sort_order: 'asc' },
   });
 
-  return categories.map((c) => ({
+return categories.map((c) => ({
     id: c.id,
     name: c.name,
     slug: c.slug,
@@ -274,6 +274,137 @@ export async function getCategories() {
     productCount: c._count.products,
     parentId: c.parent_id,
   }));
+}
+
+export async function createCategory(data) {
+  const existing = await prisma.category.findUnique({ where: { slug: data.slug } });
+  if (existing) {
+    const error = new Error('Ce slug existe déjà');
+    error.status = 409;
+    throw error;
+  }
+
+  const category = await prisma.category.create({
+    data: {
+      name: data.name,
+      slug: data.slug,
+      icon: data.icon ?? 'Package',
+      color: data.color ?? '#01796F',
+      sort_order: data.sortOrder ?? 0,
+      parent_id: data.parentId ?? null,
+    },
+    include: { _count: { select: { products: true } } },
+  });
+
+  return {
+    id: category.id,
+    name: category.name,
+    slug: category.slug,
+    icon: category.icon,
+    color: category.color,
+    sortOrder: category.sort_order,
+    productCount: category._count.products,
+    parentId: category.parent_id,
+  };
+}
+
+export async function updateCategory(id, data) {
+  const category = await prisma.category.findUnique({ where: { id } });
+  if (!category) {
+    const error = new Error('Catégorie introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  if (data.slug && data.slug !== category.slug) {
+    const existing = await prisma.category.findUnique({ where: { slug: data.slug } });
+    if (existing) {
+      const error = new Error('Ce slug existe déjà');
+      error.status = 409;
+      throw error;
+    }
+  }
+
+  if (data.parentId !== undefined) {
+    if (data.parentId === id) {
+      const error = new Error('Une catégorie ne peut pas être son propre parent');
+      error.status = 400;
+      throw error;
+    }
+    if (data.parentId !== null) {
+      const parent = await prisma.category.findUnique({ where: { id: data.parentId } });
+      if (!parent) {
+        const error = new Error('Catégorie parente introuvable');
+        error.status = 404;
+        throw error;
+      }
+    }
+  }
+
+  const updated = await prisma.category.update({
+    where: { id },
+    data: {
+      name: data.name ?? category.name,
+      slug: data.slug ?? category.slug,
+      icon: data.icon ?? category.icon,
+      color: data.color ?? category.color,
+      sort_order: data.sortOrder ?? category.sort_order,
+      parent_id: data.parentId ?? category.parent_id,
+    },
+    include: { _count: { select: { products: true } } },
+  });
+
+  return {
+    id: updated.id,
+    name: updated.name,
+    slug: updated.slug,
+    icon: updated.icon,
+    color: updated.color,
+    sortOrder: updated.sort_order,
+    productCount: updated._count.products,
+    parentId: updated.parent_id,
+  };
+}
+
+export async function reorderCategories(updates) {
+  await prisma.$transaction(
+    updates.map(({ id, sortOrder, parentId }) =>
+      prisma.category.update({
+        where: { id },
+        data: { sort_order: sortOrder, parent_id: parentId ?? null },
+      })
+    )
+  );
+
+  return { message: 'Ordre mis à jour' };
+}
+
+export async function deleteCategory(id) {
+  const category = await prisma.category.findUnique({
+    where: { id },
+    include: { _count: { select: { products: true, children: true } } },
+  });
+
+  if (!category) {
+    const error = new Error('Catégorie introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  if (category._count.products > 0) {
+    const error = new Error(`Impossible de supprimer : ${category._count.products} annonce(s) liée(s)`);
+    error.status = 409;
+    throw error;
+  }
+
+  if (category._count.children > 0) {
+    const error = new Error('Impossible de supprimer : cette catégorie a des sous-catégories');
+    error.status = 409;
+    throw error;
+  }
+
+  await prisma.category.delete({ where: { id } });
+  return { message: 'Catégorie supprimée' };
 }
 
 export async function updateProductStatus(productId, status) {

@@ -51,6 +51,51 @@ export async function getProducts(req, res, next) {
   }
 }
 
+export async function getCategories(req, res, next) {
+  try {
+    const categories = await adminService.getCategories();
+    res.json({ data: categories });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function createCategory(req, res, next) {
+  try {
+    const category = await adminService.createCategory(req.validated.body);
+    res.status(201).json({ data: category });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function updateCategory(req, res, next) {
+  try {
+    const category = await adminService.updateCategory(Number(req.params.id), req.validated.body);
+    res.json({ data: category });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function reorderCategories(req, res, next) {
+  try {
+    const result = await adminService.reorderCategories(req.validated.body.updates);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function deleteCategory(req, res, next) {
+  try {
+    const result = await adminService.deleteCategory(Number(req.params.id));
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function updateProductStatus(req, res, next) {
   try {
     const result = await adminService.updateProductStatus(

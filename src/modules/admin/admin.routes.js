@@ -1,7 +1,51 @@
 import { Router } from 'express';
+import { z } from 'zod';
 import { auth, admin as adminMiddleware } from '../../middleware/auth.js';
-import { pagination } from '../../utils/pagination.js';
+import { pagination, validate } from '../../utils/pagination.js';
 import * as adminController from './admin.controller.js';
+
+const createCategorySchema = z.object({
+  body: z.object({
+    name: z.string().min(1).max(100),
+    slug: z.string().min(1).max(100),
+    icon: z.string().max(50).optional(),
+    color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+    sortOrder: z.number().int().min(0).optional(),
+    parentId: z.number().int().positive().nullable().optional(),
+  }),
+});
+
+const updateCategorySchema = z.object({
+  body: z.object({
+    name: z.string().min(1).max(100).optional(),
+    slug: z.string().min(1).max(100).optional(),
+    icon: z.string().max(50).optional(),
+    color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+    sortOrder: z.number().int().min(0).optional(),
+    parentId: z.number().int().positive().nullable().optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^\d+$/),
+  }),
+});
+
+const reorderCategoriesSchema = z.object({
+  body: z.object({
+    updates: z.array(
+      z.object({
+        id: z.number().int().positive(),
+        sortOrder: z.number().int().min(0),
+        parentId: z.number().int().positive().nullable().optional(),
+      })
+    ),
+  }),
+});
+
+const deleteCategorySchema = z.object({
+  params: z.object({
+    id: z.string().regex(/^\d+$/),
+  }),
+});
 
 const router = Router();
 
@@ -13,6 +57,10 @@ router.put('/users/:id/status', adminController.updateUserStatus);
 router.get('/products', pagination, adminController.getProducts);
 router.put('/products/:id/status', adminController.updateProductStatus);
 router.get('/categories', adminController.getCategories);
+router.post('/categories', validate(createCategorySchema), adminController.createCategory);
+router.put('/categories/:id', validate(updateCategorySchema), adminController.updateCategory);
+router.put('/categories/reorder', validate(reorderCategoriesSchema), adminController.reorderCategories);
+router.delete('/categories/:id', validate(deleteCategorySchema), adminController.deleteCategory);
 router.get('/kyc/pending', pagination, adminController.getKycPending);
 router.put('/kyc/:id/approve', adminController.approveKyc);
 router.put('/kyc/:id/reject', adminController.rejectKyc);

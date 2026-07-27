@@ -22,6 +22,12 @@ const SettingsPage = lazy(() => import("@/features/settings/pages/SettingsPage")
 const WalletPage = lazy(() => import("@/features/wallet/pages/WalletPage"));
 const ReviewsPage = lazy(() => import("@/features/reviews/pages/ReviewsPage"));
 const AdminDashboardPage = lazy(() => import("@/features/admin/pages/AdminDashboardPage"));
+const AdminUsersPage = lazy(() => import("@/features/admin/pages/AdminUsersPage"));
+const AdminListingsPage = lazy(() => import("@/features/admin/pages/AdminListingsPage"));
+const AdminCategoriesPage = lazy(() => import("@/features/admin/pages/AdminCategoriesPage"));
+const AdminPaymentsPage = lazy(() => import("@/features/admin/pages/AdminPaymentsPage"));
+const AdminReportsPage = lazy(() => import("@/features/admin/pages/AdminReportsPage"));
+const AdminSettingsPage = lazy(() => import("@/features/admin/pages/AdminSettingsPage"));
 const AboutPage = lazy(() => import("@/features/static/pages/AboutPage"));
 const FAQPage = lazy(() => import("@/features/static/pages/FAQPage"));
 const PrivacyPage = lazy(() => import("@/features/static/pages/PrivacyPage"));
@@ -60,6 +66,12 @@ export {
   WalletPage,
   ReviewsPage,
   AdminDashboardPage,
+  AdminUsersPage,
+  AdminListingsPage,
+  AdminCategoriesPage,
+  AdminPaymentsPage,
+  AdminReportsPage,
+  AdminSettingsPage,
   AboutPage,
   FAQPage,
   PrivacyPage,

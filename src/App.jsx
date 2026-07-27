@@ -35,6 +35,12 @@ import {
   WalletPage,
   ReviewsPage,
   AdminDashboardPage,
+  AdminUsersPage,
+  AdminListingsPage,
+  AdminCategoriesPage,
+  AdminPaymentsPage,
+  AdminReportsPage,
+  AdminSettingsPage,
   AboutPage,
   FAQPage,
   PrivacyPage,
@@ -217,6 +223,12 @@ function App() {
                       }
                     >
                       <Route path="/admin" element={<AdminDashboardPage />} />
+                      <Route path="/admin/users" element={<AdminUsersPage />} />
+                      <Route path="/admin/listings" element={<AdminListingsPage />} />
+                      <Route path="/admin/categories" element={<AdminCategoriesPage />} />
+                      <Route path="/admin/payments" element={<AdminPaymentsPage />} />
+                      <Route path="/admin/reports" element={<AdminReportsPage />} />
+                      <Route path="/admin/settings" element={<AdminSettingsPage />} />
                     </Route>
 
                     <Route path="/maintenance" element={<MaintenancePage />} />

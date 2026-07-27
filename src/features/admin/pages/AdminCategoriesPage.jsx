@@ -1,74 +1,340 @@
-import { useQuery } from "@tanstack/react-query";
-import { FolderTree, Package } from "lucide-react";
+import { useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FolderTree,
+  Plus,
+  Edit2,
+  Trash2,
+  ChevronDown,
+  ChevronUp,
+  ChevronRight,
+  Save,
+  X,
+  ArrowUpDown,
+  Hash,
+  Palette,
+  Smile,
+  Eye,
+  EyeOff,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/shared/services/api";
+import toast from "react-hot-toast";
+
+const ICONS = [
+  "Smartphone", "Car", "Laptop", "Sofa", "Shirt", "Home",
+  "Refrigerator", "Gamepad2", "Dumbbell", "Sparkles", "Baby",
+  "Apple", "Briefcase", "PawPrint", "BookOpen", "Music",
+  "Palette", "TreePine", "GraduationCap", "Crown", "Scissors",
+  "Hammer", "Wrench", "PartyPopper", "Camera", "Bike",
+  "Footprints", "ShoppingBag", "Gem", "Flower2", "Sun",
+  "Package", "Star", "MapPin", "Users", "PackageCheck",
+  "ShieldCheck", "CheckCircle2", "Download", "Play", "Apple",
+  "Zap", "Shield", "Send", "FileText", "MessageSquare", "Heart",
+];
+
+function slugify(text) {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+function getRandomColor() {
+  const colors = [
+    "#01796F", "#2563EB", "#7C3AED", "#DB2777", "#EA580C",
+    "#16A34A", "#0891B2", "#BE123C", "#4338CA", "#0F766E",
+  ];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
 
 export default function AdminCategoriesPage() {
-  const { data, isLoading } = useQuery({
+  const qc = useQueryClient();
+  const [expanded, setExpanded] = useState(new Set());
+  const [modal, setModal] = useState(null);
+  const [form, setForm] = useState({ name: "", slug: "", icon: "Package", color: getRandomColor(), parentId: null, sortOrder: 0, isActive: true });
+
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["adminCategories"],
     queryFn: () => api.get("/admin/categories").then((r) => r.data),
   });
 
+  const createMutation = useMutation({
+    mutationFn: (data) => api.post("/admin/categories", data).then((r) => r.data.data),
+    onSuccess: () => { toast.success("Catégorie créée"); closeModal(); refetch(); },
+    onError: (e) => toast.error(e.response?.data?.error ?? "Erreur"),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }) => api.put(`/admin/categories/${id}`, data).then((r) => r.data.data),
+    onSuccess: () => { toast.success("Catégorie modifiée"); closeModal(); refetch(); },
+    onError: (e) => toast.error(e.response?.data?.error ?? "Erreur"),
+  });
+
+  const reorderMutation = useMutation({
+    mutationFn: (updates) => api.put("/admin/categories/reorder", { updates }).then((r) => r.data),
+    onSuccess: () => { toast.success("Ordre mis à jour"); refetch(); },
+    onError: (e) => toast.error(e.response?.data?.error ?? "Erreur"),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => api.delete(`/admin/categories/${id}`).then((r) => r.data),
+    onSuccess: () => { toast.success("Catégorie supprimée"); refetch(); },
+    onError: (e) => toast.error(e.response?.data?.error ?? "Erreur"),
+  });
+
   const categories = data?.data ?? [];
+  const roots = categories.filter((c) => c.parentId === null);
+
+  const openCreate = (parentId = null) => {
+    setForm({ name: "", slug: "", icon: "Package", color: getRandomColor(), parentId, sortOrder: 0, isActive: true });
+    setModal({ type: "create", parentId });
+  };
+
+  const openEdit = (cat) => {
+    setForm({
+      name: cat.name,
+      slug: cat.slug,
+      icon: cat.icon,
+      color: cat.color,
+      parentId: cat.parentId,
+      sortOrder: cat.sortOrder,
+      isActive: true,
+    });
+    setModal({ type: "edit", id: cat.id });
+  };
+
+  const closeModal = () => {
+    setModal(null);
+    setForm({ name: "", slug: "", icon: "Package", color: getRandomColor(), parentId: null, sortOrder: 0, isActive: true });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!form.name.trim()) return toast.error("Le nom est requis");
+    if (modal.type === "create") createMutation.mutate(form);
+    else updateMutation.mutate({ id: modal.id, data: form });
+  };
+
+  const toggleExpand = (id) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const moveCategory = (id, direction) => {
+    const all = [...categories].sort((a, b) => a.sortOrder - b.sortOrder);
+    const idx = all.findIndex((c) => c.id === id);
+    if (idx === -1) return;
+    const newIdx = idx + (direction === "up" ? -1 : 1);
+    if (newIdx < 0 || newIdx >= all.length) return;
+
+    const updates = all.map((c, i) => {
+      if (i === idx) return { id: c.id, sortOrder: all[newIdx].sortOrder };
+      if (i === newIdx) return { id: c.id, sortOrder: all[idx].sortOrder };
+      return { id: c.id, sortOrder: c.sortOrder };
+    });
+    reorderMutation.mutate(updates);
+  };
+
+  const childrenOf = (parentId) => categories.filter((c) => c.parentId === parentId).sort((a, b) => a.sortOrder - b.sortOrder);
+
+  const CategoryNode = ({ cat, level = 0 }) => {
+    const kids = childrenOf(cat.id);
+    const hasChildren = kids.length > 0;
+    const isExpanded = expanded.has(cat.id);
+
+    return (
+      <>
+        <motion.div
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          style={{ paddingLeft: `${16 + level * 24}px` }}
+          className="flex items-center gap-2 py-2 hover:bg-gray-800/50 rounded-lg"
+        >
+          <div className="flex-1 flex items-center gap-2 min-w-0">
+            <span
+              onClick={() => toggleExpand(cat.id)}
+              className={`w-6 h-6 flex items-center justify-center text-gray-400 hover:text-white cursor-pointer ${isExpanded ? "rotate-90" : ""}`}
+            >
+              {hasChildren ? <ChevronRight className="w-4 h-4" /> : <div className="w-4 h-4" />}
+            </span>
+            <div
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-sm shrink-0"
+              style={{ backgroundColor: `${cat.color}20` }}
+            >
+              <span style={{ color: cat.color }}>{cat.icon === "Package" ? "📦" : "★"}</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-white truncate">{cat.name}</p>
+              <p className="text-xs text-gray-500 truncate">{cat.slug}</p>
+            </div>
+            <Badge variant="secondary" className="text-xs">
+              {cat.productCount} annonces
+            </Badge>
+          </div>
+          <div className="flex items-center gap-1">
+            <button onClick={() => moveCategory(cat.id, "up")} className="p-1.5 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white" title="Monter" disabled={cat.sortOrder === 0}><ChevronUp className="w-4 h-4" /></button>
+            <button onClick={() => moveCategory(cat.id, "down")} className="p-1.5 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white" title="Descendre"><ChevronDown className="w-4 h-4" /></button>
+            <button onClick={() => openEdit(cat)} className="p-1.5 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white" title="Modifier"><Edit2 className="w-4 h-4" /></button>
+            <button onClick={() => openCreate(cat.id)} className="p-1.5 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white" title="Sous-catégorie"><Plus className="w-4 h-4" /></button>
+            <button onClick={() => deleteMutation.mutate(cat.id)} className="p-1.5 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-red-400" title="Supprimer"><Trash2 className="w-4 h-4" /></button>
+          </div>
+        </motion.div>
+
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+            >
+              {kids.map((kid) => <CategoryNode key={kid.id} cat={kid} level={level + 1} />)}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </>
+    );
+  };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h1 className="text-xl font-bold text-white">Catégories</h1>
-        <span className="text-sm text-gray-500">{categories.length} catégories</span>
+        <button onClick={() => openCreate()} className="flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-700 rounded-xl text-white text-sm font-medium">
+          <Plus className="w-4 h-4" /> Nouvelle catégorie
+        </button>
       </div>
 
       <div className="rounded-2xl border border-gray-800 bg-gray-900 overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-600 border-t-transparent" />
+            <Loader2 className="h-8 w-8 animate-spin text-brand-600" />
           </div>
         ) : categories.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-gray-500">
             <FolderTree className="w-12 h-12 mb-3 opacity-50" />
-            <p>Aucune catégorie trouvée</p>
+            <p>Aucune catégorie</p>
+            <button onClick={() => openCreate()} className="mt-4 text-sm text-brand-400 hover:underline">Créer la première</button>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-800 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  <th className="px-6 py-3">Catégorie</th>
-                  <th className="px-6 py-3">Slug</th>
-                  <th className="px-6 py-3 text-center">Annonces</th>
-                  <th className="px-6 py-3 hidden lg:table-cell">Ordre</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-800">
-                {categories.map((cat) => (
-                  <tr key={cat.id} className="hover:bg-gray-800/50 transition-colors">
-                    <td className="px-6 py-3">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
-                          style={{ backgroundColor: `${cat.color}20` }}
-                        >
-                          <span style={{ color: cat.color }}>
-                            {cat.icon === "Smartphone" ? "📱" : cat.icon === "Car" ? "🚗" : cat.icon === "Laptop" ? "💻" : "📦"}
-                          </span>
-                        </div>
-                        <span className="text-sm font-medium text-white">{cat.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-3 text-sm text-gray-500">{cat.slug}</td>
-                    <td className="px-6 py-3 text-center">
-                      <div className="flex items-center justify-center gap-1.5">
-                        <Package className="w-3.5 h-3.5 text-gray-500" />
-                        <span className="text-sm text-white">{cat.productCount}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-3 hidden lg:table-cell text-sm text-gray-500">{cat.sortOrder}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="divide-y divide-gray-800 p-3">
+            {roots.map((root) => <CategoryNode key={root.id} cat={root} />)}
           </div>
         )}
       </div>
+
+      <AnimatePresence>
+        {modal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+            onClick={closeModal}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-gray-900 rounded-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between border-b border-gray-800 px-6 py-4">
+                <h2 className="text-lg font-semibold text-white">
+                  {modal.type === "create" ? (modal.parentId ? "Nouvelle sous-catégorie" : "Nouvelle catégorie") : "Modifier la catégorie"}
+                </h2>
+                <button onClick={closeModal} className="p-2 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white"><X className="w-5 h-5" /></button>
+              </div>
+              <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-1">Nom</label>
+                  <input
+                    type="text"
+                    value={form.name}
+                    onChange={(e) => {
+                      setForm({ ...form, name: e.target.value });
+                      if (!form.slug) setForm({ ...form, slug: slugify(e.target.value) });
+                    }}
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-600/50"
+                    placeholder="Ex: Téléphones"
+                    required
+                    autoFocus
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-1">Slug (URL)</label>
+                  <input
+                    type="text"
+                    value={form.slug}
+                    onChange={(e) => setForm({ ...form, slug: e.target.value.toLowerCase() })}
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-600/50"
+                    placeholder="Ex: telephones"
+                    required
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-400 mb-1">Icône</label>
+                    <select
+                      value={form.icon}
+                      onChange={(e) => setForm({ ...form, icon: e.target.value })}
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-600/50"
+                    >
+                      {ICONS.map((i) => <option key={i} value={i}>{i}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-400 mb-1">Couleur</label>
+                    <input
+                      type="color"
+                      value={form.color}
+                      onChange={(e) => setForm({ ...form, color: e.target.value })}
+                      className="w-full h-10 rounded-lg border border-gray-700 cursor-pointer"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-1">Catégorie parente</label>
+                  <select
+                    value={form.parentId ?? ""}
+                    onChange={(e) => setForm({ ...form, parentId: e.target.value || null })}
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-600/50"
+                  >
+                    <option value="">— Aucune (mega-catégorie) —</option>
+                    {categories.filter((c) => c.parentId === null).map((c) => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-1">Ordre d'affichage</label>
+                  <input
+                    type="number"
+                    value={form.sortOrder}
+                    onChange={(e) => setForm({ ...form, sortOrder: parseInt(e.target.value) || 0 })}
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-600/50"
+                    min="0"
+                  />
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <button type="button" onClick={closeModal} className="flex-1 px-4 py-2 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700">Annuler</button>
+                  <button type="submit" disabled={createMutation.isPending || updateMutation.isPending} className="flex-1 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white disabled:opacity-50">
+                    {(createMutation.isPending || updateMutation.isPending) ? "Enregistrement..." : "Enregistrer"}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -442,14 +442,14 @@ export async function getSessions(userId) {
     device: t.user_agent || 'Appareil inconnu',
     ip: t.ip_address || 'Inconnu',
     location: 'Togo',
-    lastActive: i === 0 ? 'Maintenant' : formatDistance(t.created_at),
+    lastActive: i === 0 ? 'Maintenant' : formatDistance(t.created_at, now),
     isCurrent: i === 0,
   }));
 
   return sessions;
 }
 
-function formatDistance(date) {
+function formatDistance(date, now) {
   const diff = now - date.getTime();
   const minutes = Math.floor(diff / 60000);
   if (minutes < 1) return 'Maintenant';

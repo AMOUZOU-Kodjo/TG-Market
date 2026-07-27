@@ -31,7 +31,7 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
   return (
     <>
       {/* Sidebar Header */}
-      <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100 dark:border-gray-700">
+      {/* <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100 dark:border-gray-700">
         <Link to="/" className="flex items-center gap-2">
           <Logo size="sm" />
           {sidebarOpen && <span className="text-lg font-bold text-brand-900">Market</span>}
@@ -44,7 +44,7 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
             className={`w-4 h-4 transition-transform ${!sidebarOpen ? "rotate-180" : ""}`}
           />
         </button>
-      </div>
+      </div> */}
 
       {/* Mon espace */}
       <div className="px-4 pt-4 pb-2">

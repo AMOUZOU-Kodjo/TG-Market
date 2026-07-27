@@ -74,7 +74,7 @@ export default function DashboardLayout() {
         {/* Sidebar */}
         <aside
           className={`fixed lg:sticky top-0 z-40 h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ${
-            sidebarOpen ? "w-64" : "w-20"
+            sidebarOpen ? "w-80" : "w-20"
           } ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} flex flex-col`}
         >
           {/* Sidebar Header */}
@@ -137,7 +137,7 @@ export default function DashboardLayout() {
               {/* Bouton */}
               <button
                 onClick={() => navigate("/dashboard/analytics")}
-                className="rounded-xl border border-white/25 bg-white/15 px-4 py-3 text-sm font-semibold text-white backdrop-blur transition-all hover:bg-white/20"
+                className="rounded-xl border border-white/25 bg-white/15 px-5 py-3 text-sm font-medium text-white backdrop-blur transition-all hover:bg-white/20"
               >
                 Voir →
               </button>

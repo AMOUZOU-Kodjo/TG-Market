@@ -108,15 +108,6 @@ export async function updateProductStatus(req, res, next) {
   }
 }
 
-export async function getCategories(req, res, next) {
-  try {
-    const categories = await adminService.getCategories();
-    res.json({ data: categories });
-  } catch (err) {
-    next(err);
-  }
-}
-
 export async function getKycPending(req, res, next) {
   try {
     const { page, perPage, skip } = req.pagination;

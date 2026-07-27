@@ -514,7 +514,8 @@ export default function CreateListingPage() {
             <ListingPreview
               data={{
                 ...formValues,
-                category: selectedCategory?.name || "",
+                // category: selectedCategory?.name || "",
+                category: selectedSubCategory?.name || "",
                 images: photos,
                 tags: formValues.tags || [],
               }}

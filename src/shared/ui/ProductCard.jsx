@@ -23,7 +23,8 @@ export default function ProductCard({
 }) {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const { data: favData } = useCheckFavorite(productId);
+  // const { data: favData } = useCheckFavorite(productId);
+  const { data: favData } = useCheckFavorite(productId, isAuthenticated); 
   const toggleFav = useToggleFavorite();
 
   const isFavorite = favData?.isFavorite ?? isFavoriteProp ?? false;

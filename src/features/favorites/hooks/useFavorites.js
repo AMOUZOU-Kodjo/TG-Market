@@ -8,11 +8,18 @@ export function useFavorites(params) {
   });
 }
 
-export function useCheckFavorite(productId) {
+// export function useCheckFavorite(productId) {
+//   return useQuery({
+//     queryKey: ["favorite", productId],
+//     queryFn: () => favoritesApi.check(productId),
+//     enabled: !!productId,
+//   });
+// }
+export function useCheckFavorite(productId, isAuthenticated) {
   return useQuery({
     queryKey: ["favorite", productId],
     queryFn: () => favoritesApi.check(productId),
-    enabled: !!productId,
+    enabled: !!productId && !!isAuthenticated, // ← ajout de la condition d'auth
   });
 }
 

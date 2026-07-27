@@ -230,7 +230,7 @@ export default function DashboardLayout() {
             <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100 dark:border-gray-700">
               <Link to="/" className="flex items-center gap-2">
                 <Logo size="sm" />
-                <span className="text-lg font-bold text-brand-900">Market</span>
+                <span className="text-lg font-bold text-brand-900">MARKET</span>
               </Link>
               <button
                 onClick={() => setMobileView("page")}

@@ -851,7 +851,7 @@
 //   );
 // }
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -990,6 +990,28 @@ export default function SettingsPage() {
     },
   });
 
+  const { mutate: savePreferences } = useMutation({
+    mutationFn: usersApi.updatePreferences,
+    onSuccess: () => {
+      toast.success("Préférences sauvegardées !");
+      qc.invalidateQueries({ queryKey: ["authMe"] });
+    },
+    onError: () => {
+      toast.error("Erreur lors de la sauvegarde des préférences");
+    },
+  });
+
+  const { mutate: savePrivacy } = useMutation({
+    mutationFn: usersApi.updatePrivacy,
+    onSuccess: () => {
+      toast.success("Confidentialité sauvegardée !");
+      qc.invalidateQueries({ queryKey: ["authMe"] });
+    },
+    onError: () => {
+      toast.error("Erreur lors de la sauvegarde de la confidentialité");
+    },
+  });
+
   const verificationSteps = [
     {
       id: 1,
@@ -1025,16 +1047,24 @@ export default function SettingsPage() {
       icon: "Camera",
     },
   ];
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("theme") === "dark" ||
+        (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    }
+    return false;
+  });
+  const [preferredLanguage, setPreferredLanguage] = useState(user?.preferredLanguage || "fr");
+  const [preferredCurrency, setPreferredCurrency] = useState(user?.preferredCurrency || "FCFA");
   const [notifications, setNotifications] = useState({
-    email: true,
-    push: true,
-    sms: false,
+    email: user?.notificationsEmail ?? true,
+    push: user?.notificationsPush ?? true,
+    sms: user?.notificationsSms ?? false,
   });
   const [privacy, setPrivacy] = useState({
-    profileVisibility: "public",
-    showPhone: false,
-    showLocation: true,
+    profileVisibility: user?.profileVisibility || "public",
+    showPhone: user?.showPhone ?? false,
+    showLocation: user?.showLocation ?? true,
   });
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [show2FASetup, setShow2FASetup] = useState(false);
@@ -1045,6 +1075,10 @@ export default function SettingsPage() {
     confirm: false,
   });
   const [activeTab, setActiveTab] = useState("profile");
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDarkMode);
+  }, []);
 
   const {
     register,
@@ -1531,9 +1565,18 @@ export default function SettingsPage() {
                     Langue d'affichage de l'application
                   </p>
                 </div>
-                <select className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white">
-                  <option>Français</option>
-                  <option>English</option>
+                <select
+                  value={preferredLanguage}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setPreferredLanguage(v);
+                    savePreferences({ preferredLanguage: v });
+                  }}
+                  className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                >
+                  <option value="fr">Français</option>
+                  <option value="ee">Ewe</option>
+                  <option value="en">English</option>
                 </select>
               </div>
               <div className="flex items-center justify-between py-3">
@@ -1543,10 +1586,18 @@ export default function SettingsPage() {
                     Devise d'affichage des prix
                   </p>
                 </div>
-                <select className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white">
-                  <option>FCFA</option>
-                  <option>EUR</option>
-                  <option>USD</option>
+                <select
+                  value={preferredCurrency}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setPreferredCurrency(v);
+                    savePreferences({ preferredCurrency: v });
+                  }}
+                  className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                >
+                  <option value="FCFA">FCFA</option>
+                  <option value="EUR">EUR</option>
+                  <option value="USD">USD</option>
                 </select>
               </div>
             </div>
@@ -1556,25 +1607,38 @@ export default function SettingsPage() {
                 label="Notifications par email"
                 description="Recevez les alertes importantes par email"
                 enabled={notifications.email}
-                onChange={(v) => setNotifications((p) => ({ ...p, email: v }))}
+                onChange={(v) => {
+                  setNotifications((p) => ({ ...p, email: v }));
+                  savePreferences({ notificationsEmail: v });
+                }}
               />
               <Toggle
                 label="Notifications push"
                 description="Recevez les notifications sur votre appareil"
                 enabled={notifications.push}
-                onChange={(v) => setNotifications((p) => ({ ...p, push: v }))}
+                onChange={(v) => {
+                  setNotifications((p) => ({ ...p, push: v }));
+                  savePreferences({ notificationsPush: v });
+                }}
               />
               <Toggle
                 label="Notifications SMS"
                 description="Recevez les alertes critiques par SMS"
                 enabled={notifications.sms}
-                onChange={(v) => setNotifications((p) => ({ ...p, sms: v }))}
+                onChange={(v) => {
+                  setNotifications((p) => ({ ...p, sms: v }));
+                  savePreferences({ notificationsSms: v });
+                }}
               />
               <Toggle
                 label="Mode sombre"
                 description="Activez le thème sombre pour plus de confort"
                 enabled={isDarkMode}
-                onChange={setIsDarkMode}
+                onChange={(v) => {
+                  setIsDarkMode(v);
+                  localStorage.setItem("theme", v ? "dark" : "light");
+                  document.documentElement.classList.toggle("dark", v);
+                }}
               />
             </div>
           </motion.section>
@@ -1606,7 +1670,11 @@ export default function SettingsPage() {
                 </div>
                 <select
                   value={privacy.profileVisibility}
-                  onChange={(e) => setPrivacy((p) => ({ ...p, profileVisibility: e.target.value }))}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setPrivacy((p) => ({ ...p, profileVisibility: v }));
+                    savePrivacy({ profileVisibility: v });
+                  }}
                   className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white"
                 >
                   <option value="public">Public</option>
@@ -1618,13 +1686,19 @@ export default function SettingsPage() {
                 label="Afficher mon numéro de téléphone"
                 description="Visible sur votre profil par les autres utilisateurs"
                 enabled={privacy.showPhone}
-                onChange={(v) => setPrivacy((p) => ({ ...p, showPhone: v }))}
+                onChange={(v) => {
+                  setPrivacy((p) => ({ ...p, showPhone: v }));
+                  savePrivacy({ showPhone: v });
+                }}
               />
               <Toggle
                 label="Afficher ma localisation"
                 description="Affiche votre ville dans vos annonces"
                 enabled={privacy.showLocation}
-                onChange={(v) => setPrivacy((p) => ({ ...p, showLocation: v }))}
+                onChange={(v) => {
+                  setPrivacy((p) => ({ ...p, showLocation: v }));
+                  savePrivacy({ showLocation: v });
+                }}
               />
             </div>
           </motion.section>

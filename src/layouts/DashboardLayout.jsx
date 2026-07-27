@@ -109,21 +109,23 @@ export default function DashboardLayout() {
           </div>
 
           {/* Wallet green band */}
-          <div className="mx-3 rounded-xl bg-green-600 p-4 text-white">
+          <div className="mx-3 rounded-xl bg-brand-600 p-4 text-white">
             <p className="text-sm font-semibold">Portefeuille TGM</p>
-            <p className="text-2xl font-bold mt-1">{formatCFA(totalEarned)}</p>
-            <button
-              onClick={() => navigate("/dashboard/analytics")}
-              className="mt-3 block text-sm font-medium underline decoration-white/50 hover:underline-offset-2"
-            >
-              Voir →
-            </button>
+            <div className="flex justify-center items-center gap-2">
+              <p className="text-2xl font-bold">{formatCFA(totalEarned)}</p>
+              <button
+                onClick={() => navigate("/dashboard/analytics")}
+                className="block text-sm font-medium underline decoration-white/50 hover:underline-offset-2"
+              >
+                Voir →
+              </button>
+           </div>
           </div>
 
           {/* Devenir membre certifié */}
           <Link
             to="/dashboard/settings"
-            className="mx-3 mt-3 block rounded-xl bg-green-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-green-700 transition-colors"
+            className="mx-3 mt-3 block rounded-xl bg-brand-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-green-700 transition-colors"
           >
             Devenir un membre certifié
           </Link>

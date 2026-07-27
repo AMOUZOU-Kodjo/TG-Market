@@ -1,4 +1,5 @@
 import { Package, ShoppingCart, Clock, CheckCircle2, AlertCircle, XCircle, Truck } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useEscrowList } from "@/features/wallet/hooks/useWallet";
 import { formatCFA } from "@/shared/utils/format";

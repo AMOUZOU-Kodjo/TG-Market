@@ -22,7 +22,7 @@ import StepIndicator from "@/shared/ui/StepIndicator";
 import ListingFormStep from "@/features/listings/components/ListingFormStep";
 import PhotoUploader from "@/features/listings/components/PhotoUploader";
 import ListingPreview from "@/features/listings/components/ListingPreview";
-import { useProduct } from "@/features/products/hooks/useProducts";
+import { useProduct, useUpdateProduct, useDeleteProduct } from "@/features/products/hooks/useProducts";
 import { useCategories } from "@/features/categories/hooks/useCategories";
 import { CITIES, PRODUCT_CONDITIONS, MAX_IMAGES_PER_LISTING } from "@/shared/constants";
 import { createListingSchema } from "@/shared/utils/validators";
@@ -37,34 +37,17 @@ const WIZARD_STEPS = [
   { label: "Sauvegarder", icon: "💾" },
 ];
 
-function getIconComponent(iconName) {
-  const ICON_MAP = {
-    Smartphone: (props) => (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-        <rect width="14" height="20" x="5" y="2" rx="2" ry="2" /><path d="M12 18h.01" />
-      </svg>
-    ),
-    Car: (props) => (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-        <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" /><circle cx="7" cy="17" r="2" /><path d="M9 17h6" /><circle cx="17" cy="17" r="2" />
-      </svg>
-    ),
-  };
-  return ICON_MAP[iconName] || ((props) => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <path d="m7.5 4.27 9 5.15" /><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" />
-    </svg>
-  ));
-}
-
 export default function EditListingPage() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { data: product } = useProduct(id);
   const { data: categories = [] } = useCategories();
+  const updateProduct = useUpdateProduct();
+  const deleteProduct = useDeleteProduct();
   const [currentStep, setCurrentStep] = useState(0);
   const [photos, setPhotos] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedParentCategory, setSelectedParentCategory] = useState(null);
+  const [selectedSubCategory, setSelectedSubCategory] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -84,9 +67,23 @@ export default function EditListingPage() {
   const formValues = watch();
 
   useEffect(() => {
-    if (existingProduct) {
-      const cat = categories.find((c) => c.name === existingProduct.category);
-      if (cat) setSelectedCategory(cat);
+    if (existingProduct && categories.length > 0) {
+      const productCategoryId = existingProduct.category?.id;
+      if (productCategoryId) {
+        const parent = categories.find((c) =>
+          c.children?.some((ch) => ch.id === productCategoryId)
+        );
+        if (parent) {
+          setSelectedParentCategory(parent);
+          const sub = parent.children.find((ch) => ch.id === productCategoryId);
+          if (sub) setSelectedSubCategory(sub);
+        } else {
+          const directMatch = categories.find((c) => c.id === productCategoryId);
+          if (directMatch) {
+            setSelectedParentCategory(directMatch);
+          }
+        }
+      }
 
       const productPhotos = existingProduct.images.map((url, i) => ({
         id: `existing-${i}`,
@@ -107,13 +104,13 @@ export default function EditListingPage() {
       setValue("deliveryPrice", existingProduct.deliveryPrice || "");
       setValue("tags", existingProduct.tags?.join(", ") || "");
     }
-  }, [existingProduct, setValue]);
+  }, [existingProduct, categories, setValue]);
 
   const validateStep = useCallback(
     async (step) => {
       switch (step) {
         case 0:
-          if (!selectedCategory) {
+          if (!selectedSubCategory) {
             toast.error("Veuillez sélectionner une catégorie");
             return false;
           }
@@ -134,7 +131,7 @@ export default function EditListingPage() {
           return true;
       }
     },
-    [selectedCategory, photos.length, trigger]
+    [selectedSubCategory, photos.length, trigger]
   );
 
   const handleNext = useCallback(async () => {
@@ -150,16 +147,62 @@ export default function EditListingPage() {
     }
   }, [currentStep]);
 
-  const handleSave = useCallback(() => {
-    setIsSaved(true);
-    toast.success("Annonce mise à jour avec succès !");
-  }, []);
+  const handleSave = useCallback(async () => {
+    if (!selectedSubCategory) {
+      toast.error("Veuillez sélectionner une catégorie");
+      return;
+    }
+    try {
+      const existingUrls = photos.filter((p) => !p.file).map((p) => p.url);
+      const filesToUpload = photos.filter((p) => p.file).map((p) => p.file);
+      let uploadedUrls = [];
+      if (filesToUpload.length > 0) {
+        const formData = new FormData();
+        filesToUpload.forEach((file) => formData.append("files", file));
+        const { default: api } = await import("@/shared/services/api");
+        const { data } = await api.post("/upload/image", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        uploadedUrls = data.urls || [];
+      }
+      const allImages = [...existingUrls, ...uploadedUrls];
 
-  const handleDelete = useCallback(() => {
-    setIsDeleting(true);
-    toast.success("Annonce supprimée");
-    setTimeout(() => navigate("/listings"), 1000);
-  }, [navigate]);
+      await updateProduct.mutateAsync({
+        id: Number(id),
+        data: {
+          categoryId: selectedSubCategory.id,
+          title: formValues.title,
+          description: formValues.description,
+          price: Number(formValues.price),
+          condition: formValues.condition,
+          brand: formValues.brand || undefined,
+          city: formValues.city,
+          neighborhood: formValues.neighborhood || undefined,
+          negotiable: formValues.negotiable,
+          deliveryAvailable: formValues.deliveryAvailable,
+          deliveryPrice: formValues.deliveryPrice ? Number(formValues.deliveryPrice) : undefined,
+          tags: Array.isArray(formValues.tags) ? formValues.tags : (formValues.tags ? formValues.tags.split(",").map((t) => t.trim()).filter(Boolean) : []),
+          images: allImages,
+        },
+      });
+      setIsSaved(true);
+      toast.success("Annonce mise à jour avec succès !");
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Erreur lors de la mise à jour");
+    }
+  }, [selectedSubCategory, photos, formValues, id, updateProduct]);
+
+  const handleDelete = useCallback(async () => {
+    try {
+      setIsDeleting(true);
+      await deleteProduct.mutateAsync(Number(id));
+      toast.success("Annonce supprimée");
+      navigate("/listings");
+    } catch (err) {
+      setIsDeleting(false);
+      toast.error(err?.response?.data?.message || "Erreur lors de la suppression");
+    }
+  }, [id, deleteProduct, navigate]);
 
   if (!existingProduct) {
     return (
@@ -182,50 +225,46 @@ export default function EditListingPage() {
   const renderStep = () => {
     switch (currentStep) {
       case 0:
+        const parentCategories = categories.filter((c) => !c.parentId);
+        const availableSubCategories = selectedParentCategory?.children ?? [];
         return (
           <ListingFormStep
             title="Catégorie"
             description="Modifiez la catégorie de votre annonce"
           >
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-              {categories.map((cat) => {
-                const Icon = getIconComponent(cat.icon);
-                const isSelected = selectedCategory?.id === cat.id;
-                return (
-                  <motion.button
-                    key={cat.id}
-                    type="button"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={cn(
-                      "flex flex-col items-center gap-2 rounded-2xl border-2 p-4 text-center transition-all",
-                      isSelected
-                        ? "border-brand-800 bg-brand-50 shadow-md shadow-brand-800/10 dark:bg-brand-800/10"
-                        : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:hover:border-gray-600"
-                    )}
-                  >
-                    <div
-                      className="flex h-12 w-12 items-center justify-center rounded-xl"
-                      style={{ backgroundColor: cat.color + "15" }}
-                    >
-                      {Icon && <Icon className="h-6 w-6" style={{ color: cat.color }} />}
-                    </div>
-                    <span className="text-xs font-semibold text-gray-800 dark:text-gray-200">
-                      {cat.name}
-                    </span>
-                    {isSelected && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-800"
-                      >
-                        <CheckCircle2 className="h-3.5 w-3.5 text-white" />
-                      </motion.div>
-                    )}
-                  </motion.button>
-                );
-              })}
+            <div className="space-y-4">
+              <Select
+                label="Catégorie principale"
+                placeholder="Sélectionnez une catégorie"
+                options={parentCategories.map((cat) => ({
+                  value: cat.id,
+                  label: cat.name,
+                }))}
+                value={selectedParentCategory?.id ?? ""}
+                onChange={(val) => {
+                  const parent = categories.find((c) => c.id === Number(val));
+                  setSelectedParentCategory(parent ?? null);
+                  setSelectedSubCategory(null);
+                }}
+              />
+
+              {availableSubCategories.length > 0 && (
+                <Select
+                  label="Sous-catégorie"
+                  placeholder="Sélectionnez une sous-catégorie"
+                  options={availableSubCategories.map((cat) => ({
+                    value: cat.id,
+                    label: cat.name,
+                  }))}
+                  value={selectedSubCategory?.id ?? ""}
+                  onChange={(val) => {
+                    const sub = availableSubCategories.find(
+                      (c) => c.id === Number(val)
+                    );
+                    setSelectedSubCategory(sub ?? null);
+                  }}
+                />
+              )}
             </div>
           </ListingFormStep>
         );
@@ -441,7 +480,7 @@ export default function EditListingPage() {
             <ListingPreview
               data={{
                 ...formValues,
-                category: selectedCategory?.name || "",
+                category: selectedSubCategory?.name || "",
                 images: photos,
                 tags: formValues.tags || [],
               }}

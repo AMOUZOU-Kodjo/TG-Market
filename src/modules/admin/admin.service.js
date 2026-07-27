@@ -382,7 +382,9 @@ export async function reorderCategories(updates) {
 export async function deleteCategory(id) {
   const category = await prisma.category.findUnique({
     where: { id },
-    include: { _count: { select: { products: true, children: true } } },
+    include: {
+      children: { select: { id: true } },
+    },
   });
 
   if (!category) {
@@ -391,20 +393,36 @@ export async function deleteCategory(id) {
     throw error;
   }
 
-  if (category._count.products > 0) {
-    const error = new Error(`Impossible de supprimer : ${category._count.products} annonce(s) liée(s)`);
-    error.status = 409;
-    throw error;
-  }
+  const childIds = category.children.map((c) => c.id);
+  const allCategoryIds = [id, ...childIds];
 
-  if (category._count.children > 0) {
-    const error = new Error('Impossible de supprimer : cette catégorie a des sous-catégories');
-    error.status = 409;
-    throw error;
-  }
+  const productIds = (
+    await prisma.product.findMany({
+      where: { category_id: { in: allCategoryIds } },
+      select: { id: true },
+    })
+  ).map((p) => p.id);
 
-  await prisma.category.delete({ where: { id } });
-  return { message: 'Catégorie supprimée' };
+  await prisma.$transaction(async (tx) => {
+    if (productIds.length > 0) {
+      await tx.escrowTransaction.deleteMany({
+        where: { product_id: { in: productIds } },
+      });
+      await tx.product.deleteMany({
+        where: { id: { in: productIds } },
+      });
+    }
+
+    if (childIds.length > 0) {
+      await tx.category.deleteMany({
+        where: { id: { in: childIds } },
+      });
+    }
+
+    await tx.category.delete({ where: { id } });
+  });
+
+  return { message: `Catégorie et ${productIds.length} annonce(s) supprimée(s)` };
 }
 
 export async function updateProductStatus(productId, status) {

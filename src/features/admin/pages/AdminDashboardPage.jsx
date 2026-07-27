@@ -59,18 +59,21 @@ const activityIcons = {
 };
 
 export default function AdminDashboardPage() {
-  const { data: users = [] } = useQuery({
+  const { data: usersData } = useQuery({
     queryKey: ["adminUsers"],
     queryFn: () => api.get("/admin/users").then((r) => r.data),
   });
-  const { data: categories = [] } = useQuery({
-    queryKey: ["adminCategories"],
-    queryFn: () => api.get("/admin/categories").then((r) => r.data),
-  });
-  const { data: pendingVerifications = [] } = useQuery({
+  const users = usersData?.data ?? [];
+  const { data: pendingVerificationsData } = useQuery({
     queryKey: ["adminPendingVerifications"],
-    queryFn: () => api.get("/admin/verifications/pending").then((r) => r.data),
+    queryFn: () => api.get("/admin/kyc/pending").then((r) => r.data),
   });
+  const pendingVerifications = pendingVerificationsData?.data ?? [];
+  const { data: categoriesData } = useQuery({
+    queryKey: ["adminCategories"],
+    queryFn: () => api.get("/categories").then((r) => r.data),
+  });
+  const categories = categoriesData?.data ?? (Array.isArray(categoriesData) ? categoriesData : []);
 
   const displayedUsers = users.slice(0, 10);
   const [userStatuses, setUserStatuses] = useState(

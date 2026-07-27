@@ -60,11 +60,14 @@ export default function RegisterPage() {
   });
 
   const onSubmit = async (data) => {
+    // Ajouter le préfixe +228 au numéro de téléphone
+    const phone = data.phone.startsWith("+228") ? data.phone : `+228${data.phone.replace(/\s+/g, "")}`;
+    
     const result = await registerUser({
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
-      phone: data.phone,
+      phone,
       password: data.password,
       city: data.city,
     });

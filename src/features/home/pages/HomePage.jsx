@@ -58,6 +58,7 @@ import {
 } from "lucide-react";
 import { useProducts } from "@/features/products/hooks/useProducts";
 import { useCategories } from "@/features/categories/hooks/useCategories";
+import { usePublicStats } from "@/features/home/hooks/usePublicStats";
 import Button from "@/shared/ui/Button";
 import CategoryCard from "@/shared/ui/CategoryCard";
 import ProductCard from "@/shared/ui/ProductCard";
@@ -195,6 +196,10 @@ function SectionHeader({ title, subtitle, action, actionLabel = "Voir tout", cla
 
 function HeroSection() {
   const [activeSlide, setActiveSlide] = useState(0);
+  const { data: stats } = usePublicStats();
+
+  const formatCount = (n) =>
+    n >= 1000 ? (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1).replace(".", ",") + " 000" : String(n);
 
   const bgImages = [
     "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1920&q=80",
@@ -306,7 +311,7 @@ function HeroSection() {
             </div>
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-brand-300" />
-              <span>5 000+ utilisateurs</span>
+              <span>{stats?.totalUsers ? `${stats.totalUsers.toLocaleString("fr-FR")}+` : "5 000+"} utilisateurs</span>
             </div>
             <div className="flex items-center gap-2">
               <PackageCheck className="h-4 w-4 text-brand-300" />

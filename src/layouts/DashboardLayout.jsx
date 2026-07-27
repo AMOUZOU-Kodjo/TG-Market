@@ -19,6 +19,8 @@ import {
   Heart,
   X,
   User,
+  ShieldCheck,
+  LayoutDashboard,
 } from "lucide-react";
 import Logo from "@/shared/ui/Logo";
 import { useAuth } from "@/shared/contexts/AuthContext";
@@ -31,7 +33,7 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
   return (
     <>
       {/* Sidebar Header */}
-      {/* <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100 dark:border-gray-700">
+      <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100 dark:border-gray-700">
         <Link to="/" className="flex items-center gap-2">
           <Logo size="sm" />
           {sidebarOpen && <span className="text-lg font-bold text-brand-900">Market</span>}
@@ -44,7 +46,7 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
             className={`w-4 h-4 transition-transform ${!sidebarOpen ? "rotate-180" : ""}`}
           />
         </button>
-      </div> */}
+      </div>
 
       {/* Mon espace */}
       <div className="px-4 pt-4 pb-2">
@@ -131,6 +133,18 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
         <Bell className="w-4 h-4 shrink-0" />
         Notifications
       </Link>
+
+      {/* Admin - visible only for admins */}
+      {user?.role === "admin" && (
+        <Link
+          to="/admin"
+          onClick={onMobileLinkClick}
+          className="mx-3 mt-2 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+        >
+          <LayoutDashboard className="w-4 h-4 shrink-0" />
+          Administration
+        </Link>
+      )}
 
       {/* Footer */}
       <div className="mx-3 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 space-y-1 pb-4">
@@ -227,7 +241,7 @@ export default function DashboardLayout() {
         {/* ===== MOBILE SIDEBAR FULL-SCREEN ===== */}
         {mobileView === "sidebar" && (
           <div className="lg:hidden fixed inset-0 z-50 bg-white dark:bg-gray-900 flex flex-col">
-            <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100 dark:border-gray-700">
+            {/* <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100 dark:border-gray-700">
               <Link to="/" className="flex items-center gap-2">
                 <Logo size="sm" />
                 <span className="text-lg font-bold text-brand-900">MARKET</span>
@@ -238,7 +252,7 @@ export default function DashboardLayout() {
               >
                 <X className="w-5 h-5" />
               </button>
-            </div>
+            </div> */}
             <div className="flex-1 overflow-y-auto pb-20">
               <SidebarContent
                 sidebarOpen={true}

@@ -34,3 +34,15 @@ export function useVerifyOtp() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["kycStatus"] }),
   });
 }
+
+export function useSendEmailOtp() {
+  return useMutation({ mutationFn: kycApi.sendEmailOtp });
+}
+
+export function useVerifyEmailOtp() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: kycApi.verifyEmailOtp,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["kycStatus"] }),
+  });
+}

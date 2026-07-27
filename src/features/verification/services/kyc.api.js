@@ -5,5 +5,7 @@ export const kycApi = {
   submit: (data) => api.post("/kyc/submit", data).then((r) => r.data),
   sendOtp: (data) => api.post("/kyc/phone/send-otp", data).then((r) => r.data),
   verifyOtp: (data) => api.post("/kyc/phone/verify-otp", data).then((r) => r.data),
+  sendEmailOtp: (data) => api.post("/kyc/email/send-otp", data).then((r) => r.data),
+  verifyEmailOtp: (data) => api.post("/kyc/email/verify-otp", data).then((r) => r.data),
   getBadges: () => api.get("/kyc/badges").then((r) => r.data),
 };

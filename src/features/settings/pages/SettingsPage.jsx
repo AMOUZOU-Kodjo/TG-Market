@@ -895,6 +895,8 @@ import KycProgress from "@/features/verification/components/KycProgress";
 import BadgeGrid from "@/features/verification/components/BadgeGrid";
 import DocumentUpload from "@/features/verification/components/DocumentUpload";
 import PhoneVerification from "@/features/verification/components/PhoneVerification";
+import EmailVerification from "@/features/verification/components/EmailVerification";
+import { useSubmitKyc } from "@/features/verification/hooks/useKyc";
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 12 },
@@ -1042,6 +1044,9 @@ export default function SettingsPage() {
       toast.error("Erreur lors de la sauvegarde de la confidentialité");
     },
   });
+
+  const { mutate: submitKyc, isPending: submittingKyc } = useSubmitKyc();
+  const [documentFrontUrl, setDocumentFrontUrl] = useState(null);
 
   const verificationSteps = [
     {
@@ -1759,13 +1764,21 @@ export default function SettingsPage() {
             <div className="mt-6 space-y-6">
               <PhoneVerification />
 
+              <EmailVerification email={user?.email} />
+
               <div>
                 <h3 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">
                   Document d'identité
                 </h3>
                 {kycStatus?.documentStatus === "none" || !kycStatus?.documentStatus ? (
                   <DocumentUpload
-                    onUpload={(file) => toast.success("Document téléchargé avec succès !")}
+                    onUpload={(file, fileUrl) => {
+                      setDocumentFrontUrl(fileUrl);
+                      submitKyc({
+                        documentType: "cni",
+                        documentFrontUrl: fileUrl,
+                      });
+                    }}
                   />
                 ) : kycStatus?.documentStatus === "pending" ? (
                   <div className="flex items-center gap-3 rounded-xl border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
@@ -1797,7 +1810,13 @@ export default function SettingsPage() {
                         {kycStatus?.rejectionReason || "Veuillez soumettre un nouveau document."}
                       </p>
                       <DocumentUpload
-                        onUpload={(file) => toast.success("Nouveau document téléchargé !")}
+                        onUpload={(file, fileUrl) => {
+                          setDocumentFrontUrl(fileUrl);
+                          submitKyc({
+                            documentType: "cni",
+                            documentFrontUrl: fileUrl,
+                          });
+                        }}
                       />
                     </div>
                   </div>

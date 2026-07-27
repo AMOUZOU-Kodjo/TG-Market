@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Upload, FileCheck, X, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Upload, FileCheck, X, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
+import api from "@/shared/services/api";
+import toast from "react-hot-toast";
 
 const statusConfig = {
   none: { label: "", color: "" },
@@ -18,12 +20,35 @@ const docLabels = {
 export default function DocumentUpload({ documentType = "cni", onUpload, status = "none", rejectionReason }) {
   const [preview, setPreview] = useState(null);
   const [dragOver, setDragOver] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
-  const handleFile = (file) => {
+  const handleFile = async (file) => {
     if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Le fichier ne doit pas dépasser 5 MB");
+      return;
+    }
+
     const url = URL.createObjectURL(file);
     setPreview(url);
-    onUpload?.(file);
+    setUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const result = await api.post("/upload/image", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      const fileUrl = result.data.url;
+      onUpload?.(file, fileUrl);
+      toast.success("Document téléchargé avec succès !");
+    } catch {
+      toast.error("Erreur lors du téléchargement");
+      setPreview(null);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleDrop = (e) => {
@@ -45,9 +70,16 @@ export default function DocumentUpload({ documentType = "cni", onUpload, status 
           {preview && (
             <div className="relative overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
               <img src={preview} alt="Document" className="h-48 w-full object-cover" />
-              <button onClick={() => { setPreview(null); }} className="absolute right-2 top-2 rounded-full bg-black/50 p-1 text-white hover:bg-black/70">
-                <X className="h-4 w-4" />
-              </button>
+              {uploading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                  <Loader2 className="h-8 w-8 animate-spin text-white" />
+                </div>
+              )}
+              {!uploading && (
+                <button onClick={() => { setPreview(null); }} className="absolute right-2 top-2 rounded-full bg-black/50 p-1 text-white hover:bg-black/70">
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
           )}
           {status !== "none" && (
@@ -61,7 +93,7 @@ export default function DocumentUpload({ documentType = "cni", onUpload, status 
           {status === "rejected" && rejectionReason && (
             <p className="mt-1 text-xs text-red-600 dark:text-red-400">{rejectionReason}</p>
           )}
-          {status === "none" && (
+          {status === "none" && !uploading && (
             <button onClick={() => setPreview(null)} className="mt-2 text-sm font-medium text-red-700 hover:text-red-800">
               Changer de document
             </button>

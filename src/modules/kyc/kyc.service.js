@@ -1,7 +1,7 @@
 import prisma from '../../config/database.js';
 import redis from '../../config/redis.js';
 import { generateOtp } from '../../utils/helpers.js';
-import { sendEmail, passwordResetEmail } from '../../utils/email.js';
+import { sendEmail } from '../../utils/email.js';
 
 export async function getStatus(userId) {
   const user = await prisma.user.findUnique({
@@ -160,11 +160,17 @@ export async function sendEmailOtp(userId) {
   const otp = generateOtp();
   await redis.set(`otp:email:${userId}`, otp, 'EX', 300);
 
-  await sendEmail({
+  const result = await sendEmail({
     to: user.email,
     subject: 'TG-Market — Code de vérification',
     html: emailOtpTemplate(otp),
   });
+
+  if (!result.success) {
+    const error = new Error("Échec de l'envoi de l'email");
+    error.status = 500;
+    throw error;
+  }
 
   return { message: 'Code de vérification envoyé par email' };
 }

@@ -1,7 +1,8 @@
 const corsConfig = {
   origin: (origin, callback) => {
     const allowed = (process.env.CORS_ORIGINS || '').split(',').map(s => s.trim());
-    if (!origin || allowed.includes(origin)) {
+    const isPreview = origin && origin.endsWith('.ak-market.pages.dev');
+    if (!origin || allowed.includes(origin) || isPreview) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));

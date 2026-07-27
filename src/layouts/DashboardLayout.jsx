@@ -2,11 +2,8 @@ import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  LayoutDashboard,
   Package,
-  ShoppingBag,
   MessageCircle,
-  BarChart3,
   Megaphone,
   Settings,
   ChevronLeft,
@@ -50,17 +47,6 @@ export default function DashboardLayout() {
   useEffect(() => {
     setMobileSidebarOpen(false);
   }, [location]);
-
-  const navItems = [
-    { to: "/dashboard", label: "Vue d'ensemble", icon: LayoutDashboard },
-    { to: "/dashboard/products", label: "Mes annonces", icon: Package },
-    { to: "/dashboard/orders", label: "Mes commandes", icon: ShoppingBag },
-    { to: "/dashboard/messages", label: "Messages", icon: MessageCircle, badge: user?.unreadMessages },
-    { to: "/dashboard/notifications", label: "Notifications", icon: Bell, badge: user?.unreadNotifications },
-    { to: "/dashboard/analytics", label: "Statistiques", icon: BarChart3 },
-    { to: "/dashboard/profile", label: "Profil", icon: User },
-    { to: "/dashboard/settings", label: "Parametres", icon: Settings },
-  ];
 
   const quickStats = [
     { label: "Vues totales", value: totalViews.toLocaleString("fr-FR"), icon: Eye, color: "blue" },
@@ -118,7 +104,7 @@ export default function DashboardLayout() {
           {/* Mon espace */}
           <div className="px-4 pt-4 pb-2">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-              Mon espace
+              MON ESPACE
             </h3>
           </div>
 

@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Package, ShoppingCart, Clock, CheckCircle2, AlertCircle, XCircle, Truck } from "lucide-react";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useEscrowList } from "@/features/wallet/hooks/useWallet";
@@ -29,10 +27,10 @@ function EscrowRow({ escrow, role }) {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-          {isSeller ? "Vente" : "Achat"} — {escrow.productId?.title ?? "Produit"}
+          {isSeller ? "Vente" : "Achat"} — {escrow.productTitle ?? "Produit"}
         </p>
         <p className="text-xs text-gray-500 dark:text-gray-400">
-          {isSeller ? "Acheteur" : "Vendeur"} : {counterparty?.firstName ?? ""} {counterparty?.lastName ?? ""}
+          {isSeller ? "Acheteur" : "Vendeur"} : {isSeller ? escrow.buyerName : escrow.sellerName}
         </p>
         <div className="flex items-center gap-2 mt-1">
           <StatusIcon className="h-3.5 w-3.5 text-gray-400" />

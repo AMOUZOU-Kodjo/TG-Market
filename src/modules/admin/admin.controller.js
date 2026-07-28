@@ -82,6 +82,24 @@ export async function getProducts(req, res, next) {
   }
 }
 
+export async function getProductDetail(req, res, next) {
+  try {
+    const product = await adminService.getProductDetail(Number(req.params.id));
+    res.json(product);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function updateProductAdmin(req, res, next) {
+  try {
+    const product = await adminService.updateProductAdmin(Number(req.params.id), req.body);
+    res.json(product);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function getCategories(req, res, next) {
   try {
     const categories = await adminService.getCategories();
@@ -202,6 +220,33 @@ export async function runSeed(req, res, next) {
     const seedPath = path.resolve(__dirname, '../../prisma/seed.js');
     execSync(`node ${seedPath}`, { stdio: 'pipe' });
     res.json({ success: true, message: 'Seed exécuté avec succès' });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getSettings(req, res, next) {
+  try {
+    const settings = await adminService.getSettings();
+    res.json(settings);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function updateSettings(req, res, next) {
+  try {
+    const settings = await adminService.updateSettings(req.body);
+    res.json(settings);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getPublicSettings(_req, res, next) {
+  try {
+    const settings = await adminService.getPublicSettings();
+    res.json(settings);
   } catch (err) {
     next(err);
   }

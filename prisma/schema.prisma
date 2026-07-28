@@ -533,3 +533,9 @@ model ProductView {
   @@index([product_id, created_at])
   @@index([user_id])
 }
+
+model SiteSetting {
+  key        String   @id
+  value      String   @db.Text
+  updated_at DateTime @updatedAt
+}

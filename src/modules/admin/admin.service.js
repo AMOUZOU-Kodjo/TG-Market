@@ -156,6 +156,7 @@ export async function getUsers({ page, perPage, skip, role, isActive }) {
         email: true,
         phone: true,
         city: true,
+        avatar: true,
         role: true,
         identity_verified: true,
         is_active: true,
@@ -179,6 +180,7 @@ export async function getUsers({ page, perPage, skip, role, isActive }) {
       email: u.email,
       phone: u.phone,
       city: u.city,
+      avatar: u.avatar,
       role: u.role,
       identityVerified: u.identity_verified,
       isActive: u.is_active,
@@ -504,6 +506,130 @@ export async function updateProductStatus(productId, status) {
   return { message: 'Statut du produit mis à jour avec succès' };
 }
 
+export async function getProductDetail(productId) {
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+    include: {
+      user: { select: { id: true, first_name: true, last_name: true, avatar: true, phone: true } },
+      category: { select: { id: true, name: true, slug: true } },
+      images: { select: { url: true, sort_order: true }, orderBy: { sort_order: 'asc' } },
+      tags: { select: { tag: true } },
+      specifications: { select: { label: true, value: true } },
+      vehicle: true,
+    },
+  });
+
+  if (!product) {
+    const error = new Error('Produit introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  return {
+    id: product.id,
+    title: product.title,
+    description: product.description,
+    price: product.price,
+    originalPrice: product.original_price,
+    condition: product.condition,
+    brand: product.brand,
+    city: product.city,
+    neighborhood: product.neighborhood,
+    negotiable: product.negotiable,
+    deliveryAvailable: product.delivery_available,
+    deliveryPrice: product.delivery_price,
+    status: product.status,
+    isUrgent: product.is_urgent,
+    isPromoted: product.is_promoted,
+    isFeatured: product.is_featured,
+    views: product.views,
+    favoritesCount: product.favorites_count,
+    createdAt: product.created_at,
+    user: {
+      id: product.user.id,
+      firstName: product.user.first_name,
+      lastName: product.user.last_name,
+      avatar: product.user.avatar,
+      phone: product.user.phone,
+    },
+    category: product.category,
+    images: product.images.map((i) => i.url),
+    tags: product.tags.map((t) => t.tag),
+    specifications: product.specifications,
+    vehicle: product.vehicle,
+  };
+}
+
+export async function updateProductAdmin(productId, data) {
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+    select: { id: true, category_id: true },
+  });
+
+  if (!product) {
+    const error = new Error('Produit introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  await prisma.$transaction(async (tx) => {
+    const updateData = {};
+    if (data.title !== undefined) updateData.title = data.title;
+    if (data.description !== undefined) updateData.description = data.description;
+    if (data.price !== undefined) updateData.price = data.price;
+    if (data.originalPrice !== undefined) updateData.original_price = data.originalPrice;
+    if (data.condition !== undefined) updateData.condition = data.condition;
+    if (data.brand !== undefined) updateData.brand = data.brand;
+    if (data.city !== undefined) updateData.city = data.city;
+    if (data.neighborhood !== undefined) updateData.neighborhood = data.neighborhood;
+    if (data.negotiable !== undefined) updateData.negotiable = data.negotiable;
+    if (data.deliveryAvailable !== undefined) updateData.delivery_available = data.deliveryAvailable;
+    if (data.deliveryPrice !== undefined) updateData.delivery_price = data.deliveryPrice;
+    if (data.status !== undefined) updateData.status = data.status;
+    if (data.isUrgent !== undefined) updateData.is_urgent = data.isUrgent;
+    if (data.isPromoted !== undefined) updateData.is_promoted = data.isPromoted;
+    if (data.isFeatured !== undefined) updateData.is_featured = data.isFeatured;
+
+    if (Object.keys(updateData).length > 0) {
+      await tx.product.update({ where: { id: productId }, data: updateData });
+    }
+
+    if (data.images) {
+      await tx.productImage.deleteMany({ where: { product_id: productId } });
+      if (data.images.length > 0) {
+        await tx.productImage.createMany({
+          data: data.images.map((url, i) => ({ product_id: productId, url, sort_order: i })),
+        });
+      }
+    }
+
+    if (data.tags) {
+      await tx.productTag.deleteMany({ where: { product_id: productId } });
+      if (data.tags.length > 0) {
+        await tx.productTag.createMany({
+          data: data.tags.map((tag) => ({ product_id: productId, tag: tag.toLowerCase().trim() })),
+        });
+      }
+    }
+
+    if (data.specifications) {
+      await tx.productSpec.deleteMany({ where: { product_id: productId } });
+      if (data.specifications.length > 0) {
+        await tx.productSpec.createMany({
+          data: data.specifications.map((s) => ({ product_id: productId, label: s.label, value: s.value })),
+        });
+      }
+    }
+
+    if (data.categoryId && data.categoryId !== product.category_id) {
+      await tx.category.update({ where: { id: product.category_id }, data: { product_count: { decrement: 1 } } });
+      await tx.category.update({ where: { id: data.categoryId }, data: { product_count: { increment: 1 } } });
+    }
+  });
+
+  return getProductDetail(productId);
+}
+
 export async function getKycPending({ page, perPage, skip }) {
   const where = { status: 'pending' };
 
@@ -740,5 +866,52 @@ export async function getRecentActivity() {
         lastName: e.seller.last_name,
       },
     })),
+  };
+}
+
+const DEFAULT_SETTINGS = {
+  site_name: 'TG-Market',
+  site_version: '1.0.0',
+  site_description: 'La plateforme togolaise de vente et d\'achat d\'articles d\'occasion',
+  support_email: 'support@akmarket.tg',
+  maintenance_mode: 'false',
+};
+
+export async function getSettings() {
+  const rows = await prisma.siteSetting.findMany();
+  const map = {};
+  for (const row of rows) map[row.key] = row.value;
+  const result = {};
+  for (const [key, fallback] of Object.entries(DEFAULT_SETTINGS)) {
+    result[key] = map[key] ?? fallback;
+  }
+  return result;
+}
+
+export async function updateSettings(data) {
+  const entries = Object.entries(data).filter(([_, v]) => v !== undefined);
+  await prisma.$transaction(
+    entries.map(([key, value]) =>
+      prisma.siteSetting.upsert({
+        where: { key },
+        update: { value: String(value) },
+        create: { key, value: String(value) },
+      })
+    )
+  );
+  return getSettings();
+}
+
+export async function getPublicSettings() {
+  const rows = await prisma.siteSetting.findMany({
+    where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode'] } },
+  });
+  const map = {};
+  for (const row of rows) map[row.key] = row.value;
+  return {
+    siteName: map.site_name ?? DEFAULT_SETTINGS.site_name,
+    siteVersion: map.site_version ?? DEFAULT_SETTINGS.site_version,
+    siteDescription: map.site_description ?? DEFAULT_SETTINGS.site_description,
+    maintenanceMode: map.maintenance_mode === 'true',
   };
 }

@@ -66,6 +66,24 @@ app.get('/api/stats/public', async (_req, res) => {
   }
 });
 
+app.get('/api/settings/public', async (_req, res) => {
+  try {
+    const rows = await prisma.siteSetting.findMany({
+      where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode'] } },
+    });
+    const map = {};
+    for (const row of rows) map[row.key] = row.value;
+    res.json({
+      siteName: map.site_name ?? 'TG-Market',
+      siteVersion: map.site_version ?? '1.0.0',
+      siteDescription: map.site_description ?? 'La plateforme togolaise de vente et d\'achat d\'articles d\'occasion',
+      maintenanceMode: map.maintenance_mode === 'true',
+    });
+  } catch {
+    res.json({ siteName: 'TG-Market', siteVersion: '1.0.0', siteDescription: '', maintenanceMode: false });
+  }
+});
+
 // ─── API Routes ──────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);

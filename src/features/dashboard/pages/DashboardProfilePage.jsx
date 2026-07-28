@@ -53,20 +53,45 @@ function OverviewTab() {
   );
 }
 
-function ProductsTab() {
+function ProductsTab({ products }) {
+  const navigate = useNavigate();
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-base font-semibold text-gray-900 dark:text-white">Mes annonces</h3>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white">Mes annonces ({products.length})</h3>
         <button
-          onClick={() => (window.location.href = "/publier")}
+          onClick={() => navigate("/vendre")}
           className="flex items-center gap-2 rounded-xl bg-brand-800 px-4 py-2 text-sm font-medium text-white shadow-sm shadow-brand-800/25 hover:bg-brand-900 transition-colors"
         >
           <Package className="h-4 w-4" />
           Nouvelle annonce
         </button>
       </div>
-      <ProductTable />
+      {products.length === 0 ? (
+        <EmptyState icon={Package} title="Aucune annonce" description="Publiez votre première annonce pour commencer à vendre." />
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {products.map((product) => (
+            <ProductCard
+              key={product.id}
+              productId={product.id}
+              image={product.images?.[0]}
+              title={product.title}
+              price={product.price}
+              originalPrice={product.originalPrice}
+              location={product.city || product.location}
+              neighborhood={product.neighborhood}
+              condition={product.condition}
+              hasActiveNegotiation={product.hasActiveNegotiation}
+              isUrgent={product.isUrgent}
+              isPromoted={product.isPromoted}
+              isFeatured={product.isFeatured}
+              negotiable={product.negotiable}
+              onClick={() => navigate(`/annonce/${product.id}`)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -246,7 +271,7 @@ export default function DashboardProfilePage() {
 
   const myProducts = (myProductsData?.data || myProductsData || []).filter((p) => p.seller?.id === user?.id);
   const myReviews = (myReviewsData?.data || myReviewsData || []).filter((r) => r.reviewer?.id === user?.id);
-  const favoriteProducts = favoritesData?.data || favoritesData || [];
+  const favoriteProducts = (favoritesData?.data || favoritesData || []).map((fav) => fav.product || fav);
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
@@ -309,13 +334,13 @@ export default function DashboardProfilePage() {
 
   const tabs = [
     { id: "overview", label: "Vue d'ensemble", icon: BarChart3, content: <OverviewTab /> },
-    { id: "products", label: "Mes annonces", icon: Package, count: myProducts.length, content: <ProductsTab /> },
+    { id: "products", label: "Mes annonces", icon: Package, count: myProducts.length, content: <ProductsTab products={myProducts} /> },
     { id: "orders", label: "Commandes", icon: ShoppingCart, content: <OrdersTab /> },
     { id: "proposals", label: "Propositions", icon: Handshake, content: <BundleProposalsTab /> },
     { id: "analytics", label: "Statistiques", icon: TrendingUp, content: <AnalyticsTab /> },
     { id: "favorites", label: "Favoris", icon: Heart, count: favoriteProducts.length, content: (
       favoriteProducts.length > 0 ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {favoriteProducts.map((product) => (
             <ProductCard key={product.id} productId={product.id} image={product.images?.[0]} title={product.title}
               price={product.price} originalPrice={product.originalPrice} location={product.city || product.location}

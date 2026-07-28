@@ -38,6 +38,18 @@ export async function updateUserStatus(req, res, next) {
   }
 }
 
+export async function updateUserRole(req, res, next) {
+  try {
+    const result = await adminService.updateUserRole(
+      Number(req.params.id),
+      req.body.role,
+    );
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function getProducts(req, res, next) {
   try {
     const { page, perPage, skip } = req.pagination;

@@ -55,6 +55,7 @@ router.use(auth, adminMiddleware);
 router.get('/stats', adminController.getStats);
 router.get('/users', pagination, adminController.getUsers);
 router.put('/users/:id/status', adminController.updateUserStatus);
+router.put('/users/:id/role', adminController.updateUserRole);
 router.get('/products', pagination, adminController.getProducts);
 router.put('/products/:id/status', adminController.updateProductStatus);
 router.get('/categories', adminController.getCategories);

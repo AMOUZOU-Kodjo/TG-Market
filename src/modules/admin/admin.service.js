@@ -209,6 +209,33 @@ export async function updateUserStatus(userId, isActive) {
   return { message: `Utilisateur ${isActive ? 'activé' : 'désactivé'} avec succès` };
 }
 
+export async function updateUserRole(userId, role) {
+  const validRoles = ['user', 'admin'];
+  if (!validRoles.includes(role)) {
+    const error = new Error('Rôle invalide. Valeurs acceptées : user, admin');
+    error.status = 400;
+    throw error;
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, role: true },
+  });
+
+  if (!user) {
+    const error = new Error('Utilisateur introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { role },
+  });
+
+  return { message: `Rôle mis à jour vers "${role}" avec succès` };
+}
+
 export async function getProducts({ page, perPage, skip }) {
   const where = { status: { not: 'deleted' } };
 

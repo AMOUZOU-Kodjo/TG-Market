@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   LayoutDashboard,
   Users,
@@ -10,16 +10,13 @@ import {
   AlertTriangle,
   Settings,
   ChevronLeft,
-  Menu,
   Bell,
   Search,
   LogOut,
   Shield,
   HelpCircle,
-  X,
   TrendingUp,
   Activity,
-  UserCheck,
   AlertCircle,
 } from "lucide-react";
 import Logo from "@/shared/ui/Logo";
@@ -27,13 +24,8 @@ import { useAuth } from "@/shared/contexts/AuthContext";
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const location = useLocation();
   const { user } = useAuth();
-
-  useEffect(() => {
-    setMobileSidebarOpen(false);
-  }, [location]);
 
   const navItems = [
     { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -54,25 +46,12 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-brand-950">
-      {/* Mobile Overlay */}
-      <AnimatePresence>
-        {mobileSidebarOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-black/60 lg:hidden"
-            onClick={() => setMobileSidebarOpen(false)}
-          />
-        )}
-      </AnimatePresence>
-
       <div className="flex">
         {/* Admin Sidebar */}
         <aside
           className={`fixed lg:sticky top-0 z-40 h-screen bg-brand-900 border-r border-brand-800 transition-all duration-300 flex flex-col ${
             sidebarOpen ? "w-64" : "w-20"
-          } ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
+          } -translate-x-full lg:translate-x-0`}
         >
           {/* Sidebar Header */}
           <div className="h-16 flex items-center justify-between px-4 border-b border-gray-800">
@@ -94,12 +73,6 @@ export default function AdminLayout() {
               className="hidden lg:flex p-1.5 rounded-lg hover:bg-gray-800 text-gray-400 transition-colors"
             >
               <ChevronLeft className={`w-4 h-4 transition-transform ${!sidebarOpen ? "rotate-180" : ""}`} />
-            </button>
-            <button
-              onClick={() => setMobileSidebarOpen(false)}
-              className="lg:hidden p-1.5 rounded-lg hover:bg-gray-800 text-gray-400"
-            >
-              <X className="w-4 h-4" />
             </button>
           </div>
 
@@ -166,35 +139,29 @@ export default function AdminLayout() {
         {/* Main Content */}
         <div className="flex-1 min-w-0">
           {/* Admin Header */}
-          <header className="sticky top-0 z-30 h-16 bg-brand-900/80 backdrop-blur-xl border-b border-brand-800 flex items-center justify-between px-4 sm:px-6">
+          <header className="sticky top-0 z-30 h-16 bg-white/80 lg:bg-brand-900/80 backdrop-blur-xl border-b border-gray-200 lg:border-brand-800 flex items-center justify-between px-4 sm:px-6">
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => setMobileSidebarOpen(true)}
-                className="lg:hidden p-2 rounded-lg hover:bg-gray-800 text-gray-400"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
               <div className="relative hidden sm:block">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 lg:text-gray-500" />
                 <input
                   type="text"
                   placeholder="Rechercher dans l'admin..."
-                   className="pl-10 pr-4 py-2 bg-brand-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-700/50 text-white placeholder-gray-500 w-72"
+                   className="pl-10 pr-4 py-2 bg-gray-100 lg:bg-brand-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-700/50 text-gray-900 lg:text-white placeholder-gray-500 w-72"
                 />
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-brand-700/10 text-brand-400 text-xs font-medium rounded-lg">
+              <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-brand-50 lg:bg-brand-700/10 text-brand-600 lg:text-brand-400 text-xs font-medium rounded-lg">
                 <Shield className="w-3.5 h-3.5" />
                 Mode Adminnistrateur
               </span>
-              <button className="relative p-2 rounded-lg hover:bg-gray-800 text-gray-400 transition-colors">
+              <button className="relative p-2 rounded-lg hover:bg-gray-100 lg:hover:bg-gray-800 text-gray-500 lg:text-gray-400 transition-colors">
                 <Bell className="w-5 h-5" />
                 <span className="absolute top-1 right-1 w-4 h-4 bg-brand-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                   7
                 </span>
               </button>
-              <Link to="/faq" className="p-2 rounded-lg hover:bg-gray-800 text-gray-400 transition-colors">
+              <Link to="/faq" className="p-2 rounded-lg hover:bg-gray-100 lg:hover:bg-gray-800 text-gray-500 lg:text-gray-400 transition-colors">
                 <HelpCircle className="w-5 h-5" />
               </Link>
             </div>
@@ -228,7 +195,7 @@ export default function AdminLayout() {
           </div>
 
           {/* Page Content */}
-          <main className="px-4 sm:px-6 pb-8">
+          <main className="px-4 sm:px-6 pb-24 lg:pb-8">
             <motion.div
               key={location.pathname}
               initial={{ opacity: 0, y: 8 }}
@@ -240,6 +207,31 @@ export default function AdminLayout() {
           </main>
         </div>
       </div>
+
+      {/* Mobile Bottom Bar */}
+      <nav className="fixed bottom-0 inset-x-0 z-50 lg:hidden bg-white border-t border-gray-200 safe-area-pb">
+        <div className="flex items-center justify-around h-16">
+          {navItems.map((item) => {
+            const isActive = location.pathname === item.to || (item.to === "/admin" && location.pathname === "/admin");
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={`flex flex-col items-center justify-center gap-0.5 w-full h-full transition-colors ${
+                  isActive
+                    ? "text-brand-600"
+                    : "text-gray-400"
+                }`}
+              >
+                <item.icon className="w-6 h-6" strokeWidth={isActive ? 2.2 : 1.5} />
+                <span className={`text-[10px] leading-tight ${isActive ? "font-semibold" : "font-medium"}`}>
+                  {item.label}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }

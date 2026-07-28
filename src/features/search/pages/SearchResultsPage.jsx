@@ -24,7 +24,7 @@ const ITEMS_PER_PAGE = 12;
 function ProductCardSkeleton() {
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900">
-      <div className="aspect-[4/3] animate-pulse bg-gray-200 dark:bg-gray-800" />
+      <div className="aspect-[100/120] animate-pulse bg-gray-200 dark:bg-gray-800" />
       <div className="space-y-3 p-4">
         <div className="h-4 w-3/4 animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
         <div className="h-5 w-1/2 animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
@@ -366,9 +366,14 @@ export default function SearchResultsPage() {
                       title={product.title}
                       price={product.price}
                       originalPrice={product.originalPrice}
-                      location={`${product.neighborhood ? product.neighborhood + ", " : ""}${product.city}`}
+                      location={product.city}
+                      neighborhood={product.neighborhood}
                       condition={product.condition}
                       hasActiveNegotiation={product.hasActiveNegotiation}
+                      isUrgent={product.isUrgent}
+                      isPromoted={product.isPromoted}
+                      isFeatured={product.isFeatured}
+                      negotiable={product.negotiable}
                       onClick={() => navigate(`/annonce/${product.id}`)}
                     />
                   </motion.div>
@@ -389,9 +394,14 @@ export default function SearchResultsPage() {
                       title={product.title}
                       price={product.price}
                       originalPrice={product.originalPrice}
-                      location={`${product.neighborhood ? product.neighborhood + ", " : ""}${product.city}`}
+                      location={product.city}
+                      neighborhood={product.neighborhood}
                       condition={product.condition}
                       hasActiveNegotiation={product.hasActiveNegotiation}
+                      isUrgent={product.isUrgent}
+                      isPromoted={product.isPromoted}
+                      isFeatured={product.isFeatured}
+                      negotiable={product.negotiable}
                       onClick={() => navigate(`/annonce/${product.id}`)}
                     />
                   </motion.div>

@@ -82,17 +82,24 @@ export default function FavoritesPage() {
           const images = product.images || [];
           const firstImage = typeof images[0] === "string" ? images[0] : images[0]?.url;
           const sellerName = product.seller?.name || "";
-          const location = product.city || product.location || "";
+          const location = product.city || "";
 
           return (
             <motion.div key={fav.id || product.id} variants={itemVariants}>
               <ProductCard
+                productId={product.id}
                 image={firstImage}
                 title={product.title}
                 price={product.price}
                 originalPrice={product.originalPrice}
                 location={location}
+                neighborhood={product.neighborhood}
                 condition={product.condition}
+                hasActiveNegotiation={product.hasActiveNegotiation}
+                isUrgent={product.isUrgent}
+                isPromoted={product.isPromoted}
+                isFeatured={product.isFeatured}
+                negotiable={product.negotiable}
                 isFavorite={true}
                 onClick={() => navigate(`/annonce/${product.id}`)}
               />

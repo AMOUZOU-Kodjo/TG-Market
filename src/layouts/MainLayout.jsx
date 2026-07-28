@@ -3,6 +3,7 @@ import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
+  ChevronLeft,
   ChevronDown,
   Bell,
   User,
@@ -103,8 +104,12 @@ export default function MainLayout() {
         <div className="sticky top-0 z-50">
           {/* Header */}
           <header
-            className={`transition-all shadow-2xl duration-300 ${
-              scrolled ? "bg-navbar-scrolled backdrop-blur-xl shadow-xl" : "bg-navbar"
+            className={`transition-all duration-300 ${
+              location.pathname.startsWith("/categories/")
+                ? "bg-white md:bg-navbar shadow-sm md:shadow-2xl"
+                : scrolled
+                  ? "bg-navbar-scrolled backdrop-blur-xl shadow-xl"
+                  : "bg-navbar shadow-2xl"
             }`}
           >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -273,29 +278,49 @@ export default function MainLayout() {
               {/* Mobile: two rows */}
               <div className="md:hidden">
                 {/* Row 1: Logo */}
-                <div className="flex items-center justify-center py-2">
+                {!location.pathname.startsWith("/categories/") && (
+                <div className="flex items-center justify-center pt-3 pb-2">
                   <Link to="/">
                     <Logo size="md" />
                   </Link>
                 </div>
+                )}
 
-                {/* Row 2: Search + Actions */}
-                <div className="flex items-center gap-2 pb-2">
+                {/* Row 2: Back button (category pages) + Search + Actions */}
+                <div className={`flex items-center gap-2 ${location.pathname.startsWith("/categories/") ? "pt-3 pb-2" : "pb-2"}`}>
+                  {location.pathname.startsWith("/categories/") && (
+                    <Link
+                      to="/"
+                      className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors shrink-0"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </Link>
+                  )}
                   <form onSubmit={handleSearch} className="flex-1">
                     <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
+                      <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${
+                        location.pathname.startsWith("/categories/") ? "text-gray-400" : "text-white/50"
+                      }`} />
                       <input
                         type="text"
                         placeholder="Rechercher..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-white/20 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder-white/60"
+                        className={`w-full pl-10 pr-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2 ${
+                          location.pathname.startsWith("/categories/")
+                            ? "bg-gray-100 text-gray-900 placeholder-gray-400 focus:ring-gray-300"
+                            : "bg-white/20 text-white placeholder-white/60 focus:ring-white/50"
+                        }`}
                       />
                     </div>
                   </form>
                   <button
                     onClick={() => setDarkMode(!darkMode)}
-                    className="p-2 rounded-lg text-white/80 hover:bg-white/10 transition-colors"
+                    className={`p-2 rounded-lg transition-colors ${
+                      location.pathname.startsWith("/categories/")
+                        ? "text-gray-600 hover:bg-gray-100"
+                        : "text-white/80 hover:bg-white/10"
+                    }`}
                   >
                     {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                   </button>
@@ -303,7 +328,11 @@ export default function MainLayout() {
                   <div className="relative" ref={mobileMenuRef}>
                   <button
                     onClick={() => navigate("/dashboard")}
-                    className="p-1 rounded-full hover:bg-white/10 transition-colors"
+                    className={`p-1 rounded-full transition-colors ${
+                      location.pathname.startsWith("/categories/")
+                        ? "hover:bg-gray-100"
+                        : "hover:bg-white/10"
+                    }`}
                   >
                       <img
                         src={user?.avatar}
@@ -368,7 +397,11 @@ export default function MainLayout() {
                   ) : (
                   <Link
                     to="/connexion"
-                    className="p-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                    className={`p-2 rounded-lg text-sm font-medium transition-colors ${
+                      location.pathname.startsWith("/categories/")
+                        ? "text-gray-600 hover:bg-gray-100"
+                        : "text-white/80 hover:text-white hover:bg-white/10"
+                    }`}
                   >
                     <User className="w-5 h-5" />
                   </Link>
@@ -376,10 +409,10 @@ export default function MainLayout() {
                 </div>
               </div>
             </div>
-          </header>
 
-          {/* Category Bar */}
-         <CategoryBar />
+            {/* Category Bar */}
+            <CategoryBar />
+          </header>
         </div>
 
         {/* Main Content */}
@@ -394,7 +427,7 @@ export default function MainLayout() {
           </motion.div>
         </main>
 
-        <footer className="bg-footer dark:bg-footer-dark text-footer-text">
+        <footer className={`bg-footer dark:bg-footer-dark text-footer-text ${location.pathname.startsWith("/categories/") ? "hidden md:block" : ""}`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             {/* Mobile: centered layout | Desktop: 3-column grid */}
             <div className="flex flex-col items-center lg:grid lg:grid-cols-3 lg:items-start lg:gap-8">

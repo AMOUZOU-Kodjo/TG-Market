@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Users,
@@ -6,30 +5,24 @@ import {
   DollarSign,
   AlertTriangle,
   TrendingUp,
-  MoreVertical,
   Check,
   X,
   Shield,
   Eye,
-  Edit2,
-  Trash2,
   Ban,
   UserCheck,
-  BarChart3,
   Clock,
-  Search,
-  ChevronRight,
-  ExternalLink,
-  FileCheck,
-  Camera,
+  BarChart3,
+  Package,
+  Eye as EyeIcon,
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import Button from "@/shared/ui/Button";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Badge from "@/shared/ui/Badge";
 import Avatar from "@/shared/ui/Avatar";
 import api from "@/shared/services/api";
 import { formatCFA, formatRelativeTime } from "@/shared/utils/format";
 import toast from "react-hot-toast";
+import { useState } from "react";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -41,34 +34,45 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 260, damping: 20 } },
 };
 
-const recentActivity = [
-  { type: "sale", text: "Samsung Galaxy S24 vendu par Kofi Améyo", time: "Il y a 2h", amount: 850000 },
-  { type: "user", text: "Nouvel utilisateur : Kokou Amega", time: "Il y a 3h" },
-  { type: "report", text: "Annonce signalée : iPhone trop bon marché", time: "Il y a 4h" },
-  { type: "sale", text: "MacBook Air M2 vendu par Prosper Degan", time: "Il y a 5h", amount: 650000 },
-  { type: "user", text: "Kévin Agbéké vérifié comme vendeur", time: "Il y a 6h" },
-  { type: "listing", text: "Toyota Corolla 2019 ajouté à Kara", time: "Il y a 7h" },
-  { type: "report", text: "Utilisateur signalé pour comportement suspect", time: "Il y a 8h" },
-];
-
-const activityIcons = {
-  sale: { icon: DollarSign, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
+const activityConfig = {
+  product: { icon: Package, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
   user: { icon: Users, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
-  report: { icon: AlertTriangle, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
-  listing: { icon: List, color: "text-brand-800", bg: "bg-brand-50 dark:bg-brand-800/10" },
+  escrow: { icon: DollarSign, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
 };
 
+const months = ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun", "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"];
+
 export default function AdminDashboardPage() {
+  const queryClient = useQueryClient();
+
+  const { data: stats, isLoading: statsLoading } = useQuery({
+    queryKey: ["adminStats"],
+    queryFn: () => api.get("/admin/stats").then((r) => r.data),
+  });
+
+  const { data: activityData } = useQuery({
+    queryKey: ["adminActivity"],
+    queryFn: () => api.get("/admin/activity").then((r) => r.data),
+  });
+
   const { data: usersData } = useQuery({
     queryKey: ["adminUsers"],
     queryFn: () => api.get("/admin/users").then((r) => r.data),
   });
   const users = usersData?.data ?? [];
+
   const { data: pendingVerificationsData } = useQuery({
     queryKey: ["adminPendingVerifications"],
     queryFn: () => api.get("/admin/kyc/pending").then((r) => r.data),
   });
   const pendingVerifications = pendingVerificationsData?.data ?? [];
+
+  const { data: productsData } = useQuery({
+    queryKey: ["adminProducts"],
+    queryFn: () => api.get("/admin/products").then((r) => r.data),
+  });
+  const pendingListings = (productsData?.data ?? []).filter((p) => p.status === "pending");
+
   const { data: categoriesData } = useQuery({
     queryKey: ["adminCategories"],
     queryFn: () => api.get("/categories").then((r) => r.data),
@@ -76,64 +80,96 @@ export default function AdminDashboardPage() {
   const categories = categoriesData?.data ?? (Array.isArray(categoriesData) ? categoriesData : []);
 
   const displayedUsers = users.slice(0, 10);
-  const [userStatuses, setUserStatuses] = useState({});
 
-  const pendingListings = [
-    {
-      id: 101,
-      title: "iPhone 14 Pro Max 256GB - Neuf scellé",
-      price: 750000,
-      category: "Téléphones",
-      seller: displayedUsers[0] ?? { name: "Inconnu", avatar: null },
-      submittedAt: "2025-07-20T08:00:00Z",
-      images: 1,
+  const toggleUserStatus = useMutation({
+    mutationFn: ({ userId, isActive }) =>
+      api.put(`/admin/users/${userId}/status`, { isActive }).then((r) => r.data),
+    onSuccess: (_, { isActive }) => {
+      toast.success(isActive ? "Utilisateur activé" : "Utilisateur désactivé");
+      queryClient.invalidateQueries({ queryKey: ["adminUsers"] });
     },
-    {
-      id: 102,
-      title: "Terrain 500m² à Kpéme - Titre foncier",
-      price: 15000000,
-      category: "Immobilier",
-      seller: displayedUsers[1] ?? { name: "Inconnu", avatar: null },
-      submittedAt: "2025-07-19T16:30:00Z",
-      images: 1,
+    onError: () => toast.error("Erreur lors de la mise à jour"),
+  });
+
+  const changeUserRole = useMutation({
+    mutationFn: ({ userId, role }) =>
+      api.put(`/admin/users/${userId}/role`, { role }).then((r) => r.data),
+    onSuccess: () => {
+      toast.success("Rôle mis à jour");
+      queryClient.invalidateQueries({ queryKey: ["adminUsers"] });
     },
-    {
-      id: 103,
-      title: "Set complète de batterie Pearl Export",
-      price: 850000,
-      category: "Musique",
-      seller: displayedUsers[2] ?? { name: "Inconnu", avatar: null },
-      submittedAt: "2025-07-19T14:30:00Z",
-      images: 1,
+    onError: () => toast.error("Erreur lors du changement de rôle"),
+  });
+
+  const updateProductStatus = useMutation({
+    mutationFn: ({ productId, status }) =>
+      api.put(`/admin/products/${productId}/status`, { status }).then((r) => r.data),
+    onSuccess: () => {
+      toast.success("Statut mis à jour");
+      queryClient.invalidateQueries({ queryKey: ["adminProducts"] });
+      queryClient.invalidateQueries({ queryKey: ["adminStats"] });
     },
-    {
-      id: 104,
-      title: "Lot de 50 pagnes wax assorted",
-      price: 125000,
-      category: "Mode & Vêtements",
-      seller: displayedUsers[3] ?? { name: "Inconnu", avatar: null },
-      submittedAt: "2025-07-19T10:15:00Z",
-      images: 1,
+    onError: () => toast.error("Erreur lors de la mise à jour"),
+  });
+
+  const approveKycMutation = useMutation({
+    mutationFn: (kycId) => api.put(`/admin/kyc/${kycId}/approve`).then((r) => r.data),
+    onSuccess: () => {
+      toast.success("KYC approuvé");
+      queryClient.invalidateQueries({ queryKey: ["adminPendingVerifications"] });
     },
-  ];
+    onError: () => toast.error("Erreur lors de l'approbation"),
+  });
 
-  const handleBanUser = (userId) => {
-    setUserStatuses((prev) => ({ ...prev, [userId]: "banned" }));
-    toast.success("Utilisateur banni");
-  };
+  const rejectKycMutation = useMutation({
+    mutationFn: ({ kycId, reason }) =>
+      api.put(`/admin/kyc/${kycId}/reject`, { reason }).then((r) => r.data),
+    onSuccess: () => {
+      toast.success("KYC rejeté");
+      queryClient.invalidateQueries({ queryKey: ["adminPendingVerifications"] });
+    },
+    onError: () => toast.error("Erreur lors du rejet"),
+  });
 
-  const handleVerifyUser = (userId) => {
-    setUserStatuses((prev) => ({ ...prev, [userId]: "verified" }));
-    toast.success("Utilisateur vérifié");
-  };
+  const statCards = stats
+    ? [
+        { label: "Utilisateurs", value: stats.totalUsers, icon: Users, color: "blue", change: `+${stats.newUsersThisMonth} ce mois` },
+        { label: "Annonces actives", value: stats.activeListings, icon: List, color: "green", change: `+${stats.newProductsThisMonth} ce mois` },
+        { label: "Ventes", value: stats.totalSales, icon: TrendingUp, color: "blue", change: `+${stats.salesThisMonth} ce mois` },
+        { label: "Vues totales", value: stats.totalViews, icon: EyeIcon, color: "purple", change: `${stats.totalProducts} annonces` },
+      ]
+    : [];
 
-  const handleApproveListing = (id) => {
-    toast.success("Annonce approuvée");
-  };
+  const monthlyValues = stats?.monthlyData ?? [];
+  const maxMonthly = Math.max(...monthlyValues.map((m) => m.products), 1);
 
-  const handleRejectListing = (id) => {
-    toast.error("Annonce rejetée");
-  };
+  const recentProducts = activityData?.recentProducts ?? [];
+  const recentUsers = activityData?.recentUsers ?? [];
+  const recentEscrows = activityData?.recentEscrows ?? [];
+
+  const allActivity = [
+    ...recentProducts.map((p) => ({
+      type: "product",
+      text: `${p.title} ajouté par ${p.user.firstName} ${p.user.lastName}`,
+      time: p.createdAt,
+      amount: p.price,
+      status: p.status,
+    })),
+    ...recentUsers.map((u) => ({
+      type: "user",
+      text: `${u.firstName} ${u.lastName} s'est inscrit`,
+      time: u.createdAt,
+    })),
+    ...recentEscrows.map((e) => ({
+      type: "escrow",
+      text: `Vente de ${e.product.title} — ${e.buyer.firstName} → ${e.seller.firstName}`,
+      time: e.createdAt,
+      amount: e.amount,
+      status: e.status,
+    })),
+  ]
+    .sort((a, b) => new Date(b.time) - new Date(a.time))
+    .slice(0, 10);
 
   return (
     <div className="space-y-6">
@@ -143,6 +179,26 @@ export default function AdminDashboardPage() {
         animate="visible"
         className="space-y-6"
       >
+        {/* Stat Cards */}
+        {statCards.length > 0 && (
+          <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {statCards.map((stat, i) => (
+              <div key={i} className="bg-brand-900 rounded-xl p-4 border border-brand-800">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-xs text-gray-500 mb-1">{stat.label}</p>
+                    <p className="text-xl font-bold text-white">{stat.value?.toLocaleString() ?? "—"}</p>
+                  </div>
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-${stat.color}-500/10`}>
+                    <stat.icon className={`w-5 h-5 text-${stat.color}-400`} />
+                  </div>
+                </div>
+                <p className="text-xs mt-2 font-medium text-brand-600">{stat.change}</p>
+              </div>
+            ))}
+          </motion.div>
+        )}
+
         {/* Users Management */}
         <motion.div
           variants={itemVariants}
@@ -158,7 +214,7 @@ export default function AdminDashboardPage() {
                 <tr className="border-b border-gray-800 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   <th className="px-6 py-3">Utilisateur</th>
                   <th className="px-6 py-3">Email</th>
-                  <th className="px-6 py-3">Note</th>
+                  <th className="px-6 py-3">Rôle</th>
                   <th className="px-6 py-3">Statut</th>
                   <th className="px-6 py-3">Inscrit</th>
                   <th className="px-6 py-3">Actions</th>
@@ -169,60 +225,48 @@ export default function AdminDashboardPage() {
                   <tr key={user.id} className="transition-colors hover:bg-gray-800/50">
                     <td className="px-6 py-3">
                       <div className="flex items-center gap-3">
-                        <Avatar src={user.avatar} name={user.name} size="sm" />
-                        <span className="text-sm font-medium text-white">{user.name}</span>
+                        <Avatar src={user.avatar} name={`${user.firstName} ${user.lastName}`} size="sm" />
+                        <span className="text-sm font-medium text-white">{user.firstName} {user.lastName}</span>
                       </div>
                     </td>
                     <td className="px-6 py-3 text-sm text-gray-400">{user.email}</td>
                     <td className="px-6 py-3">
-                      <span className="text-sm text-yellow-500">★ {user.rating}</span>
+                      <select
+                        value={user.role}
+                        onChange={(e) => changeUserRole.mutate({ userId: user.id, role: e.target.value })}
+                        className={`text-xs font-medium rounded-lg px-2 py-1 border-0 cursor-pointer ${
+                          user.role === "admin"
+                            ? "bg-purple-500/10 text-purple-400"
+                            : "bg-gray-800 text-gray-400"
+                        }`}
+                      >
+                        <option value="user">Utilisateur</option>
+                        <option value="admin">Admin</option>
+                      </select>
                     </td>
                     <td className="px-6 py-3">
                       <Badge
-                        variant={
-                          userStatuses[user.id] === "verified"
-                            ? "success"
-                            : userStatuses[user.id] === "banned"
-                            ? "danger"
-                            : "warning"
-                        }
+                        variant={user.isActive ? "success" : "danger"}
                         dot
                       >
-                        {userStatuses[user.id] === "verified"
-                          ? "Vérifié"
-                          : userStatuses[user.id] === "banned"
-                          ? "Banni"
-                          : "Actif"}
+                        {user.isActive ? "Actif" : "Inactif"}
                       </Badge>
                     </td>
                     <td className="px-6 py-3 text-xs text-gray-500">
-                      {formatRelativeTime(user.joinedAt)}
+                      {formatRelativeTime(user.createdAt)}
                     </td>
                     <td className="px-6 py-3">
                       <div className="flex items-center gap-1">
-                        {userStatuses[user.id] !== "verified" && (
-                          <button
-                            onClick={() => handleVerifyUser(user.id)}
-                            className="rounded-lg p-1.5 text-brand-600 transition-colors hover:bg-brand-700/10"
-                            title="Vérifier"
-                          >
-                            <UserCheck className="h-4 w-4" />
-                          </button>
-                        )}
-                        {userStatuses[user.id] !== "banned" && (
-                          <button
-                            onClick={() => handleBanUser(user.id)}
-                            className="rounded-lg p-1.5 text-red-400 transition-colors hover:bg-red-700/10"
-                            title="Bannir"
-                          >
-                            <Ban className="h-4 w-4" />
-                          </button>
-                        )}
                         <button
-                          className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-800"
-                          title="Voir le profil"
+                          onClick={() => toggleUserStatus.mutate({ userId: user.id, isActive: !user.isActive })}
+                          className={`rounded-lg p-1.5 transition-colors ${
+                            user.isActive
+                              ? "text-red-400 hover:bg-red-700/10"
+                              : "text-brand-600 hover:bg-brand-700/10"
+                          }`}
+                          title={user.isActive ? "Désactiver" : "Activer"}
                         >
-                          <Eye className="h-4 w-4" />
+                          {user.isActive ? <Ban className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
                         </button>
                       </div>
                     </td>
@@ -244,28 +288,31 @@ export default function AdminDashboardPage() {
               <Badge variant="warning" dot>{pendingListings.length}</Badge>
             </div>
             <div className="divide-y divide-gray-800">
+              {pendingListings.length === 0 && (
+                <p className="px-6 py-8 text-center text-sm text-gray-500">Aucune annonce en attente</p>
+              )}
               {pendingListings.map((listing) => (
                 <div key={listing.id} className="px-6 py-4">
                   <div className="flex items-start justify-between">
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-white truncate">{listing.title}</p>
                       <p className="mt-1 text-xs text-gray-500">
-                        {formatCFA(listing.price)} · {listing.category}
+                        {formatCFA(listing.price)} · {listing.category?.name ?? "—"}
                       </p>
                       <p className="mt-1 text-xs text-gray-500">
-                        par {listing.seller?.name ?? "Inconnu"} · {formatRelativeTime(listing.submittedAt)}
+                        par {listing.user?.firstName} {listing.user?.lastName} · {formatRelativeTime(listing.createdAt)}
                       </p>
                     </div>
                     <div className="flex items-center gap-1">
                       <button
-                        onClick={() => handleApproveListing(listing.id)}
+                        onClick={() => updateProductStatus.mutate({ productId: listing.id, status: "active" })}
                         className="rounded-lg bg-brand-700/10 p-1.5 text-brand-600 transition-colors hover:bg-brand-700/20"
                         title="Approuver"
                       >
                         <Check className="h-4 w-4" />
                       </button>
                       <button
-                        onClick={() => handleRejectListing(listing.id)}
+                        onClick={() => updateProductStatus.mutate({ productId: listing.id, status: "rejected" })}
                         className="rounded-lg bg-red-700/10 p-1.5 text-red-400 transition-colors hover:bg-red-700/20"
                         title="Rejeter"
                       >
@@ -304,14 +351,6 @@ export default function AdminDashboardPage() {
                       <p className="text-xs text-gray-500">{cat.productCount} annonces</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <button className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-800 hover:text-white">
-                      <Edit2 className="h-3.5 w-3.5" />
-                    </button>
-                    <button className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-700/10 hover:text-red-400">
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
                 </div>
               ))}
             </div>
@@ -334,36 +373,37 @@ export default function AdminDashboardPage() {
                   <div className="flex items-start gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <p className="text-sm font-medium text-white">{verification.name}</p>
+                        <p className="text-sm font-medium text-white">{verification.user.firstName} {verification.user.lastName}</p>
                         <Badge variant="secondary" size="sm">{verification.documentType}</Badge>
                       </div>
                       <p className="mt-1 text-xs text-gray-500">
                         Soumis {formatRelativeTime(verification.submittedAt)}
                       </p>
                       <div className="mt-3 flex gap-2">
-                        <img
-                          src={verification.selfieUrl}
-                          alt="Selfie"
-                          className="h-16 w-16 rounded-lg object-cover"
-                        />
-                        <img
-                          src={verification.docFrontUrl}
-                          alt="Document"
-                          className="h-16 w-16 rounded-lg object-cover"
-                        />
+                        {verification.selfieUrl && (
+                          <img src={verification.selfieUrl} alt="Selfie" className="h-16 w-16 rounded-lg object-cover" />
+                        )}
+                        {verification.documentFrontUrl && (
+                          <img src={verification.documentFrontUrl} alt="Document" className="h-16 w-16 rounded-lg object-cover" />
+                        )}
+                        {verification.documentBackUrl && (
+                          <img src={verification.documentBackUrl} alt="Document (verso)" className="h-16 w-16 rounded-lg object-cover" />
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-1">
                       <button
-                        onClick={() => toast.success(`Identité de ${verification.name} vérifiée`)}
-                        className="rounded-lg bg-brand-700/10 p-2 text-brand-600 transition-colors hover:bg-brand-700/20"
+                        onClick={() => approveKycMutation.mutate(verification.id)}
+                        disabled={approveKycMutation.isPending}
+                        className="rounded-lg bg-brand-700/10 p-2 text-brand-600 transition-colors hover:bg-brand-700/20 disabled:opacity-50"
                         title="Approuver"
                       >
                         <Check className="h-4 w-4" />
                       </button>
                       <button
-                        onClick={() => toast.error(`Identité de ${verification.name} rejetée`)}
-                        className="rounded-lg bg-red-700/10 p-2 text-red-400 transition-colors hover:bg-red-700/20"
+                        onClick={() => rejectKycMutation.mutate({ kycId: verification.id, reason: "Documents non conformes" })}
+                        disabled={rejectKycMutation.isPending}
+                        className="rounded-lg bg-red-700/10 p-2 text-red-400 transition-colors hover:bg-red-700/20 disabled:opacity-50"
                         title="Rejeter"
                       >
                         <X className="h-4 w-4" />
@@ -377,32 +417,44 @@ export default function AdminDashboardPage() {
         )}
 
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* Revenue Chart Placeholder */}
+          {/* Monthly Chart (real data from stats) */}
           <motion.div
             variants={itemVariants}
             className="rounded-2xl border border-gray-800 bg-gray-900 p-6"
           >
-            <h2 className="mb-4 text-lg font-semibold text-white">Revenus mensuels</h2>
-            <div className="flex items-end gap-2" style={{ height: 180 }}>
-              {[45, 52, 58, 61, 67, 72, 78, 82, 85, 89, 92, 95].map((value, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ height: 0 }}
-                  animate={{ height: `${value}%` }}
-                  transition={{ duration: 0.6, delay: i * 0.05, ease: "easeOut" }}
-                  className="flex-1 rounded-t-lg bg-brand-800"
-                  title={`${value}M FCFA`}
-                />
-              ))}
-            </div>
-            <div className="mt-2 flex justify-between text-[10px] text-gray-500">
-              {["Jan", "Fév", "Mar", "Avr", "Mai", "Jun", "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"].map((m) => (
-                <span key={m}>{m}</span>
-              ))}
-            </div>
+            <h2 className="mb-4 text-lg font-semibold text-white">Annonces mensuelles</h2>
+            {monthlyValues.length > 0 ? (
+              <>
+                <div className="flex items-end gap-2" style={{ height: 180 }}>
+                  {monthlyValues.map((m, i) => {
+                    const pct = Math.round((m.products / maxMonthly) * 100);
+                    return (
+                      <motion.div
+                        key={m.month}
+                        initial={{ height: 0 }}
+                        animate={{ height: `${pct}%` }}
+                        transition={{ duration: 0.6, delay: i * 0.05, ease: "easeOut" }}
+                        className="flex-1 rounded-t-lg bg-brand-800"
+                        title={`${m.products} annonces — ${m.month}`}
+                      />
+                    );
+                  })}
+                </div>
+                <div className="mt-2 flex justify-between text-[10px] text-gray-500 overflow-hidden">
+                  {monthlyValues.map((m) => {
+                    const monthNum = parseInt(m.month.split("-")[1], 10);
+                    return <span key={m.month}>{months[monthNum - 1]}</span>;
+                  })}
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center justify-center h-[180px] text-sm text-gray-500">
+                {statsLoading ? "Chargement..." : "Aucune donnée"}
+              </div>
+            )}
           </motion.div>
 
-          {/* Recent Activity */}
+          {/* Recent Activity (real data) */}
           <motion.div
             variants={itemVariants}
             className="rounded-2xl border border-gray-800 bg-gray-900"
@@ -412,8 +464,11 @@ export default function AdminDashboardPage() {
               <Clock className="h-4 w-4 text-gray-500" />
             </div>
             <div className="divide-y divide-gray-800">
-              {recentActivity.map((activity, i) => {
-                const config = activityIcons[activity.type];
+              {allActivity.length === 0 && (
+                <p className="px-6 py-8 text-center text-sm text-gray-500">Aucune activité récente</p>
+              )}
+              {allActivity.map((activity, i) => {
+                const config = activityConfig[activity.type] ?? activityConfig.product;
                 const IconComp = config.icon;
                 return (
                   <div key={i} className="flex items-center gap-3 px-6 py-3">
@@ -421,11 +476,11 @@ export default function AdminDashboardPage() {
                       <IconComp className={`h-4 w-4 ${config.color}`} />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm text-gray-300">{activity.text}</p>
-                      <p className="text-xs text-gray-500">{activity.time}</p>
+                      <p className="text-sm text-gray-300 truncate">{activity.text}</p>
+                      <p className="text-xs text-gray-500">{formatRelativeTime(activity.time)}</p>
                     </div>
                     {activity.amount && (
-                      <span className="text-xs font-medium text-brand-600">
+                      <span className="text-xs font-medium text-brand-600 whitespace-nowrap">
                         +{formatCFA(activity.amount)}
                       </span>
                     )}

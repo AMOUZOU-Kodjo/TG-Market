@@ -1,13 +1,13 @@
-import { useParams, Link, Navigate } from "react-router-dom";
+import { useParams, Link, Navigate, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronRight, Package } from "lucide-react";
+import { ChevronLeft, Package } from "lucide-react";
 import { useCategory, useCategoryProducts } from "@/features/categories/hooks/useCategories";
 import ProductCard from "@/shared/ui/ProductCard";
-import Breadcrumb from "@/shared/ui/Breadcrumb";
 import EmptyState from "@/shared/ui/EmptyState";
 
 export default function CategoryPage() {
   const { slug } = useParams();
+  const navigate = useNavigate();
 
   const { data: category, isLoading } = useCategory(slug);
   const { data: productsData } = useCategoryProducts(slug, { page: 1, perPage: 20 });
@@ -27,16 +27,16 @@ export default function CategoryPage() {
     return <Navigate to="/404" replace />;
   }
 
-  const breadcrumbItems = [
-    { label: "Accueil", href: "/" },
-    { label: "Catégories", href: "/categories" },
-    { label: categoryName },
-  ];
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <Breadcrumb items={breadcrumbItems} className="mb-6" />
+        <button
+          onClick={() => navigate("/")}
+          className="hidden md:flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors mb-6"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          Retour
+        </button>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -86,9 +86,13 @@ export default function CategoryPage() {
                 title={product.title}
                 price={product.price}
                 originalPrice={product.originalPrice}
-                location={`${product.city}${product.district ? `, ${product.district}` : ""}`}
+                location={product.city}
+                neighborhood={product.neighborhood}
                 condition={product.condition}
                 hasActiveNegotiation={product.hasActiveNegotiation}
+                isUrgent={product.isUrgent}
+                isPromoted={product.isPromoted}
+                negotiable={product.negotiable}
                 onClick={() =>
                   (window.location.href = `/annonce/${product.id}`)
                 }

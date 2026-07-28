@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { createPortal } from "react-dom";
+import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaMobileScreen,
@@ -11,7 +12,6 @@ import {
   FaCamera,
   FaCar,
   FaBicycle,
-  FaGears,
   FaHouse,
   FaCouch,
   FaPaintbrush,
@@ -51,6 +51,8 @@ import {
   FaGlasses,
   FaTruckMoving,
   FaMotorcycle,
+  FaChevronRight,
+  FaArrowRight,
 } from "react-icons/fa6";
 import { TbCategory } from "react-icons/tb";
 import { useCategories } from "@/features/categories/hooks/useCategories";
@@ -96,57 +98,88 @@ const faIconMap = {
   Blocks: FaGamepad,
   Dog: FaDog,
   Wallet: FaSackDollar,
-  Watch: FaClock,
 };
 
 const groupImages = {
-  multimedia: "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=400&h=300&fit=crop",
-  vehicules: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=400&h=300&fit=crop",
-  maison: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=300&fit=crop",
-  mode: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=400&h=300&fit=crop",
-  loisirs: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop",
-  famille: "https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=400&h=300&fit=crop",
-  "bricolage-jardin": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=300&fit=crop",
-  immobilier: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=300&fit=crop",
-  "pro-services": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
+  multimedia:
+    "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=500&h=400&fit=crop",
+  vehicules:
+    "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=500&h=400&fit=crop",
+  maison:
+    "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=500&h=400&fit=crop",
+  mode: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=500&h=400&fit=crop",
+  loisirs:
+    "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500&h=400&fit=crop",
+  famille:
+    "https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=500&h=400&fit=crop",
+  "bricolage-jardin":
+    "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=500&h=400&fit=crop",
+  immobilier:
+    "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=500&h=400&fit=crop",
+  "pro-services":
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=400&fit=crop",
 };
 
 export default function CategoryBar() {
   const { data: categories = [] } = useCategories();
+  const location = useLocation();
+  const isCategoryPage = location.pathname.startsWith("/categories/");
   const [openIndex, setOpenIndex] = useState(null);
-  const [menuPos, setMenuPos] = useState({ left: 0, top: 0, width: 0 });
+  const [mobilePath, setMobilePath] = useState([]);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const closeTimeout = useRef(null);
   const containerRef = useRef(null);
 
+  const handleMobileDrill = useCallback((cat) => {
+    setMobilePath((prev) => [...prev, cat]);
+  }, []);
+
+  const handleMobileBack = useCallback(() => {
+    setMobilePath((prev) => prev.slice(0, -1));
+  }, []);
+
+  const handleMobileOpenCategory = useCallback((parent) => {
+    setMobilePath([parent]);
+    setMobileOpen(true);
+  }, []);
+
+  const closeMobile = useCallback(() => {
+    setMobilePath([]);
+    setMobileOpen(false);
+  }, []);
+
   const parents = categories.filter((c) => c.parentId === null);
 
-  const handleEnter = useCallback((i) => {
-    clearTimeout(closeTimeout.current);
-    if (window.innerWidth >= 768) {
-      const bar = containerRef.current;
-      if (bar) {
-        const rect = bar.getBoundingClientRect();
-        setMenuPos({
-          left: rect.left,
-          top: rect.bottom,
-          width: rect.width,
-        });
+  const handleEnter = useCallback(
+    (i) => {
+      clearTimeout(closeTimeout.current);
+      if (window.innerWidth >= 768) {
+        setOpenIndex(i);
       }
-      setOpenIndex(i);
-    }
-  }, []);
+    },
+    []
+  );
 
   const handleLeave = useCallback(() => {
     if (window.innerWidth >= 768) {
-      closeTimeout.current = setTimeout(() => setOpenIndex(null), 120);
+      closeTimeout.current = setTimeout(() => setOpenIndex(null), 100);
     }
   }, []);
 
-  const handleMobileClick = useCallback((i) => {
-    if (window.innerWidth < 768) {
-      setOpenIndex(openIndex === i ? null : i);
+  const handleCancelLeave = useCallback(() => {
+    clearTimeout(closeTimeout.current);
+  }, []);
+
+  const closeMenu = useCallback(() => setOpenIndex(null), []);
+
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
     }
-  }, [openIndex]);
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileOpen]);
 
   useEffect(() => {
     return () => clearTimeout(closeTimeout.current);
@@ -154,7 +187,11 @@ export default function CategoryBar() {
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (openIndex !== null && containerRef.current && !containerRef.current.contains(e.target)) {
+      if (
+        openIndex !== null &&
+        containerRef.current &&
+        !containerRef.current.contains(e.target)
+      ) {
         setOpenIndex(null);
       }
     };
@@ -162,143 +199,266 @@ export default function CategoryBar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openIndex]);
 
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape") {
+        setOpenIndex(null);
+        closeMobile();
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, []);
+
   if (parents.length === 0) return null;
 
+  const activeParent = openIndex !== null ? parents[openIndex] : null;
+
   return (
-    <div
-      ref={containerRef}
-      className="bg-[#01353095] dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 z-50"
-    >
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-start md:justify-center gap-1 overflow-x-auto hide-scrollbar px-4 sm:px-6 lg:px-8 py-2">
-          {parents.map((group, i) => {
-            const Icon = faIconMap[group.icon] || FaLaptop;
-            return (
-              <div
-                key={group.slug}
-                className="relative shrink-0"
-                onMouseEnter={() => handleEnter(i)}
-                onMouseLeave={handleLeave}
-              >
+    <div ref={containerRef} className={`relative ${isCategoryPage ? "border-b border-gray-200 md:border-white/10" : "border-b border-white/10"}`}>
+      {/* ═══ Desktop: Category pills ═══ */}
+      <div className="hidden md:block">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center gap-1 py-2">
+            {parents.map((group, i) => {
+              const Icon = faIconMap[group.icon] || FaLaptop;
+              const isActive = openIndex === i;
+              return (
                 <button
-                  onClick={() => handleMobileClick(i)}
-                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
-                    openIndex === i
-                      ? "bg-brand-50 text-brand-800 dark:bg-brand-900/30 dark:text-brand-400"
-                      : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-brand-50 hover:text-brand-800 dark:hover:bg-brand-900/30 dark:hover:text-brand-400"
+                  key={group.slug}
+                  onMouseEnter={() => handleEnter(i)}
+                  onMouseLeave={handleLeave}
+                  onClick={() => (isActive ? closeMenu() : setOpenIndex(i))}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-semibold whitespace-nowrap transition-all duration-200 ${
+                    isCategoryPage
+                      ? isActive
+                        ? "bg-brand-100 text-brand-800 shadow-sm"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                      : isActive
+                        ? "bg-white text-brand-800 shadow-sm"
+                        : "text-white/80 hover:text-white hover:bg-white/10"
                   }`}
                 >
-                  <Icon className="w-3.5 h-3.5" />
+                  <Icon className="w-4 h-4" />
                   {group.name}
                 </button>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
 
+      {/* ═══ Mobile: Category pills + Full-screen overlay ═══ */}
+      <div className="md:hidden">
+        {/* Scrollable pills */}
+        <div className="flex items-center gap-1 overflow-x-auto hide-scrollbar px-4 py-2">
+          {parents.map((group) => {
+            const Icon = faIconMap[group.icon] || FaLaptop;
+            const isActive = mobileOpen && mobilePath[0]?.id === group.id;
+            return (
+              <button
+                key={group.slug}
+                onClick={() => isActive ? closeMobile() : handleMobileOpenCategory(group)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors shrink-0 ${
+                  isCategoryPage
+                    ? isActive
+                      ? "bg-brand-100 text-brand-800 shadow-sm"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    : isActive
+                      ? "bg-white text-brand-800 shadow-sm"
+                      : "bg-white/10 text-white/80 hover:bg-white/20"
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                {group.name}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Full-screen overlay */}
+        {createPortal(
+          <AnimatePresence>
+            {mobileOpen && mobilePath.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="fixed inset-0 z-[200] bg-white dark:bg-gray-900 flex flex-col"
+            >
+              {/* Header */}
+              <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-100 dark:border-gray-800 shrink-0">
+                <button
+                  type="button"
+                  onClick={closeMobile}
+                  className="p-2 -ml-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <svg className="w-5 h-5 text-gray-900 dark:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                  {mobilePath[mobilePath.length - 1].name}
+                </h2>
+              </div>
+
+              {/* Breadcrumbs */}
+              {mobilePath.length > 1 && (
+                <div className="flex items-center gap-2 px-4 py-2 border-b border-gray-50 dark:border-gray-800 shrink-0">
+                  {mobilePath.map((cat, i) => (
+                    <span key={cat.id} className="flex items-center gap-1.5">
+                      {i > 0 && <span className="text-gray-300">/</span>}
+                      <button
+                        type="button"
+                        onClick={() => setMobilePath((prev) => prev.slice(0, i + 1))}
+                        className={`text-xs font-medium transition-colors ${
+                          i === mobilePath.length - 1
+                            ? "text-gray-900 dark:text-white"
+                            : "text-gray-400 hover:text-gray-600"
+                        }`}
+                      >
+                        {cat.name}
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto px-4 py-4">
+                {/* Voir tout */}
+                <Link
+                  to={`/categories/${mobilePath[mobilePath.length - 1].slug}`}
+                  onClick={closeMobile}
+                  className="flex items-center gap-3 px-4 py-3 mb-3 rounded-xl bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-400 font-semibold text-sm transition-colors"
+                >
+                  <TbCategory className="w-5 h-5" />
+                  Voir tout
+                </Link>
+
+                {/* Children */}
+                <div className="space-y-1">
+                  {(mobilePath[mobilePath.length - 1].children || []).map((cat) => {
+                    const hasChildren = cat.children && cat.children.length > 0;
+                    const Icon = faIconMap[cat.icon] || FaBoxOpen;
+                    if (hasChildren) {
+                      return (
+                        <button
+                          key={cat.slug}
+                          onClick={() => handleMobileDrill(cat)}
+                          className="w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                        >
+                          <span className="flex items-center gap-3">
+                            <Icon className="w-5 h-5 text-gray-400" />
+                            {cat.name}
+                          </span>
+                          <FaChevronRight className="w-4 h-4 text-gray-300" />
+                        </button>
+                      );
+                    }
+                    return (
+                      <Link
+                        key={cat.slug}
+                        to={`/categories/${cat.slug}`}
+                        onClick={closeMobile}
+                        className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                      >
+                        <Icon className="w-5 h-5 text-gray-400" />
+                        {cat.name}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+          document.body
+        )}
+      </div>
+
+      {/* ═══ Desktop: Mega Menu Dropdown ═══ */}
       <AnimatePresence>
-        {openIndex !== null && parents[openIndex] && (
+        {activeParent && (
           <motion.div
-            key={parents[openIndex].slug}
-            initial={{ opacity: 0, y: 4 }}
+            key={activeParent.slug}
+            initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 4 }}
-            transition={{ duration: 0.15 }}
-            className="fixed z-[100] left-0 right-0 md:left-auto md:right-auto md:w-auto"
-            style={
-              window.innerWidth >= 768
-                ? { left: menuPos.left + 200, top: menuPos.top, width: menuPos.width - 400 }
-                : {
-                    left: 0,
-                    top: menuPos.top,
-                    width: "100vw",
-                    height: "calc(100vh - " + menuPos.top + "px)",
-                  }
-            }
-            onMouseEnter={() => {
-              if (window.innerWidth >= 768) {
-                clearTimeout(closeTimeout.current);
-                setOpenIndex(openIndex);
-              }
-            }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            onMouseEnter={handleCancelLeave}
             onMouseLeave={handleLeave}
+            className="hidden md:block absolute top-full left-0 right-0 z-[100]"
           >
-            <div className="bg-white dark:bg-gray-800 rounded-b-lg shadow-xl border border-gray-100 dark:border-gray-700 w-full h-full overflow-hidden flex flex-col">
-              <div className="flex flex-col lg:flex-row flex-1 min-h-0">
-                <div className="relative w-full h-40 lg:w-[280px] lg:h-full shrink-0">
-                  <img
-                    src={groupImages[parents[openIndex].slug] || groupImages.multimedia}
-                    alt={parents[openIndex].name}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-white/80 lg:dark:to-gray-800/80" />
-                  <button
-                    onClick={() => setOpenIndex(null)}
-                    className="lg:hidden absolute top-3 left-3 p-2 bg-black/40 hover:bg-black/60 rounded-full text-white transition-colors z-10"
-                  >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                  <div className="absolute bottom-3 left-4 lg:bottom-4">
-                    <h3 className="text-lg font-bold text-white lg:text-gray-900 lg:dark:text-white drop-shadow">
-                      {parents[openIndex].name}
-                    </h3>
+            <div className="bg-white shadow-[0_20px_60px_-12px_rgba(0,0,0,0.12)] border-t border-gray-100">
+              <div className="max-w-350 mx-auto flex">
+                {/* ── Left Panel: Image ── */}
+                <div className="relative w-87.5 shrink-0 flex flex-col">
+                  <div className="border-r border-gray-200 mb-6">
+                    <div className="flex items-center justify-between px-6 py-4  bg-gray-50">
+                      <h3 className="text-base font-bold text-gray-900">{activeParent.name}</h3>
+                      <Link
+                        to={`/categories/${activeParent.slug}`}
+                        onClick={closeMenu}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-50 text-brand-700 hover:bg-brand-100 rounded-lg text-xs font-semibold transition-colors shrink-0"
+                      >
+                        Voir tout
+                        <FaArrowRight className="w-3 h-3" />
+                      </Link>
+                    </div>
+                    <div className="mx-6  mt-0 border border-gray-200 rounded-lg overflow-hidden">
+                      <img
+                        src={groupImages[activeParent.slug] || groupImages.multimedia}
+                        alt={activeParent.name}
+                        className="w-full object-cover transition-transform duration-500 hover:scale-[1.03] aspect-5/5"
+                      />
+                    </div>
                   </div>
                 </div>
 
-                  <div className="flex-1 p-5 overflow-y-auto">
-                  <div className="grid grid-cols-3 gap-4">
-                    {parents[openIndex].children?.map((sub) => {
-                      const SubIcon = faIconMap[sub.icon] || FaBoxOpen;
-                      const hasSubChildren = sub.children?.length > 0;
-                      return (
-                        <div key={sub.slug}>
-                          <Link
-                            to={`/categories/${sub.slug}`}
-                            onClick={() => setOpenIndex(null)}
-                            className="flex items-center gap-3 px-3 py-1.5 rounded-xl text-sm font-semibold text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                          >
-                            <SubIcon className="w-5 h-5 text-gray-400 dark:text-gray-500 shrink-0" />
-                            {sub.name}
-                          </Link>
-                          {hasSubChildren && (
-                            <div className="ml-8 mt-1 flex flex-wrap gap-1">
-                              {sub.children.map((subSub) => {
-                                const SubSubIcon = faIconMap[subSub.icon] || FaBoxOpen;
-                                return (
-                                  <Link
-                                    key={subSub.slug}
-                                    to={`/categories/${subSub.slug}`}
-                                    onClick={() => setOpenIndex(null)}
-                                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-brand-700 dark:hover:text-brand-400 transition-colors"
-                                  >
-                                    <SubSubIcon className="w-3.5 h-3.5 shrink-0" />
-                                    {subSub.name}
-                                  </Link>
-                                );
-                              })}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <Link
-                    to={`/categories/${parents[openIndex].slug}`}
-                    onClick={() => setOpenIndex(null)}
-                    className="mt-3 flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-brand-700 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-lg transition-colors"
-                  >
-                    <TbCategory className="w-3.5 h-3.5" />
-                    Voir tous les produits
-                  </Link>
+                {/* ── Right Panel: Subcategories Grid ── */}
+                <div className="flex-1 p-8 overflow-y-auto" style={{ maxHeight: "420px" }}>
+                  {activeParent.children?.length > 0 ? (
+                    <div className="grid grid-cols-4 gap-x-8 gap-y-6">
+                      {activeParent.children.map((sub) => {
+                        const hasSubChildren = sub.children && sub.children.length > 0;
+                        return (
+                          <div key={sub.slug}>
+                            <Link
+                              to={`/categories/${sub.slug}`}
+                              onClick={closeMenu}
+                              className="group inline-flex items-center gap-1.5 mb-3"
+                            >
+                              <h4 className="text-base font-semibold text-gray-900 group-hover:text-brand-700 transition-colors">
+                                {sub.name}
+                              </h4>
+                              <FaChevronRight className="w-3 h-3 text-gray-300 group-hover:text-brand-600 transition-colors opacity-0 group-hover:opacity-100" />
+                            </Link>
+                            {hasSubChildren && (
+                              <ul className="space-y-1">
+                                {sub.children.map((subSub) => (
+                                  <li key={subSub.slug}>
+                                    <Link
+                                      to={`/categories/${subSub.slug}`}
+                                      onClick={closeMenu}
+                                      className="block py-1 text-sm text-gray-500 hover:text-brand-700 transition-colors"
+                                    >
+                                      {subSub.name}
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-full">
+                      <p className="text-gray-400 text-sm">Aucune sous-catégorie</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

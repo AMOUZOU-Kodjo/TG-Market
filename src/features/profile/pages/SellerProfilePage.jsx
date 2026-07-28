@@ -56,9 +56,14 @@ export default function SellerProfilePage() {
               title={product.title}
               price={product.price}
               originalPrice={product.originalPrice}
-              location={product.location}
+              location={product.city || product.location}
+              neighborhood={product.neighborhood}
               condition={product.condition}
               hasActiveNegotiation={product.hasActiveNegotiation}
+              isUrgent={product.isUrgent}
+              isPromoted={product.isPromoted}
+              isFeatured={product.isFeatured}
+              negotiable={product.negotiable}
               onClick={() => navigate(`/annonce/${product.id}`)}
             />
           ))}

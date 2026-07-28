@@ -1,13 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Select from "@/shared/ui/Select";
 
 export default function CategoryPicker({ categories, value, onChange, error }) {
   const [path, setPath] = useState([]);
+  const isInternalChange = useRef(false);
 
   useEffect(() => {
-    if (!value || !categories.length) return;
+    if (isInternalChange.current) {
+      isInternalChange.current = false;
+      return;
+    }
+    if (!value || !categories.length) {
+      setPath([]);
+      return;
+    }
     const chain = [];
-    let current = categories.find((c) => c.id === value.id);
+    let current = findCategoryById(categories, value.id);
     while (current) {
       chain.unshift(current);
       current = current.parentId
@@ -37,6 +45,7 @@ export default function CategoryPicker({ categories, value, onChange, error }) {
   function handleSelect(levelIndex, catId) {
     if (!catId) {
       setPath((prev) => prev.slice(0, levelIndex));
+      isInternalChange.current = true;
       onChange(null);
       return;
     }
@@ -46,6 +55,7 @@ export default function CategoryPicker({ categories, value, onChange, error }) {
 
     const newPath = [...path.slice(0, levelIndex), selected];
     setPath(newPath);
+    isInternalChange.current = true;
     onChange(selected);
   }
 

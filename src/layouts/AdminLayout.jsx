@@ -37,7 +37,7 @@ export default function AdminLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
       <div className="flex">
         {/* Admin Sidebar */}
         <aside
@@ -129,7 +129,7 @@ export default function AdminLayout() {
         </aside>
 
         {/* Main Content */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 overflow-x-hidden">
           {/* Admin Header */}
           <header className="sticky top-0 z-30 h-16 bg-white/80 backdrop-blur-xl border-b border-gray-200 flex items-center justify-between px-4 sm:px-6">
             <div className="flex items-center gap-3">
@@ -175,21 +175,21 @@ export default function AdminLayout() {
 
       {/* Mobile Bottom Bar */}
       <nav className="fixed bottom-0 inset-x-0 z-50 lg:hidden bg-white border-t border-gray-200 safe-area-pb">
-        <div className="flex items-center justify-around h-16">
+        <div className="flex items-center overflow-x-auto h-16 hide-scrollbar">
           {navItems.map((item) => {
             const isActive = location.pathname === item.to || (item.to === "/admin" && location.pathname === "/admin");
             return (
               <Link
                 key={item.to}
                 to={item.to}
-                className={`flex flex-col items-center justify-center gap-0.5 w-full h-full transition-colors ${
+                className={`flex flex-col items-center justify-center gap-0.5 shrink-0 min-w-[60px] h-full transition-colors ${
                   isActive
                     ? "text-brand-600"
                     : "text-gray-400"
                 }`}
               >
-                <item.icon className="w-6 h-6" strokeWidth={isActive ? 2.2 : 1.5} />
-                <span className={`text-[10px] leading-tight ${isActive ? "font-semibold" : "font-medium"}`}>
+                <item.icon className="w-5 h-5" strokeWidth={isActive ? 2.2 : 1.5} />
+                <span className={`text-[10px] leading-tight whitespace-nowrap ${isActive ? "font-semibold" : "font-medium"}`}>
                   {item.label}
                 </span>
               </Link>

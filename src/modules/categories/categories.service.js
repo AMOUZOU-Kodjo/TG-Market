@@ -207,6 +207,7 @@ export async function getCategoryProducts(slug, { page, perPage, condition, minP
     favoritesCount: p.favorites_count,
     isUrgent: p.is_urgent,
     isPromoted: p.is_promoted,
+    hasActiveNegotiation: p.has_active_negotiation,
     createdAt: p.created_at,
     image: p.images[0]?.url || null,
     seller: {

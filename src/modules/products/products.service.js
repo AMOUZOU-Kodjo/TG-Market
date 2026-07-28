@@ -36,6 +36,9 @@ function formatProduct(product, userId = null) {
     views: product.views,
     favorites: product.favorites_count,
     hasActiveNegotiation: product.has_active_negotiation,
+    isUrgent: product.is_urgent,
+    isPromoted: product.is_promoted,
+    isFeatured: product.is_featured,
     specifications: product.specifications
       ? product.specifications.map((s) => ({ label: s.label, value: s.value }))
       : [],

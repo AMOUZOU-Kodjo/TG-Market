@@ -108,6 +108,11 @@ export async function getMyFavorites(userId, { page, perPage }) {
         price: f.product.price,
         condition: f.product.condition,
         city: f.product.city,
+        negotiable: f.product.negotiable,
+        hasActiveNegotiation: f.product.has_active_negotiation,
+        isUrgent: f.product.is_urgent,
+        isPromoted: f.product.is_promoted,
+        isFeatured: f.product.is_featured,
         favoritesCount: f.product.favorites_count,
         images: f.product.images
           .sort((a, b) => a.sort_order - b.sort_order)

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Package, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Package, Plus, Trash2, AlertTriangle } from "lucide-react";
 import { useCreateBundle } from "@/features/bundles/hooks/useBundles";
 import { useMyProducts } from "@/features/products/hooks/useProducts";
 import { useAuth } from "@/shared/contexts/AuthContext";
@@ -19,7 +19,7 @@ const fadeUp = {
 export default function CreateBundlePage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { data: myProducts = [], isLoading } = useMyProducts({ status: "active", limit: 50 });
+  const { data: myProducts = [], isLoading, isError } = useMyProducts({ status: "active", limit: 50 });
   const createBundle = useCreateBundle();
 
   const [title, setTitle] = useState("");
@@ -28,6 +28,7 @@ export default function CreateBundlePage() {
   const [selectedIds, setSelectedIds] = useState([]);
 
   const products = myProducts?.data || myProducts || [];
+
   const selectedProducts = products.filter((p) => selectedIds.includes(p.id));
   const totalPrice = selectedProducts.reduce((sum, p) => sum + (p.price || 0), 0);
   const discountPct = totalPrice > 0 && bundlePrice
@@ -79,6 +80,20 @@ export default function CreateBundlePage() {
   if (!user) {
     navigate("/connexion");
     return null;
+  }
+
+  if (isError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950">
+        <div className="text-center">
+          <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-yellow-500" />
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Erreur de chargement</h1>
+          <p className="mt-2 text-gray-500 dark:text-gray-400">
+            Impossible de charger vos annonces. Réessayez plus tard.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -119,6 +119,43 @@ app.get('/api/settings/public', async (_req, res) => {
   }
 });
 
+// ─── Contact form ────────────────────────────────────
+import { sendEmail } from './utils/email.js';
+
+app.post('/api/contact', async (req, res) => {
+  try {
+    const { name, email, subject, message } = req.body;
+    if (!name || !email || !message) {
+      return res.status(400).json({ error: 'Nom, email et message sont requis' });
+    }
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #01796F;">Nouveau message de contact</h2>
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+          <tr><td style="padding: 8px; font-weight: bold; color: #333;">Nom</td><td style="padding: 8px;">${name}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold; color: #333;">Email</td><td style="padding: 8px;">${email}</td></tr>
+          ${subject ? `<tr><td style="padding: 8px; font-weight: bold; color: #333;">Sujet</td><td style="padding: 8px;">${subject}</td></tr>` : ''}
+        </table>
+        <div style="background: #f4f4f4; padding: 20px; border-radius: 8px;">
+          <p style="font-weight: bold; color: #333;">Message :</p>
+          <p style="color: #555; line-height: 1.6;">${message.replace(/\n/g, '<br>')}</p>
+        </div>
+      </div>
+    `;
+
+    await sendEmail({
+      to: 'phipsipy@gmail.com',
+      subject: `[Contact] ${subject || 'Nouveau message'} de ${name}`,
+      html,
+    });
+
+    res.json({ success: true, message: 'Message envoyé avec succès' });
+  } catch {
+    res.status(500).json({ error: "Erreur lors de l'envoi du message" });
+  }
+});
+
 // ─── API Routes ──────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);

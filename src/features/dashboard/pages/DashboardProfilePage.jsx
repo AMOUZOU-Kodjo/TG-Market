@@ -497,31 +497,55 @@ export default function DashboardProfilePage() {
           </div>
           <Button variant="outline" size="sm" icon={Edit3} onClick={() => setEditModalOpen(true)}>Modifier</Button>
         </div>
-        <div className="flex flex-wrap gap-3 mt-5 pt-5 border-t border-gray-100 dark:border-gray-700">
-          <div className="flex items-center gap-2 text-sm">
-            <Package className="h-4 w-4 text-gray-400" />
-            <span className="font-semibold text-gray-900 dark:text-white">{myProducts.length}</span>
-            <span className="text-gray-500">Annonces</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <TrendingUp className="h-4 w-4 text-gray-400" />
-            <span className="font-semibold text-gray-900 dark:text-white">{formatCFA(walletData?.totalEarned ?? 0)}</span>
-            <span className="text-gray-500">Revenus (FCFA)</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <Heart className="h-4 w-4 text-gray-400" />
-            <span className="font-semibold text-gray-900 dark:text-white">{favoriteProducts.length}</span>
-            <span className="text-gray-500">Favoris</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <Star className="h-4 w-4 text-gray-400" />
-            <span className="font-semibold text-gray-900 dark:text-white">{myReviews.length}</span>
-            <span className="text-gray-500">Avis</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <MessageCircle className="h-4 w-4 text-gray-400" />
-            <span className="font-semibold text-gray-900 dark:text-white">{(conversationsData?.data || conversationsData || []).reduce((s, c) => s + (c.unreadCount || 0), 0)}</span>
-            <span className="text-gray-500">Messages non lus</span>
+        <div className="mt-5 pt-5 border-t border-gray-100 dark:border-gray-700">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div className="rounded-xl bg-gray-50 dark:bg-gray-900/50 p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Annonces</span>
+                <div className="w-8 h-8 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
+                  <Package className="h-4 w-4 text-brand-600" />
+                </div>
+              </div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{myProducts.length}</p>
+            </div>
+            <div className="rounded-xl bg-gray-50 dark:bg-gray-900/50 p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Revenus</span>
+                <div className="w-8 h-8 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
+                  <TrendingUp className="h-4 w-4 text-green-600" />
+                </div>
+              </div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCFA(walletData?.totalEarned ?? 0)}</p>
+              <p className="text-xs text-gray-400 mt-0.5">FCFA</p>
+            </div>
+            <div className="rounded-xl bg-gray-50 dark:bg-gray-900/50 p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Favoris</span>
+                <div className="w-8 h-8 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
+                  <Heart className="h-4 w-4 text-red-500" />
+                </div>
+              </div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{favoriteProducts.length}</p>
+            </div>
+            <div className="rounded-xl bg-gray-50 dark:bg-gray-900/50 p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Avis</span>
+                <div className="w-8 h-8 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
+                  <Star className="h-4 w-4 text-amber-500" />
+                </div>
+              </div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{myReviews.length}</p>
+            </div>
+            <div className="rounded-xl bg-gray-50 dark:bg-gray-900/50 p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Messages</span>
+                <div className="w-8 h-8 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
+                  <MessageCircle className="h-4 w-4 text-sky-600" />
+                </div>
+              </div>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{(conversationsData?.data || conversationsData || []).reduce((s, c) => s + (c.unreadCount || 0), 0)}</p>
+              <p className="text-xs text-gray-400 mt-0.5">non lus</p>
+            </div>
           </div>
         </div>
       </div>

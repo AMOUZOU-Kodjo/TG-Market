@@ -61,10 +61,10 @@ app.get('/api/stats/public', async (_req, res) => {
     const [totalUsers, totalListings, totalSales, verifiedUsers, cities] = await Promise.all([
       prisma.user.count({ where: { is_active: true } }),
       prisma.product.count({ where: { status: 'active' } }),
-      prisma.escrowTransaction.count({ where: { status: 'released' } }),
+      prisma.escrowTransaction.count({ where: { status: 'completed' } }),
       prisma.user.count({ where: { email_verified_at: { not: null } } }),
       prisma.product.findMany({
-        where: { city: { not: null } },
+        where: { city: { not: '' } },
         select: { city: true },
         distinct: ['city'],
       }).then(rows => rows.length),

@@ -67,6 +67,7 @@ const conversationParticipantInclude = {
 const conversationDetailInclude = {
   participants: { include: conversationParticipantInclude },
   product: {
+    where: { status: { not: 'deleted' } },
     select: {
       id: true,
       title: true,
@@ -90,6 +91,7 @@ export async function listConversations(userId, { page, perPage }) {
           include: {
             participants: { include: conversationParticipantInclude },
             product: {
+              where: { status: { not: 'deleted' } },
               select: {
                 id: true,
                 title: true,

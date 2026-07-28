@@ -95,17 +95,12 @@ export async function createBundleProposal(req, res, next) {
 
     const io = req.app.get('io');
     if (io) {
-      const { getUserSockets } = await import('../../sockets/socketHandler.js');
-      getUserSockets(proposal.sellerId).forEach((sid) => {
-        io.to(sid).emit('notification', {
-          id: Date.now(),
-          type: 'bundle_proposal',
-          title: `Nouvelle proposition sur votre lot`,
-          description: `${req.user.firstName ?? ''} ${req.user.lastName ?? ''} a proposé ${proposedPrice?.toLocaleString('fr-FR')} FCFA`,
-          bundleId: proposal.bundleId,
-          read: false,
-          createdAt: new Date().toISOString(),
-        });
+      const { notifyUser } = await import('../notifications/notifications.service.js');
+      await notifyUser(io, proposal.sellerId, {
+        type: 'bundle_proposal',
+        title: 'Nouvelle proposition sur votre lot',
+        description: `${req.user.firstName ?? ''} ${req.user.lastName ?? ''} a proposé ${proposedPrice?.toLocaleString('fr-FR')} FCFA`,
+        metadata: { bundleId: proposal.bundleId },
       });
     }
 
@@ -152,17 +147,12 @@ export async function acceptBundleProposal(req, res, next) {
 
     const io = req.app.get('io');
     if (io) {
-      const { getUserSockets } = await import('../../sockets/socketHandler.js');
-      getUserSockets(proposal.buyerId).forEach((sid) => {
-        io.to(sid).emit('notification', {
-          id: Date.now(),
-          type: 'bundle_proposal_accepted',
-          title: 'Proposition acceptée',
-          description: `Votre proposition sur "${proposal.bundle?.title ?? 'le lot'}" a été acceptée`,
-          bundleId: proposal.bundleId,
-          read: false,
-          createdAt: new Date().toISOString(),
-        });
+      const { notifyUser } = await import('../notifications/notifications.service.js');
+      await notifyUser(io, proposal.buyerId, {
+        type: 'bundle_proposal_accepted',
+        title: 'Proposition acceptée',
+        description: `Votre proposition sur "${proposal.bundle?.title ?? 'le lot'}" a été acceptée`,
+        metadata: { bundleId: proposal.bundleId },
       });
     }
 
@@ -179,17 +169,12 @@ export async function rejectBundleProposal(req, res, next) {
 
     const io = req.app.get('io');
     if (io) {
-      const { getUserSockets } = await import('../../sockets/socketHandler.js');
-      getUserSockets(proposal.buyerId).forEach((sid) => {
-        io.to(sid).emit('notification', {
-          id: Date.now(),
-          type: 'bundle_proposal_rejected',
-          title: 'Proposition refusée',
-          description: `Votre proposition sur "${proposal.bundle?.title ?? 'le lot'}" a été refusée`,
-          bundleId: proposal.bundleId,
-          read: false,
-          createdAt: new Date().toISOString(),
-        });
+      const { notifyUser } = await import('../notifications/notifications.service.js');
+      await notifyUser(io, proposal.buyerId, {
+        type: 'bundle_proposal_rejected',
+        title: 'Proposition refusée',
+        description: `Votre proposition sur "${proposal.bundle?.title ?? 'le lot'}" a été refusée`,
+        metadata: { bundleId: proposal.bundleId },
       });
     }
 
@@ -203,6 +188,19 @@ export async function cancelBundleProposal(req, res, next) {
   try {
     const proposalId = Number(req.params.proposalId);
     const proposal = await bundlesService.cancelBundleProposal(proposalId, req.user.id);
+
+    const io = req.app.get('io');
+    if (io) {
+      const { notifyUser } = await import('../notifications/notifications.service.js');
+      const recipientId = proposal.sellerId === req.user.id ? proposal.buyerId : proposal.sellerId;
+      await notifyUser(io, recipientId, {
+        type: 'bundle_proposal_cancelled',
+        title: 'Proposition annulée',
+        description: `La proposition sur "${proposal.bundle?.title ?? 'le lot'}" a été annulée`,
+        metadata: { bundleId: proposal.bundleId },
+      });
+    }
+
     res.json(proposal);
   } catch (err) {
     next(err);

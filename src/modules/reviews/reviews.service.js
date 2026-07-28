@@ -3,6 +3,7 @@ import prisma from '../../config/database.js';
 function formatReview(review) {
   return {
     id: review.id,
+    sellerId: review.seller_id,
     reviewer: {
       id: review.reviewer.id,
       name: `${review.reviewer.first_name} ${review.reviewer.last_name}`,

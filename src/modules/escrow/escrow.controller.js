@@ -47,6 +47,19 @@ export async function confirmPayment(req, res, next) {
   try {
     const id = Number(req.params.id);
     const escrow = await escrowService.confirmPayment(id, req.user.id);
+
+    const io = req.app.get('io');
+    if (io) {
+      const { notifyUser } = await import('../notifications/notifications.service.js');
+      await notifyUser(io, escrow.sellerId, {
+        type: 'payment_confirmed',
+        title: 'Paiement confirmé',
+        description: `Le paiement pour "${escrow.productTitle}" a été confirmé`,
+        productId: escrow.productId,
+        metadata: { escrowId: escrow.id },
+      });
+    }
+
     res.json(escrow);
   } catch (err) {
     next(err);
@@ -67,6 +80,19 @@ export async function confirmDelivery(req, res, next) {
   try {
     const id = Number(req.params.id);
     const escrow = await escrowService.confirmDelivery(id, req.user.id);
+
+    const io = req.app.get('io');
+    if (io) {
+      const { notifyUser } = await import('../notifications/notifications.service.js');
+      await notifyUser(io, escrow.sellerId, {
+        type: 'delivery_confirmed',
+        title: 'Livraison confirmée',
+        description: `La livraison pour "${escrow.productTitle}" a été confirmée`,
+        productId: escrow.productId,
+        metadata: { escrowId: escrow.id },
+      });
+    }
+
     res.json(escrow);
   } catch (err) {
     next(err);
@@ -78,6 +104,20 @@ export async function disputeEscrow(req, res, next) {
     const id = Number(req.params.id);
     const { reason } = req.validated.body;
     const escrow = await escrowService.disputeEscrow(id, req.user.id, reason);
+
+    const io = req.app.get('io');
+    if (io) {
+      const { notifyUser } = await import('../notifications/notifications.service.js');
+      const recipientId = escrow.buyerId === req.user.id ? escrow.sellerId : escrow.buyerId;
+      await notifyUser(io, recipientId, {
+        type: 'escrow_disputed',
+        title: 'Litige ouvert',
+        description: `Un litige a été ouvert pour "${escrow.productTitle}"`,
+        productId: escrow.productId,
+        metadata: { escrowId: escrow.id, reason },
+      });
+    }
+
     res.json(escrow);
   } catch (err) {
     next(err);
@@ -88,6 +128,19 @@ export async function cancelEscrow(req, res, next) {
   try {
     const id = Number(req.params.id);
     const escrow = await escrowService.cancelEscrow(id, req.user.id);
+
+    const io = req.app.get('io');
+    if (io) {
+      const { notifyUser } = await import('../notifications/notifications.service.js');
+      await notifyUser(io, escrow.sellerId, {
+        type: 'escrow_cancelled',
+        title: 'Transaction annulée',
+        description: `La transaction pour "${escrow.productTitle}" a été annulée`,
+        productId: escrow.productId,
+        metadata: { escrowId: escrow.id },
+      });
+    }
+
     res.json(escrow);
   } catch (err) {
     next(err);

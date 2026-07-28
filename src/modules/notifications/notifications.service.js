@@ -100,3 +100,14 @@ export async function createNotification({ userId, type, title, description, pro
 
   return formatNotification(notification);
 }
+
+export async function notifyUser(io, userId, { type, title, description, productId = null, metadata = null }) {
+  const notification = await createNotification({ userId, type, title, description, productId, metadata });
+
+  const { getUserSockets } = await import('../../sockets/socketHandler.js');
+  getUserSockets(userId).forEach((sid) => {
+    io.to(sid).emit('notification', notification);
+  });
+
+  return notification;
+}

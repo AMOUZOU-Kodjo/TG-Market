@@ -35,6 +35,19 @@ export async function getMyReviews(req, res, next) {
 export async function createReview(req, res, next) {
   try {
     const review = await reviewsService.createReview(req.user.id, req.validated.body);
+
+    const io = req.app.get('io');
+    if (io) {
+      const { notifyUser } = await import('../notifications/notifications.service.js');
+      await notifyUser(io, review.sellerId, {
+        type: 'new_review',
+        title: `Nouvel avis de ${review.reviewer.name}`,
+        description: `${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)} — ${review.comment?.substring(0, 100) || ''}`,
+        productId: null,
+        metadata: { reviewId: review.id, rating: review.rating },
+      });
+    }
+
     res.status(201).json(review);
   } catch (err) {
     next(err);

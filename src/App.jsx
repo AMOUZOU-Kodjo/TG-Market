@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/shared/contexts/ThemeContext";
 import { AuthProvider } from "@/shared/contexts/AuthContext";
 import { SocketProvider } from "@/shared/contexts/SocketContext";
 import { NotificationProvider } from "@/shared/contexts/NotificationContext";
+import { SiteSettingsProvider } from "@/shared/contexts/SiteSettingsContext";
 import MainLayout from "@/layouts/MainLayout";
 import AuthLayout from "@/layouts/AuthLayout";
 import DashboardLayout from "@/layouts/DashboardLayout";
@@ -85,7 +86,8 @@ function App() {
         <AuthProvider>
           <SocketProvider>
             <NotificationProvider>
-              <BrowserRouter>
+              <SiteSettingsProvider>
+                <BrowserRouter>
                 <AuthLogoutHandler />
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
@@ -237,6 +239,7 @@ function App() {
                   </Routes>
                 </Suspense>
               </BrowserRouter>
+              </SiteSettingsProvider>
 
               <Toaster
                 position="top-right"

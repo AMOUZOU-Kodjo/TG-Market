@@ -18,11 +18,13 @@ import {
   Activity,
 } from "lucide-react";
 import { useAuth } from "@/shared/contexts/AuthContext";
+import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const location = useLocation();
   const { user } = useAuth();
+  const settings = useSiteSettings();
 
   const navItems = [
     { to: "/admin", label: "Dashboard", icon: LayoutDashboard },

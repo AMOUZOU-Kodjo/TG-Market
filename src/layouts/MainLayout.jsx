@@ -33,6 +33,7 @@ import { AppleStoreBadge, GooglePlayBadge } from "@/shared/ui/StoreBadges";
 import CategoryBar from "@/features/home/components/CategoryBar";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useNotificationContext } from "@/shared/hooks/useNotificationContext";
+import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 
 export default function MainLayout() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -47,6 +48,11 @@ export default function MainLayout() {
 
   const { user, logout } = useAuth();
   const { unreadCount } = useNotificationContext();
+  const settings = useSiteSettings();
+
+  useEffect(() => {
+    document.title = `${settings.siteName} - Achat & Vente au Togo`;
+  }, [settings.siteName]);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -518,7 +524,7 @@ export default function MainLayout() {
 
             {/* Copyright */}
             <div className="mt-10 pt-4 pb-2 border-t text-center border-footer-border  items-center justify-between gap-4 text-sm text-footer-text">
-              <p>&copy; 2025 TG-Market. Tous droits réservés.</p>
+              <p>&copy; 2025 {settings.siteName}. Tous droits réservés.</p>
             </div>
           </div>
         </footer>

@@ -1,4 +1,4 @@
-import { authenticator } from 'otplib';
+import { generateSecret as otplibGenerateSecret, verifySync, generateURI } from 'otplib';
 import qrcode from 'qrcode';
 import prisma from '../../config/database.js';
 
@@ -14,8 +14,8 @@ export async function generateSecret(userId) {
     throw error;
   }
 
-  const secret = authenticator.generateSecret();
-  const otpauth = authenticator.keyuri(user.email, 'TG-Market', secret);
+  const secret = otplibGenerateSecret();
+  const otpauth = generateURI({ issuer: 'TG-Market', label: user.email, secret });
   const qrCode = await qrcode.toDataURL(otpauth);
 
   await prisma.user.update({
@@ -44,8 +44,8 @@ export async function enableTwoFactor(userId, token) {
     throw error;
   }
 
-  const isValid = authenticator.verify({ token, secret: user.two_factor_secret });
-  if (!isValid) {
+  const isValid = verifySync({ token, secret: user.two_factor_secret });
+  if (!isValid.valid) {
     const error = new Error('Code invalide');
     error.status = 400;
     throw error;
@@ -110,8 +110,8 @@ export async function verifyTwoFactor(tempToken, token, req) {
     throw error;
   }
 
-  const isValid = authenticator.verify({ token, secret: user.two_factor_secret });
-  if (!isValid) {
+  const isValid = verifySync({ token, secret: user.two_factor_secret });
+  if (!isValid.valid) {
     const error = new Error('Code 2FA invalide');
     error.status = 401;
     throw error;

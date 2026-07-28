@@ -141,8 +141,10 @@ export async function getStats() {
   };
 }
 
-export async function getUsers({ page, perPage, skip }) {
+export async function getUsers({ page, perPage, skip, role, isActive }) {
   const where = {};
+  if (role) where.role = role;
+  if (isActive !== undefined) where.is_active = isActive === 'true';
 
   const [users, total] = await Promise.all([
     prisma.user.findMany({
@@ -234,6 +236,45 @@ export async function updateUserRole(userId, role) {
   });
 
   return { message: `Rôle mis à jour vers "${role}" avec succès` };
+}
+
+export async function deleteUser(userId) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, role: true },
+  });
+
+  if (!user) {
+    const error = new Error('Utilisateur introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  if (user.role === 'admin') {
+    const error = new Error('Impossible de supprimer un administrateur');
+    error.status = 403;
+    throw error;
+  }
+
+  await prisma.user.delete({ where: { id: userId } });
+  return { message: 'Utilisateur supprimé avec succès' };
+}
+
+export async function deleteProduct(productId) {
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+    select: { id: true },
+  });
+
+  if (!product) {
+    const error = new Error('Produit introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  await prisma.escrowTransaction.deleteMany({ where: { product_id: productId } });
+  await prisma.product.delete({ where: { id: productId } });
+  return { message: 'Produit supprimé avec succès' };
 }
 
 export async function getProducts({ page, perPage, skip }) {

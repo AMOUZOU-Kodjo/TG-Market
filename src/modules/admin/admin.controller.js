@@ -16,7 +16,8 @@ export async function getStats(req, res, next) {
 export async function getUsers(req, res, next) {
   try {
     const { page, perPage, skip } = req.pagination;
-    const { data, total } = await adminService.getUsers({ page, perPage, skip });
+    const { role, isActive } = req.query;
+    const { data, total } = await adminService.getUsers({ page, perPage, skip, role, isActive });
     res.json({
       data,
       meta: buildPaginationMeta(total, page, perPage),
@@ -44,6 +45,24 @@ export async function updateUserRole(req, res, next) {
       Number(req.params.id),
       req.body.role,
     );
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function deleteUser(req, res, next) {
+  try {
+    const result = await adminService.deleteUser(Number(req.params.id));
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function deleteProduct(req, res, next) {
+  try {
+    const result = await adminService.deleteProduct(Number(req.params.id));
     res.json(result);
   } catch (err) {
     next(err);

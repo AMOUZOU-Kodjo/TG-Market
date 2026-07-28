@@ -68,10 +68,30 @@ function ProductsTab({ products }) {
     }
   };
 
+  if (products.length === 0) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white">Mes annonces (0)</h3>
+          <button
+            onClick={() => navigate("/vendre")}
+            className="flex items-center gap-2 rounded-xl bg-brand-800 px-4 py-2 text-sm font-medium text-white shadow-sm shadow-brand-800/25 hover:bg-brand-900 transition-colors"
+          >
+            <Package className="h-4 w-4" />
+            Nouvelle annonce
+          </button>
+        </div>
+        <EmptyState icon={Package} title="Aucune annonce" description="Publiez votre première annonce pour commencer à vendre." />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-base font-semibold text-gray-900 dark:text-white">Mes annonces ({products.length})</h3>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+          Mes annonces ({products.length})
+        </h3>
         <button
           onClick={() => navigate("/vendre")}
           className="flex items-center gap-2 rounded-xl bg-brand-800 px-4 py-2 text-sm font-medium text-white shadow-sm shadow-brand-800/25 hover:bg-brand-900 transition-colors"
@@ -80,50 +100,56 @@ function ProductsTab({ products }) {
           Nouvelle annonce
         </button>
       </div>
-      {products.length === 0 ? (
-        <EmptyState icon={Package} title="Aucune annonce" description="Publiez votre première annonce pour commencer à vendre." />
-      ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {products.map((product) => (
-            <div key={product.id}>
-              <ProductCard
-                productId={product.id}
-                image={product.images?.[0]}
-                title={product.title}
-                price={product.price}
-                originalPrice={product.originalPrice}
-                location={product.city || product.location}
-                neighborhood={product.neighborhood}
-                condition={product.condition}
-                hasActiveNegotiation={product.hasActiveNegotiation}
-                isUrgent={product.isUrgent}
-                isPromoted={product.isPromoted}
-                isFeatured={product.isFeatured}
-                negotiable={product.negotiable}
-                onClick={() => navigate(`/annonce/${product.id}`)}
-              />
-              <div className="flex items-center justify-between gap-1 border border-t-0 border-gray-100 dark:border-gray-800 rounded-b-2xl bg-white dark:bg-gray-800 px-2 py-2">
-                <span className="flex items-center gap-1 text-xs text-gray-400" title="Vues">
-                  <Eye className="h-3 w-3" />
-                  {product.views ?? 0}
-                </span>
-                <div className="flex items-center gap-1">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {products.map((product) => (
+          <div key={product.id}>
+            <ProductCard
+              productId={product.id}
+              image={product.images?.[0]}
+              title={product.title}
+              price={product.price}
+              originalPrice={product.originalPrice}
+              location={product.city || product.location}
+              neighborhood={product.neighborhood}
+              condition={product.condition}
+              hasActiveNegotiation={product.hasActiveNegotiation}
+              isUrgent={product.isUrgent}
+              isPromoted={product.isPromoted}
+              isFeatured={product.isFeatured}
+              negotiable={product.negotiable}
+              onClick={() => navigate(`/annonce/${product.id}`)}
+            />
+            <div className="flex items-center justify-between gap-1 border border-t-0 border-gray-100 dark:border-gray-800 rounded-b-2xl bg-white dark:bg-gray-800 px-2 py-2">
+              <span className="flex items-center gap-1 text-xs text-gray-400" title="Vues">
+                <Eye className="h-3 w-3" />
+                {product.views || 0}
+              </span>
+              <div className="flex items-center gap-1">
                 <button
-                  onClick={(e) => { e.stopPropagation(); navigate(`/annonce/${product.id}`); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/annonce/${product.id}`);
+                  }}
                   className="rounded-lg bg-brand-50 p-1.5 text-brand-700 transition-colors hover:bg-brand-100 dark:bg-brand-900/20 dark:text-brand-400 dark:hover:bg-brand-900/30"
                   title="Voir l'annonce"
                 >
                   <Eye className="h-3.5 w-3.5" />
                 </button>
                 <button
-                  onClick={(e) => { e.stopPropagation(); navigate(`/modifier/${product.id}`); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/modifier/${product.id}`);
+                  }}
                   className="rounded-lg bg-blue-50 p-1.5 text-blue-700 transition-colors hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/30"
                   title="Modifier l'annonce"
                 >
                   <Edit3 className="h-3.5 w-3.5" />
                 </button>
                 <button
-                  onClick={(e) => { e.stopPropagation(); handleDelete(product); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(product);
+                  }}
                   className="rounded-lg bg-red-50 p-1.5 text-red-700 transition-colors hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
                   title="Supprimer l'annonce"
                 >
@@ -131,9 +157,9 @@ function ProductsTab({ products }) {
                 </button>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

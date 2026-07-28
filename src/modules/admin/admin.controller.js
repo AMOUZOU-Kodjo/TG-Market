@@ -259,13 +259,17 @@ export async function getPublicSettings(_req, res, next) {
 export async function getContactMessages(req, res, next) {
   try {
     const { page, perPage, skip } = req.pagination;
+    const where = {};
+    if (req.query.read === 'false') where.read = false;
+    if (req.query.read === 'true') where.read = true;
     const [data, total] = await Promise.all([
       prisma.contactMessage.findMany({
+        where,
         skip,
         take: perPage,
         orderBy: { created_at: 'desc' },
       }),
-      prisma.contactMessage.count(),
+      prisma.contactMessage.count({ where }),
     ]);
     res.json({ data, meta: buildPaginationMeta(total, page, perPage) });
   } catch (err) {

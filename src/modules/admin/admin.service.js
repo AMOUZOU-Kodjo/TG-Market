@@ -316,6 +316,15 @@ export async function updateCategory(id, data) {
     throw error;
   }
 
+  if (data.name && data.name !== category.name) {
+    const existingName = await prisma.category.findUnique({ where: { name: data.name } });
+    if (existingName) {
+      const error = new Error('Ce nom existe déjà');
+      error.status = 409;
+      throw error;
+    }
+  }
+
   if (data.slug && data.slug !== category.slug) {
     const existing = await prisma.category.findUnique({ where: { slug: data.slug } });
     if (existing) {

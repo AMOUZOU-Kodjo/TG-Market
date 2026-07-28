@@ -17,8 +17,7 @@ import Tabs from "@/shared/ui/Tabs";
 import ProductCard from "@/shared/ui/ProductCard";
 import ReviewList from "@/features/profile/components/ReviewList";
 import EmptyState from "@/shared/ui/EmptyState";
-import DashboardStats from "@/features/dashboard/components/DashboardStats";
-import ProductTable from "@/features/dashboard/components/ProductTable";
+
 import toast from "react-hot-toast";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
@@ -41,18 +40,6 @@ const escrowStatusConfig = {
   disputed: { label: "Litige", variant: "danger" },
   cancelled: { label: "Annulée", variant: "danger" },
 };
-
-function OverviewTab() {
-  return (
-    <div className="space-y-6">
-      <DashboardStats />
-      <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-800">
-        <h3 className="mb-4 text-base font-semibold text-gray-900 dark:text-white">Annonces récentes</h3>
-        <ProductTable />
-      </div>
-    </div>
-  );
-}
 
 function ProductsTab({ products }) {
   const navigate = useNavigate();
@@ -404,7 +391,6 @@ export default function DashboardProfilePage() {
   const roleLabel = user?.role === "admin" ? "Admin" : myProducts.length > 0 ? "Vendeur" : "Acheteur";
 
   const tabs = [
-    { id: "overview", label: "Vue d'ensemble", icon: BarChart3, content: <OverviewTab /> },
     { id: "products", label: "Mes annonces", icon: Package, count: myProducts.length, content: <ProductsTab products={myProducts} /> },
     { id: "orders", label: "Commandes", icon: ShoppingCart, content: <OrdersTab /> },
     { id: "proposals", label: "Propositions", icon: Handshake, content: <BundleProposalsTab /> },

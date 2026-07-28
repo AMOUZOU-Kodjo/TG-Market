@@ -63,10 +63,10 @@ export default function ProductReviews({ productId, sellerId }) {
         </h2>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <div className="grid gap-6 lg:grid-cols-[620px_1fr]">
+        <div className="rounded-2xl  border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
           <div className="mb-4 text-center">
-            <p className="text-5xl font-bold text-gray-900 dark:text-white">
+            <p className="text-3xl font-bold text-gray-900 dark:text-white">
               {avgRating.toFixed(1)}
             </p>
             <div className="mt-2 flex items-center justify-center gap-1">

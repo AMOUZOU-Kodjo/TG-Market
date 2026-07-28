@@ -10,6 +10,8 @@ export default function AdminSettingsPage() {
   const { data: settings, isLoading } = useQuery({
     queryKey: ["adminSettings"],
     queryFn: () => api.get("/admin/settings").then((r) => r.data),
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 
   const [form, setForm] = useState(null);
@@ -31,7 +33,20 @@ export default function AdminSettingsPage() {
     onSuccess: (updated) => {
       toast.success("Paramètres enregistrés");
       qc.setQueryData(["adminSettings"], updated);
-      qc.invalidateQueries({ queryKey: ["siteSettings"] });
+      setForm({
+        site_name: updated.site_name ?? "",
+        site_version: updated.site_version ?? "",
+        site_description: updated.site_description ?? "",
+        support_email: updated.support_email ?? "",
+        maintenance_mode: updated.maintenance_mode === "true",
+      });
+      qc.setQueryData(["siteSettings"], {
+        siteName: updated.site_name,
+        siteVersion: updated.site_version,
+        siteDescription: updated.site_description,
+        maintenanceMode: updated.maintenance_mode === "true",
+        supportEmail: updated.support_email,
+      });
     },
     onError: (e) => toast.error(e.response?.data?.error ?? "Erreur lors de l'enregistrement"),
   });

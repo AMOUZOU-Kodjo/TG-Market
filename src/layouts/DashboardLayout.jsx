@@ -24,20 +24,21 @@ import {
 } from "lucide-react";
 import Logo from "@/shared/ui/Logo";
 import { useAuth } from "@/shared/contexts/AuthContext";
+import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import { useNotificationContext } from "@/shared/hooks/useNotificationContext";
 import { useMyProducts } from "@/features/products/hooks/useProducts";
 import { useEscrowList, useWalletBalance } from "@/features/wallet/hooks/useWallet";
 import { useFavorites } from "@/features/favorites/hooks/useFavorites";
 import { formatCFA } from "@/shared/utils/format";
 
-function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, totalEarned, navigate, logout }) {
+function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, totalEarned, navigate, logout, siteName }) {
   return (
     <>
       {/* Sidebar Header */}
       <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100 dark:border-gray-700">
         <Link to="/" className="flex items-center gap-2">
           <Logo size="sm" />
-          {sidebarOpen && <span className="text-lg font-bold text-brand-900">Market</span>}
+          {sidebarOpen && <span className="text-lg font-bold text-brand-900">{siteName ?? "Market"}</span>}
         </Link>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -64,7 +65,7 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
                 <Wallet size={18} className="text-amber-300" />
               </div>
-              <span className="text-sm font-semibold text-white/80">Portefeuille TGM</span>
+              <span className="text-sm font-semibold text-white/80">Portefeuille {siteName?.split("-")[0] ?? "TGM"}</span>
             </div>
             <h2 className="text-2xl font-bold tracking-tight">{formatCFA(totalEarned)}</h2>
           </div>
@@ -185,6 +186,7 @@ export default function DashboardLayout() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { unreadCount } = useNotificationContext();
+  const settings = useSiteSettings();
 
   const { data: myProductsData } = useMyProducts();
   const { data: escrowData } = useEscrowList();
@@ -237,6 +239,7 @@ export default function DashboardLayout() {
             totalEarned={totalEarned}
             navigate={navigate}
             logout={logout}
+            siteName={settings.siteName}
           />
         </aside>
 
@@ -264,6 +267,7 @@ export default function DashboardLayout() {
                 totalEarned={totalEarned}
                 navigate={navigate}
                 logout={logout}
+                siteName={settings.siteName}
               />
             </div>
           </div>

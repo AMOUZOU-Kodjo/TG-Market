@@ -1,3 +1,4 @@
+import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import tgLogo from "@/assets/logo-tg.png";
 
 const SIZES = {
@@ -8,7 +9,8 @@ const SIZES = {
 };
 
 export default function Logo({ size = "md", className = "" }) {
+  const { siteName } = useSiteSettings();
   return (
-    <img src={tgLogo} alt="TG-Market" className={`object-contain ${SIZES[size]} ${className}`} />
+    <img src={tgLogo} alt={siteName} className={`object-contain ${SIZES[size]} ${className}`} />
   );
 }

@@ -32,6 +32,7 @@ import ReviewList from "@/features/profile/components/ReviewList";
 import ProductCard from "@/shared/ui/ProductCard";
 import EmptyState from "@/shared/ui/EmptyState";
 import { useAuth } from "@/shared/contexts/AuthContext";
+import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import { useMyProducts } from "@/features/products/hooks/useProducts";
 import { useMyReviews } from "@/features/reviews/hooks/useReviews";
 import { usersApi } from "@/features/profile/services/users.api";
@@ -40,6 +41,7 @@ import { cn } from "@/shared/utils/cn";
 
 export default function UserProfilePage() {
   const { user, setUser } = useAuth();
+  const { supportEmail } = useSiteSettings();
   const queryClient = useQueryClient();
   const { data: myProductsData } = useMyProducts();
   const { data: myReviewsData } = useMyReviews();
@@ -539,7 +541,7 @@ export default function UserProfilePage() {
             </div>
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Pour des raisons de sécurité, la suppression de compte n'est pas encore disponible en ligne. Veuillez contacter le support à <span className="font-medium">support@akmarket.tg</span> pour demander la suppression de votre compte.
+            Pour des raisons de sécurité, la suppression de compte n'est pas encore disponible en ligne. Veuillez contacter le support à <span className="font-medium">{supportEmail}</span> pour demander la suppression de votre compte.
           </p>
         </div>
       </Modal>

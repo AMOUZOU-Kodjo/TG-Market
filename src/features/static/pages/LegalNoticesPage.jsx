@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Scale, Mail, Phone, MapPin, Building, Globe, ExternalLink } from "lucide-react";
+import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 
 const sections = [
   {
@@ -84,19 +85,20 @@ const itemVariants = {
 };
 
 export default function LegalNoticesPage() {
+  const { siteName, supportEmail } = useSiteSettings();
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <section className="bg-brand-800 px-4 py-16 text-white sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center">
+          <div className="mx-auto max-w-7xl text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <Scale className="mx-auto mb-4 h-12 w-12 text-white/80" />
             <h1 className="text-3xl font-bold sm:text-4xl">Mentions légales</h1>
-            <p className="mt-3 text-white/80">Informations légales relatives au site TG-Market</p>
+            <p className="mt-3 text-white/80">Informations légales relatives au site {siteName}</p>
           </motion.div>
         </div>
       </section>
 
-      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -118,7 +120,7 @@ export default function LegalNoticesPage() {
                 </h2>
               </div>
               <div className="space-y-3">
-                {section.content.split("\n\n").map((paragraph, j) => (
+                {section.content.replace(/TG-Market/g, siteName).replace(/support@akmarket\.tg/g, supportEmail).split("\n\n").map((paragraph, j) => (
                   <p key={j} className="whitespace-pre-line text-sm leading-relaxed text-gray-600 dark:text-gray-400">
                     {paragraph}
                   </p>
@@ -129,7 +131,7 @@ export default function LegalNoticesPage() {
         </motion.div>
 
         <div className="mt-8 text-center text-xs text-gray-400 dark:text-gray-500">
-          <p>© 2025 TG-Market SARU. Tous droits réservés.</p>
+          <p>© 2025 {siteName} SARU. Tous droits réservés.</p>
           <p className="mt-1">Déclaration conformité RGPD & Loi Togolaise sur la Protection des Données Personnelles</p>
         </div>
       </div>

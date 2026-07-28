@@ -52,7 +52,9 @@ export default function MainLayout() {
 
   useEffect(() => {
     document.title = `${settings.siteName} - Achat & Vente au Togo`;
-  }, [settings.siteName]);
+    const meta = document.querySelector('meta[name="description"]');
+    if (meta && settings.siteDescription) meta.setAttribute("content", settings.siteDescription);
+  }, [settings.siteName, settings.siteDescription]);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -190,93 +192,97 @@ export default function MainLayout() {
                   </Link>
 
                   {user ? (
-                  /* User Menu (connected) */
-                  <div className="relative" ref={desktopMenuRef}>
-                    <button
-                      onClick={() => navigate("/dashboard")}
-                      className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-white/10 transition-colors"
-                    >
-                      <img
-                        src={user?.avatar}
-                        alt={user?.name}
-                        className="w-8 h-8 rounded-full object-cover ring-2 ring-white/30"
-                      />
-                      <ChevronDown
-                        className={`w-4 h-4 text-white/80 transition-transform ${
-                          userMenuOpen ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
+                    /* User Menu (connected) */
+                    <div className="relative" ref={desktopMenuRef}>
+                      <button
+                        onClick={() => navigate("/dashboard")}
+                        className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-white/10 transition-colors"
+                      >
+                        <img
+                          src={user?.avatar}
+                          alt={user?.name}
+                          className="w-8 h-8 rounded-full object-cover ring-2 ring-white/30"
+                        />
+                        <ChevronDown
+                          className={`w-4 h-4 text-white/80 transition-transform ${
+                            userMenuOpen ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
 
-                    <AnimatePresence>
-                      {userMenuOpen && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                          transition={{ duration: 0.15 }}
-                          className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
-                        >
-                          <div className="p-4 border-b border-gray-100 dark:border-gray-700">
-                            <p className="font-semibold text-gray-900 dark:text-white text-sm">
-                              {user?.name}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                              {user?.email}
-                            </p>
-                          </div>
-                          <div className="p-2">
-                            {userMenuItems.map((item) => (
+                      <AnimatePresence>
+                        {userMenuOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                            transition={{ duration: 0.15 }}
+                            className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+                          >
+                            <div className="p-4 border-b border-gray-100 dark:border-gray-700">
+                              <p className="font-semibold text-gray-900 dark:text-white text-sm">
+                                {user?.name}
+                              </p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                {user?.email}
+                              </p>
+                            </div>
+                            <div className="p-2">
+                              {userMenuItems.map((item) => (
+                                <Link
+                                  key={item.to}
+                                  to={item.to}
+                                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                  <item.icon className="w-4 h-4 text-gray-400" />
+                                  <span className="flex-1">{item.label}</span>
+                                  {item.badge > 0 && (
+                                    <span className="px-2 py-0.5 bg-brand-700 text-white text-[10px] font-bold rounded-full">
+                                      {item.badge}
+                                    </span>
+                                  )}
+                                </Link>
+                              ))}
+                              <div className="my-1 border-t border-gray-100 dark:border-gray-700" />
                               <Link
-                                key={item.to}
-                                to={item.to}
+                                to="/faq"
                                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                               >
-                                <item.icon className="w-4 h-4 text-gray-400" />
-                                <span className="flex-1">{item.label}</span>
-                                {item.badge > 0 && (
-                                  <span className="px-2 py-0.5 bg-brand-700 text-white text-[10px] font-bold rounded-full">
-                                    {item.badge}
-                                  </span>
-                                )}
+                                <HelpCircle className="w-4 h-4 text-gray-400" />
+                                Aide et support
                               </Link>
-                            ))}
-                            <div className="my-1 border-t border-gray-100 dark:border-gray-700" />
-                            <Link
-                              to="/faq"
-                              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                            >
-                              <HelpCircle className="w-4 h-4 text-gray-400" />
-                              Aide et support
-                            </Link>
-                            <button
-                              onClick={async () => { await logout(); navigate("/"); setUserMenuOpen(false); }}
-                              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-800 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
-                            >
-                              <LogOut className="w-4 h-4" />
-                              Deconnexion
-                            </button>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
+                              <button
+                                onClick={async () => {
+                                  await logout();
+                                  navigate("/");
+                                  setUserMenuOpen(false);
+                                }}
+                                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-800 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+                              >
+                                <LogOut className="w-4 h-4" />
+                                Deconnexion
+                              </button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   ) : (
-                  /* Login/Register buttons (guest) */
-                  <div className="flex items-center gap-2">
-                    <Link
-                      to="/connexion"
-                      className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
-                    >
-                      Connexion
-                    </Link>
-                    <Link
-                      to="/inscription"
-                      className="px-3 py-2 rounded-lg text-sm font-medium bg-white text-brand-900 hover:bg-white/90 transition-colors"
-                    >
-                      Inscription
-                    </Link>
-                  </div>
+                    /* Login/Register buttons (guest) */
+                    <div className="flex items-center gap-2">
+                      <Link
+                        to="/connexion"
+                        className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                      >
+                        Connexion
+                      </Link>
+                      <Link
+                        to="/inscription"
+                        className="px-3 py-2 rounded-lg text-sm font-medium bg-white text-brand-900 hover:bg-white/90 transition-colors"
+                      >
+                        Inscription
+                      </Link>
+                    </div>
                   )}
                 </div>
               </div>
@@ -285,15 +291,17 @@ export default function MainLayout() {
               <div className="md:hidden">
                 {/* Row 1: Logo */}
                 {!location.pathname.startsWith("/categories/") && (
-                <div className="flex items-center justify-center pt-3 pb-2">
-                  <Link to="/">
-                    <Logo size="md" />
-                  </Link>
-                </div>
+                  <div className="flex items-center justify-center pt-3 pb-2">
+                    <Link to="/">
+                      <Logo size="md" />
+                    </Link>
+                  </div>
                 )}
 
                 {/* Row 2: Back button (category pages) + Search + Actions */}
-                <div className={`flex items-center gap-2 ${location.pathname.startsWith("/categories/") ? "pt-3 pb-2" : "pb-2"}`}>
+                <div
+                  className={`flex items-center gap-2 ${location.pathname.startsWith("/categories/") ? "pt-3 pb-2" : "pb-2"}`}
+                >
                   {location.pathname.startsWith("/categories/") && (
                     <Link
                       to="/"
@@ -304,9 +312,13 @@ export default function MainLayout() {
                   )}
                   <form onSubmit={handleSearch} className="flex-1">
                     <div className="relative">
-                      <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${
-                        location.pathname.startsWith("/categories/") ? "text-gray-400" : "text-white/50"
-                      }`} />
+                      <Search
+                        className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${
+                          location.pathname.startsWith("/categories/")
+                            ? "text-gray-400"
+                            : "text-white/50"
+                        }`}
+                      />
                       <input
                         type="text"
                         placeholder="Rechercher..."
@@ -331,86 +343,90 @@ export default function MainLayout() {
                     {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                   </button>
                   {user ? (
-                  <div className="relative" ref={mobileMenuRef}>
-                  <button
-                    onClick={() => navigate("/dashboard")}
-                    className={`p-1 rounded-full transition-colors ${
-                      location.pathname.startsWith("/categories/")
-                        ? "hover:bg-gray-100"
-                        : "hover:bg-white/10"
-                    }`}
-                  >
-                      <img
-                        src={user?.avatar}
-                        alt={user?.name}
-                        className="w-8 h-8 rounded-full object-cover ring-2 ring-white/30"
-                      />
-                    </button>
+                    <div className="relative" ref={mobileMenuRef}>
+                      <button
+                        onClick={() => navigate("/dashboard")}
+                        className={`p-1 rounded-full transition-colors ${
+                          location.pathname.startsWith("/categories/")
+                            ? "hover:bg-gray-100"
+                            : "hover:bg-white/10"
+                        }`}
+                      >
+                        <img
+                          src={user?.avatar}
+                          alt={user?.name}
+                          className="w-8 h-8 rounded-full object-cover ring-2 ring-white/30"
+                        />
+                      </button>
 
-                    <AnimatePresence>
-                      {userMenuOpen && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                          transition={{ duration: 0.15 }}
-                          className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-50"
-                        >
-                          <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
-                            <p className="font-semibold text-gray-900 dark:text-white text-sm">
-                              {user?.name}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {user?.email}
-                            </p>
-                          </div>
-                          <div className="p-2">
-                            {userMenuItems.map((item) => (
+                      <AnimatePresence>
+                        {userMenuOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                            transition={{ duration: 0.15 }}
+                            className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-50"
+                          >
+                            <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                              <p className="font-semibold text-gray-900 dark:text-white text-sm">
+                                {user?.name}
+                              </p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">
+                                {user?.email}
+                              </p>
+                            </div>
+                            <div className="p-2">
+                              {userMenuItems.map((item) => (
+                                <Link
+                                  key={item.to}
+                                  to={item.to}
+                                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                  <item.icon className="w-4 h-4 text-gray-400" />
+                                  <span className="flex-1">{item.label}</span>
+                                  {item.badge > 0 && (
+                                    <span className="px-2 py-0.5 bg-brand-700 text-white text-[10px] font-bold rounded-full">
+                                      {item.badge}
+                                    </span>
+                                  )}
+                                </Link>
+                              ))}
+                              <div className="my-1 border-t border-gray-100 dark:border-gray-700" />
                               <Link
-                                key={item.to}
-                                to={item.to}
+                                to="/faq"
                                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                               >
-                                <item.icon className="w-4 h-4 text-gray-400" />
-                                <span className="flex-1">{item.label}</span>
-                                {item.badge > 0 && (
-                                  <span className="px-2 py-0.5 bg-brand-700 text-white text-[10px] font-bold rounded-full">
-                                    {item.badge}
-                                  </span>
-                                )}
+                                <HelpCircle className="w-4 h-4 text-gray-400" />
+                                Aide et support
                               </Link>
-                            ))}
-                            <div className="my-1 border-t border-gray-100 dark:border-gray-700" />
-                            <Link
-                              to="/faq"
-                              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                            >
-                              <HelpCircle className="w-4 h-4 text-gray-400" />
-                              Aide et support
-                            </Link>
-                            <button
-                              onClick={async () => { await logout(); navigate("/"); setUserMenuOpen(false); }}
-                              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-800 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
-                            >
-                              <LogOut className="w-4 h-4" />
-                              Deconnexion
-                            </button>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
+                              <button
+                                onClick={async () => {
+                                  await logout();
+                                  navigate("/");
+                                  setUserMenuOpen(false);
+                                }}
+                                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-800 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+                              >
+                                <LogOut className="w-4 h-4" />
+                                Deconnexion
+                              </button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   ) : (
-                  <Link
-                    to="/connexion"
-                    className={`p-2 rounded-lg text-sm font-medium transition-colors ${
-                      location.pathname.startsWith("/categories/")
-                        ? "text-gray-600 hover:bg-gray-100"
-                        : "text-white/80 hover:text-white hover:bg-white/10"
-                    }`}
-                  >
-                    <User className="w-5 h-5" />
-                  </Link>
+                    <Link
+                      to="/connexion"
+                      className={`p-2 rounded-lg text-sm font-medium transition-colors ${
+                        location.pathname.startsWith("/categories/")
+                          ? "text-gray-600 hover:bg-gray-100"
+                          : "text-white/80 hover:text-white hover:bg-white/10"
+                      }`}
+                    >
+                      <User className="w-5 h-5" />
+                    </Link>
                   )}
                 </div>
               </div>
@@ -433,17 +449,22 @@ export default function MainLayout() {
           </motion.div>
         </main>
 
-        <footer className={`bg-footer dark:bg-footer-dark text-footer-text ${location.pathname.startsWith("/categories/") ? "hidden md:block" : ""}`}>
+        <footer
+          className={`bg-footer dark:bg-footer-dark text-footer-text 
+${location.pathname.startsWith("/categories/") || location.pathname.startsWith("/vendre") || 
+location.pathname.startsWith("/annonce/") ? "hidden " : ""}`}
+        >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             {/* Mobile: centered layout | Desktop: 3-column grid */}
             <div className="flex flex-col items-center lg:grid lg:grid-cols-3 lg:items-start lg:gap-8">
-
               {/* Col 1 — Logo + Télécharger */}
               <div className="text-center mb-8 lg:mb-0 w-full">
                 <div className="flex justify-center mb-4">
                   <Logo size="md" />
                 </div>
-                <h4 className="text-footer-heading font-semibold text-sm mb-3">Télécharger l'app</h4>
+                <h4 className="text-footer-heading font-semibold text-sm mb-3">
+                  Télécharger l'app
+                </h4>
                 <div className="flex gap-2 justify-center">
                   <AppleStoreBadge />
                   <GooglePlayBadge />
@@ -524,7 +545,9 @@ export default function MainLayout() {
 
             {/* Copyright */}
             <div className="mt-10 pt-4 pb-2 border-t text-center border-footer-border  items-center justify-between gap-4 text-sm text-footer-text">
-              <p>&copy; 2025 {settings.siteName}. Tous droits réservés.</p>
+              <p>
+                &copy; 2025 {settings.siteName}. Tous droits réservés. v{settings.siteVersion}
+              </p>
             </div>
           </div>
         </footer>

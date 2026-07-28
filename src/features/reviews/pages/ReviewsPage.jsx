@@ -8,6 +8,7 @@ import Button from "@/shared/ui/Button";
 import Textarea from "@/shared/ui/Textarea";
 import { useMyReviews } from "@/features/reviews/hooks/useReviews";
 import { useAuth } from "@/shared/contexts/AuthContext";
+import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import { formatRelativeTime } from "@/shared/utils/format";
 import toast from "react-hot-toast";
 
@@ -52,6 +53,7 @@ function RatingDistribution({ reviews }) {
 
 export default function ReviewsPage() {
   const { user } = useAuth();
+  const { siteName } = useSiteSettings();
   const { data: reviewsData = [] } = useMyReviews();
   const [filter, setFilter] = useState("all");
   const [newRating, setNewRating] = useState(0);
@@ -87,7 +89,7 @@ export default function ReviewsPage() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Avis</h1>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {reviews.length} avis de la communauté TG-Market
+          {reviews.length} avis de la communauté {siteName}
         </p>
       </div>
 

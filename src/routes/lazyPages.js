@@ -42,6 +42,9 @@ const ContactPage = lazy(() => import("@/features/static/pages/ContactPage"));
 const CheckoutPage = lazy(() => import("@/features/payment/pages/CheckoutPage"));
 const OrderDetailPage = lazy(() => import("@/features/payment/pages/OrderDetailPage"));
 const HistoryPage = lazy(() => import("@/features/dashboard/pages/HistoryPage"));
+const MakeOfferPage = lazy(() => import("@/features/offers/pages/MakeOfferPage"));
+const CreateBundlePage = lazy(() => import("@/features/bundles/pages/CreateBundlePage"));
+const BundleDetailPage = lazy(() => import("@/features/bundles/pages/BundleDetailPage"));
 
 export {
   HomePage,
@@ -86,4 +89,7 @@ export {
   CheckoutPage,
   OrderDetailPage,
   HistoryPage,
+  MakeOfferPage,
+  CreateBundlePage,
+  BundleDetailPage,
 };

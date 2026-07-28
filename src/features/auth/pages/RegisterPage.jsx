@@ -18,6 +18,7 @@ import {
 import toast from "react-hot-toast";
 import { registerSchema } from "@/shared/utils/validators";
 import { useAuth } from "@/shared/contexts/AuthContext";
+import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import Input from "@/shared/ui/Input";
 import Button from "@/shared/ui/Button";
 
@@ -40,6 +41,7 @@ export default function RegisterPage() {
   const [socialLoading, setSocialLoading] = useState(null);
   const navigate = useNavigate();
   const { register: registerUser } = useAuth();
+  const { siteName } = useSiteSettings();
 
   const {
     register,
@@ -72,7 +74,7 @@ export default function RegisterPage() {
       city: data.city,
     });
     if (result.success) {
-      toast.success("Inscription réussie ! Bienvenue sur TG-Market 🎉");
+      toast.success(`Inscription réussie ! Bienvenue sur ${siteName} 🎉`);
       navigate("/");
     } else {
       toast.error(result.error || "Erreur lors de l'inscription");
@@ -103,7 +105,7 @@ export default function RegisterPage() {
           Créer un compte
         </h1>
         <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-          Rejoignez la communauté TG-Market et commencez à acheter/vendre
+          Rejoignez la communauté {siteName} et commencez à acheter/vendre
         </p>
       </motion.div>
 

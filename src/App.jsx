@@ -12,6 +12,7 @@ import AuthLayout from "@/layouts/AuthLayout";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import AdminLayout from "@/layouts/AdminLayout";
 import { AuthGuard, GuestGuard, AdminGuard } from "@/guards/AuthGuard";
+import { MaintenanceGuard } from "@/guards/MaintenanceGuard";
 import { AuthLogoutHandler } from "@/shared/contexts/AuthContext";
 
 import {
@@ -56,6 +57,9 @@ import {
   CheckoutPage,
   OrderDetailPage,
   HistoryPage,
+  MakeOfferPage,
+  CreateBundlePage,
+  BundleDetailPage,
 } from "@/routes/lazyPages";
 
 const queryClient = new QueryClient({
@@ -88,157 +92,220 @@ function App() {
             <NotificationProvider>
               <SiteSettingsProvider>
                 <BrowserRouter>
-                <AuthLogoutHandler />
-                <Suspense fallback={<PageLoader />}>
-                  <Routes>
-                    <Route element={<MainLayout />}>
-                      <Route path="/" element={<HomePage />} />
-                     <Route path="/categories/:slug" element={<CategoryPage />} />
-                      <Route path="/vehicules" element={<VehicleListingsPage />} />
-                      <Route path="/recherche" element={<SearchResultsPage />} />
-                      <Route path="/annonce/:id" element={<ProductDetailPage />} />
-                      <Route path="/vendeur/:id" element={<SellerProfilePage />} />
-                      <Route path="/vendeurs" element={<SellersPage />} />
+                  <AuthLogoutHandler />
+                  <MaintenanceGuard>
+                    <Suspense fallback={<PageLoader />}>
+                      <Routes>
+                        <Route element={<MainLayout />}>
+                          <Route path="/" element={<HomePage />} />
+                          <Route path="/categories/:slug" element={<CategoryPage />} />
+                          <Route path="/vehicules" element={<VehicleListingsPage />} />
+                          <Route path="/recherche" element={<SearchResultsPage />} />
+                          <Route path="/annonce/:id" element={<ProductDetailPage />} />
+                          <Route path="/vendeur/:id" element={<SellerProfilePage />} />
+                          <Route path="/vendeurs" element={<SellersPage />} />
 
-                      <Route
-                        path="/favoris"
-                        element={
-                          <AuthGuard>
-                            <FavoritesPage />
-                          </AuthGuard>
-                        }
-                      />
-                      <Route
-                        path="/notifications"
-                        element={
-                          <AuthGuard>
-                            <Navigate to="/dashboard/notifications" replace />
-                          </AuthGuard>
-                        }
-                      />
-                      <Route
-                        path="/profil"
-                        element={
-                          <AuthGuard>
-                            <Navigate to="/dashboard/profile" replace />
-                          </AuthGuard>
-                        }
-                      />
-                      <Route
-                        path="/parametres"
-                        element={
-                          <AuthGuard>
-                            <SettingsPage />
-                          </AuthGuard>
-                        }
-                      />
-                      <Route
-                        path="/portefeuille"
-                        element={
-                          <AuthGuard>
-                            <WalletPage />
-                          </AuthGuard>
-                        }
-                      />
-                      <Route path="/avis" element={<ReviewsPage />} />
+                          <Route
+                            path="/favoris"
+                            element={
+                              <AuthGuard>
+                                <FavoritesPage />
+                              </AuthGuard>
+                            }
+                          />
+                          <Route
+                            path="/notifications"
+                            element={
+                              <AuthGuard>
+                                <Navigate to="/dashboard/notifications" replace />
+                              </AuthGuard>
+                            }
+                          />
+                          <Route
+                            path="/profil"
+                            element={
+                              <AuthGuard>
+                                <Navigate to="/dashboard/profile" replace />
+                              </AuthGuard>
+                            }
+                          />
+                          <Route
+                            path="/parametres"
+                            element={
+                              <AuthGuard>
+                                <SettingsPage />
+                              </AuthGuard>
+                            }
+                          />
+                          <Route
+                            path="/portefeuille"
+                            element={
+                              <AuthGuard>
+                                <WalletPage />
+                              </AuthGuard>
+                            }
+                          />
+                          <Route path="/avis" element={<ReviewsPage />} />
 
-                      <Route
-                        path="/vendre"
-                        element={
-                          <AuthGuard>
-                            <CreateListingPage />
-                          </AuthGuard>
-                        }
-                      />
-                      <Route
-                        path="/modifier/:id"
-                        element={
-                          <AuthGuard>
-                            <EditListingPage />
-                          </AuthGuard>
-                        }
-                      />
+                          <Route
+                            path="/vendre"
+                            element={
+                              <AuthGuard>
+                                <CreateListingPage />
+                              </AuthGuard>
+                            }
+                          />
+                          <Route
+                            path="/modifier/:id"
+                            element={
+                              <AuthGuard>
+                                <EditListingPage />
+                              </AuthGuard>
+                            }
+                          />
 
-                      <Route path="/a-propos" element={<AboutPage />} />
-                      <Route path="/comment-ca-marche" element={<HowItWorksPage />} />
-                      <Route path="/contact" element={<ContactPage />} />
-                      <Route path="/faq" element={<FAQPage />} />
-                      <Route path="/confidentialite" element={<PrivacyPage />} />
-                      <Route path="/conditions" element={<TermsPage />} />
-                      <Route path="/mentions-legales" element={<LegalNoticesPage />} />
-                    </Route>
+                          <Route path="/a-propos" element={<AboutPage />} />
+                          <Route path="/comment-ca-marche" element={<HowItWorksPage />} />
+                          <Route path="/contact" element={<ContactPage />} />
+                          <Route path="/faq" element={<FAQPage />} />
+                          <Route path="/confidentialite" element={<PrivacyPage />} />
+                          <Route path="/conditions" element={<TermsPage />} />
+                          <Route path="/mentions-legales" element={<LegalNoticesPage />} />
+                        </Route>
 
-                    <Route path="/messages" element={<AuthGuard><MessagesPage /></AuthGuard>} />
-                    <Route path="/messages/:conversationId" element={<AuthGuard><ConversationPage /></AuthGuard>} />
-                    <Route path="/acheter/:productId" element={<AuthGuard><CheckoutPage /></AuthGuard>} />
-                    <Route path="/commandes/:id" element={<AuthGuard><OrderDetailPage /></AuthGuard>} />
+                        <Route
+                          path="/messages"
+                          element={
+                            <AuthGuard>
+                              <MessagesPage />
+                            </AuthGuard>
+                          }
+                        />
+                        <Route
+                          path="/messages/:conversationId"
+                          element={
+                            <AuthGuard>
+                              <ConversationPage />
+                            </AuthGuard>
+                          }
+                        />
+                        <Route
+                          path="/acheter/:productId"
+                          element={
+                            <AuthGuard>
+                              <CheckoutPage />
+                            </AuthGuard>
+                          }
+                        />
 
-                    <Route element={<AuthLayout />}>
-                      <Route
-                        path="/login"
-                        element={<Navigate to="/connexion" replace />}
-                      />
-                      <Route
-                        path="/connexion"
-                        element={
-                          <GuestGuard>
-                            <LoginPage />
-                          </GuestGuard>
-                        }
-                      />
-                      <Route
-                        path="/inscription"
-                        element={
-                          <GuestGuard>
-                            <RegisterPage />
-                          </GuestGuard>
-                        }
-                      />
-                      <Route path="/mot-de-passe-oublie" element={<ForgotPasswordPage />} />
-                    </Route>
+                        <Route
+                          path="/offre/:productId"
+                          element={
+                            <AuthGuard>
+                              <MakeOfferPage />
+                            </AuthGuard>
+                          }
+                        />
+                        <Route
+                          path="/lot/creer"
+                          element={
+                            <AuthGuard>
+                              <CreateBundlePage />
+                            </AuthGuard>
+                          }
+                        />
+                        <Route path="/lot/:id" element={<BundleDetailPage />} />
+                        <Route
+                          path="/commandes/:id"
+                          element={
+                            <AuthGuard>
+                              <OrderDetailPage />
+                            </AuthGuard>
+                          }
+                        />
 
-                    <Route
-                      element={
-                        <AuthGuard>
-                          <DashboardLayout />
-                        </AuthGuard>
-                      }
-                    >
-                      <Route path="/tableau-de-bord" element={<SellerDashboardPage />} />
-                      <Route path="/dashboard" element={<SellerDashboardPage />} />
-                      <Route path="/dashboard/products" element={<SellerDashboardPage defaultTab="products" />} />
-                      <Route path="/dashboard/orders" element={<SellerDashboardPage defaultTab="orders" />} />
-                      <Route path="/dashboard/messages" element={<MessagesPage />} />
-                      <Route path="/dashboard/notifications" element={<SellerDashboardPage defaultTab="notifications" />} />
-                      <Route path="/dashboard/analytics" element={<SellerDashboardPage defaultTab="analytics" />} />
-                      <Route path="/dashboard/profile" element={<SellerDashboardPage defaultTab="profile" />} />
-                      <Route path="/dashboard/promotions" element={<SellerDashboardPage defaultTab="promotions" />} />
-                      <Route path="/dashboard/settings" element={<SettingsPage />} />
-                      <Route path="/dashboard/history" element={<HistoryPage />} />
-                    </Route>
+                        <Route element={<AuthLayout />}>
+                          <Route path="/login" element={<Navigate to="/connexion" replace />} />
+                          <Route
+                            path="/connexion"
+                            element={
+                              <GuestGuard>
+                                <LoginPage />
+                              </GuestGuard>
+                            }
+                          />
+                          <Route
+                            path="/inscription"
+                            element={
+                              <GuestGuard>
+                                <RegisterPage />
+                              </GuestGuard>
+                            }
+                          />
+                          <Route path="/mot-de-passe-oublie" element={<ForgotPasswordPage />} />
+                        </Route>
 
-                    <Route
-                      element={
-                        <AdminGuard>
-                          <AdminLayout />
-                        </AdminGuard>
-                      }
-                    >
-                      <Route path="/admin" element={<AdminDashboardPage />} />
-                      <Route path="/admin/users" element={<AdminUsersPage />} />
-                      <Route path="/admin/listings" element={<AdminListingsPage />} />
-                      <Route path="/admin/categories" element={<AdminCategoriesPage />} />
-                      <Route path="/admin/payments" element={<AdminPaymentsPage />} />
-                      <Route path="/admin/reports" element={<AdminReportsPage />} />
-                      <Route path="/admin/settings" element={<AdminSettingsPage />} />
-                    </Route>
+                        <Route
+                          element={
+                            <AuthGuard>
+                              <DashboardLayout />
+                            </AuthGuard>
+                          }
+                        >
+                          <Route path="/tableau-de-bord" element={<SellerDashboardPage />} />
+                          <Route path="/dashboard" element={<SellerDashboardPage />} />
+                          <Route
+                            path="/dashboard/products"
+                            element={<SellerDashboardPage defaultTab="products" />}
+                          />
+                          <Route
+                            path="/dashboard/orders"
+                            element={<SellerDashboardPage defaultTab="orders" />}
+                          />
+                          <Route path="/dashboard/messages" element={<MessagesPage />} />
+                          <Route
+                            path="/dashboard/notifications"
+                            element={<SellerDashboardPage defaultTab="notifications" />}
+                          />
+                          <Route
+                            path="/dashboard/analytics"
+                            element={<SellerDashboardPage defaultTab="analytics" />}
+                          />
+                          <Route
+                            path="/dashboard/profile"
+                            element={<SellerDashboardPage defaultTab="profile" />}
+                          />
+                          <Route
+                            path="/dashboard/promotions"
+                            element={<SellerDashboardPage defaultTab="promotions" />}
+                          />
+                          <Route path="/dashboard/settings" element={<SettingsPage />} />
+                          <Route path="/dashboard/history" element={<HistoryPage />} />
+                        </Route>
 
-                    <Route path="/maintenance" element={<MaintenancePage />} />
-                    <Route path="/erreur" element={<ErrorPage />} />
-                    <Route path="*" element={<NotFoundPage />} />
-                  </Routes>
-                </Suspense>
-              </BrowserRouter>
+                        <Route
+                          element={
+                            <AdminGuard>
+                              <AdminLayout />
+                            </AdminGuard>
+                          }
+                        >
+                          <Route path="/admin" element={<AdminDashboardPage />} />
+                          <Route path="/admin/users" element={<AdminUsersPage />} />
+                          <Route path="/admin/listings" element={<AdminListingsPage />} />
+                          <Route path="/admin/categories" element={<AdminCategoriesPage />} />
+                          <Route path="/admin/payments" element={<AdminPaymentsPage />} />
+                          <Route path="/admin/reports" element={<AdminReportsPage />} />
+                          <Route path="/admin/settings" element={<AdminSettingsPage />} />
+                        </Route>
+
+                        <Route path="/maintenance" element={<MaintenancePage />} />
+                        <Route path="/erreur" element={<ErrorPage />} />
+                        <Route path="*" element={<NotFoundPage />} />
+                      </Routes>
+                    </Suspense>
+                  </MaintenanceGuard>
+                </BrowserRouter>
               </SiteSettingsProvider>
 
               <Toaster

@@ -53,7 +53,7 @@ export default function AdminLayout() {
               </div>
               {sidebarOpen && (
                 <div>
-                  <span className="text-lg font-bold text-gray-900">TG</span>
+                  <span className="text-lg font-bold text-gray-900">{settings.siteName?.split("-")[0] ?? "TG"}</span>
                   <span className="text-xs ml-1 px-1.5 py-0.5 bg-brand-50 text-brand-600 rounded font-medium">
                     ADMIN
                   </span>

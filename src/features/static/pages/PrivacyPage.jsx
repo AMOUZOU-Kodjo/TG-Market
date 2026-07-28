@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Shield, Lock, Eye, UserCheck, Database, Share2, Mail, Phone, MapPin, FileText, Clock, Globe, AlertTriangle, Cookie } from "lucide-react";
+import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 
 const sections = [
   {
@@ -104,11 +105,12 @@ const itemVariants = {
 };
 
 export default function PrivacyPage() {
+  const { siteName, supportEmail } = useSiteSettings();
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Hero */}
       <section className="bg-brand-800 px-4 py-16 text-white sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center">
+          <div className="mx-auto max-w-7xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -122,14 +124,14 @@ export default function PrivacyPage() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-8 rounded-2xl border border-brand-300 bg-brand-50 p-5 dark:border-brand-800/20 dark:bg-brand-800/5"
         >
           <p className="text-sm leading-relaxed text-brand-950 dark:text-brand-400">
-            Cette politique explique comment nous recueillons, utilisons, conservons et partageons tes données lorsque tu utilises nos services TG-Market.
+            Cette politique explique comment nous recueillons, utilisons, conservons et partageons tes données lorsque tu utilises nos services {siteName}.
           </p>
         </motion.div>
 
@@ -154,7 +156,7 @@ export default function PrivacyPage() {
                 </h2>
               </div>
               <div className="prose prose-sm max-w-none">
-                {section.content.split("\n\n").map((paragraph, j) => (
+                {section.content.replace(/TG-Market/g, siteName).replace(/support@akmarket\.tg/g, supportEmail).split("\n\n").map((paragraph, j) => (
                   <p key={j} className="mb-3 whitespace-pre-line text-sm leading-relaxed text-gray-600 dark:text-gray-400">
                     {paragraph}
                   </p>

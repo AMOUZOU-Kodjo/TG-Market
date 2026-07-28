@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+// import { FaBoxOpen } from "react-icons/fa6";
 import {
   MapPin,
   Truck,
@@ -8,19 +9,23 @@ import {
   Heart,
   Tag,
   Clock,
-  ChevronRight,
   Home,
   Package,
   ShieldCheck,
   ArrowLeft,
   AlertTriangle,
+  MessageSquare,
+  ShoppingCart,
+  ChevronLeft,
 } from "lucide-react";
 import { useProduct, useSimilarProducts } from "@/features/products/hooks/useProducts";
 import { productsApi } from "@/features/products/services/products.api";
 import { useCategories } from "@/features/categories/hooks/useCategories";
+import { useAuth } from "@/shared/contexts/AuthContext";
 import { formatCFA, formatRelativeTime, formatNumber } from "@/shared/utils/format";
 import Breadcrumb from "@/shared/ui/Breadcrumb";
 import Badge from "@/shared/ui/Badge";
+import Button from "@/shared/ui/Button";
 import ImageGallery from "@/shared/ui/ImageGallery";
 import ProductActions from "@/features/products/components/ProductActions";
 import SellerCard from "@/features/products/components/SellerCard";
@@ -39,6 +44,7 @@ export default function ProductDetailPage() {
   const { data: product, isLoading } = useProduct(id);
   const { data: similarProducts = [] } = useSimilarProducts(id);
   const { data: categories = [] } = useCategories();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (id) {
@@ -92,23 +98,54 @@ export default function ProductDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-        <Breadcrumb items={breadcrumbItems} className="mb-5" />
+        <div className="sticky top-28 h-17 z-40 -mx-4 mt-[-1rem] bg-white px-4 py-3 backdrop-blur-sm dark:bg-gray-950/80 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+          <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-between">
+            <div className="flex items-center   gap-10">
+              <Link
+                to="/"
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+              >
+                <ChevronLeft className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+              </Link>
+              <h1 className="flex-1 min-w-0 truncate text-sm font-bold text-gray-900 dark:text-white sm:text-base sm:truncate-none">
+                {product.title}
+              </h1>
+            </div>
+            <div className="flex shrink-0 gap-1.5 justify-center sm:justify-start">
+              <Link to={`/offre/${product.id}`}>
+                <Button variant="primary" size="sm" icon={MessageSquare}>
+                  <span className="hidden sm:inline">Faire une offre</span>
+                  <span className="sm:hidden">Offre</span>
+                </Button>
+              </Link>
+              <Link to="/lot/creer">
+                <Button variant="outline" size="sm" icon={Package}>
+                  <span className="hidden sm:inline">Créer un lot</span>
+                  <span className="sm:hidden">Lot</span>
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
 
-        <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
+        {/* <Breadcrumb items={breadcrumbItems} className="mb-5 mt-3" /> */}
+
+        {/* <div className="grid gap-8 mt-8 lg:grid-cols-[1fr_380px]"> */}
+        <div className="grid gap-8 mt-8 lg:grid-cols-[1fr_720px]">
           <div className="space-y-6">
             <motion.div {...fadeUp} transition={{ delay: 0.05 }}>
-              <ImageGallery images={product.images} />
+              {/* <div className="overflow-hidden rounded-2xl aspect-[16/] max-h-[780px]"> */}
+              <div className="overflow-hidden rounded-2xl aspect-10/9 max-h-120">
+                {/* <div className="overflow-hidden rounded-2xl aspect-[16/9] max-h-[360px]"> */}
+                <ImageGallery images={product.images} />
+              </div>
             </motion.div>
 
             <motion.div
               {...fadeUp}
               transition={{ delay: 0.1 }}
-              className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+              className="rounded-2xl  p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
             >
-              <h1 className="mb-3 text-xl font-bold text-gray-900 dark:text-white sm:text-2xl">
-                {product.title}
-              </h1>
-
               <div className="mb-4 flex flex-wrap items-center gap-2">
                 <Badge
                   variant={
@@ -121,9 +158,7 @@ export default function ProductDetailPage() {
                 >
                   {product.condition}
                 </Badge>
-                {product.negotiable && (
-                  <Badge variant="neutral">Négociable</Badge>
-                )}
+                {product.negotiable && <Badge variant="neutral">Négociable</Badge>}
                 {product.deliveryAvailable && (
                   <Badge variant="secondary">
                     <span className="flex items-center gap-1">
@@ -185,43 +220,34 @@ export default function ProductDetailPage() {
               <ProductActions product={product} />
             </motion.div>
 
-            {product.specifications &&
-              Object.keys(product.specifications).length > 0 && (
-                <motion.div
-                  {...fadeUp}
-                  transition={{ delay: 0.15 }}
-                  className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
-                >
-                  <h3 className="mb-4 flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white">
-                    <Package className="h-5 w-5 text-brand-800" />
-                    Caractéristiques
-                  </h3>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {Object.entries(product.specifications).map(
-                      ([key, value]) => (
-                        <div
-                          key={key}
-                          className="flex justify-between rounded-xl bg-gray-50 px-4 py-2.5 dark:bg-gray-800"
-                        >
-                          <span className="text-sm text-gray-500 dark:text-gray-400">
-                            {key}
-                          </span>
-                          <span className="text-sm font-medium text-gray-900 dark:text-white">
-                            {value}
-                          </span>
-                        </div>
-                      )
-                    )}
-                  </div>
-                </motion.div>
-              )}
-
-            {product.tags && product.tags.length > 0 && (
+            {product.specifications && Object.keys(product.specifications).length > 0 && (
               <motion.div
                 {...fadeUp}
-                transition={{ delay: 0.2 }}
-                className="flex flex-wrap gap-2"
+                transition={{ delay: 0.15 }}
+                className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
               >
+                <h3 className="mb-4 flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white">
+                  <Package className="h-5 w-5 text-brand-800" />
+                  Caractéristiques
+                </h3>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {Object.entries(product.specifications).map(([key, value]) => (
+                    <div
+                      key={key}
+                      className="flex justify-between rounded-xl bg-gray-50 px-4 py-2.5 dark:bg-gray-800"
+                    >
+                      <span className="text-sm text-gray-500 dark:text-gray-400">{key}</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        {value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {product.tags && product.tags.length > 0 && (
+              <motion.div {...fadeUp} transition={{ delay: 0.2 }} className="flex flex-wrap gap-2">
                 {product.tags.map((tag) => (
                   <span
                     key={tag}
@@ -235,14 +261,14 @@ export default function ProductDetailPage() {
             )}
           </div>
 
-          <div className="space-y-5">
-            <div className="lg:sticky lg:top-24">
+          <div className="space-y-5 ">
+            <div className="lg:sticky lg:top-24 rounded-2xl border border-gray-100 bg-white  shadow-sm ">
               <SellerCard seller={product.seller} productId={product.id} />
 
               <motion.div
                 {...fadeUp}
                 transition={{ delay: 0.25 }}
-                className="mt-5 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+                className="mt-5   p-4  dark:border-gray-800 dark:bg-gray-900"
               >
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center justify-between text-gray-600 dark:text-gray-400">
@@ -293,7 +319,7 @@ export default function ProductDetailPage() {
           </div>
         )}
 
-        <div className="mt-12">
+        <div className="mt-5">
           <ProductReviews productId={product.id} sellerId={product.seller?.id} />
         </div>
       </div>

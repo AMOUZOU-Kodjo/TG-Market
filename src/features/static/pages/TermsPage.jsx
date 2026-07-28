@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { FileText, Scale, Shield, AlertTriangle, CreditCard, Users, Gavel, Mail, Lock, Eye, Share2, MessageSquare, Ban, CheckCircle } from "lucide-react";
+import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 
 const sections = [
   {
@@ -244,26 +245,27 @@ const itemVariants = {
 };
 
 export default function TermsPage() {
+  const { siteName, supportEmail } = useSiteSettings();
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <section className="bg-brand-800 px-4 py-16 text-white sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <Scale className="mx-auto mb-4 h-12 w-12 text-white/80" />
-            <h1 className="text-3xl font-bold sm:text-4xl">CGU — Conditions Générales d'Utilisation</h1>
-            <p className="mt-3 text-white/80">Date de mise à jour : 10 octobre 2025</p>
-          </motion.div>
-        </div>
-      </section>
+          <div className="mx-auto max-w-7xl text-center">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <Scale className="mx-auto mb-4 h-12 w-12 text-white/80" />
+              <h1 className="text-3xl font-bold sm:text-4xl">CGU — Conditions Générales d'Utilisation</h1>
+              <p className="mt-3 text-white/80">Date de mise à jour : 10 octobre 2025</p>
+            </motion.div>
+          </div>
+        </section>
 
-      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-8 rounded-2xl border border-brand-300 bg-brand-50 p-5 dark:border-brand-800/20 dark:bg-brand-800/5"
         >
           <p className="text-sm leading-relaxed text-brand-950 dark:text-brand-400">
-            Ces conditions régissent ton utilisation de la plateforme TG-Market.
+            Ces conditions régissent ton utilisation de la plateforme {siteName}.
             En utilisant nos services, tu confirmes avoir lu, compris et accepté
             l'ensemble de ces conditions.
           </p>
@@ -290,7 +292,7 @@ export default function TermsPage() {
                 </h2>
               </div>
               <div className="space-y-3">
-                {section.content.split("\n\n").map((paragraph, j) => (
+                {section.content.replace(/TG-Market/g, siteName).replace(/support@akmarket\.tg/g, supportEmail).split("\n\n").map((paragraph, j) => (
                   <p key={j} className="whitespace-pre-line text-sm leading-relaxed text-gray-600 dark:text-gray-400">
                     {paragraph}
                   </p>

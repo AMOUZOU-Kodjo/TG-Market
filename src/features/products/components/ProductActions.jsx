@@ -5,10 +5,12 @@ import toast from "react-hot-toast";
 import { cn } from "@/shared/utils/cn";
 import { useCheckFavorite, useToggleFavorite } from "@/features/favorites/hooks/useFavorites";
 import { useAuth } from "@/shared/contexts/AuthContext";
+import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import { useNavigate } from "react-router-dom";
 
 export default function ProductActions({ product }) {
   const { isAuthenticated } = useAuth();
+  const { siteName } = useSiteSettings();
   const navigate = useNavigate();
   const { data: favData } = useCheckFavorite(product?.id, isAuthenticated);
   const toggleFav = useToggleFavorite();
@@ -52,7 +54,7 @@ export default function ProductActions({ product }) {
       try {
         await navigator.share({
           title: product.title,
-          text: `Regarde ${product.title} sur TG-Market`,
+          text: `Regarde ${product.title} sur ${siteName}`,
           url: window.location.href,
         });
       } catch (err) {

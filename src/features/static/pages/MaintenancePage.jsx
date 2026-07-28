@@ -1,13 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { Wrench, Clock, Mail, ArrowRight, CheckCircle2 } from "lucide-react";
 import Button from "@/shared/ui/Button";
 import Input from "@/shared/ui/Input";
+import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import toast from "react-hot-toast";
 
 export default function MaintenancePage() {
+  const { siteName, maintenanceMode } = useSiteSettings();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+
+  useEffect(() => {
+    if (!maintenanceMode) {
+      navigate("/", { replace: true });
+    }
+  }, [maintenanceMode, navigate]);
 
   const estimatedReturn = "24 juillet 2026 à 18h00 (GMT+0)";
 
@@ -64,7 +74,7 @@ export default function MaintenancePage() {
               Maintenance en cours
             </h1>
             <p className="mb-6 text-gray-500 dark:text-gray-400">
-              TG-Market est actuellement en maintenance pour améliorer vos
+              {siteName} est actuellement en maintenance pour améliorer vos
               services. Nous serons de retour très bientôt !
             </p>
           </div>
@@ -155,7 +165,7 @@ export default function MaintenancePage() {
         </motion.div>
 
         <p className="mt-6 text-center text-xs text-gray-400 dark:text-gray-500">
-          © 2025 TG-Market. Tous droits réservés.
+          © 2025 {siteName}. Tous droits réservés.
         </p>
       </div>
     </div>

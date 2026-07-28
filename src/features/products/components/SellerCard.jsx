@@ -29,15 +29,10 @@ export default function SellerCard({ seller, productId }) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
-      className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+      className="rounded-2xl    p-5  dark:border-gray-800 dark:bg-gray-900"
     >
-      <div className="flex items-start gap-4">
-        <Avatar
-          src={seller.avatar}
-          name={seller.name}
-          size="lg"
-          verified={seller.verified}
-        />
+      <div className="flex  items-start gap-4">
+        <Avatar src={seller.avatar} name={seller.name} size="lg" verified={seller.verified} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">
@@ -89,9 +84,7 @@ export default function SellerCard({ seller, productId }) {
         {seller.joinedAt && (
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
             <Calendar className="h-4 w-4 shrink-0 text-gray-400" />
-            <span className="truncate">
-              Membre {formatRelativeTime(seller.joinedAt)}
-            </span>
+            <span className="truncate">Membre {formatRelativeTime(seller.joinedAt)}</span>
           </div>
         )}
         {seller.productCount != null && (
@@ -107,50 +100,48 @@ export default function SellerCard({ seller, productId }) {
           </div>
         )}
       </div>
-
-      <div className="mt-5 flex gap-3">
-        <Link to={`/vendeur/${seller.id}`} className="flex-1">
-          <Button
-            variant="outline"
-            fullWidth
-            size="md"
-            icon={ExternalLink}
-          >
+      <div className="mt-5 flex flex-wrap gap-2">
+        <Link to={`/vendeur/${seller.id}`} className="flex-1 min-w-[130px]">
+          <Button variant="outline" fullWidth size="md" icon={ExternalLink}>
             Voir profil
           </Button>
         </Link>
-        {!isOwn && (
+        {!isOwn ? (
           <>
-            <Button
-              variant="primary"
-              fullWidth
-              size="md"
-              icon={ShoppingCart}
-              onClick={() => navigate(`/acheter/${productId}`)}
-            >
-              Acheter
-            </Button>
-            <Button
-              variant="outline"
-              fullWidth
-              size="md"
-              icon={MessageCircle}
-              loading={isPending}
-              onClick={async () => {
-                try {
-                  const conv = await createConversation({
-                    participantId: seller.id,
-                    productId,
-                  });
-                  navigate(`/messages/${conv.id}`);
-                } catch {
-                  // silently ignore — user can retry
-                }
-              }}
-            >
-              Contacter
-            </Button>
+            <Link to={`/acheter/${productId}`} className="flex-1 min-w-[130px]">
+              <Button variant="primary" fullWidth size="md" icon={ShoppingCart} className="border border-brand-600">
+                Acheter
+              </Button>
+            </Link>
+            <div className="flex-1 min-w-[130px]">
+              <Button
+                variant="outline"
+                fullWidth
+                size="md"
+                icon={MessageCircle}
+                loading={isPending}
+                onClick={async () => {
+                  try {
+                    const conv = await createConversation({
+                      participantId: seller.id,
+                      productId,
+                    });
+                    navigate(`/messages/${conv.id}`);
+                  } catch {
+                    // silently ignore — user can retry
+                  }
+                }}
+              >
+                Contacter
+              </Button>
+            </div>
           </>
+        ) : (
+          <Link to="/dashboard" className="w-full">
+            <Button variant="outline" fullWidth size="md" icon={ExternalLink}>
+              Gérer mon annonce
+            </Button>
+          </Link>
         )}
       </div>
     </motion.div>

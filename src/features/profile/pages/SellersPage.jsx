@@ -5,6 +5,7 @@ import Breadcrumb from "@/shared/ui/Breadcrumb";
 import Avatar from "@/shared/ui/Avatar";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/shared/services/api";
+import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -22,6 +23,7 @@ const stagger = {
 
 export default function SellersPage() {
   const navigate = useNavigate();
+  const { siteName } = useSiteSettings();
 
   const { data: sellersRaw = [], isLoading } = useQuery({
     queryKey: ["sellers"],
@@ -45,7 +47,7 @@ export default function SellersPage() {
           Vendeurs vérifiés
         </h1>
         <p className="mt-1 text-gray-500 dark:text-gray-400">
-          Nos vendeurs de confiance, vérifiés par TG-Market.
+          Nos vendeurs de confiance, vérifiés par {siteName}.
         </p>
       </motion.div>
 

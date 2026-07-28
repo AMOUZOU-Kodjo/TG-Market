@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Search, HelpCircle, MessageCircle, Shield, Tag, Truck, CreditCard, UserCheck, Settings, AlertTriangle, BookOpen } from "lucide-react";
 import { useFaqs } from "@/features/static/hooks/useFaqs";
+import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import { Link } from "react-router-dom";
 import Button from "@/shared/ui/Button";
 
@@ -45,7 +46,7 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
-function AccordionItem({ faq, isOpen, onToggle }) {
+function AccordionItem({ faq, isOpen, onToggle, siteName }) {
   return (
     <motion.div
       variants={itemVariants}
@@ -59,7 +60,7 @@ function AccordionItem({ faq, isOpen, onToggle }) {
           <HelpCircle className="h-4 w-4" />
         </div>
         <span className="flex-1 text-sm font-medium text-gray-900 dark:text-white">
-          {faq.question}
+          {faq.question.replace(/TG-Market/g, siteName)}
         </span>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
@@ -78,7 +79,7 @@ function AccordionItem({ faq, isOpen, onToggle }) {
           >
             <div className="border-t border-gray-100 px-5 py-4 dark:border-gray-800">
               <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-                {faq.answer}
+                {faq.answer.replace(/TG-Market/g, siteName)}
               </p>
             </div>
           </motion.div>
@@ -90,6 +91,7 @@ function AccordionItem({ faq, isOpen, onToggle }) {
 
 export default function FAQPage() {
   const { data: faqs = [], isLoading } = useFaqs();
+  const { siteName } = useSiteSettings();
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [openId, setOpenId] = useState(null);
@@ -112,21 +114,21 @@ export default function FAQPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Hero */}
       <section className="bg-brand-800 px-4 py-16 text-white sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <HelpCircle className="mx-auto mb-4 h-12 w-12 text-white/80" />
-            <h1 className="text-3xl font-bold sm:text-4xl">Questions fréquentes</h1>
-            <p className="mt-3 text-white/80">
-              Trouvez rapidement les réponses à vos questions sur TG-Market
-            </p>
-          </motion.div>
-        </div>
-      </section>
+          <div className="mx-auto max-w-7xl text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <HelpCircle className="mx-auto mb-4 h-12 w-12 text-white/80" />
+              <h1 className="text-3xl font-bold sm:text-4xl">Questions fréquentes</h1>
+              <p className="mt-3 text-white/80">
+                Trouvez rapidement les réponses à vos questions sur {siteName}
+              </p>
+            </motion.div>
+          </div>
+        </section>
 
-      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Search */}
         <div className="relative mb-6">
           <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
@@ -172,6 +174,7 @@ export default function FAQPage() {
               faq={faq}
               isOpen={openId === faq.id}
               onToggle={() => setOpenId(openId === faq.id ? null : faq.id)}
+              siteName={siteName}
             />
           ))}
         </motion.div>

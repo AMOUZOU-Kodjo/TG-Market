@@ -3,9 +3,11 @@ import { Link } from "react-router-dom";
 import { RefreshCw, Home, AlertOctagon, ArrowLeft } from "lucide-react";
 import Button from "@/shared/ui/Button";
 import { useState } from "react";
+import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 
 export default function ErrorPage() {
   const [retrying, setRetrying] = useState(false);
+  const { supportEmail } = useSiteSettings();
 
   const handleRetry = () => {
     setRetrying(true);
@@ -105,8 +107,8 @@ export default function ErrorPage() {
             <p>Heure : {new Date().toLocaleString("fr-FR")}</p>
             <p>
               Si le problème persiste, contactez le support à{" "}
-              <a href="mailto:support@akmarket.tg" className="text-red-800 hover:underline">
-                support@akmarket.tg
+              <a href={`mailto:${supportEmail}`} className="text-red-800 hover:underline">
+                {supportEmail}
               </a>
             </p>
           </div>

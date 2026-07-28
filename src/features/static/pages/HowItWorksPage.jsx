@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import Button from "@/shared/ui/Button";
+import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -28,6 +29,7 @@ function StepImage({ src, alt, className = "" }) {
 }
 
 export default function HowItWorksPage() {
+  const { siteName } = useSiteSettings();
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
       {/* Hero */}
@@ -37,7 +39,7 @@ export default function HowItWorksPage() {
           <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={0}>
             <h1 className="text-4xl font-bold sm:text-5xl">Comment ça marche ?</h1>
             <p className="mt-4 text-lg text-white/80">
-              TG-Market, l'application de seconde main au Togo.<br />
+              {siteName}, l'application de seconde main au Togo.<br />
               Ton style, tes bonnes affaires — vends et achète d'occasion.
             </p>
           </motion.div>
@@ -129,7 +131,7 @@ export default function HowItWorksPage() {
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">C'est parti pour la remise</h3>
                 <p className="mt-2 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
-                  Tu as le choix : remise en main propre, RDV sécurisé chez un partenaire TG-Market (recommandé), ou la livraison.
+                  Tu as le choix : remise en main propre, RDV sécurisé chez un partenaire {siteName} (recommandé), ou la livraison.
                 </p>
               </div>
             </motion.div>
@@ -199,7 +201,7 @@ export default function HowItWorksPage() {
               {
                 image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&h=400&fit=crop",
                 title: "RDV sécurisés",
-                desc: "Un partenaire TG-Market accueille l'échange : environnement sûr, validation QR Code, sérénité maximale !",
+                desc: `Un partenaire ${siteName} accueille l'échange : environnement sûr, validation QR Code, sérénité maximale !`,
                 border: "border-brand-200 dark:border-brand-800/30",
               },
               {
@@ -259,7 +261,7 @@ export default function HowItWorksPage() {
                 C'est ta preuve de sécurité et la clé pour débloquer le paiement.
               </p>
               <p className="mt-3 text-sm font-medium text-yellow-800 dark:text-yellow-400">
-                Sans scan QR, l'échange n'est pas sécurisé par TG-Market.
+                Sans scan QR, l'échange n'est pas sécurisé par {siteName}.
               </p>
             </div>
           </motion.div>
@@ -272,7 +274,7 @@ export default function HowItWorksPage() {
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
             <h2 className="text-3xl font-bold sm:text-4xl">Prêt à commencer ?</h2>
             <p className="mt-4 text-lg text-white/80">
-              Rejoins la communauté TG-Market et trouve de bonnes affaires près de chez toi.
+              Rejoins la communauté {siteName} et trouve de bonnes affaires près de chez toi.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <Link to="/inscription">

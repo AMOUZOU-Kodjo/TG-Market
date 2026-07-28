@@ -25,6 +25,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import Button from "@/shared/ui/Button";
+import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -156,6 +157,7 @@ const testimonials = [
 
 export default function AboutPage() {
   const [openTimeline, setOpenTimeline] = useState(0);
+  const { siteName } = useSiteSettings();
 
   return (
     <div className="min-h-screen">
@@ -180,7 +182,7 @@ export default function AboutPage() {
               <span className="text-yellow-400">Togo</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-white/80">
-              TG-Market connecte les vendeurs et acheteurs à travers tout le Togo.
+              {siteName} connecte les vendeurs et acheteurs à travers tout le Togo.
               Achetez, vendez et échangez en toute confiance.
             </p>
           </motion.div>
@@ -192,7 +194,7 @@ export default function AboutPage() {
           >
             <Link to="/">
               <Button size="lg" className="bg-white text-brand-900 hover:bg-gray-100">
-                Explorer TG-Market
+                Explorer {siteName}
                 <ArrowRight className="ml-1 h-5 w-5" />
               </Button>
             </Link>
@@ -283,7 +285,7 @@ export default function AboutPage() {
                           animate={{ height: "auto", opacity: 1 }}
                           className="mt-3 text-sm leading-relaxed text-gray-600 dark:text-gray-400"
                         >
-                          {item.description}
+                          {item.description.replace(/TG-Market/g, siteName)}
                         </motion.p>
                       )}
                     </div>
@@ -310,7 +312,7 @@ export default function AboutPage() {
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Notre mission</h2>
             <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-gray-600 dark:text-gray-400">
               Rendre le commerce accessible à tous les Togolais. Que vous soyez à Lomé, Kara, Sokodé ou Kpalimé,
-              TG-Market vous permet de vendre et acheter en toute simplicité. Nous croyons que chaque Togolais
+              {siteName} vous permet de vendre et acheter en toute simplicité. Nous croyons que chaque Togolais
               mérite une plateforme fiable, sécurisée et pensée pour lui.
             </p>
           </motion.div>
@@ -350,7 +352,7 @@ export default function AboutPage() {
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{value.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-                  {value.description}
+                  {value.description.replace(/TG-Market/g, siteName)}
                 </p>
               </motion.div>
             ))}
@@ -435,7 +437,7 @@ export default function AboutPage() {
                 </h3>
                 <p className="mt-1 text-sm font-medium text-brand-800 dark:text-brand-400">{member.role}</p>
                 <p className="mt-3 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
-                  {member.bio}
+                  {member.bio.replace(/TG-Market/g, siteName)}
                 </p>
               </motion.div>
             ))}
@@ -507,10 +509,10 @@ export default function AboutPage() {
             className="rounded-2xl bg-brand-800 p-8 text-center text-white sm:p-12"
           >
             <h2 className="text-2xl font-bold sm:text-3xl">
-              Rejoignez TG-Market aujourd{"'"}hui
+              Rejoignez {siteName} aujourd{"'"}hui
             </h2>
             <p className="mx-auto mt-4 max-w-md text-white/80">
-              Que vous soyez vendeur ou acheteur, TG-Market est la meilleure
+              Que vous soyez vendeur ou acheteur, {siteName} est la meilleure
               plateforme pour vos échanges au Togo.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">

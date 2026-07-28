@@ -451,54 +451,54 @@ export default function DashboardProfilePage() {
           </div>
           <Button variant="outline" size="sm" icon={Edit3} onClick={() => setEditModalOpen(true)}>Modifier</Button>
         </div>
-        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-            <div className="rounded-lg bg-gray-50 dark:bg-gray-900/50 p-3">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">Annonces</span>
-                <div className="w-6 h-6 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
-                  <Package className="h-3 w-3 text-brand-600" />
+        <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+          <div className="grid grid-cols-5 gap-1.5">
+            <div className="rounded-md bg-gray-50 dark:bg-gray-900/50 p-2">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[9px] font-medium text-gray-500 uppercase tracking-wider">Annonces</span>
+                <div className="w-5 h-5 rounded bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
+                  <Package className="h-2.5 w-2.5 text-brand-600" />
                 </div>
               </div>
-              <p className="text-base font-bold text-gray-900 dark:text-white">{myProducts.length}</p>
+              <p className="text-sm font-bold text-gray-900 dark:text-white">{myProducts.length}</p>
             </div>
-            <div className="rounded-lg bg-gray-50 dark:bg-gray-900/50 p-3">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">Revenus</span>
-                <div className="w-6 h-6 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
-                  <TrendingUp className="h-3 w-3 text-green-600" />
+            <div className="rounded-md bg-gray-50 dark:bg-gray-900/50 p-2">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[9px] font-medium text-gray-500 uppercase tracking-wider">Revenus</span>
+                <div className="w-5 h-5 rounded bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
+                  <TrendingUp className="h-2.5 w-2.5 text-green-600" />
                 </div>
               </div>
-              <p className="text-base font-bold text-gray-900 dark:text-white">{formatCFA(walletData?.totalEarned ?? 0)}</p>
-              <p className="text-[10px] text-gray-400 mt-0.5">FCFA</p>
+              <p className="text-sm font-bold text-gray-900 dark:text-white">{formatCFA(walletData?.totalEarned ?? 0)}</p>
+              <p className="text-[9px] text-gray-400">FCFA</p>
             </div>
-            <div className="rounded-lg bg-gray-50 dark:bg-gray-900/50 p-3">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">Favoris</span>
-                <div className="w-6 h-6 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
-                  <Heart className="h-3 w-3 text-red-500" />
+            <div className="rounded-md bg-gray-50 dark:bg-gray-900/50 p-2">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[9px] font-medium text-gray-500 uppercase tracking-wider">Favoris</span>
+                <div className="w-5 h-5 rounded bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
+                  <Heart className="h-2.5 w-2.5 text-red-500" />
                 </div>
               </div>
-              <p className="text-base font-bold text-gray-900 dark:text-white">{favoriteProducts.length}</p>
+              <p className="text-sm font-bold text-gray-900 dark:text-white">{favoriteProducts.length}</p>
             </div>
-            <div className="rounded-lg bg-gray-50 dark:bg-gray-900/50 p-3">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">Avis</span>
-                <div className="w-6 h-6 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
-                  <Star className="h-3 w-3 text-amber-500" />
+            <div className="rounded-md bg-gray-50 dark:bg-gray-900/50 p-2">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[9px] font-medium text-gray-500 uppercase tracking-wider">Avis</span>
+                <div className="w-5 h-5 rounded bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
+                  <Star className="h-2.5 w-2.5 text-amber-500" />
                 </div>
               </div>
-              <p className="text-base font-bold text-gray-900 dark:text-white">{myReviews.length}</p>
+              <p className="text-sm font-bold text-gray-900 dark:text-white">{myReviews.length}</p>
             </div>
-            <div className="rounded-lg bg-gray-50 dark:bg-gray-900/50 p-3">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">Messages</span>
-                <div className="w-6 h-6 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
-                  <MessageCircle className="h-3 w-3 text-sky-600" />
+            <div className="rounded-md bg-gray-50 dark:bg-gray-900/50 p-2">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[9px] font-medium text-gray-500 uppercase tracking-wider">Messages</span>
+                <div className="w-5 h-5 rounded bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
+                  <MessageCircle className="h-2.5 w-2.5 text-sky-600" />
                 </div>
               </div>
-              <p className="text-base font-bold text-gray-900 dark:text-white">{(conversationsData?.data || conversationsData || []).reduce((s, c) => s + (c.unreadCount || 0), 0)}</p>
-              <p className="text-[10px] text-gray-400 mt-0.5">non lus</p>
+              <p className="text-sm font-bold text-gray-900 dark:text-white">{(conversationsData?.data || conversationsData || []).reduce((s, c) => s + (c.unreadCount || 0), 0)}</p>
+              <p className="text-[9px] text-gray-400">non lus</p>
             </div>
           </div>
         </div>

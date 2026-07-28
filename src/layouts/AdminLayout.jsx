@@ -15,11 +15,8 @@ import {
   LogOut,
   Shield,
   HelpCircle,
-  TrendingUp,
   Activity,
-  AlertCircle,
 } from "lucide-react";
-import Logo from "@/shared/ui/Logo";
 import { useAuth } from "@/shared/contexts/AuthContext";
 
 export default function AdminLayout() {
@@ -37,32 +34,25 @@ export default function AdminLayout() {
     { to: "/admin/settings", label: "Parametres", icon: Settings },
   ];
 
-  const adminStats = [
-    { label: "Utilisateurs", value: "24 567", icon: Users, color: "blue", change: "+12%" },
-    { label: "Annonces actives", value: "12 456", icon: List, color: "green", change: "+8%" },
-    { label: "Signalements", value: "23", icon: AlertCircle, color: "blue", change: "-5%" },
-    { label: "Ventes", value: "5 678", icon: TrendingUp, color: "blue", change: "+15%" },
-  ];
-
   return (
-    <div className="min-h-screen bg-brand-950">
+    <div className="min-h-screen bg-gray-50">
       <div className="flex">
         {/* Admin Sidebar */}
         <aside
-          className={`fixed lg:sticky top-0 z-40 h-screen bg-brand-900 border-r border-brand-800 transition-all duration-300 flex flex-col ${
+          className={`fixed lg:sticky top-0 z-40 h-screen bg-white border-r border-gray-200 transition-all duration-300 flex flex-col ${
             sidebarOpen ? "w-64" : "w-20"
           } -translate-x-full lg:translate-x-0`}
         >
           {/* Sidebar Header */}
-          <div className="h-16 flex items-center justify-between px-4 border-b border-gray-800">
+          <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-brand-900 flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center shrink-0">
                 <Shield className="w-4 h-4 text-white" />
               </div>
               {sidebarOpen && (
                 <div>
-                  <span className="text-lg font-bold text-white">TG</span>
-                  <span className="text-xs ml-1 px-1.5 py-0.5 bg-brand-700/20 text-brand-400 rounded font-medium">
+                  <span className="text-lg font-bold text-gray-900">TG</span>
+                  <span className="text-xs ml-1 px-1.5 py-0.5 bg-brand-50 text-brand-600 rounded font-medium">
                     ADMIN
                   </span>
                 </div>
@@ -70,27 +60,27 @@ export default function AdminLayout() {
             </Link>
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="hidden lg:flex p-1.5 rounded-lg hover:bg-gray-800 text-gray-400 transition-colors"
+              className="hidden lg:flex p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors"
             >
               <ChevronLeft className={`w-4 h-4 transition-transform ${!sidebarOpen ? "rotate-180" : ""}`} />
             </button>
           </div>
 
           {/* Admin User */}
-          <div className={`p-4 border-b border-gray-800 ${!sidebarOpen ? "px-2" : ""}`}>
+          <div className={`p-4 border-b border-gray-100 ${!sidebarOpen ? "px-2" : ""}`}>
             <div className={`flex items-center gap-3 ${!sidebarOpen ? "justify-center" : ""}`}>
               <div className="relative shrink-0">
                 <img
                   src={user.avatar}
                   alt={user.name}
-                  className="w-10 h-10 rounded-full object-cover ring-2 ring-brand-700/30"
+                  className="w-10 h-10 rounded-full object-cover ring-2 ring-brand-100"
                 />
-                <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-brand-700 rounded-full border-2 border-gray-900" />
+                <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-brand-600 rounded-full border-2 border-white" />
               </div>
               {sidebarOpen && (
                 <div className="min-w-0">
-                  <p className="font-semibold text-white text-sm truncate">{user.name}</p>
-                  <p className="text-xs text-brand-400 font-medium">Administrateur</p>
+                  <p className="font-semibold text-gray-900 text-sm truncate">{user.name}</p>
+                  <p className="text-xs text-brand-600 font-medium">Administrateur</p>
                 </div>
               )}
             </div>
@@ -106,12 +96,12 @@ export default function AdminLayout() {
                   to={item.to}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                     isActive
-                      ? "bg-brand-700/10 text-brand-400"
-                      : "text-gray-400 hover:bg-gray-800 hover:text-gray-200"
+                      ? "bg-brand-50 text-brand-700"
+                      : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
                   } ${!sidebarOpen ? "justify-center" : ""}`}
                   title={!sidebarOpen ? item.label : undefined}
                 >
-                  <item.icon className={`w-5 h-5 shrink-0 ${isActive ? "text-brand-400" : ""}`} />
+                  <item.icon className={`w-5 h-5 shrink-0 ${isActive ? "text-brand-600" : ""}`} />
                   {sidebarOpen && <span>{item.label}</span>}
                 </Link>
               );
@@ -119,16 +109,16 @@ export default function AdminLayout() {
           </nav>
 
           {/* Sidebar Footer */}
-          <div className="p-3 border-t border-gray-800 space-y-1">
+          <div className="p-3 border-t border-gray-100 space-y-1">
             <Link
               to="/"
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-gray-200 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
             >
               <Activity className="w-5 h-5 shrink-0" />
               {sidebarOpen && <span>Retour au site</span>}
             </Link>
             <button
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-brand-400 hover:bg-brand-700/10 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
             >
               <LogOut className="w-5 h-5 shrink-0" />
               {sidebarOpen && <span>Deconnexion</span>}
@@ -139,63 +129,36 @@ export default function AdminLayout() {
         {/* Main Content */}
         <div className="flex-1 min-w-0">
           {/* Admin Header */}
-          <header className="sticky top-0 z-30 h-16 bg-white/80 lg:bg-brand-900/80 backdrop-blur-xl border-b border-gray-200 lg:border-brand-800 flex items-center justify-between px-4 sm:px-6">
+          <header className="sticky top-0 z-30 h-16 bg-white/80 backdrop-blur-xl border-b border-gray-200 flex items-center justify-between px-4 sm:px-6">
             <div className="flex items-center gap-3">
               <div className="relative hidden sm:block">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 lg:text-gray-500" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Rechercher dans l'admin..."
-                   className="pl-10 pr-4 py-2 bg-gray-100 lg:bg-brand-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-700/50 text-gray-900 lg:text-white placeholder-gray-500 w-72"
+                  className="pl-10 pr-4 py-2 bg-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-gray-900 placeholder-gray-400 w-72"
                 />
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-brand-50 lg:bg-brand-700/10 text-brand-600 lg:text-brand-400 text-xs font-medium rounded-lg">
+              <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-brand-50 text-brand-600 text-xs font-medium rounded-lg">
                 <Shield className="w-3.5 h-3.5" />
-                Mode Adminnistrateur
+                Mode Administrateur
               </span>
-              <button className="relative p-2 rounded-lg hover:bg-gray-100 lg:hover:bg-gray-800 text-gray-500 lg:text-gray-400 transition-colors">
+              <button className="relative p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors">
                 <Bell className="w-5 h-5" />
-                <span className="absolute top-1 right-1 w-4 h-4 bg-brand-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                <span className="absolute top-1 right-1 w-4 h-4 bg-brand-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                   7
                 </span>
               </button>
-              <Link to="/faq" className="p-2 rounded-lg hover:bg-gray-100 lg:hover:bg-gray-800 text-gray-500 lg:text-gray-400 transition-colors">
+              <Link to="/faq" className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors">
                 <HelpCircle className="w-5 h-5" />
               </Link>
             </div>
           </header>
 
-          {/* Admin Stats */}
-          <div className="px-4 sm:px-6 py-4">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-              {adminStats.map((stat, i) => (
-                <div
-                  key={i}
-                   className="bg-brand-900 rounded-xl p-4 border border-brand-800"
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="text-xs text-gray-500 mb-1">{stat.label}</p>
-                      <p className="text-xl font-bold text-white">{stat.value}</p>
-                    </div>
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-${stat.color}-500/10`}>
-                      <stat.icon className={`w-5 h-5 text-${stat.color}-400`} />
-                    </div>
-                  </div>
-                  <p className={`text-xs mt-2 font-medium ${
-                    stat.change.startsWith("+") ? "text-brand-600" : "text-red-400"
-                  }`}>
-                    {stat.change} ce mois
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* Page Content */}
-          <main className="px-4 sm:px-6 pb-24 lg:pb-8">
+          <main className="px-4 sm:px-6 py-6 pb-24 lg:pb-8">
             <motion.div
               key={location.pathname}
               initial={{ opacity: 0, y: 8 }}

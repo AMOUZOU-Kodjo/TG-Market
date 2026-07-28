@@ -158,12 +158,12 @@ export default function AdminCategoriesPage() {
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           style={{ paddingLeft: `${16 + level * 24}px` }}
-          className="flex items-center gap-2 py-2 hover:bg-gray-800/50 rounded-lg"
+          className="flex items-center gap-2 py-2 hover:bg-gray-50 rounded-lg"
         >
           <div className="flex-1 flex items-center gap-2 min-w-0">
             <span
               onClick={() => toggleExpand(cat.id)}
-              className={`w-6 h-6 flex items-center justify-center text-gray-400 hover:text-white cursor-pointer ${isExpanded ? "rotate-90" : ""}`}
+              className={`w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-700 cursor-pointer ${isExpanded ? "rotate-90" : ""}`}
             >
               {hasChildren ? <ChevronRight className="w-4 h-4" /> : <div className="w-4 h-4" />}
             </span>
@@ -174,19 +174,19 @@ export default function AdminCategoriesPage() {
               <span style={{ color: cat.color }}>{cat.icon === "Package" ? "📦" : "★"}</span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">{cat.name}</p>
-              <p className="text-xs text-gray-500 truncate">{cat.slug}</p>
+              <p className="text-sm font-medium text-gray-900 truncate">{cat.name}</p>
+              <p className="text-xs text-gray-400 truncate">{cat.slug}</p>
             </div>
             <Badge variant="secondary" className="text-xs">
               {cat.productCount} annonces
             </Badge>
           </div>
           <div className="flex items-center gap-1">
-            <button onClick={() => moveCategory(cat.id, "up")} className="p-1.5 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white" title="Monter" disabled={cat.sortOrder === 0}><ChevronUp className="w-4 h-4" /></button>
-            <button onClick={() => moveCategory(cat.id, "down")} className="p-1.5 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white" title="Descendre"><ChevronDown className="w-4 h-4" /></button>
-            <button onClick={() => openEdit(cat)} className="p-1.5 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white" title="Modifier"><Edit2 className="w-4 h-4" /></button>
-            <button onClick={() => openCreate(cat.id)} className="p-1.5 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white" title="Sous-catégorie"><Plus className="w-4 h-4" /></button>
-            <button onClick={() => deleteMutation.mutate(cat.id)} className="p-1.5 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-red-400" title="Supprimer"><Trash2 className="w-4 h-4" /></button>
+            <button onClick={() => moveCategory(cat.id, "up")} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Monter" disabled={cat.sortOrder === 0}><ChevronUp className="w-4 h-4" /></button>
+            <button onClick={() => moveCategory(cat.id, "down")} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Descendre"><ChevronDown className="w-4 h-4" /></button>
+            <button onClick={() => openEdit(cat)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Modifier"><Edit2 className="w-4 h-4" /></button>
+            <button onClick={() => openCreate(cat.id)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Sous-catégorie"><Plus className="w-4 h-4" /></button>
+            <button onClick={() => deleteMutation.mutate(cat.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500" title="Supprimer"><Trash2 className="w-4 h-4" /></button>
           </div>
         </motion.div>
 
@@ -208,25 +208,25 @@ export default function AdminCategoriesPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h1 className="text-xl font-bold text-white">Catégories</h1>
+        <h1 className="text-xl font-bold text-gray-900">Catégories</h1>
         <button onClick={() => openCreate()} className="flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-700 rounded-xl text-white text-sm font-medium">
           <Plus className="w-4 h-4" /> Nouvelle catégorie
         </button>
       </div>
 
-      <div className="rounded-2xl border border-gray-800 bg-gray-900 overflow-hidden">
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-8 w-8 animate-spin text-brand-600" />
           </div>
         ) : categories.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-gray-500">
+          <div className="flex flex-col items-center justify-center py-20 text-gray-400">
             <FolderTree className="w-12 h-12 mb-3 opacity-50" />
             <p>Aucune catégorie</p>
-            <button onClick={() => openCreate()} className="mt-4 text-sm text-brand-400 hover:underline">Créer la première</button>
+            <button onClick={() => openCreate()} className="mt-4 text-sm text-brand-600 hover:underline">Créer la première</button>
           </div>
         ) : (
-          <div className="divide-y divide-gray-800 p-3">
+          <div className="divide-y divide-gray-100 p-3">
             {roots.map((root) => <CategoryNode key={root.id} cat={root} />)}
           </div>
         )}
@@ -245,18 +245,18 @@ export default function AdminCategoriesPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-gray-900 rounded-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between border-b border-gray-800 px-6 py-4">
-                <h2 className="text-lg font-semibold text-white">
+              <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+                <h2 className="text-lg font-semibold text-gray-900">
                   {modal.type === "create" ? (modal.parentId ? "Nouvelle sous-catégorie" : "Nouvelle catégorie") : "Modifier la catégorie"}
                 </h2>
-                <button onClick={closeModal} className="p-2 rounded-lg hover:bg-gray-800 text-gray-400 hover:text-white"><X className="w-5 h-5" /></button>
+                <button onClick={closeModal} className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700"><X className="w-5 h-5" /></button>
               </div>
               <form onSubmit={handleSubmit} className="p-6 space-y-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-1">Nom</label>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Nom</label>
                   <input
                     type="text"
                     value={form.name}
@@ -264,36 +264,36 @@ export default function AdminCategoriesPage() {
                       setForm({ ...form, name: e.target.value });
                       if (!form.slug) setForm({ ...form, slug: slugify(e.target.value) });
                     }}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-600/50"
+                    className="w-full px-4 py-2 bg-gray-100 border-0 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
                     placeholder="Ex: Téléphones"
                     required
                     autoFocus
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-1">Slug (URL)</label>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Slug (URL)</label>
                   <input
                     type="text"
                     value={form.slug}
                     onChange={(e) => setForm({ ...form, slug: e.target.value.toLowerCase() })}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-600/50"
+                    className="w-full px-4 py-2 bg-gray-100 border-0 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
                     placeholder="Ex: telephones"
                     required
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-400 mb-1">Icône</label>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Icône</label>
                     <select
                       value={form.icon}
                       onChange={(e) => setForm({ ...form, icon: e.target.value })}
-                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-600/50"
+                      className="w-full px-4 py-2 bg-gray-100 border-0 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
                     >
                       {ICONS.map((i) => <option key={i} value={i}>{i}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-400 mb-1">Couleur</label>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Couleur</label>
                     <input
                       type="color"
                       value={form.color}
@@ -303,11 +303,11 @@ export default function AdminCategoriesPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-1">Catégorie parente</label>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Catégorie parente</label>
                   <select
                     value={form.parentId ?? ""}
                     onChange={(e) => setForm({ ...form, parentId: e.target.value ? Number(e.target.value) : null })}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-600/50"
+                    className="w-full px-4 py-2 bg-gray-100 border-0 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
                   >
                     <option value="">— Aucune (mega-catégorie) —</option>
                     {categories.filter((c) => c.parentId === null).map((c) => (
@@ -316,17 +316,17 @@ export default function AdminCategoriesPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-1">Ordre d'affichage</label>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Ordre d'affichage</label>
                   <input
                     type="number"
                     value={form.sortOrder}
                     onChange={(e) => setForm({ ...form, sortOrder: parseInt(e.target.value) || 0 })}
-                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-600/50"
+                    className="w-full px-4 py-2 bg-gray-100 border-0 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
                     min="0"
                   />
                 </div>
                 <div className="flex gap-3 pt-2">
-                  <button type="button" onClick={closeModal} className="flex-1 px-4 py-2 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700">Annuler</button>
+                  <button type="button" onClick={closeModal} className="flex-1 px-4 py-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200">Annuler</button>
                   <button type="submit" disabled={createMutation.isPending || updateMutation.isPending} className="flex-1 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white disabled:opacity-50">
                     {(createMutation.isPending || updateMutation.isPending) ? "Enregistrement..." : "Enregistrer"}
                   </button>

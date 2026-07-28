@@ -69,7 +69,7 @@ app.get('/api/stats/public', async (_req, res) => {
 app.get('/api/settings/public', async (_req, res) => {
   try {
     const rows = await prisma.siteSetting.findMany({
-      where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode'] } },
+      where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode', 'support_email'] } },
     });
     const map = {};
     for (const row of rows) map[row.key] = row.value;
@@ -78,9 +78,10 @@ app.get('/api/settings/public', async (_req, res) => {
       siteVersion: map.site_version ?? '1.0.0',
       siteDescription: map.site_description ?? 'La plateforme togolaise de vente et d\'achat d\'articles d\'occasion',
       maintenanceMode: map.maintenance_mode === 'true',
+      supportEmail: map.support_email ?? 'support@akmarket.tg',
     });
   } catch {
-    res.json({ siteName: 'TG-Market', siteVersion: '1.0.0', siteDescription: '', maintenanceMode: false });
+    res.json({ siteName: 'TG-Market', siteVersion: '1.0.0', siteDescription: '', maintenanceMode: false, supportEmail: 'support@akmarket.tg' });
   }
 });
 

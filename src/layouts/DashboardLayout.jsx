@@ -21,7 +21,6 @@ import {
   User,
   ShieldCheck,
   LayoutDashboard,
-  Handshake,
 } from "lucide-react";
 import Logo from "@/shared/ui/Logo";
 import { useAuth } from "@/shared/contexts/AuthContext";
@@ -129,16 +128,6 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
       >
         <Package className="w-4 h-4 shrink-0" />
         {sidebarOpen && <span>Mes Ventes et Achats</span>}
-      </Link>
-
-      <Link
-        to="/dashboard/propositions"
-        onClick={onMobileLinkClick}
-        className={`mx-3 mt-1 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
-        title={!sidebarOpen ? "Propositions de lots" : undefined}
-      >
-        <Handshake className="w-4 h-4 shrink-0" />
-        {sidebarOpen && <span>Propositions de lots</span>}
       </Link>
 
       {sidebarOpen && <div className="mx-3 mt-4 border-t border-gray-100 dark:border-gray-700" />}

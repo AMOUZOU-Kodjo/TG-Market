@@ -1,5 +1,7 @@
+import prisma from '../../config/database.js';
 import * as adminService from './admin.service.js';
 import { buildPaginationMeta } from '../../utils/pagination.js';
+import { sendEmail } from '../../utils/email.js';
 import { execSync } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -249,6 +251,79 @@ export async function getPublicSettings(_req, res, next) {
   try {
     const settings = await adminService.getPublicSettings();
     res.json(settings);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getContactMessages(req, res, next) {
+  try {
+    const { page, perPage, skip } = req.pagination;
+    const [data, total] = await Promise.all([
+      prisma.contactMessage.findMany({
+        skip,
+        take: perPage,
+        orderBy: { created_at: 'desc' },
+      }),
+      prisma.contactMessage.count(),
+    ]);
+    res.json({ data, meta: buildPaginationMeta(total, page, perPage) });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getContactMessage(req, res, next) {
+  try {
+    const message = await prisma.contactMessage.findUnique({
+      where: { id: Number(req.params.id) },
+    });
+    if (!message) return res.status(404).json({ error: 'Message introuvable' });
+    res.json(message);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function markContactMessageRead(req, res, next) {
+  try {
+    const message = await prisma.contactMessage.update({
+      where: { id: Number(req.params.id) },
+      data: { read: true },
+    });
+    res.json(message);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function replyContactMessage(req, res, next) {
+  try {
+    const { reply } = req.body;
+    if (!reply || !reply.trim()) {
+      return res.status(400).json({ error: 'Le message de réponse est requis' });
+    }
+    const message = await prisma.contactMessage.findUnique({
+      where: { id: Number(req.params.id) },
+    });
+    if (!message) return res.status(404).json({ error: 'Message introuvable' });
+    await sendEmail({
+      to: message.email,
+      subject: `Re: ${message.subject || 'Votre message'}`,
+      html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+        <h2 style="color:#01796F;">TG-Market — Réponse à votre message</h2>
+        <p><strong>Votre message :</strong></p>
+        <blockquote style="background:#f4f4f4;padding:15px;border-radius:8px;margin:10px 0;color:#555">${message.message}</blockquote>
+        <p><strong>Notre réponse :</strong></p>
+        <div style="background:#f0faf8;padding:15px;border-radius:8px;margin:10px 0;color:#333">${reply}</div>
+        <p style="color:#999;font-size:12px;">Cordialement,<br/>L'équipe TG-Market</p>
+      </div>`,
+    });
+    await prisma.contactMessage.update({
+      where: { id: Number(req.params.id) },
+      data: { read: true },
+    });
+    res.json({ success: true, message: 'Réponse envoyée' });
   } catch (err) {
     next(err);
   }

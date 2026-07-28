@@ -75,5 +75,9 @@ router.put('/kyc/:id/reject', adminController.rejectKyc);
 router.get('/escrow', pagination, adminController.getEscrowTransactions);
 router.get('/activity', adminController.getRecentActivity);
 router.post('/seed', adminController.runSeed);
+router.get('/contact-messages', pagination, adminController.getContactMessages);
+router.get('/contact-messages/:id', adminController.getContactMessage);
+router.put('/contact-messages/:id/read', adminController.markContactMessageRead);
+router.post('/contact-messages/:id/reply', adminController.replyContactMessage);
 
 export default router;

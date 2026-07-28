@@ -102,30 +102,32 @@ function ProductsTab({ products }) {
                 negotiable={product.negotiable}
                 onClick={() => navigate(`/annonce/${product.id}`)}
               />
-              <div className="flex items-center justify-center gap-2 border border-t-0 border-gray-100 dark:border-gray-800 rounded-b-2xl bg-white dark:bg-gray-800 px-3 py-2.5">
+              <div className="flex items-center justify-between gap-1 border border-t-0 border-gray-100 dark:border-gray-800 rounded-b-2xl bg-white dark:bg-gray-800 px-2 py-2">
+                <span className="flex items-center gap-1 text-xs text-gray-400" title="Vues">
+                  <Eye className="h-3 w-3" />
+                  {product.views ?? 0}
+                </span>
+                <div className="flex items-center gap-1">
                 <button
                   onClick={(e) => { e.stopPropagation(); navigate(`/annonce/${product.id}`); }}
-                  className="flex items-center gap-1.5 rounded-lg bg-brand-50 px-3 py-1.5 text-xs font-medium text-brand-700 transition-colors hover:bg-brand-100 dark:bg-brand-900/20 dark:text-brand-400 dark:hover:bg-brand-900/30"
-                  title="Voir"
+                  className="rounded-lg bg-brand-50 p-1.5 text-brand-700 transition-colors hover:bg-brand-100 dark:bg-brand-900/20 dark:text-brand-400 dark:hover:bg-brand-900/30"
+                  title="Voir l'annonce"
                 >
                   <Eye className="h-3.5 w-3.5" />
-                  Vue
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); navigate(`/modifier/${product.id}`); }}
-                  className="flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/30"
-                  title="Modifier"
+                  className="rounded-lg bg-blue-50 p-1.5 text-blue-700 transition-colors hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/30"
+                  title="Modifier l'annonce"
                 >
                   <Edit3 className="h-3.5 w-3.5" />
-                  Modifier
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); handleDelete(product); }}
-                  className="flex items-center gap-1.5 rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 transition-colors hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
-                  title="Supprimer"
+                  className="rounded-lg bg-red-50 p-1.5 text-red-700 transition-colors hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
+                  title="Supprimer l'annonce"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
-                  Supp
                 </button>
               </div>
             </div>

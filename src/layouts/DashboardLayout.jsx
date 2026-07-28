@@ -78,7 +78,7 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
                 <h2 className="text-2xl font-bold tracking-tight">{formatCFA(totalEarned)}</h2>
               </div>
               <button
-                onClick={() => { onMobileLinkClick(); navigate("/dashboard/analytics"); }}
+                onClick={() => { onMobileLinkClick(); navigate("/portefeuille"); }}
                 className="rounded-xl border border-white/25 bg-white/15 px-5 py-3 text-sm font-medium text-white backdrop-blur transition-all hover:bg-white/20"
               >
                 Voir →

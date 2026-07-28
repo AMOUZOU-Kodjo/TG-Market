@@ -22,7 +22,7 @@ function EscrowRow({ escrow, role }) {
   const StatusIcon = status.icon;
 
   return (
-    <div className="flex items-center gap-4 rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+    <div className="flex items-center gap-4 rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-800">
       <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 shrink-0">
         <Package className="h-6 w-6 text-gray-400" />
       </div>
@@ -69,11 +69,11 @@ export default function HistoryPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+        <div className="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-800">
           <p className="text-xs text-gray-500 dark:text-gray-400">Ventes</p>
           <p className="text-2xl font-bold text-brand-800 dark:text-brand-400">{sales.length}</p>
         </div>
-        <div className="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+        <div className="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-800">
           <p className="text-xs text-gray-500 dark:text-gray-400">Achats</p>
           <p className="text-2xl font-bold text-brand-800 dark:text-brand-400">{purchases.length}</p>
         </div>
@@ -86,11 +86,11 @@ export default function HistoryPage() {
           Mes Ventes
         </h2>
         {isLoading ? (
-          <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900">
+          <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
             <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-800" />
           </div>
         ) : sales.length === 0 ? (
-          <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900">
+          <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
             <Package className="mx-auto h-10 w-10 text-gray-300" />
             <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">Aucune vente pour le moment</p>
           </div>
@@ -110,11 +110,11 @@ export default function HistoryPage() {
           Mes Achats
         </h2>
         {isLoading ? (
-          <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900">
+          <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
             <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-800" />
           </div>
         ) : purchases.length === 0 ? (
-          <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900">
+          <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
             <ShoppingCart className="mx-auto h-10 w-10 text-gray-300" />
             <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">Aucun achat pour le moment</p>
           </div>

@@ -99,7 +99,7 @@ export default function ErrorPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="mx-auto mt-12 max-w-md rounded-2xl border border-gray-100 bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-900/50"
+          className="mx-auto mt-12 max-w-md rounded-2xl border border-gray-100 bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-800/50"
         >
           <div className="space-y-2 text-left text-xs text-gray-500 dark:text-gray-400">
             <p className="font-medium text-gray-700 dark:text-gray-300">Informations de diagnostic :</p>

@@ -157,7 +157,7 @@ export default function RegisterPage() {
             <input
               type="tel"
               placeholder="90 12 34 56"
-              className="w-full rounded-r-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-500 dark:focus:border-red-800 dark:focus:ring-red-800/20"
+              className="w-full rounded-r-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500 dark:focus:border-red-800 dark:focus:ring-red-800/20"
               {...register("phone")}
             />
           </div>
@@ -177,7 +177,7 @@ export default function RegisterPage() {
               <MapPin className="h-5 w-5" />
             </div>
             <select
-              className="w-full appearance-none rounded-xl border border-gray-300 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 transition-colors focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-red-800 dark:focus:ring-red-800/20"
+              className="w-full appearance-none rounded-xl border border-gray-300 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 transition-colors focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-red-800 dark:focus:ring-red-800/20"
               {...register("city")}
             >
               <option value="">Sélectionnez votre ville</option>

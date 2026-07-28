@@ -40,7 +40,7 @@ function OverviewTab() {
     <div className="space-y-6">
       <DashboardStats />
 
-      <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
+      <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-800">
         <h3 className="mb-4 text-base font-semibold text-gray-900 dark:text-white">
           Annonces récentes
         </h3>
@@ -81,17 +81,17 @@ function OrdersTab() {
         Mes commandes
       </h3>
       {isLoading ? (
-        <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900">
+        <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-800" />
           <p className="mt-3 text-sm text-gray-500">Chargement...</p>
         </div>
       ) : escrows.length === 0 ? (
-        <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900">
+        <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
           <ShoppingCart className="mx-auto h-10 w-10 text-gray-300" />
           <p className="mt-3 text-sm text-gray-500">Aucune commande pour le moment</p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900">
+        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -201,17 +201,17 @@ function BundleProposalsTab() {
         Propositions de lots
       </h3>
       {isLoading ? (
-        <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900">
+        <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-800" />
           <p className="mt-3 text-sm text-gray-500">Chargement...</p>
         </div>
       ) : proposals.length === 0 ? (
-        <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900">
+        <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
           <Handshake className="mx-auto h-10 w-10 text-gray-300" />
           <p className="mt-3 text-sm text-gray-500">Aucune proposition reçue</p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900">
+        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -270,7 +270,7 @@ function BundleProposalsTab() {
                               <button className="rounded-lg bg-gray-50 p-1.5 text-gray-500 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700" title="Message">
                                 <MessageCircle className="h-4 w-4" />
                               </button>
-                              <div className="absolute right-0 top-full z-10 mt-1 hidden w-64 rounded-xl border border-gray-200 bg-white p-3 text-xs text-gray-700 shadow-lg group-hover:block dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                              <div className="absolute right-0 top-full z-10 mt-1 hidden w-64 rounded-xl border border-gray-200 bg-white p-3 text-xs text-gray-700 shadow-lg group-hover:block dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
                                 {p.message}
                               </div>
                             </div>
@@ -308,19 +308,19 @@ function AnalyticsTab() {
       </h3>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
+        <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-800">
           <p className="text-sm text-gray-500 dark:text-gray-400">Vues totales</p>
           <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
             {(myProductsData?.data?.reduce((s, p) => s + (p.views || 0), 0) ?? 0).toLocaleString("fr-FR")}
           </p>
         </div>
-        <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
+        <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-800">
           <p className="text-sm text-gray-500 dark:text-gray-400">Revenus totaux</p>
           <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
             {formatCFA(walletData?.totalEarned ?? 0)}
           </p>
         </div>
-        <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
+        <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-800">
           <p className="text-sm text-gray-500 dark:text-gray-400">Annonces actives</p>
           <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
             {products.filter((p) => p.status === "active").length}
@@ -328,7 +328,7 @@ function AnalyticsTab() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
+      <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-800">
         <h4 className="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
           Produits les plus vus
         </h4>

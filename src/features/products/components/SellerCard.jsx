@@ -29,7 +29,7 @@ export default function SellerCard({ seller, productId }) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
-      className="rounded-2xl    p-5  dark:border-gray-800 dark:bg-gray-900"
+      className="rounded-2xl    p-5  dark:border-gray-800 dark:bg-gray-800"
     >
       <div className="flex  items-start gap-4">
         <Avatar src={seller.avatar} name={seller.name} size="lg" verified={seller.verified} />

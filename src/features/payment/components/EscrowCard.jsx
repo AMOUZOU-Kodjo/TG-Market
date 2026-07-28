@@ -19,7 +19,7 @@ export default function EscrowCard({ transaction, onClick }) {
     <motion.div
       whileHover={{ y: -2 }}
       onClick={onClick}
-      className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-4 transition-shadow hover:shadow-md cursor-pointer dark:border-gray-800 dark:bg-gray-900"
+      className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-4 transition-shadow hover:shadow-md cursor-pointer dark:border-gray-800 dark:bg-gray-800"
     >
       <img src={transaction.productImage} alt="" className="h-14 w-14 rounded-xl object-cover" />
       <div className="flex-1 min-w-0">

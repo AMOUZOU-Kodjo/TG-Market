@@ -20,6 +20,7 @@ import {
   LoginPage,
   RegisterPage,
   ForgotPasswordPage,
+  ResetPasswordPage,
   CategoryPage,
   SearchResultsPage,
   ProductDetailPage,
@@ -243,6 +244,7 @@ function App() {
                             }
                           />
                           <Route path="/mot-de-passe-oublie" element={<ForgotPasswordPage />} />
+                          <Route path="/reinitialisation" element={<ResetPasswordPage />} />
                         </Route>
 
                         <Route

@@ -95,7 +95,7 @@ export default function NotificationsPage() {
           </div>
           <div className="space-y-3">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+              <div key={i} className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-800">
                 <div className="h-10 w-10 animate-pulse rounded-xl bg-gray-200 dark:bg-gray-700" />
                 <div className="flex-1 space-y-2">
                   <div className="h-4 w-48 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
@@ -170,7 +170,7 @@ export default function NotificationsPage() {
         variants={listVariants}
         initial="hidden"
         animate="visible"
-        className="divide-y divide-gray-100 rounded-2xl border border-gray-100 bg-white dark:divide-gray-800 dark:border-gray-800 dark:bg-gray-900"
+        className="divide-y divide-gray-100 rounded-2xl border border-gray-100 bg-white dark:divide-gray-800 dark:border-gray-800 dark:bg-gray-800"
       >
         <AnimatePresence mode="popLayout">
           {filteredNotifications.map((notification) => {

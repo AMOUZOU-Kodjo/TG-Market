@@ -94,7 +94,7 @@ export default function MakeOfferPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 h-full"
+              className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-800 h-full"
             >
               <div className="relative aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800">
                 {product.images?.[activeImage] ? (
@@ -109,7 +109,7 @@ export default function MakeOfferPage() {
                   </div>
                 )}
                 {product.condition && (
-                  <div className="absolute right-2 top-2 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold text-gray-700 shadow-sm backdrop-blur-sm dark:bg-gray-900/90 dark:text-gray-300">
+                  <div className="absolute right-2 top-2 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold text-gray-700 shadow-sm backdrop-blur-sm dark:bg-gray-800/90 dark:text-gray-300">
                     {product.condition === "new" ? "Neuf" : product.condition === "like_new" ? "Très bon état" : product.condition === "good" ? "Bon état" : product.condition === "fair" ? "Usé" : product.condition}
                   </div>
                 )}
@@ -167,7 +167,7 @@ export default function MakeOfferPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="sticky top-8 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+              className="sticky top-8 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-800"
             >
               <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
                 Votre offre

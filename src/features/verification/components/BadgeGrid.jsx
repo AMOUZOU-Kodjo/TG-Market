@@ -39,8 +39,8 @@ export default function BadgeGrid({ badges = [] }) {
             whileHover={{ y: -4, scale: 1.02 }}
             className={`relative overflow-hidden rounded-2xl border p-4 transition-shadow ${
               badge.earned
-                ? "border-gray-100 bg-white shadow-sm hover:shadow-md dark:border-gray-800 dark:bg-gray-900"
-                : "border-gray-100 bg-gray-50/50 dark:border-gray-800 dark:bg-gray-900/50"
+                ? "border-gray-100 bg-white shadow-sm hover:shadow-md dark:border-gray-800 dark:bg-gray-800"
+                : "border-gray-100 bg-gray-50/50 dark:border-gray-800 dark:bg-gray-800/50"
             }`}
           >
             <div className={`mb-3 flex h-10 w-10 items-center justify-center rounded-xl ${badge.color}`}>

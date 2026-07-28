@@ -140,7 +140,7 @@ export default function BundleDetailPage() {
         <div className="mb-4 flex items-center gap-3">
           <button
             onClick={() => navigate(-1)}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-800"
           >
             <ArrowLeft className="h-5 w-5 text-gray-700 dark:text-gray-300" />
           </button>
@@ -162,7 +162,7 @@ export default function BundleDetailPage() {
             <motion.div
               {...fadeUp}
               transition={{ delay: 0.1 }}
-              className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+              className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-800"
             >
               <h3 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
                 À propos de ce lot
@@ -198,7 +198,7 @@ export default function BundleDetailPage() {
             <motion.div
               {...fadeUp}
               transition={{ delay: 0.15 }}
-              className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+              className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-800"
             >
               <h3 className="mb-4 flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white">
                 <Package className="h-5 w-5 text-brand-800" />
@@ -249,7 +249,7 @@ export default function BundleDetailPage() {
               <motion.div
                 {...fadeUp}
                 transition={{ delay: 0.2 }}
-                className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+                className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-800"
               >
                 <h3 className="mb-4 text-base font-semibold text-gray-900 dark:text-white">
                   Résumé du lot
@@ -326,7 +326,7 @@ export default function BundleDetailPage() {
                           value={proposedPrice}
                           onChange={(e) => setProposedPrice(e.target.value)}
                           placeholder="ex: 25000"
-                          className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-400/20 dark:border-gray-600 dark:bg-gray-900 dark:text-white"
+                          className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-400/20 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                         />
                       </div>
                     </div>
@@ -337,7 +337,7 @@ export default function BundleDetailPage() {
                         onChange={(e) => setProposalMessage(e.target.value)}
                         placeholder="Expliquez votre proposition..."
                         rows={3}
-                        className="w-full resize-none rounded-xl border border-gray-200 bg-white p-2.5 text-sm focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-400/20 dark:border-gray-600 dark:bg-gray-900 dark:text-white"
+                        className="w-full resize-none rounded-xl border border-gray-200 bg-white p-2.5 text-sm focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-400/20 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                       />
                     </div>
                     <Button
@@ -375,7 +375,7 @@ export default function BundleDetailPage() {
                     </h4>
                     <div className="space-y-2">
                       {proposalsData.data.slice(0, 3).map((p) => (
-                        <div key={p.id} className="rounded-lg bg-white p-3 text-sm dark:bg-gray-900">
+                        <div key={p.id} className="rounded-lg bg-white p-3 text-sm dark:bg-gray-800">
                           <div className="flex items-center justify-between">
                             <span className="font-medium text-gray-900 dark:text-white">
                               {[p.buyer?.firstName, p.buyer?.lastName].filter(Boolean).join(" ")}

@@ -167,7 +167,7 @@ export default function ContactPage() {
             >
               <div className="space-y-5">
                 {contactInfo.map((item, i) => (
-                  <div key={i} className="flex items-start gap-4 rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-900">
+                  <div key={i} className="flex items-start gap-4 rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-800">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-100 dark:bg-brand-900/30">
                       <item.icon className="h-5 w-5 text-brand-700 dark:text-brand-400" />
                     </div>

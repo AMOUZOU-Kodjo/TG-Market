@@ -28,7 +28,7 @@ export default function CategoryCard({
       transition={{ type: "spring", stiffness: 400, damping: 20 }}
       onClick={onClick}
       className={cn(
-        "cursor-pointer rounded-2xl border border-gray-100 bg-white p-4 transition-shadow hover:shadow-md dark:border-gray-800 dark:bg-gray-900",
+        "cursor-pointer rounded-2xl border border-gray-100 bg-white p-4 transition-shadow hover:shadow-md dark:border-gray-800 dark:bg-gray-800",
         className
       )}
       {...rest}

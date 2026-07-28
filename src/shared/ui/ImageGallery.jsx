@@ -46,13 +46,13 @@ export default function ImageGallery({
             <>
               <button
                 onClick={prev}
-                className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-lg backdrop-blur-sm transition-colors hover:bg-white dark:bg-gray-900/90 dark:hover:bg-gray-900"
+                className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-lg backdrop-blur-sm transition-colors hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-900"
               >
                 <ChevronLeft className="h-5 w-5 text-gray-700 dark:text-gray-300" />
               </button>
               <button
                 onClick={next}
-                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-lg backdrop-blur-sm transition-colors hover:bg-white dark:bg-gray-900/90 dark:hover:bg-gray-900"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-lg backdrop-blur-sm transition-colors hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-900"
               >
                 <ChevronRight className="h-5 w-5 text-gray-700 dark:text-gray-300" />
               </button>
@@ -60,7 +60,7 @@ export default function ImageGallery({
           )}
           <button
             onClick={() => setIsFullscreen(true)}
-            className="absolute right-3 top-3 rounded-full bg-white/90 p-2 shadow-lg backdrop-blur-sm transition-colors hover:bg-white dark:bg-gray-900/90 dark:hover:bg-gray-900"
+            className="absolute right-3 top-3 rounded-full bg-white/90 p-2 shadow-lg backdrop-blur-sm transition-colors hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-900"
           >
             <Maximize2 className="h-4 w-4 text-gray-700 dark:text-gray-300" />
           </button>

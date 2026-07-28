@@ -23,7 +23,7 @@ const ITEMS_PER_PAGE = 12;
 
 function ProductCardSkeleton() {
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900">
+    <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800">
       <div className="aspect-[100/120] animate-pulse bg-gray-200 dark:bg-gray-800" />
       <div className="space-y-3 p-4">
         <div className="h-4 w-3/4 animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
@@ -41,7 +41,7 @@ function LoadingSkeleton({ view }) {
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className="flex overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900"
+            className="flex overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800"
           >
             <div className="h-40 w-48 shrink-0 animate-pulse bg-gray-200 dark:bg-gray-800" />
             <div className="flex-1 space-y-3 p-4">
@@ -295,7 +295,7 @@ export default function SearchResultsPage() {
               )}
             </Button>
 
-            <div className="hidden items-center gap-1 rounded-lg border border-gray-200 bg-white p-1 dark:border-gray-700 dark:bg-gray-900 sm:flex">
+            <div className="hidden items-center gap-1 rounded-lg border border-gray-200 bg-white p-1 dark:border-gray-700 dark:bg-gray-800 sm:flex">
               <button
                 type="button"
                 onClick={() => setView("grid")}

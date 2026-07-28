@@ -366,7 +366,7 @@ function HeroSection() {
 //         <div className="mt-8 text-center">
 //           <Link
 //             to="/categories"
-//             className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-brand-400 hover:text-brand-800 hover:shadow-md dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-brand-800"
+//             className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-brand-400 hover:text-brand-800 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-brand-800"
 //           >
 //             Voir toutes les catégories
 //             <ArrowRight className="h-4 w-4" />
@@ -384,7 +384,7 @@ function HeroSection() {
 //       initial="hidden"
 //       whileInView="visible"
 //       viewport={{ once: true, margin: "-80px" }}
-//       className="py-16 sm:py-20 bg-gray-50 dark:bg-gray-900/50"
+//       className="py-16 sm:py-20 bg-gray-50 dark:bg-gray-800/50"
 //     >
 //       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 //         <SectionHeader
@@ -502,7 +502,7 @@ function PopularProductsSection() {
 //       initial="hidden"
 //       whileInView="visible"
 //       viewport={{ once: true, margin: "-80px" }}
-//       className="py-16 sm:py-20 bg-gray-50 dark:bg-gray-900/50"
+//       className="py-16 sm:py-20 bg-gray-50 dark:bg-gray-800/50"
 //     >
 //       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 //         <SectionHeader
@@ -531,11 +531,11 @@ function PopularProductsSection() {
 //                   <motion.div
 //                     whileHover={{ y: -4 }}
 //                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
-//                     className="rounded-2xl border border-gray-100 bg-white p-5 text-center shadow-sm transition-shadow hover:shadow-md dark:border-gray-800 dark:bg-gray-900"
+//                     className="rounded-2xl border border-gray-100 bg-white p-5 text-center shadow-sm transition-shadow hover:shadow-md dark:border-gray-800 dark:bg-gray-800"
 //                   >
 //                     <div className="relative mx-auto mb-3 w-fit">
 //                       <Avatar src={seller.avatar} name={seller.name} size="lg" />
-//                       <div className="absolute -bottom-1 -right-1 rounded-full bg-white p-0.5 dark:bg-gray-900">
+//                       <div className="absolute -bottom-1 -right-1 rounded-full bg-white p-0.5 dark:bg-gray-800">
 //                         <ShieldCheck className="h-4 w-4 text-brand-700" />
 //                       </div>
 //                     </div>
@@ -660,7 +660,7 @@ function PopularProductsSection() {
 //       initial="hidden"
 //       whileInView="visible"
 //       viewport={{ once: true, margin: "-80px" }}
-//       className="py-16 sm:py-20 bg-gray-50 dark:bg-gray-900/50"
+//       className="py-16 sm:py-20 bg-gray-50 dark:bg-gray-800/50"
 //     >
 //       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 //         <div className="mb-12 text-center">

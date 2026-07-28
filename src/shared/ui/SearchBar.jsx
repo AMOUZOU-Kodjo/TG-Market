@@ -88,7 +88,7 @@ export default function SearchBar({
       </form>
 
       {showDropdown && (
-        <div className="absolute top-full z-50 mt-1 w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900">
+        <div className="absolute top-full z-50 mt-1 w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
           {recentSearches.length > 0 && !query && (
             <div className="p-2">
               <div className="flex items-center justify-between px-2 py-1.5">

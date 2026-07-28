@@ -163,7 +163,7 @@ export default function CategoryFilter({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900",
+        "rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800",
         className
       )}
     >

@@ -58,7 +58,7 @@ export default function MessagesPage() {
   }, []);
 
   return (
-    <div className="flex h-dvh min-h-0 overflow-hidden bg-white dark:bg-gray-900">
+    <div className="flex h-dvh min-h-0 overflow-hidden bg-white dark:bg-gray-800">
       {/* Conversation List Sidebar */}
       <div
         className={cn(

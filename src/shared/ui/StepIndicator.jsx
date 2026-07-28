@@ -25,7 +25,7 @@ export default function StepIndicator({
                       ? "border-brand-800 bg-brand-800 text-white"
                       : isActive
                         ? "border-brand-800 bg-brand-50 text-brand-900 dark:bg-brand-800/10"
-                        : "border-gray-300 bg-white text-gray-400 dark:border-gray-700 dark:bg-gray-900"
+                        : "border-gray-300 bg-white text-gray-400 dark:border-gray-700 dark:bg-gray-800"
                   )}
                 >
                   {isCompleted ? (

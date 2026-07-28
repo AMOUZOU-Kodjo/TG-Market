@@ -273,7 +273,7 @@
 //           variants={sectionVariants}
 //           initial="hidden"
 //           animate="visible"
-//           className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
+//           className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-800"
 //         >
 //           <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
 //             <User className="h-5 w-5 text-red-800" />
@@ -341,7 +341,7 @@
 //           variants={sectionVariants}
 //           initial="hidden"
 //           animate="visible"
-//           className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
+//           className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-800"
 //         >
 //           <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
 //             <Lock className="h-5 w-5 text-red-800" />
@@ -492,7 +492,7 @@
 //                     <div className="flex items-center gap-3">
 //                       <Input
 //                         placeholder="Entrez le code reçu par SMS"
-//                         className="max-w-xs bg-white dark:bg-gray-900"
+//                         className="max-w-xs bg-white dark:bg-gray-800"
 //                       />
 //                       <Button
 //                         size="sm"
@@ -651,7 +651,7 @@
 //           variants={sectionVariants}
 //           initial="hidden"
 //           animate="visible"
-//           className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
+//           className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-800"
 //         >
 //           <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
 //             <Globe className="h-5 w-5 text-red-800" />
@@ -664,7 +664,7 @@
 //                 <p className="text-sm font-medium text-gray-900 dark:text-white">Langue</p>
 //                 <p className="text-xs text-gray-500 dark:text-gray-400">Langue d'affichage de l'application</p>
 //               </div>
-//               <select className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white">
+//               <select className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white">
 //                 <option>Français</option>
 //                 <option>English</option>
 //               </select>
@@ -674,7 +674,7 @@
 //                 <p className="text-sm font-medium text-gray-900 dark:text-white">Devise</p>
 //                 <p className="text-xs text-gray-500 dark:text-gray-400">Devise d'affichage des prix</p>
 //               </div>
-//               <select className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white">
+//               <select className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white">
 //                 <option>FCFA</option>
 //                 <option>EUR</option>
 //                 <option>USD</option>
@@ -717,7 +717,7 @@
 //           variants={sectionVariants}
 //           initial="hidden"
 //           animate="visible"
-//           className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
+//           className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-800"
 //         >
 //           <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
 //             <Eye className="h-5 w-5 text-red-800" />
@@ -733,7 +733,7 @@
 //               <select
 //                 value={privacy.profileVisibility}
 //                 onChange={(e) => setPrivacy((p) => ({ ...p, profileVisibility: e.target.value }))}
-//                 className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+//                 className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
 //               >
 //                 <option value="public">Public</option>
 //                 <option value="contacts">Mes contacts</option>
@@ -762,7 +762,7 @@
 //           variants={sectionVariants}
 //           initial="hidden"
 //           animate="visible"
-//           className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
+//           className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-800"
 //         >
 //           <h2 className="mb-2 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
 //             <ShieldCheck className="h-5 w-5 text-red-800" />
@@ -851,10 +851,11 @@
 //   );
 // }
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
+import { useTheme } from "@/shared/contexts/ThemeContext";
 import {
   User,
   Mail,
@@ -1024,6 +1025,47 @@ export default function SettingsPage() {
     },
   });
 
+  const { data: twoFactorStatus } = useQuery({
+    queryKey: ["twoFactorStatus"],
+    queryFn: authApi.get2FAStatus,
+    enabled: !!userId,
+  });
+  const twoFactorEnabled = twoFactorStatus?.enabled ?? false;
+
+  const { mutate: generate2FASecret, data: twoFactorSecretData, isPending: generatingSecret, reset: reset2FASecret } = useMutation({
+    mutationFn: authApi.generate2FASecret,
+    onError: () => {
+      toast.error("Erreur lors de la génération du code 2FA");
+    },
+  });
+
+  const { mutate: enable2FA, isPending: enabling2FA } = useMutation({
+    mutationFn: authApi.enable2FA,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["twoFactorStatus"] });
+      setShow2FASetup(false);
+      setTwoFactorCode("");
+      reset2FASecret();
+      toast.success("2FA activée avec succès !");
+    },
+    onError: () => {
+      toast.error("Code invalide. Veuillez réessayer.");
+    },
+  });
+
+  const { mutate: disable2FA, isPending: disabling2FA } = useMutation({
+    mutationFn: authApi.disable2FA,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["twoFactorStatus"] });
+      setShowDisablePrompt(false);
+      setDisablePassword("");
+      toast.success("2FA désactivée.");
+    },
+    onError: () => {
+      toast.error("Mot de passe incorrect.");
+    },
+  });
+
   const { mutate: savePreferences } = useMutation({
     mutationFn: usersApi.updatePreferences,
     onSuccess: () => {
@@ -1084,13 +1126,7 @@ export default function SettingsPage() {
       icon: "Camera",
     },
   ];
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("theme") === "dark" ||
-        (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    }
-    return false;
-  });
+  const { isDark: isDarkMode, toggleTheme } = useTheme();
   const [preferredLanguage, setPreferredLanguage] = useState(user?.preferredLanguage || "fr");
   const [preferredCurrency, setPreferredCurrency] = useState(user?.preferredCurrency || "FCFA");
   const [notifications, setNotifications] = useState({
@@ -1103,8 +1139,10 @@ export default function SettingsPage() {
     showPhone: user?.showPhone ?? false,
     showLocation: user?.showLocation ?? true,
   });
-  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [twoFactorCode, setTwoFactorCode] = useState("");
   const [show2FASetup, setShow2FASetup] = useState(false);
+  const [showDisablePrompt, setShowDisablePrompt] = useState(false);
+  const [disablePassword, setDisablePassword] = useState("");
   const [showLoginHistory, setShowLoginHistory] = useState(false);
   const [showPassword, setShowPassword] = useState({
     current: false,
@@ -1112,10 +1150,6 @@ export default function SettingsPage() {
     confirm: false,
   });
   const [activeTab, setActiveTab] = useState("profile");
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", isDarkMode);
-  }, []);
 
   const {
     register,
@@ -1189,7 +1223,7 @@ export default function SettingsPage() {
             variants={sectionVariants}
             initial="hidden"
             animate="visible"
-            className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
+            className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-800"
           >
             <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
               <User className="h-5 w-5 text-red-800" />
@@ -1256,7 +1290,7 @@ export default function SettingsPage() {
             variants={sectionVariants}
             initial="hidden"
             animate="visible"
-            className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
+            className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-800"
           >
             <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
               <Lock className="h-5 w-5 text-red-800" />
@@ -1389,10 +1423,9 @@ export default function SettingsPage() {
                 <button
                   onClick={() => {
                     if (twoFactorEnabled) {
-                      setTwoFactorEnabled(false);
-                      setShow2FASetup(false);
-                      toast.success("2FA désactivée.");
+                      setShowDisablePrompt(true);
                     } else {
+                      generate2FASecret();
                       setShow2FASetup(true);
                     }
                   }}
@@ -1408,6 +1441,47 @@ export default function SettingsPage() {
                 </button>
               </div>
 
+              {/* Disable 2FA — password confirmation */}
+              <AnimatePresence>
+                {showDisablePrompt && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-5 dark:border-red-800/50 dark:bg-red-900/10">
+                      <h4 className="mb-2 text-sm font-semibold text-red-800 dark:text-red-300">
+                        Désactiver la 2FA
+                      </h4>
+                      <p className="mb-4 text-xs text-red-700 dark:text-red-400">
+                        Veuillez entrer votre mot de passe pour confirmer la désactivation.
+                      </p>
+                      <div className="flex items-center gap-3">
+                        <Input
+                          type="password"
+                          placeholder="Votre mot de passe"
+                          value={disablePassword}
+                          onChange={(e) => setDisablePassword(e.target.value)}
+                          className="max-w-xs bg-white dark:bg-gray-800"
+                        />
+                        <Button
+                          size="sm"
+                          onClick={() => disable2FA({ password: disablePassword })}
+                          disabled={disabling2FA || !disablePassword}
+                        >
+                          {disabling2FA ? "Désactivation..." : "Confirmer"}
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => { setShowDisablePrompt(false); setDisablePassword(""); }}>
+                          Annuler
+                        </Button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Enable 2FA — QR code + TOTP */}
               <AnimatePresence>
                 {show2FASetup && !twoFactorEnabled && (
                   <motion.div
@@ -1416,33 +1490,52 @@ export default function SettingsPage() {
                     exit={{ height: 0, opacity: 0 }}
                     className="overflow-hidden"
                   >
-                    <div className="mt-4 rounded-xl border border-yellow-200 bg-yellow-50 p-5 dark:border-yellow-800/50 dark:bg-yellow-900/10">
-                      <h4 className="mb-2 text-sm font-semibold text-yellow-800 dark:text-yellow-300">
-                        Activer la 2FA par SMS
-                      </h4>
-                      <p className="mb-4 text-xs text-yellow-700 dark:text-yellow-400">
-                        Un code de vérification sera envoyé à votre numéro chaque tentative de
-                        connexion.
-                      </p>
-                      <div className="flex items-center gap-3">
-                        <Input
-                          placeholder="Entrez le code reçu par SMS"
-                          className="max-w-xs bg-white dark:bg-gray-900"
-                        />
-                        <Button
-                          size="sm"
-                          onClick={() => {
-                            setTwoFactorEnabled(true);
-                            setShow2FASetup(false);
-                            toast.success("2FA activée avec succès !");
-                          }}
-                        >
-                          Vérifier
-                        </Button>
-                        <Button size="sm" variant="ghost" onClick={() => setShow2FASetup(false)}>
-                          Annuler
-                        </Button>
-                      </div>
+                    <div className="mt-4 rounded-xl border border-brand-200 bg-brand-50 p-5 dark:border-brand-800/50 dark:bg-brand-900/10">
+                      {generatingSecret ? (
+                        <p className="text-sm text-brand-700 dark:text-brand-400">Génération du code...</p>
+                      ) : twoFactorSecretData?.qrCode ? (
+                        <>
+                          <h4 className="mb-2 text-sm font-semibold text-brand-800 dark:text-brand-300">
+                            Activer la 2FA
+                          </h4>
+                          <p className="mb-4 text-xs text-brand-700 dark:text-brand-400">
+                            Scannez ce QR code avec Google Authenticator ou une application compatible, puis saisissez le code à 6 chiffres généré.
+                          </p>
+                          <div className="mb-4 flex justify-center">
+                            <img
+                              src={twoFactorSecretData.qrCode}
+                              alt="QR Code 2FA"
+                              className="h-40 w-40 rounded-lg"
+                            />
+                          </div>
+                          {twoFactorSecretData.secret && (
+                            <p className="mb-4 text-center text-xs text-gray-500 dark:text-gray-400">
+                              Code secret : <code className="rounded bg-gray-200 px-2 py-0.5 font-mono text-sm dark:bg-gray-700">{twoFactorSecretData.secret}</code>
+                            </p>
+                          )}
+                          <div className="flex items-center gap-3">
+                            <Input
+                              placeholder="Code à 6 chiffres"
+                              value={twoFactorCode}
+                              onChange={(e) => setTwoFactorCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                              className="max-w-[140px] bg-white text-center font-mono text-lg dark:bg-gray-800"
+                              maxLength={6}
+                            />
+                            <Button
+                              size="sm"
+                              onClick={() => enable2FA({ token: twoFactorCode })}
+                              disabled={enabling2FA || twoFactorCode.length !== 6}
+                            >
+                              {enabling2FA ? "Vérification..." : "Vérifier"}
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => { setShow2FASetup(false); reset2FASecret(); setTwoFactorCode(""); }}>
+                              Annuler
+                            </Button>
+                          </div>
+                        </>
+                      ) : (
+                        <p className="text-sm text-red-600">Erreur lors de la génération du code. Veuillez réessayer.</p>
+                      )}
                     </div>
                   </motion.div>
                 )}
@@ -1588,7 +1681,7 @@ export default function SettingsPage() {
             variants={sectionVariants}
             initial="hidden"
             animate="visible"
-            className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
+            className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-800"
           >
             <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
               <Globe className="h-5 w-5 text-red-800" />
@@ -1610,7 +1703,7 @@ export default function SettingsPage() {
                     setPreferredLanguage(v);
                     savePreferences({ preferredLanguage: v });
                   }}
-                  className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                  className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                 >
                   <option value="fr">Français</option>
                   <option value="ee">Ewe</option>
@@ -1631,7 +1724,7 @@ export default function SettingsPage() {
                     setPreferredCurrency(v);
                     savePreferences({ preferredCurrency: v });
                   }}
-                  className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                  className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                 >
                   <option value="FCFA">FCFA</option>
                   <option value="EUR">EUR</option>
@@ -1672,11 +1765,7 @@ export default function SettingsPage() {
                 label="Mode sombre"
                 description="Activez le thème sombre pour plus de confort"
                 enabled={isDarkMode}
-                onChange={(v) => {
-                  setIsDarkMode(v);
-                  localStorage.setItem("theme", v ? "dark" : "light");
-                  document.documentElement.classList.toggle("dark", v);
-                }}
+                onChange={toggleTheme}
               />
             </div>
           </motion.section>
@@ -1689,7 +1778,7 @@ export default function SettingsPage() {
             variants={sectionVariants}
             initial="hidden"
             animate="visible"
-            className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
+            className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-800"
           >
             <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
               <Eye className="h-5 w-5 text-red-800" />
@@ -1713,7 +1802,7 @@ export default function SettingsPage() {
                     setPrivacy((p) => ({ ...p, profileVisibility: v }));
                     savePrivacy({ profileVisibility: v });
                   }}
-                  className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                  className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                 >
                   <option value="public">Public</option>
                   <option value="contacts">Mes contacts</option>
@@ -1749,7 +1838,7 @@ export default function SettingsPage() {
             variants={sectionVariants}
             initial="hidden"
             animate="visible"
-            className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
+            className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-800"
           >
             <h2 className="mb-2 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
               <ShieldCheck className="h-5 w-5 text-red-800" />

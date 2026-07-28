@@ -249,7 +249,7 @@ export default function UserProfilePage() {
       content: (
         <div className="max-w-2xl space-y-6">
           {/* Compte */}
-          <div className="rounded-2xl bg-white p-5 dark:bg-gray-900">
+          <div className="rounded-2xl bg-white p-5 dark:bg-gray-800">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
               <Shield className="h-4 w-4 text-brand-800" />
               Compte
@@ -293,7 +293,7 @@ export default function UserProfilePage() {
           </div>
 
           {/* Mot de passe */}
-          <div className="rounded-2xl bg-white p-5 dark:bg-gray-900">
+          <div className="rounded-2xl bg-white p-5 dark:bg-gray-800">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
               <Lock className="h-4 w-4 text-brand-800" />
               Mot de passe
@@ -357,7 +357,7 @@ export default function UserProfilePage() {
           </div>
 
           {/* Notifications */}
-          <div className="rounded-2xl bg-white p-5 dark:bg-gray-900">
+          <div className="rounded-2xl bg-white p-5 dark:bg-gray-800">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
               <Bell className="h-4 w-4 text-brand-800" />
               Notifications

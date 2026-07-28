@@ -57,7 +57,7 @@ export default function ProfileHeader({
   ];
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-gray-900">
+    <div className="overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-gray-800">
       {/* Cover */}
       <div className="relative h-20 sm:h-28 bg-white dark:bg-gray-800">
         {/* Avatar overlapping cover bottom */}

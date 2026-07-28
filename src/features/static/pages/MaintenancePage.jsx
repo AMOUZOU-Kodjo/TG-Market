@@ -38,7 +38,7 @@ export default function MaintenancePage() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 260, damping: 20 }}
-          className="rounded-3xl border border-gray-100 bg-white p-8 shadow-xl dark:border-gray-800 dark:bg-gray-900 sm:p-10"
+          className="rounded-3xl border border-gray-100 bg-white p-8 shadow-xl dark:border-gray-800 dark:bg-gray-800 sm:p-10"
         >
           {/* Animated Icon */}
           <div className="relative mx-auto mb-6 h-24 w-24">

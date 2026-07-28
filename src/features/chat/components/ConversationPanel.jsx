@@ -348,7 +348,7 @@ export default function ConversationPanel({ conversation, messages: initialMessa
             initial={{ y: 60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 60, opacity: 0 }}
-            className="flex items-center justify-between border-t border-gray-100 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900"
+            className="flex items-center justify-between border-t border-gray-100 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-800"
           >
             <span className="text-sm text-gray-600 dark:text-gray-400">
               {selectedIds.size} sélectionné{selectedIds.size > 1 ? "s" : ""}

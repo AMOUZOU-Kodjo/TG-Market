@@ -34,7 +34,7 @@ export default function ConversationPage() {
   }
 
   return (
-    <div className="flex h-dvh min-h-0 overflow-hidden bg-white dark:bg-gray-900">
+    <div className="flex h-dvh min-h-0 overflow-hidden bg-white dark:bg-gray-800">
       <div className="hidden sm:flex w-80 min-h-0 flex-col border-r border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-2 border-b border-gray-200 px-3 py-3 dark:border-gray-700">
           <Link

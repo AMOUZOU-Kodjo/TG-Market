@@ -146,7 +146,7 @@ export default function WalletPage() {
         {activeTab === "transactions" && (
           <motion.div
             variants={itemVariants}
-            className="rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900"
+            className="rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800"
           >
             <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -203,7 +203,7 @@ export default function WalletPage() {
         {activeTab === "escrow" && (
           <motion.div variants={itemVariants} className="space-y-4">
             {selectedEscrow ? (
-              <div className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+              <div className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-800">
                 <button
                   onClick={() => setSelectedEscrow(null)}
                   className="mb-4 text-sm font-medium text-brand-800 hover:text-brand-900"
@@ -221,7 +221,7 @@ export default function WalletPage() {
             ) : (
               <>
                 {escrowTransactions.length === 0 ? (
-                  <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900">
+                  <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
                     <Shield className="mx-auto h-12 w-12 text-gray-300 dark:text-gray-600" />
                     <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">
                       Aucune transaction séquestre
@@ -250,7 +250,7 @@ export default function WalletPage() {
         {activeTab === "methods" && (
           <motion.div
             variants={itemVariants}
-            className="rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900"
+            className="rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800"
           >
             <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">

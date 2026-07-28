@@ -151,7 +151,7 @@ export default function CheckoutPage() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
+              className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-800"
             >
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Le vendeur a été notifié. Vous serez informé dès que la commande sera expédiée.
@@ -178,7 +178,7 @@ export default function CheckoutPage() {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900"
+              className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800"
             >
               <motion.div
                 animate={{ scale: [1, 1.05, 1] }}
@@ -238,7 +238,7 @@ export default function CheckoutPage() {
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
+                className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-800"
               >
                 <div className="flex items-center gap-4">
                   <img
@@ -261,7 +261,7 @@ export default function CheckoutPage() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.05 }}
-                className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
+                className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-800"
               >
                 <h2 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">
                   Détails du paiement
@@ -290,7 +290,7 @@ export default function CheckoutPage() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
+                className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-800"
               >
                 <h2 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">
                   Moyen de paiement
@@ -306,7 +306,7 @@ export default function CheckoutPage() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15 }}
-                className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
+                className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-800"
               >
                 <h2 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">
                   Numéro de téléphone
@@ -356,7 +356,7 @@ export default function CheckoutPage() {
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
+                className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-800"
               >
                 <div className="flex items-center gap-4">
                   <img

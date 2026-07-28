@@ -32,6 +32,7 @@ import BottomNav from "@/shared/ui/BottomNav";
 import { AppleStoreBadge, GooglePlayBadge } from "@/shared/ui/StoreBadges";
 import CategoryBar from "@/features/home/components/CategoryBar";
 import { useAuth } from "@/shared/contexts/AuthContext";
+import { useTheme } from "@/shared/contexts/ThemeContext";
 import { useNotificationContext } from "@/shared/hooks/useNotificationContext";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 
@@ -39,7 +40,7 @@ export default function MainLayout() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
+  const { isDark: darkMode, toggleTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const desktopMenuRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -90,6 +91,7 @@ export default function MainLayout() {
   const navLinks = [
     { to: "/", label: "Accueil", icon: Home },
     { to: "/vendre", label: "Vendre", icon: PlusCircle },
+    { to: "/comment-ca-marche", label: "Comment ça marche", icon: HelpCircle },
   ];
 
   const userMenuItems = [
@@ -106,7 +108,7 @@ export default function MainLayout() {
   ];
 
   return (
-    <div className={`min-h-screen flex flex-col ${darkMode ? "dark" : ""}`}>
+    <div className="min-h-screen flex flex-col">
       <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors">
         {/* Sticky Header + Category Bar */}
         <div className={`sticky top-0 z-50 relative ${location.pathname.startsWith("/vendeur/") ? "hidden" : ""}`}>
@@ -175,7 +177,7 @@ export default function MainLayout() {
                 <div className="flex items-center gap-2">
                   {/* Dark Mode Toggle */}
                   <button
-                    onClick={() => setDarkMode(!darkMode)}
+                    onClick={toggleTheme}
                     className="p-2 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors"
                   >
                     {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -220,7 +222,7 @@ export default function MainLayout() {
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 8, scale: 0.96 }}
                             transition={{ duration: 0.15 }}
-                            className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+                            className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
                           >
                             <div className="p-4 border-b border-gray-100 dark:border-gray-700">
                               <p className="font-semibold text-gray-900 dark:text-white text-sm">
@@ -336,7 +338,7 @@ export default function MainLayout() {
                     </div>
                   </form>
                   <button
-                    onClick={() => setDarkMode(!darkMode)}
+                    onClick={toggleTheme}
                     className={`p-2 rounded-lg transition-colors ${
                       location.pathname.startsWith("/categories/")
                         ? "text-gray-600 hover:bg-gray-100"
@@ -369,7 +371,7 @@ export default function MainLayout() {
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 8, scale: 0.96 }}
                             transition={{ duration: 0.15 }}
-                            className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-50"
+                            className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-50"
                           >
                             <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
                               <p className="font-semibold text-gray-900 dark:text-white text-sm">
@@ -555,9 +557,4 @@ location.pathname.startsWith("/annonce/") || location.pathname.startsWith("/vend
           </div>
         </footer>
 
-        {/* Mobile Bottom Nav */}
-        <BottomNav />
-      </div>
-    </div>
-  );
-}
+      

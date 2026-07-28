@@ -23,7 +23,7 @@ export default function ListingPreview({ data = {} }) {
   const conditionInfo = CONDITION_MAP[condition];
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+    <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-800">
       <div className="relative aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-gray-800">
         {images.length > 0 ? (
           <img

@@ -325,7 +325,7 @@ export default function CreateListingPage() {
                     className={cn(
                       "w-full rounded-xl border bg-white py-2.5 pl-4 pr-24 text-lg font-bold text-gray-900 transition-colors",
                       "placeholder:text-gray-400 focus:border-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20",
-                      "dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-500",
+                      "dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500",
                       errors.price
                         ? "border-red-700"
                         : "border-gray-300 dark:border-gray-700"
@@ -637,11 +637,11 @@ export default function CreateListingPage() {
           </p>
         </div>
 
-        <div className="mb-8 overflow-hidden rounded-2xl border border-gray-100 bg-white px-4 py-5 dark:border-gray-800 dark:bg-gray-900">
+        <div className="mb-8 overflow-hidden rounded-2xl border border-gray-100 bg-white px-4 py-5 dark:border-gray-800 dark:bg-gray-800">
           <StepIndicator steps={WIZARD_STEPS} currentStep={currentStep} />
         </div>
 
-        <div className="min-h-[400px] rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900 sm:p-8">
+        <div className="min-h-[400px] rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-800 sm:p-8">
           <AnimatePresence mode="wait">{renderStep()}</AnimatePresence>
         </div>
 

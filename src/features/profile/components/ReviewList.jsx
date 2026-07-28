@@ -25,7 +25,7 @@ export default function ReviewList({ reviews = [], className }) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.05 }}
-          className="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
+          className="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-800"
         >
           <div className="flex items-start gap-3">
             <Avatar

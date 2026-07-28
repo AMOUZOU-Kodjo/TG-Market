@@ -33,7 +33,7 @@ export default function Dropdown({
       {isOpen && (
         <div
           className={cn(
-            "absolute z-50 mt-2 min-w-[200px] overflow-hidden rounded-xl border border-gray-200 bg-white py-1.5 shadow-lg dark:border-gray-700 dark:bg-gray-900",
+            "absolute z-50 mt-2 min-w-[200px] overflow-hidden rounded-xl border border-gray-200 bg-white py-1.5 shadow-lg dark:border-gray-700 dark:bg-gray-800",
             alignment[align],
             className
           )}

@@ -162,7 +162,7 @@ export default function OrderDetailPage() {
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
+            className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-800"
           >
             <Link
               to={`/annonce/${escrow.productId}`}
@@ -190,7 +190,7 @@ export default function OrderDetailPage() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 }}
-            className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
+            className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-800"
           >
             <h2 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">Détails</h2>
             <div className="space-y-2 text-sm">
@@ -214,7 +214,7 @@ export default function OrderDetailPage() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
+            className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-800"
           >
             <h2 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">Suivi</h2>
             <EscrowTimeline transaction={escrow} />
@@ -224,7 +224,7 @@ export default function OrderDetailPage() {
             <button
               onClick={handleCancel}
               disabled={actionLoading === "cancel"}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-6 py-3 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 disabled:opacity-50 dark:border-red-800 dark:bg-gray-900 dark:text-red-400 dark:hover:bg-red-900/20"
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-6 py-3 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 disabled:opacity-50 dark:border-red-800 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-red-900/20"
             >
               {actionLoading === "cancel" ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
               Annuler la commande
@@ -275,7 +275,7 @@ export default function OrderDetailPage() {
                 </p>
               </div>
               {showQrCode ? (
-                <div className="flex flex-col items-center rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+                <div className="flex flex-col items-center rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-800">
                   <QRCodeSVG value={escrow.confirmationToken} size={200} />
                   <p className="mt-3 text-xs text-gray-400">
                     ID: #{escrow.id}
@@ -290,7 +290,7 @@ export default function OrderDetailPage() {
               ) : (
                 <button
                   onClick={() => setShowQrCode(true)}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
                 >
                   <QrCode className="h-4 w-4" />
                   Afficher le QR code
@@ -311,12 +311,12 @@ export default function OrderDetailPage() {
                     onChange={(e) => setDisputeReason(e.target.value)}
                     rows={3}
                     placeholder="Expliquez le problème (min. 10 caractères)..."
-                    className="w-full rounded-xl border border-red-200 bg-white p-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:border-red-800 dark:bg-gray-900 dark:text-white"
+                    className="w-full rounded-xl border border-red-200 bg-white p-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:border-red-800 dark:bg-gray-800 dark:text-white"
                   />
                   <div className="mt-3 flex gap-2">
                     <button
                       onClick={() => { setShowDispute(false); setDisputeReason(""); }}
-                      className="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                      className="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
                     >
                       Annuler
                     </button>
@@ -338,7 +338,7 @@ export default function OrderDetailPage() {
               ) : (
                 <button
                   onClick={() => setShowDispute(true)}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-6 py-3 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 dark:border-red-800 dark:bg-gray-900 dark:text-red-400 dark:hover:bg-red-900/20"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-6 py-3 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 dark:border-red-800 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-red-900/20"
                 >
                   <AlertTriangle className="h-4 w-4" />
                   Signaler un problème

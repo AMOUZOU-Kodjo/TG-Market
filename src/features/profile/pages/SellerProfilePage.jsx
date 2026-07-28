@@ -127,7 +127,7 @@ export default function SellerProfilePage() {
   return (
     <>
       {/* Desktop sticky header - full width */}
-      <div className="sticky  top-0 z-40 hidden bg-white shadow-sm md:block dark:bg-gray-900">
+      <div className="sticky  top-0 z-40 hidden bg-white shadow-sm md:block dark:bg-gray-800">
         <div className="mx-auto max-w-7xl pb-3 px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between pt-2 pb-4">
             <div className="flex items-center gap-2">
@@ -210,7 +210,7 @@ export default function SellerProfilePage() {
                 {stats.map((stat, i) => (
                   <div
                     key={stat.label}
-                    className="flex items-center gap-1 rounded-lg border border-gray-100 bg-white px-2 py-1 shadow-sm dark:border-gray-800 dark:bg-gray-900 md:gap-1.5 md:px-3 md:py-2"
+                    className="flex items-center gap-1 rounded-lg border border-gray-100 bg-white px-2 py-1 shadow-sm dark:border-gray-800 dark:bg-gray-800 md:gap-1.5 md:px-3 md:py-2"
                   >
                     <stat.icon className="h-3 w-3 text-brand-700 dark:text-brand-400 md:h-3.5 md:w-3.5" />
                     <div>

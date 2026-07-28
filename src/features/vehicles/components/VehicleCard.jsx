@@ -11,7 +11,7 @@ export default function VehicleCard({ vehicle, index = 0 }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
       whileHover={{ y: -4 }}
-      className="group relative overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-lg dark:border-gray-800 dark:bg-gray-900"
+      className="group relative overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-lg dark:border-gray-800 dark:bg-gray-800"
     >
       <Link to={`/annonce/${vehicle.id}`}>
         <div className="relative aspect-[4/3] overflow-hidden">

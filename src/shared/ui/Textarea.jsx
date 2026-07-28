@@ -47,7 +47,7 @@ const Textarea = forwardRef(
             "w-full resize-none rounded-xl border bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors duration-200",
             "placeholder:text-gray-400",
             "focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20",
-            "dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-500",
+            "dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500",
             "dark:focus:border-red-800 dark:focus:ring-red-800/20",
             "disabled:cursor-not-allowed disabled:opacity-50",
             error

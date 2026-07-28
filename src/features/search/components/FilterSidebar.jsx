@@ -128,8 +128,8 @@ export default function FilterSidebar({
       className={cn(
         "flex h-full flex-col",
         mobile
-          ? "bg-white dark:bg-gray-900"
-          : "rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900",
+          ? "bg-white dark:bg-gray-800"
+          : "rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-800",
         className
       )}
     >

@@ -71,7 +71,7 @@ const Select = forwardRef(
               error
                 ? "border-red-700 focus:border-red-700 focus:ring-red-700/20"
                 : "border-gray-300 dark:border-gray-700",
-              "bg-white dark:bg-gray-900",
+              "bg-white dark:bg-gray-800",
               className
             )}
             {...rest}
@@ -95,7 +95,7 @@ const Select = forwardRef(
           </button>
 
           {isOpen && (
-            <div className="absolute z-50 mt-1 w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900">
+            <div className="absolute z-50 mt-1 w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
               <div className="max-h-60 overflow-y-auto p-1">
                 {options.map((option) => (
                   <button

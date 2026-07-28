@@ -79,7 +79,7 @@ export default function HowItWorksPage() {
                 desc: "Elle apparaît dans le fil autour de toi. Les acheteurs te font des offres, c'est toi qui décide d'accepter ou de refuser.",
               },
             ].map((item, i) => (
-              <motion.div key={i} variants={fadeUp} custom={i + 1} className="relative rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md dark:border-gray-800 dark:bg-gray-900">
+              <motion.div key={i} variants={fadeUp} custom={i + 1} className="relative rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md dark:border-gray-800 dark:bg-gray-800">
                 <span className="absolute -top-3 left-6 rounded-full bg-yellow-600 px-3 py-1 text-xs font-bold text-white shadow-sm">
                   {item.step}
                 </span>
@@ -95,7 +95,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* ═══════════════ VALIDATE & CONCLUDE ═══════════════ */}
-      <section className="bg-gray-50 px-4 py-16 dark:bg-gray-900 sm:px-6 lg:px-8">
+      <section className="bg-gray-50 px-4 py-16 dark:bg-gray-800 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
             <h2 className="text-center text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
@@ -149,7 +149,7 @@ export default function HowItWorksPage() {
           </motion.div>
 
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="mt-12 grid gap-8 md:grid-cols-2">
-            <motion.div variants={fadeUp} custom={0} className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+            <motion.div variants={fadeUp} custom={0} className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-800">
               <div className="h-64 overflow-hidden bg-yellow-50 dark:bg-yellow-900/10">
                 <StepImage
                   src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?w=600&h=400&fit=crop"
@@ -165,7 +165,7 @@ export default function HowItWorksPage() {
               </div>
             </motion.div>
 
-            <motion.div variants={fadeUp} custom={1} className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+            <motion.div variants={fadeUp} custom={1} className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-800">
               <div className="h-64 overflow-hidden bg-purple-50 dark:bg-purple-900/10">
                 <StepImage
                   src="https://images.unsplash.com/photo-1760360497581-0606569510a6?w=600&h=400&fit=crop"
@@ -185,7 +185,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* ═══════════════ DELIVERY MODES ═══════════════ */}
-      <section className="bg-gray-50 px-4 py-16 dark:bg-gray-900 sm:px-6 lg:px-8">
+      <section className="bg-gray-50 px-4 py-16 dark:bg-gray-800 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
             <h2 className="text-center text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">

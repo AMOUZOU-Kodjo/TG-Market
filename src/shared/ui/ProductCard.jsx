@@ -58,7 +58,7 @@ export default function ProductCard({
     <div
       onClick={onClick}
       className={cn(
-        "cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900",
+        "cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800",
         isPromoted && "ring-2 ring-brand-500",
         className
       )}
@@ -101,7 +101,7 @@ export default function ProductCard({
           <button
             onClick={handleFavorite}
             disabled={toggleFav.isPending}
-            className="absolute right-3 top-3 z-20 rounded-full bg-white/90 p-2 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:shadow-md dark:bg-gray-900/90 dark:hover:bg-gray-900"
+            className="absolute right-3 top-3 z-20 rounded-full bg-white/90 p-2 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:shadow-md dark:bg-gray-800/90 dark:hover:bg-gray-900"
           >
             <Heart
               className={cn(

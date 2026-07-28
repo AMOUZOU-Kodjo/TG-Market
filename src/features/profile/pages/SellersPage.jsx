@@ -63,7 +63,7 @@ export default function SellersPage() {
             variants={fadeUp}
             custom={i}
             onClick={() => navigate(`/vendeur/${seller.id}`)}
-            className="cursor-pointer rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-900"
+            className="cursor-pointer rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-800"
           >
             <div className="flex items-start gap-4">
               <Avatar src={seller.avatar} name={seller.name} size="lg" online />

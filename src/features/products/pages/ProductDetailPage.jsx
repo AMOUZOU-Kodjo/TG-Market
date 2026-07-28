@@ -144,7 +144,7 @@ export default function ProductDetailPage() {
             <motion.div
               {...fadeUp}
               transition={{ delay: 0.1 }}
-              className="rounded-2xl  p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+              className="rounded-2xl  p-5 shadow-sm dark:border-gray-800 dark:bg-gray-800"
             >
               <div className="mb-4 flex flex-wrap items-center gap-2">
                 <Badge
@@ -224,7 +224,7 @@ export default function ProductDetailPage() {
               <motion.div
                 {...fadeUp}
                 transition={{ delay: 0.15 }}
-                className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+                className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-800"
               >
                 <h3 className="mb-4 flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white">
                   <Package className="h-5 w-5 text-brand-800" />
@@ -268,7 +268,7 @@ export default function ProductDetailPage() {
               <motion.div
                 {...fadeUp}
                 transition={{ delay: 0.25 }}
-                className="mt-5   p-4  dark:border-gray-800 dark:bg-gray-900"
+                className="mt-5   p-4  dark:border-gray-800 dark:bg-gray-800"
               >
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center justify-between text-gray-600 dark:text-gray-400">

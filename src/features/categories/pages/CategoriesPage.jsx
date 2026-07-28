@@ -200,7 +200,7 @@ export default function CategoriesPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <Breadcrumb items={breadcrumbItems} className="mb-6" />
 
@@ -328,7 +328,7 @@ export default function CategoriesPage() {
                         whileHover={{ y: -6, scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                        className="group cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all hover:shadow-lg dark:border-gray-800 dark:bg-gray-900"
+                        className="group cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all hover:shadow-lg dark:border-gray-800 dark:bg-gray-800"
                       >
                         <div
                           className={cn(
@@ -348,7 +348,7 @@ export default function CategoriesPage() {
                           <Badge
                             variant="secondary"
                             size="sm"
-                            className="absolute right-2 top-2 bg-white/80 backdrop-blur-sm dark:bg-gray-900/80"
+                            className="absolute right-2 top-2 bg-white/80 backdrop-blur-sm dark:bg-gray-800/80"
                           >
                             {cat.productCount}
                           </Badge>

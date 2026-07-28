@@ -82,7 +82,7 @@ export default function EscrowTimeline({ transaction }) {
                   ? "border-brand-500 bg-brand-50 text-brand-600 dark:bg-brand-900/20"
                   : isCurrent
                   ? "border-blue-500 bg-blue-50 text-blue-600 dark:bg-blue-900/20"
-                  : "border-gray-300 bg-white text-gray-400 dark:border-gray-600 dark:bg-gray-900"
+                  : "border-gray-300 bg-white text-gray-400 dark:border-gray-600 dark:bg-gray-800"
               }`}>
                 {isCompleted ? <CheckCircle2 className="h-3.5 w-3.5" /> : <StepIcon className="h-3 w-3" />}
               </div>

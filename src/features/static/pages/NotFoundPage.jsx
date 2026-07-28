@@ -136,7 +136,7 @@ export default function NotFoundPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="mt-12 rounded-2xl border border-gray-100 bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-900/50"
+          className="mt-12 rounded-2xl border border-gray-100 bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-800/50"
         >
           <p className="text-sm text-gray-500 dark:text-gray-400">
             En attendant, pourquoi ne pas{" "}

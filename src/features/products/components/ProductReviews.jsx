@@ -64,7 +64,7 @@ export default function ProductReviews({ productId, sellerId }) {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[620px_1fr]">
-        <div className="rounded-2xl  border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
+        <div className="rounded-2xl  border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-800">
           <div className="mb-4 text-center">
             <p className="text-3xl font-bold text-gray-900 dark:text-white">
               {avgRating.toFixed(1)}
@@ -119,7 +119,7 @@ export default function ProductReviews({ productId, sellerId }) {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.05 * index }}
-              className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+              className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-800"
             >
               <div className="flex items-start gap-3">
                 <Avatar

@@ -20,7 +20,7 @@ export default function WalletBalance({ balance }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900"
+            className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-800"
           >
             <div className="flex items-center justify-between">
               <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${c.color}`}>

@@ -80,7 +80,7 @@ export default function MessageInput({ onSend, onTyping, disabled = false, class
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute bottom-full left-0 right-0 z-20 mb-2 mx-4 max-h-72 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-900 sm:left-4 sm:right-auto sm:w-80"
+            className="absolute bottom-full left-0 right-0 z-20 mb-2 mx-4 max-h-72 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800 sm:left-4 sm:right-auto sm:w-80"
           >
             <div className="flex items-center justify-between border-b border-gray-100 px-3 py-2 dark:border-gray-800">
               <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Emojis</span>
@@ -118,7 +118,7 @@ export default function MessageInput({ onSend, onTyping, disabled = false, class
       {/* Input Bar */}
       <form
         onSubmit={handleSubmit}
-        className="flex items-end gap-2 border-t border-gray-100 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-900"
+        className="flex items-end gap-2 border-t border-gray-100 bg-white px-4 py-3 dark:border-gray-800 dark:bg-gray-800"
       >
         <div className="flex items-center gap-1">
           <button

@@ -15,7 +15,7 @@ export default function TestimonialCard({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900",
+        "rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-800",
         className
       )}
       {...rest}

@@ -3,10 +3,10 @@ import { cn } from "@/shared/utils/cn";
 
 const variants = {
   default:
-    "bg-white border border-gray-200 shadow-sm dark:bg-gray-900 dark:border-gray-800",
+    "bg-white border border-gray-200 shadow-sm dark:bg-gray-800 dark:border-gray-800",
   interactive:
-    "bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300 cursor-pointer dark:bg-gray-900 dark:border-gray-800 dark:hover:border-gray-700",
-  flat: "bg-gray-50 dark:bg-gray-900/50",
+    "bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300 cursor-pointer dark:bg-gray-800 dark:border-gray-800 dark:hover:border-gray-700",
+  flat: "bg-gray-50 dark:bg-gray-800/50",
 };
 
 export default function Card({

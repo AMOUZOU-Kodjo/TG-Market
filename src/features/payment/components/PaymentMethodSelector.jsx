@@ -13,7 +13,7 @@ export default function PaymentMethodSelector({ methods, selected, onSelect }) {
           className={`relative flex flex-col items-center gap-2 rounded-2xl border-2 p-4 transition-all ${
             selected === m.id
               ? "border-red-800 bg-red-50 dark:border-red-700 dark:bg-red-900/20"
-              : "border-gray-100 bg-white hover:border-gray-300 dark:border-gray-800 dark:bg-gray-900"
+              : "border-gray-100 bg-white hover:border-gray-300 dark:border-gray-800 dark:bg-gray-800"
           }`}
         >
           {selected === m.id && (

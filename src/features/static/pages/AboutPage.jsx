@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import Button from "@/shared/ui/Button";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
+import { usePublicStats, usePublicReviews } from "@/features/home/hooks/usePublicStats";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -36,13 +37,6 @@ const itemVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 260, damping: 20 } },
 };
-
-const stats = [
-  { value: "24 000+", label: "Utilisateurs actifs", icon: Users },
-  { value: "18 000+", label: "Annonces publiées", icon: TrendingUp },
-  { value: "5 600+", label: "Ventes réalisées", icon: Star },
-  { value: "30+", label: "Villes couvertes", icon: MapPin },
-];
 
 const values = [
   {
@@ -92,15 +86,6 @@ const timeline = [
   { year: "2025", title: "Paiement & Livraison", description: "Intégration Flooz, TMoney et livraison locale. Le séquestre s\u2019étoffe." },
 ];
 
-const milestones = [
-  { icon: Users, value: "24 000+", label: "Utilisateurs actifs" },
-  { icon: TrendingUp, value: "18 000+", label: "Annonces publiées" },
-  { icon: Star, value: "5 600+", label: "Ventes réalisées" },
-  { icon: MapPin, value: "30+", label: "Villes couvertes" },
-  { icon: ShieldCheck, value: "8 200+", label: "Comptes vérifiés" },
-  { icon: Zap, value: "24h", label: "Délai de modération" },
-];
-
 const features = [
   {
     icon: ShieldCheck,
@@ -134,30 +119,35 @@ const features = [
   },
 ];
 
-const testimonials = [
-  {
-    name: "Kossi A.",
-    city: "Lomé",
-    text: "J\u2019ai vendu mon ancien téléphone en 2 jours. Le séquestre m\u2019a donné confiance pour la première fois en ligne.",
-    rating: 5,
-  },
-  {
-    name: "Adjovi M.",
-    city: "Kara",
-    text: "Enfin une plateforme qui marche à Kara aussi ! J\u2019ai acheté un ordinateur portable à prix raisonnable.",
-    rating: 5,
-  },
-  {
-    name: "Dame B.",
-    city: "Sokodé",
-    text: "Le support répond rapidement et la messagerie est pratique. Je recommande vivement.",
-    rating: 4,
-  },
-];
-
 export default function AboutPage() {
   const [openTimeline, setOpenTimeline] = useState(0);
   const { siteName } = useSiteSettings();
+  const { data: publicStats } = usePublicStats();
+  const testimonials = usePublicReviews().data ?? [];
+
+  const fmt = (val, suffix = "") => {
+    const n = Number(val);
+    return Number.isFinite(n) && n > 0 ? `${n.toLocaleString("fr-FR")}${suffix}` : "—";
+  };
+
+  const stats = publicStats
+    ? [
+        { value: fmt(publicStats.totalUsers, "+"), label: "Utilisateurs actifs", icon: Users },
+        { value: fmt(publicStats.totalListings, "+"), label: "Annonces publiées", icon: TrendingUp },
+        { value: fmt(publicStats.totalSales, "+"), label: "Ventes réalisées", icon: Star },
+        { value: fmt(publicStats.cities, "+"), label: "Villes couvertes", icon: MapPin },
+      ]
+    : [];
+  const milestones = publicStats
+    ? [
+        { icon: Users, value: fmt(publicStats.totalUsers, "+"), label: "Utilisateurs actifs" },
+        { icon: TrendingUp, value: fmt(publicStats.totalListings, "+"), label: "Annonces publiées" },
+        { icon: Star, value: fmt(publicStats.totalSales, "+"), label: "Ventes réalisées" },
+        { icon: MapPin, value: fmt(publicStats.cities, "+"), label: "Villes couvertes" },
+        { icon: ShieldCheck, value: fmt(publicStats.verifiedUsers, "+"), label: "Comptes vérifiés" },
+        { icon: Zap, value: fmt(publicStats.moderationTime, "h"), label: "Délai de modération" },
+      ]
+    : [];
 
   return (
     <div className="min-h-screen">
@@ -221,7 +211,7 @@ export default function AboutPage() {
               <motion.div
                 key={i}
                 variants={itemVariants}
-                className="rounded-2xl border border-gray-100 bg-white p-5 text-center dark:border-gray-800 dark:bg-gray-900"
+                className="rounded-2xl border border-gray-100 bg-white p-5 text-center dark:border-gray-800 dark:bg-gray-800"
               >
                 <stat.icon className="mx-auto mb-2 h-6 w-6 text-brand-800" />
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
@@ -233,7 +223,7 @@ export default function AboutPage() {
       </section>
 
       {/* Notre histoire */}
-      <section className="bg-gray-50 px-4 py-16 dark:bg-gray-900/50 sm:px-6 lg:px-8">
+      <section className="bg-gray-50 px-4 py-16 dark:bg-gray-800/50 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -261,13 +251,13 @@ export default function AboutPage() {
                 }`}
               >
                 <div className="hidden sm:block sm:w-1/2" />
-                <div className="absolute left-4 top-1 h-3 w-3 -translate-x-1/2 rounded-full border-2 border-brand-800 bg-white dark:bg-gray-900 sm:left-1/2" />
+                <div className="absolute left-4 top-1 h-3 w-3 -translate-x-1/2 rounded-full border-2 border-brand-800 bg-white dark:bg-gray-800 sm:left-1/2" />
                 <div className="ml-10 sm:ml-0 sm:w-1/2">
                   <button
                     onClick={() => setOpenTimeline(openTimeline === i ? -1 : i)}
                     className="w-full text-left"
                   >
-                    <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
+                    <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-800">
                       <div className="flex items-center justify-between">
                         <div>
                           <span className="text-xs font-bold text-brand-800">{item.year}</span>
@@ -304,7 +294,7 @@ export default function AboutPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900 sm:p-12"
+            className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800 sm:p-12"
           >
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-900/20">
               <Target className="h-7 w-7 text-brand-800" />
@@ -320,7 +310,7 @@ export default function AboutPage() {
       </section>
 
       {/* Nos valeurs */}
-      <section className="bg-gray-50 px-4 py-16 dark:bg-gray-900/50 sm:px-6 lg:px-8">
+      <section className="bg-gray-50 px-4 py-16 dark:bg-gray-800/50 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -345,7 +335,7 @@ export default function AboutPage() {
               <motion.div
                 key={i}
                 variants={itemVariants}
-                className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
+                className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-800"
               >
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 dark:bg-brand-900/20">
                   <value.icon className="h-6 w-6 text-brand-800" />
@@ -386,7 +376,7 @@ export default function AboutPage() {
               <motion.div
                 key={i}
                 variants={itemVariants}
-                className="rounded-2xl border border-gray-100 bg-white p-6 transition-shadow hover:shadow-md dark:border-gray-800 dark:bg-gray-900"
+                className="rounded-2xl border border-gray-100 bg-white p-6 transition-shadow hover:shadow-md dark:border-gray-800 dark:bg-gray-800"
               >
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 dark:bg-brand-900/20">
                   <feature.icon className="h-6 w-6 text-brand-800" />
@@ -402,7 +392,7 @@ export default function AboutPage() {
       </section>
 
       {/* Équipe */}
-      <section className="bg-gray-50 px-4 py-16 dark:bg-gray-900/50 sm:px-6 lg:px-8">
+      <section className="bg-gray-50 px-4 py-16 dark:bg-gray-800/50 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -427,7 +417,7 @@ export default function AboutPage() {
               <motion.div
                 key={i}
                 variants={itemVariants}
-                className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900"
+                className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800"
               >
                 <div className={`mx-auto flex h-24 w-24 items-center justify-center rounded-full text-2xl font-bold ring-4 ring-gray-100 dark:ring-gray-800 ${member.color}`}>
                   {member.initials}
@@ -471,7 +461,7 @@ export default function AboutPage() {
               <motion.div
                 key={i}
                 variants={itemVariants}
-                className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
+                className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-800"
               >
                 <div className="mb-3 flex gap-0.5">
                   {Array.from({ length: 5 }).map((_, j) => (

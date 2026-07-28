@@ -238,7 +238,7 @@ export default function DashboardLayout() {
       <div className="flex">
         {/* ===== DESKTOP SIDEBAR (lg+) ===== */}
         <aside
-          className={`hidden lg:flex fixed lg:sticky top-0 z-40 h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ${
+          className={`hidden lg:flex fixed lg:sticky top-0 z-40 h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ${
             sidebarOpen ? "w-80" : "w-20"
           } flex-col`}
         >
@@ -287,7 +287,7 @@ export default function DashboardLayout() {
         {/* ===== MAIN CONTENT ===== */}
         <div className="flex-1 min-w-0">
           {/* Dashboard Header */}
-          <header className={`${mobileView === "sidebar" ? "hidden lg:flex" : "flex"} sticky top-0 z-30 h-16 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-700 items-center justify-between px-4 sm:px-6`}>
+          <header className={`${mobileView === "sidebar" ? "hidden lg:flex" : "flex"} sticky top-0 z-30 h-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-700 items-center justify-between px-4 sm:px-6`}>
             <div className="flex items-center gap-3">
               {/* Mobile: back arrow */}
               <button
@@ -354,7 +354,7 @@ export default function DashboardLayout() {
               {quickStats.map((stat, i) => (
                 <div
                   key={i}
-                  className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700"
+                  className="bg-white dark:bg-gray-900 rounded-xl p-4 border border-gray-100 dark:border-gray-700"
                 >
                   <div className="flex items-center gap-3">
                     <div

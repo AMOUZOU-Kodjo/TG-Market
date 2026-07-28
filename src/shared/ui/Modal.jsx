@@ -74,7 +74,7 @@ export default function Modal({
             animate="visible"
             exit="exit"
             className={cn(
-              "relative w-full rounded-2xl bg-white shadow-2xl dark:bg-gray-900",
+              "relative w-full rounded-2xl bg-white shadow-2xl dark:bg-gray-800",
               sizes[size],
               className
             )}

@@ -53,7 +53,7 @@ export default function ProductTable() {
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900">
+      <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
         <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-800" />
         <p className="mt-3 text-sm text-gray-500">Chargement des annonces...</p>
       </div>
@@ -62,7 +62,7 @@ export default function ProductTable() {
 
   if (products.length === 0) {
     return (
-      <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900">
+      <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
         <Package className="mx-auto h-10 w-10 text-gray-300" />
         <p className="mt-3 text-sm text-gray-500">Aucune annonce publiée</p>
         <button
@@ -76,7 +76,7 @@ export default function ProductTable() {
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900">
+    <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>

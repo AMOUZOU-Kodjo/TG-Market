@@ -23,7 +23,7 @@ export default function SortDropdown({ value = "newest", onChange, className }) 
         className={cn(
           "flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors",
           "hover:border-brand-400 hover:text-brand-900",
-          "dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-brand-800 dark:hover:text-brand-700",
+          "dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-brand-800 dark:hover:text-brand-700",
           isOpen && "border-brand-800 ring-2 ring-brand-800/20"
         )}
       >
@@ -50,7 +50,7 @@ export default function SortDropdown({ value = "newest", onChange, className }) 
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.95 }}
               transition={{ duration: 0.15 }}
-              className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900"
+              className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800"
             >
               <div className="p-1">
                 {SORT_OPTIONS.map((option) => (

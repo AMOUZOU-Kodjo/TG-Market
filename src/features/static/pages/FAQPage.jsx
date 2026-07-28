@@ -50,7 +50,7 @@ function AccordionItem({ faq, isOpen, onToggle, siteName }) {
   return (
     <motion.div
       variants={itemVariants}
-      className="overflow-hidden rounded-xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900"
+      className="overflow-hidden rounded-xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800"
     >
       <button
         onClick={onToggle}
@@ -137,7 +137,7 @@ export default function FAQPage() {
             placeholder="Rechercher une question..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-12 pr-4 text-sm text-gray-900 shadow-sm transition-colors focus:border-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-brand-800"
+            className="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-12 pr-4 text-sm text-gray-900 shadow-sm transition-colors focus:border-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-800"
           />
         </div>
 
@@ -150,7 +150,7 @@ export default function FAQPage() {
               className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
                 activeCategory === cat
                   ? "bg-brand-800 text-white"
-                  : "bg-white text-gray-600 hover:bg-gray-100 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800"
+                  : "bg-white text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-800"
               }`}
             >
               {cat === "all" ? "Toutes" : cat}
@@ -189,7 +189,7 @@ export default function FAQPage() {
         )}
 
         {/* Contact CTA */}
-        <div className="mt-12 rounded-2xl border border-gray-100 bg-white p-6 text-center dark:border-gray-800 dark:bg-gray-900">
+        <div className="mt-12 rounded-2xl border border-gray-100 bg-white p-6 text-center dark:border-gray-800 dark:bg-gray-800">
           <MessageCircle className="mx-auto mb-3 h-8 w-8 text-brand-800" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             Vous n'avez pas trouvé votre réponse ?

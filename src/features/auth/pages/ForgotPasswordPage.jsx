@@ -1,16 +1,19 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, ArrowLeft, Send, CheckCircle2 } from "lucide-react";
+import { Mail, ArrowLeft, Send, CheckCircle2, KeyRound } from "lucide-react";
 import toast from "react-hot-toast";
 import { forgotPasswordSchema } from "@/shared/utils/validators";
+import { authApi } from "@/features/auth/services/auth.api";
 import Input from "@/shared/ui/Input";
 import Button from "@/shared/ui/Button";
 
 export default function ForgotPasswordPage() {
   const [emailSent, setEmailSent] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState("");
+  const navigate = useNavigate();
 
   const {
     register,
@@ -25,18 +28,25 @@ export default function ForgotPasswordPage() {
   });
 
   const onSubmit = async (data) => {
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setEmailSent(true);
-    toast.success("Email de réinitialisation envoyé !");
+    try {
+      await authApi.forgotPassword({ email: data.email });
+      setSubmittedEmail(data.email);
+      setEmailSent(true);
+      toast.success("Code de réinitialisation envoyé !");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Erreur lors de l'envoi du code");
+    }
   };
 
   const handleResend = async () => {
     const email = getValues("email");
     if (!email) return;
-    toast.loading("Renvoi en cours...");
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    toast.dismiss();
-    toast.success("Email renvoyé avec succès !");
+    try {
+      await authApi.forgotPassword({ email });
+      toast.success("Code renvoyé avec succès !");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Erreur lors du renvoi");
+    }
   };
 
   return (
@@ -124,11 +134,11 @@ export default function ForgotPasswordPage() {
               transition={{ delay: 0.25 }}
               className="mx-auto mb-8 max-w-sm text-sm text-gray-500 dark:text-gray-400"
             >
-              Nous avons envoyé un lien de réinitialisation à{" "}
+              Nous avons envoyé un code de vérification à 6 chiffres à{" "}
               <span className="font-medium text-gray-900 dark:text-white">
-                {getValues("email")}
+                {submittedEmail}
               </span>
-              . Vérifiez votre boîte de réception et suivez les instructions.
+              . Vérifiez votre boîte de réception.
             </motion.p>
 
             <motion.div
@@ -141,9 +151,18 @@ export default function ForgotPasswordPage() {
                 variant="primary"
                 fullWidth
                 size="lg"
+                icon={KeyRound}
+                onClick={() => navigate("/reinitialisation", { state: { email: submittedEmail } })}
+              >
+                J'ai un code, réinitialiser
+              </Button>
+              <Button
+                variant="secondary"
+                fullWidth
+                size="lg"
                 onClick={handleResend}
               >
-                Renvoyer l'email
+                Renvoyer le code
               </Button>
               <Button
                 variant="ghost"

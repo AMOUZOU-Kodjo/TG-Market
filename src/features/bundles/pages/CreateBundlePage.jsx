@@ -124,7 +124,7 @@ export default function CreateBundlePage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+              className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-800"
             >
               <h3 className="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
                 Informations du lot
@@ -163,7 +163,7 @@ export default function CreateBundlePage() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+                className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-800"
               >
                 <div className="mb-3 flex items-center justify-between">
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -245,7 +245,7 @@ export default function CreateBundlePage() {
             )}
 
             {selectedProducts.length === 0 && (
-              <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-6 text-center dark:border-gray-700 dark:bg-gray-900">
+              <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-6 text-center dark:border-gray-700 dark:bg-gray-800">
                 <Package className="mx-auto mb-2 h-8 w-8 text-gray-300 dark:text-gray-600" />
                 <p className="text-sm text-gray-400 dark:text-gray-500">
                   Sélectionnez au moins 2 produits
@@ -277,13 +277,13 @@ export default function CreateBundlePage() {
                     placeholder="Rechercher dans mes annonces..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:border-brand-800 focus:outline-none focus:ring-1 focus:ring-brand-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500 dark:focus:border-brand-400 dark:focus:ring-brand-400"
+                    className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:border-brand-800 focus:outline-none focus:ring-1 focus:ring-brand-800 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500 dark:focus:border-brand-400 dark:focus:ring-brand-400"
                   />
                 </div>
               )}
 
               {filteredProducts.length === 0 ? (
-                <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center shadow-sm dark:border-gray-800 dark:bg-gray-800">
                   <Package className="mx-auto mb-3 h-10 w-10 text-gray-300 dark:text-gray-600" />
                   {search ? (
                     <>
@@ -322,7 +322,7 @@ export default function CreateBundlePage() {
                         onClick={() => toggleProduct(product.id)}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={`relative overflow-hidden rounded-2xl border bg-white text-left shadow-sm transition-all dark:bg-gray-900 ${
+                        className={`relative overflow-hidden rounded-2xl border bg-white text-left shadow-sm transition-all dark:bg-gray-800 ${
                           selected
                             ? "border-brand-800 ring-2 ring-brand-800 dark:border-brand-400 dark:ring-brand-400"
                             : "border-gray-100 hover:border-gray-200 hover:shadow-md dark:border-gray-800 dark:hover:border-gray-700"

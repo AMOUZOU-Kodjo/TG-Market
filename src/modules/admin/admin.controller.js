@@ -237,6 +237,8 @@ export async function getSettings(req, res, next) {
 export async function updateSettings(req, res, next) {
   try {
     const settings = await adminService.updateSettings(req.body);
+    const io = req.app.get('io');
+    if (io) io.emit('settings_changed', settings);
     res.json(settings);
   } catch (err) {
     next(err);

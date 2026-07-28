@@ -4,6 +4,7 @@ import prisma from '../../config/database.js';
 import jwtConfig from '../../config/jwt.js';
 import redis from '../../config/redis.js';
 import { generateOtp } from '../../utils/helpers.js';
+import { sendEmail, passwordResetEmail } from '../../utils/email.js';
 
 function formatUser(user, unreadMessages = 0, unreadNotifications = 0) {
   const name = `${user.first_name || ''} ${user.last_name || ''}`.trim();
@@ -383,6 +384,16 @@ export async function forgotPassword(email) {
 
   const otp = generateOtp();
   await redis.set(`otp:${user.id}`, otp, 'EX', 300);
+
+  const emailResult = await sendEmail({
+    to: email,
+    subject: 'Réinitialisation de votre mot de passe - TG-Market',
+    html: passwordResetEmail(otp),
+  });
+
+  if (!emailResult.success) {
+    console.error('[ForgotPassword] Failed to send email:', emailResult.error);
+  }
 
   return { message: 'Code de réinitialisation envoyé' };
 }

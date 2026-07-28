@@ -99,6 +99,13 @@ enum OfferStatus {
   countered
 }
 
+enum BundleProposalStatus {
+  pending
+  accepted
+  rejected
+  cancelled
+}
+
 // ─── TABLES ──────────────────────────────────────────
 
 model User {
@@ -156,6 +163,8 @@ model User {
   offers_received      Offer[]               @relation("OfferSeller")
   offers_made          Offer[]               @relation("OfferBuyer")
   bundles              Bundle[]
+  bundle_proposals_received BundleProposal[] @relation("BundleProposalSeller")
+  bundle_proposals_made    BundleProposal[] @relation("BundleProposalBuyer")
 
   @@index([city])
   @@index([created_at])
@@ -582,6 +591,7 @@ model Bundle {
 
   seller      User         @relation(fields: [seller_id], references: [id])
   items       BundleItem[]
+  proposals   BundleProposal[]
 
   @@index([seller_id])
   @@index([status])
@@ -598,6 +608,27 @@ model BundleItem {
   @@unique([bundle_id, product_id])
   @@index([bundle_id])
   @@index([product_id])
+}
+
+model BundleProposal {
+  id             Int                  @id @default(autoincrement())
+  bundle_id      Int
+  buyer_id       Int
+  seller_id      Int
+  proposed_price Int
+  message        String?              @db.VarChar(500)
+  status         BundleProposalStatus @default(pending)
+  created_at     DateTime             @default(now())
+  updated_at     DateTime             @updatedAt
+
+  bundle         Bundle               @relation(fields: [bundle_id], references: [id])
+  buyer          User                 @relation("BundleProposalBuyer", fields: [buyer_id], references: [id])
+  seller         User                 @relation("BundleProposalSeller", fields: [seller_id], references: [id])
+
+  @@index([bundle_id])
+  @@index([buyer_id])
+  @@index([seller_id])
+  @@index([status])
 }
 
 model SiteSetting {

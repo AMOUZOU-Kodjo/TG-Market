@@ -338,6 +338,189 @@ export async function addProductToBundle(bundleId, sellerId, productId) {
   return getBundleById(bundleId);
 }
 
+// ─── Bundle Proposals ────────────────────────────────────
+
+function formatProposal(proposal) {
+  return {
+    id: proposal.id,
+    bundleId: proposal.bundle_id,
+    buyerId: proposal.buyer_id,
+    sellerId: proposal.seller_id,
+    proposedPrice: proposal.proposed_price,
+    message: proposal.message,
+    status: proposal.status,
+    buyer: proposal.buyer ? { id: proposal.buyer.id, firstName: proposal.buyer.first_name, lastName: proposal.buyer.last_name, avatar: proposal.buyer.avatar } : undefined,
+    seller: proposal.seller ? { id: proposal.seller.id, firstName: proposal.seller.first_name, lastName: proposal.seller.last_name, avatar: proposal.seller.avatar } : undefined,
+    bundle: proposal.bundle ? { id: proposal.bundle.id, title: proposal.bundle.title, bundlePrice: proposal.bundle.bundle_price } : undefined,
+    createdAt: proposal.created_at,
+    updatedAt: proposal.updated_at,
+  };
+}
+
+export async function createBundleProposal(bundleId, buyerId, { proposedPrice, message }) {
+  const bundle = await prisma.bundle.findUnique({ where: { id: bundleId }, select: { seller_id: true, status: true } });
+  if (!bundle || bundle.status === 'deleted') {
+    const error = new Error("Lot introuvable");
+    error.status = 404;
+    throw error;
+  }
+  if (bundle.seller_id === buyerId) {
+    const error = new Error("Vous ne pouvez pas faire une proposition sur votre propre lot");
+    error.status = 400;
+    throw error;
+  }
+
+  const proposal = await prisma.bundleProposal.create({
+    data: { bundle_id: bundleId, buyer_id: buyerId, seller_id: bundle.seller_id, proposed_price: proposedPrice, message },
+    include: { buyer: { select: { id: true, first_name: true, last_name: true, avatar: true } }, seller: { select: { id: true, first_name: true, last_name: true, avatar: true } }, bundle: { select: { id: true, title: true, bundle_price: true } } },
+  });
+
+  return formatProposal(proposal);
+}
+
+export async function getBundleProposals(bundleId, userId) {
+  const bundle = await prisma.bundle.findUnique({ where: { id: bundleId }, select: { seller_id: true } });
+  if (!bundle) {
+    const error = new Error("Lot introuvable");
+    error.status = 404;
+    throw error;
+  }
+
+  const where = bundle.seller_id === userId
+    ? { bundle_id: bundleId }
+    : { bundle_id: bundleId, buyer_id: userId };
+
+  const proposals = await prisma.bundleProposal.findMany({
+    where,
+    include: {
+      buyer: { select: { id: true, first_name: true, last_name: true, avatar: true } },
+      seller: { select: { id: true, first_name: true, last_name: true, avatar: true } },
+      bundle: { select: { id: true, title: true, bundle_price: true } },
+    },
+    orderBy: { created_at: 'desc' },
+  });
+
+  return proposals.map(formatProposal);
+}
+
+export async function getMyBundleProposals(userId, { page, perPage }) {
+  const skip = (page - 1) * perPage;
+
+  const [proposals, total] = await Promise.all([
+    prisma.bundleProposal.findMany({
+      where: { buyer_id: userId },
+      include: {
+        buyer: { select: { id: true, first_name: true, last_name: true, avatar: true } },
+        seller: { select: { id: true, first_name: true, last_name: true, avatar: true } },
+        bundle: { select: { id: true, title: true, bundle_price: true } },
+      },
+      orderBy: { created_at: 'desc' },
+      skip,
+      take: perPage,
+    }),
+    prisma.bundleProposal.count({ where: { buyer_id: userId } }),
+  ]);
+
+  return { data: proposals.map(formatProposal), total };
+}
+
+export async function getReceivedBundleProposals(sellerId, { page, perPage }) {
+  const skip = (page - 1) * perPage;
+
+  const [proposals, total] = await Promise.all([
+    prisma.bundleProposal.findMany({
+      where: { seller_id: sellerId, status: { not: 'cancelled' } },
+      include: {
+        buyer: { select: { id: true, first_name: true, last_name: true, avatar: true } },
+        bundle: { select: { id: true, title: true, bundle_price: true } },
+      },
+      orderBy: { created_at: 'desc' },
+      skip,
+      take: perPage,
+    }),
+    prisma.bundleProposal.count({ where: { seller_id: sellerId, status: { not: 'cancelled' } } }),
+  ]);
+
+  return { data: proposals.map(formatProposal), total };
+}
+
+export async function acceptBundleProposal(proposalId, sellerId) {
+  const proposal = await prisma.bundleProposal.findUnique({ where: { id: proposalId }, select: { seller_id: true, status: true } });
+  if (!proposal || proposal.seller_id !== sellerId) {
+    const error = new Error("Proposition introuvable ou non autorisée");
+    error.status = 404;
+    throw error;
+  }
+  if (proposal.status !== 'pending') {
+    const error = new Error("Cette proposition n'est plus en attente");
+    error.status = 400;
+    throw error;
+  }
+
+  const updated = await prisma.bundleProposal.update({
+    where: { id: proposalId },
+    data: { status: 'accepted' },
+    include: {
+      buyer: { select: { id: true, first_name: true, last_name: true, avatar: true } },
+      seller: { select: { id: true, first_name: true, last_name: true, avatar: true } },
+      bundle: { select: { id: true, title: true, bundle_price: true } },
+    },
+  });
+
+  return formatProposal(updated);
+}
+
+export async function rejectBundleProposal(proposalId, sellerId) {
+  const proposal = await prisma.bundleProposal.findUnique({ where: { id: proposalId }, select: { seller_id: true, status: true } });
+  if (!proposal || proposal.seller_id !== sellerId) {
+    const error = new Error("Proposition introuvable ou non autorisée");
+    error.status = 404;
+    throw error;
+  }
+  if (proposal.status !== 'pending') {
+    const error = new Error("Cette proposition n'est plus en attente");
+    error.status = 400;
+    throw error;
+  }
+
+  const updated = await prisma.bundleProposal.update({
+    where: { id: proposalId },
+    data: { status: 'rejected' },
+    include: {
+      buyer: { select: { id: true, first_name: true, last_name: true, avatar: true } },
+      bundle: { select: { id: true, title: true, bundle_price: true } },
+    },
+  });
+
+  return formatProposal(updated);
+}
+
+export async function cancelBundleProposal(proposalId, userId) {
+  const proposal = await prisma.bundleProposal.findUnique({ where: { id: proposalId }, select: { buyer_id: true, seller_id: true, status: true } });
+  if (!proposal || (proposal.buyer_id !== userId && proposal.seller_id !== userId)) {
+    const error = new Error("Proposition introuvable ou non autorisée");
+    error.status = 404;
+    throw error;
+  }
+  if (proposal.status !== 'pending') {
+    const error = new Error("Cette proposition n'est plus en attente");
+    error.status = 400;
+    throw error;
+  }
+
+  const updated = await prisma.bundleProposal.update({
+    where: { id: proposalId },
+    data: { status: 'cancelled' },
+    include: {
+      buyer: { select: { id: true, first_name: true, last_name: true, avatar: true } },
+      seller: { select: { id: true, first_name: true, last_name: true, avatar: true } },
+      bundle: { select: { id: true, title: true, bundle_price: true } },
+    },
+  });
+
+  return formatProposal(updated);
+}
+
 export async function removeProductFromBundle(bundleId, sellerId, productId) {
   const bundle = await prisma.bundle.findUnique({
     where: { id: bundleId },

@@ -22,13 +22,15 @@ import ProductTable from "@/features/dashboard/components/ProductTable";
 import toast from "react-hot-toast";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
-import { useMyProducts } from "@/features/products/hooks/useProducts";
+import { useMyProducts, useDeleteProduct } from "@/features/products/hooks/useProducts";
+import { productsApi } from "@/features/products/services/products.api";
 import { useMyReviews } from "@/features/reviews/hooks/useReviews";
 import { useFavorites } from "@/features/favorites/hooks/useFavorites";
 import { useKycStatus } from "@/features/verification/hooks/useKyc";
 import { useEscrowList, useWalletBalance } from "@/features/wallet/hooks/useWallet";
 import { useReceivedBundleProposals, useAcceptBundleProposal, useRejectBundleProposal } from "@/features/bundles/hooks/useBundleProposals";
 import { usersApi } from "@/features/profile/services/users.api";
+import { cn } from "@/shared/utils/cn";
 import { formatDate, formatCFA, formatRelativeTime } from "@/shared/utils/format";
 
 const escrowStatusConfig = {
@@ -53,8 +55,40 @@ function OverviewTab() {
   );
 }
 
+const statusConfig = {
+  active: { label: "En ligne" },
+  paused: { label: "En pause" },
+  sold: { label: "Vendu" },
+  draft: { label: "Brouillon" },
+};
+const statusLabel = (s) => statusConfig[s]?.label ?? s;
+
 function ProductsTab({ products }) {
   const navigate = useNavigate();
+  const qc = useQueryClient();
+  const deleteProduct = useDeleteProduct();
+
+  const handleDelete = async (product) => {
+    if (!window.confirm(`Supprimer « ${product.title} » ?`)) return;
+    try {
+      await deleteProduct.mutateAsync(product.id);
+      toast.success("Annonce supprimée");
+    } catch {
+      toast.error("Erreur lors de la suppression");
+    }
+  };
+
+  const handleToggleStatus = async (product) => {
+    const newStatus = product.status === "active" ? "paused" : "active";
+    try {
+      await productsApi.updateStatus(product.id, newStatus);
+      qc.invalidateQueries({ queryKey: ["myProducts"] });
+      toast.success(newStatus === "active" ? "Annonce réactivée" : "Annonce mise en pause");
+    } catch {
+      toast.error("Erreur lors du changement de statut");
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -72,23 +106,56 @@ function ProductsTab({ products }) {
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              productId={product.id}
-              image={product.images?.[0]}
-              title={product.title}
-              price={product.price}
-              originalPrice={product.originalPrice}
-              location={product.city || product.location}
-              neighborhood={product.neighborhood}
-              condition={product.condition}
-              hasActiveNegotiation={product.hasActiveNegotiation}
-              isUrgent={product.isUrgent}
-              isPromoted={product.isPromoted}
-              isFeatured={product.isFeatured}
-              negotiable={product.negotiable}
-              onClick={() => navigate(`/annonce/${product.id}`)}
-            />
+            <div key={product.id}>
+              <ProductCard
+                productId={product.id}
+                image={product.images?.[0]}
+                title={product.title}
+                price={product.price}
+                originalPrice={product.originalPrice}
+                location={product.city || product.location}
+                neighborhood={product.neighborhood}
+                condition={product.condition}
+                hasActiveNegotiation={product.hasActiveNegotiation}
+                isUrgent={product.isUrgent}
+                isPromoted={product.isPromoted}
+                isFeatured={product.isFeatured}
+                negotiable={product.negotiable}
+                onClick={() => navigate(`/annonce/${product.id}`)}
+              />
+              <div className="flex items-center justify-end gap-1 border border-t-0 border-gray-100 dark:border-gray-800 rounded-b-2xl bg-white dark:bg-gray-800 px-3 py-2">
+                <span className={cn(
+                  "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium mr-auto",
+                  product.status === "active" && "bg-brand-100 text-brand-700",
+                  product.status === "paused" && "bg-yellow-50 text-yellow-600",
+                  product.status === "sold" && "bg-gray-100 text-gray-600",
+                  product.status === "draft" && "bg-gray-50 text-gray-400",
+                )}>
+                  {statusLabel(product.status)}
+                </span>
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleToggleStatus(product); }}
+                  className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                  title={product.status === "active" ? "Mettre en pause" : "Réactiver"}
+                >
+                  {product.status === "active" ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); navigate(`/modifier/${product.id}`); }}
+                  className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-brand-800 dark:hover:bg-gray-800 dark:hover:text-brand-400"
+                  title="Modifier"
+                >
+                  <Edit3 className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleDelete(product); }}
+                  className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-800 dark:hover:bg-red-950/20 dark:hover:text-red-400"
+                  title="Supprimer"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
           ))}
         </div>
       )}

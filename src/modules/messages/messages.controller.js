@@ -70,6 +70,19 @@ export async function sendMessage(req, res, next) {
             metadata: { conversationId },
           },
         });
+
+        getUserSockets(other.user_id).forEach((sid) => {
+          io.to(sid).emit('notification', {
+            id: Date.now(),
+            type: 'message',
+            title: `Nouveau message de ${req.user.first_name || req.user.name}`,
+            description: text.trim().substring(0, 120),
+            productId: other.conversation?.product_id || null,
+            read: false,
+            createdAt: new Date().toISOString(),
+            metadata: { conversationId },
+          });
+        });
       }
     }
 

@@ -102,6 +102,19 @@ export function setupSocketIO(io) {
               metadata: { conversationId },
             },
           });
+
+          getUserSockets(otherParticipant.user_id).forEach((sid) => {
+            io.to(sid).emit('notification', {
+              id: Date.now(),
+              type: 'message',
+              title: `Nouveau message de ${socket.user.name}`,
+              description: content.substring(0, 120),
+              productId: otherParticipant.conversation?.product_id || null,
+              read: false,
+              createdAt: new Date().toISOString(),
+              metadata: { conversationId },
+            });
+          });
         }
       } catch (err) {
         console.error('Error sending message:', err.message);

@@ -364,20 +364,37 @@ export async function deleteProduct(productId, userId) {
     throw error;
   }
 
-  await prisma.$transaction([
-    prisma.product.update({
-      where: { id: productId },
-      data: { status: 'deleted' },
-    }),
-    prisma.user.update({
+  const activeEscrows = await prisma.escrowTransaction.findMany({
+    where: {
+      product_id: productId,
+      status: { notIn: ['completed', 'cancelled', 'refunded'] },
+    },
+    select: { id: true, status: true },
+  });
+
+  if (activeEscrows.length > 0) {
+    const error = new Error('Impossible de supprimer : des transactions actives sont liées à ce produit');
+    error.status = 409;
+    throw error;
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.escrowTransaction.deleteMany({
+      where: { product_id: productId },
+    });
+
+    await tx.product.delete({ where: { id: productId } });
+
+    await tx.user.update({
       where: { id: userId },
       data: { product_count: { decrement: 1 } },
-    }),
-    prisma.category.update({
+    });
+
+    await tx.category.update({
       where: { id: existing.category_id },
       data: { product_count: { decrement: 1 } },
-    }),
-  ]);
+    });
+  });
 
   return { message: 'Produit supprimé avec succès' };
 }

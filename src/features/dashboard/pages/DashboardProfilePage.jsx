@@ -27,6 +27,7 @@ import { useMyReviews } from "@/features/reviews/hooks/useReviews";
 import { useFavorites } from "@/features/favorites/hooks/useFavorites";
 import { useKycStatus } from "@/features/verification/hooks/useKyc";
 import { useEscrowList, useWalletBalance } from "@/features/wallet/hooks/useWallet";
+import { useConversations } from "@/features/chat/hooks/useConversations";
 import { useReceivedBundleProposals, useAcceptBundleProposal, useRejectBundleProposal } from "@/features/bundles/hooks/useBundleProposals";
 import { usersApi } from "@/features/profile/services/users.api";
 import { formatDate, formatCFA, formatRelativeTime } from "@/shared/utils/format";
@@ -336,6 +337,8 @@ export default function DashboardProfilePage() {
   const { data: myReviewsData } = useMyReviews();
   const { data: favoritesData } = useFavorites();
   const { data: kycStatus } = useKycStatus();
+  const { data: walletData } = useWalletBalance();
+  const { data: conversationsData } = useConversations();
 
   const myProducts = (myProductsData?.data || myProductsData || []).filter((p) => p.seller?.id === user?.id);
   const myReviews = (myReviewsData?.data || myReviewsData || []).filter((r) => r.reviewer?.id === user?.id);
@@ -521,6 +524,11 @@ export default function DashboardProfilePage() {
               <span className="text-xs text-gray-500 dark:text-gray-400">Annonces</span>
             </div>
             <div className="flex items-center gap-1.5 rounded-lg border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 px-3 py-2">
+              <TrendingUp className="h-4 w-4 text-brand-700 dark:text-brand-400" />
+              <span className="text-sm font-bold text-gray-900 dark:text-white">{formatCFA(walletData?.totalEarned ?? 0)}</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">Revenus (FCFA)</span>
+            </div>
+            <div className="flex items-center gap-1.5 rounded-lg border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 px-3 py-2">
               <Heart className="h-4 w-4 text-brand-700 dark:text-brand-400" />
               <span className="text-sm font-bold text-gray-900 dark:text-white">{favoriteProducts.length}</span>
               <span className="text-xs text-gray-500 dark:text-gray-400">Favoris</span>
@@ -529,6 +537,11 @@ export default function DashboardProfilePage() {
               <Star className="h-4 w-4 text-brand-700 dark:text-brand-400" />
               <span className="text-sm font-bold text-gray-900 dark:text-white">{myReviews.length}</span>
               <span className="text-xs text-gray-500 dark:text-gray-400">Avis</span>
+            </div>
+            <div className="flex items-center gap-1.5 rounded-lg border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 px-3 py-2">
+              <MessageCircle className="h-4 w-4 text-brand-700 dark:text-brand-400" />
+              <span className="text-sm font-bold text-gray-900 dark:text-white">{(conversationsData?.data || conversationsData || []).reduce((s, c) => s + (c.unreadCount || 0), 0)}</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">Messages non lus</span>
             </div>
           </div>
         </div>

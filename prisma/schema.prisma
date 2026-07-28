@@ -638,3 +638,13 @@ model SiteSetting {
   value      String   @db.Text
   updated_at DateTime @updatedAt
 }
+
+model ContactMessage {
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String
+  subject    String?
+  message    String   @db.Text
+  read       Boolean  @default(false)
+  created_at DateTime @default(now())
+}

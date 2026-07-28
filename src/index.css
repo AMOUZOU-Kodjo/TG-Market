@@ -25,6 +25,25 @@
   --success-light: #ECFDF5;
   --warning: #FFCE00;
   --warning-light: #FFFDE7;
+
+  /* ═══ Navbar ═══ */
+  --navbar-bg: #01353095;
+  --navbar-bg-scrolled: #01353095;
+  --navbar-text: rgba(255, 255, 255, 0.85);
+  --navbar-text-hover: #ffffff;
+  --navbar-search-bg: rgba(255, 255, 255, 0.15);
+  --navbar-search-bg-focus: rgba(255, 255, 255, 0.25);
+  --navbar-border: rgba(255, 255, 255, 0.1);
+
+  /* ═══ Footer ═══ */
+  --footer-bg: #01353095;
+  --footer-bg-dark: #012520;
+  --footer-text: #D1D5DB;
+  --footer-heading: #FFFFFF;
+  --footer-link-hover: #FFFFFF;
+  --footer-border: rgba(255, 255, 255, 0.1);
+  --footer-icon-bg: rgba(255, 255, 255, 0.08);
+  --footer-icon-bg-hover: var(--brand-800);
 }
 
 @theme {
@@ -77,8 +96,8 @@
   --color-gray-900: #111827;
   --color-gray-950: #030712;
 
-  --font-sans: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Poppins", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: "Quicksand", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Quicksand", -apple-system, BlinkMacSystemFont, sans-serif;
 
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
@@ -92,6 +111,18 @@
   --shadow-card-hover: 0 10px 15px -3px rgb(0 0 0 / 0.06), 0 4px 6px -4px rgb(0 0 0 / 0.04);
   --shadow-dropdown: 0 10px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.04);
   --shadow-modal: 0 25px 50px -12px rgb(0 0 0 / 0.15);
+
+  /* ═══ Navbar / Footer — change ICI ═══ */
+  --color-navbar: var(--navbar-bg);
+  --color-navbar-scrolled: var(--navbar-bg-scrolled);
+  --color-navbar-text: var(--navbar-text);
+  --color-footer: var(--footer-bg);
+  --color-footer-dark: var(--footer-bg-dark);
+  --color-footer-text: var(--footer-text);
+  --color-footer-heading: var(--footer-heading);
+  --color-footer-border: var(--footer-border);
+  --color-footer-icon: var(--footer-icon-bg);
+  --color-footer-icon-hover: var(--footer-icon-bg-hover);
 }
 
 @layer base {

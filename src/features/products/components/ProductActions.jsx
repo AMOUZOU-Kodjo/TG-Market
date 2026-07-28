@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 export default function ProductActions({ product }) {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const { data: favData } = useCheckFavorite(product?.id);
+  const { data: favData } = useCheckFavorite(product?.id, isAuthenticated);
   const toggleFav = useToggleFavorite();
 
   const isFavorite = favData?.isFavorite ?? false;

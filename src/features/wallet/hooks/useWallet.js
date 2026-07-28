@@ -19,7 +19,10 @@ export function useWithdraw() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: walletApi.withdraw,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["walletBalance"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["walletBalance"] });
+      qc.invalidateQueries({ queryKey: ["walletTransactions"] });
+    },
   });
 }
 
@@ -49,7 +52,11 @@ export function useConfirmPayment() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: escrowApi.confirmPayment,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["escrow"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["escrow"] });
+      qc.invalidateQueries({ queryKey: ["walletBalance"] });
+      qc.invalidateQueries({ queryKey: ["walletTransactions"] });
+    },
   });
 }
 
@@ -65,6 +72,10 @@ export function useConfirmDelivery() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: escrowApi.confirmDelivery,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["escrow"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["escrow"] });
+      qc.invalidateQueries({ queryKey: ["walletBalance"] });
+      qc.invalidateQueries({ queryKey: ["walletTransactions"] });
+    },
   });
 }

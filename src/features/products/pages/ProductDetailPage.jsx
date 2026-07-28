@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -15,6 +16,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { useProduct, useSimilarProducts } from "@/features/products/hooks/useProducts";
+import { productsApi } from "@/features/products/services/products.api";
 import { useCategories } from "@/features/categories/hooks/useCategories";
 import { formatCFA, formatRelativeTime, formatNumber } from "@/shared/utils/format";
 import Breadcrumb from "@/shared/ui/Breadcrumb";
@@ -37,6 +39,12 @@ export default function ProductDetailPage() {
   const { data: product, isLoading } = useProduct(id);
   const { data: similarProducts = [] } = useSimilarProducts(id);
   const { data: categories = [] } = useCategories();
+
+  useEffect(() => {
+    if (id) {
+      productsApi.incrementViews(id).catch(() => {});
+    }
+  }, [id]);
 
   if (isLoading) {
     return (

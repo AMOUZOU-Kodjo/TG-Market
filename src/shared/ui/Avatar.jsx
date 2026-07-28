@@ -7,6 +7,7 @@ const sizes = {
   md: "h-10 w-10 text-sm",
   lg: "h-14 w-14 text-base",
   xl: "h-20 w-20 text-lg",
+  "2xl": "h-35 w-35 text-xl",
 };
 
 const statusSizes = {
@@ -15,6 +16,7 @@ const statusSizes = {
   md: "h-3 w-3 border-2",
   lg: "h-3.5 w-3.5 border-2",
   xl: "h-4 w-4 border-2",
+  "2xl": "h-5 w-5 border-2",
 };
 
 function getInitials(name) {
@@ -66,14 +68,14 @@ export default function Avatar({
           src={src}
           alt={alt || name || "Avatar"}
           className={cn(
-            "rounded-full object-cover ring-2 ring-white dark:ring-gray-900",
+            "rounded-full object-cover ring-2 ring-gray-200 dark:ring-gray-700",
             sizes[size]
           )}
         />
       ) : (
         <div
           className={cn(
-            "flex items-center justify-center rounded-full font-semibold text-white ring-2 ring-white dark:ring-gray-900",
+            "flex items-center justify-center rounded-full font-semibold text-white ring-2 ring-gray-200 dark:ring-gray-700",
             color,
             sizes[size]
           )}
@@ -100,7 +102,8 @@ export default function Avatar({
               size === "sm" && "h-3.5 w-3.5",
               size === "md" && "h-4 w-4",
               size === "lg" && "h-5 w-5",
-              size === "xl" && "h-6 w-6"
+              size === "xl" && "h-6 w-6",
+              size === "2xl" && "h-7 w-7"
             )}
           />
         </div>

@@ -165,7 +165,10 @@ export default function CategoryBar() {
   if (parents.length === 0) return null;
 
   return (
-    <div ref={containerRef} className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 z-50">
+    <div
+      ref={containerRef}
+      className="bg-[#01353095] dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 z-50"
+    >
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-start md:justify-center gap-1 overflow-x-auto hide-scrollbar px-4 sm:px-6 lg:px-8 py-2">
           {parents.map((group, i) => {
@@ -203,7 +206,16 @@ export default function CategoryBar() {
             exit={{ opacity: 0, y: 4 }}
             transition={{ duration: 0.15 }}
             className="fixed z-[100] left-0 right-0 md:left-auto md:right-auto md:w-auto"
-            style={window.innerWidth >= 768 ? { left: menuPos.left + 200, top: menuPos.top, width: menuPos.width - 400 } : { left: 0, top: menuPos.top, width: '100vw', height: 'calc(100vh - ' + menuPos.top + 'px)' }}
+            style={
+              window.innerWidth >= 768
+                ? { left: menuPos.left + 200, top: menuPos.top, width: menuPos.width - 400 }
+                : {
+                    left: 0,
+                    top: menuPos.top,
+                    width: "100vw",
+                    height: "calc(100vh - " + menuPos.top + "px)",
+                  }
+            }
             onMouseEnter={() => {
               if (window.innerWidth >= 768) {
                 clearTimeout(closeTimeout.current);
@@ -225,7 +237,13 @@ export default function CategoryBar() {
                     onClick={() => setOpenIndex(null)}
                     className="lg:hidden absolute top-3 left-3 p-2 bg-black/40 hover:bg-black/60 rounded-full text-white transition-colors z-10"
                   >
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                     </svg>
                   </button>
@@ -236,20 +254,40 @@ export default function CategoryBar() {
                   </div>
                 </div>
 
-                <div className="flex-1 p-5 overflow-y-auto">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1">
+                  <div className="flex-1 p-5 overflow-y-auto">
+                  <div className="grid grid-cols-3 gap-4">
                     {parents[openIndex].children?.map((sub) => {
                       const SubIcon = faIconMap[sub.icon] || FaBoxOpen;
+                      const hasSubChildren = sub.children?.length > 0;
                       return (
-                        <Link
-                          key={sub.slug}
-                          to={`/categories/${sub.slug}`}
-                          onClick={() => setOpenIndex(null)}
-                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                        >
-                          <SubIcon className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />
-                          {sub.name}
-                        </Link>
+                        <div key={sub.slug}>
+                          <Link
+                            to={`/categories/${sub.slug}`}
+                            onClick={() => setOpenIndex(null)}
+                            className="flex items-center gap-3 px-3 py-1.5 rounded-xl text-sm font-semibold text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          >
+                            <SubIcon className="w-5 h-5 text-gray-400 dark:text-gray-500 shrink-0" />
+                            {sub.name}
+                          </Link>
+                          {hasSubChildren && (
+                            <div className="ml-8 mt-1 flex flex-wrap gap-1">
+                              {sub.children.map((subSub) => {
+                                const SubSubIcon = faIconMap[subSub.icon] || FaBoxOpen;
+                                return (
+                                  <Link
+                                    key={subSub.slug}
+                                    to={`/categories/${subSub.slug}`}
+                                    onClick={() => setOpenIndex(null)}
+                                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-brand-700 dark:hover:text-brand-400 transition-colors"
+                                  >
+                                    <SubSubIcon className="w-3.5 h-3.5 shrink-0" />
+                                    {subSub.name}
+                                  </Link>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
                       );
                     })}
                   </div>

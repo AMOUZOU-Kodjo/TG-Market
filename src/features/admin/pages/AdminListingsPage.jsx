@@ -21,6 +21,8 @@ export default function AdminListingsPage() {
     onSuccess: () => {
       toast.success("Statut mis à jour");
       qc.invalidateQueries({ queryKey: ["adminProducts"] });
+      qc.invalidateQueries({ queryKey: ["products"] });
+      qc.invalidateQueries({ queryKey: ["myProducts"] });
     },
     onError: () => toast.error("Erreur lors de la mise à jour"),
   });

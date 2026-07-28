@@ -24,6 +24,7 @@ import PhotoUploader from "@/features/listings/components/PhotoUploader";
 import ListingPreview from "@/features/listings/components/ListingPreview";
 import { useProduct, useUpdateProduct, useDeleteProduct } from "@/features/products/hooks/useProducts";
 import { useCategories } from "@/features/categories/hooks/useCategories";
+import CategoryPicker from "@/features/categories/components/CategoryPicker";
 import { CITIES, PRODUCT_CONDITIONS, MAX_IMAGES_PER_LISTING } from "@/shared/constants";
 import { createListingSchema } from "@/shared/utils/validators";
 
@@ -46,8 +47,7 @@ export default function EditListingPage() {
   const deleteProduct = useDeleteProduct();
   const [currentStep, setCurrentStep] = useState(0);
   const [photos, setPhotos] = useState([]);
-  const [selectedParentCategory, setSelectedParentCategory] = useState(null);
-  const [selectedSubCategory, setSelectedSubCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -66,23 +66,23 @@ export default function EditListingPage() {
 
   const formValues = watch();
 
+  function findCategoryInTree(tree, id) {
+    for (const cat of tree) {
+      if (cat.id === id) return cat;
+      if (cat.children?.length) {
+        const found = findCategoryInTree(cat.children, id);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
   useEffect(() => {
     if (existingProduct && categories.length > 0) {
       const productCategoryId = existingProduct.category?.id;
       if (productCategoryId) {
-        const parent = categories.find((c) =>
-          c.children?.some((ch) => ch.id === productCategoryId)
-        );
-        if (parent) {
-          setSelectedParentCategory(parent);
-          const sub = parent.children.find((ch) => ch.id === productCategoryId);
-          if (sub) setSelectedSubCategory(sub);
-        } else {
-          const directMatch = categories.find((c) => c.id === productCategoryId);
-          if (directMatch) {
-            setSelectedParentCategory(directMatch);
-          }
-        }
+        const found = findCategoryInTree(categories, productCategoryId);
+        if (found) setSelectedCategory(found);
       }
 
       const productPhotos = existingProduct.images.map((url, i) => ({
@@ -110,7 +110,7 @@ export default function EditListingPage() {
     async (step) => {
       switch (step) {
         case 0:
-          if (!selectedSubCategory) {
+          if (!selectedCategory) {
             toast.error("Veuillez sélectionner une catégorie");
             return false;
           }
@@ -131,7 +131,7 @@ export default function EditListingPage() {
           return true;
       }
     },
-    [selectedSubCategory, photos.length, trigger]
+    [selectedCategory, photos.length, trigger]
   );
 
   const handleNext = useCallback(async () => {
@@ -148,7 +148,7 @@ export default function EditListingPage() {
   }, [currentStep]);
 
   const handleSave = useCallback(async () => {
-    if (!selectedSubCategory) {
+    if (!selectedCategory) {
       toast.error("Veuillez sélectionner une catégorie");
       return;
     }
@@ -170,7 +170,7 @@ export default function EditListingPage() {
       await updateProduct.mutateAsync({
         id: Number(id),
         data: {
-          categoryId: selectedSubCategory.id,
+          categoryId: selectedCategory.id,
           title: formValues.title,
           description: formValues.description,
           price: Number(formValues.price),
@@ -190,7 +190,7 @@ export default function EditListingPage() {
     } catch (err) {
       toast.error(err?.response?.data?.message || "Erreur lors de la mise à jour");
     }
-  }, [selectedSubCategory, photos, formValues, id, updateProduct]);
+  }, [selectedCategory, photos, formValues, id, updateProduct]);
 
   const handleDelete = useCallback(async () => {
     try {
@@ -225,47 +225,18 @@ export default function EditListingPage() {
   const renderStep = () => {
     switch (currentStep) {
       case 0:
-        const parentCategories = categories.filter((c) => !c.parentId);
-        const availableSubCategories = selectedParentCategory?.children ?? [];
         return (
           <ListingFormStep
             title="Catégorie"
             description="Modifiez la catégorie de votre annonce"
           >
-            <div className="space-y-4">
-              <Select
-                label="Catégorie principale"
-                placeholder="Sélectionnez une catégorie"
-                options={parentCategories.map((cat) => ({
-                  value: cat.id,
-                  label: cat.name,
-                }))}
-                value={selectedParentCategory?.id ?? ""}
-                onChange={(val) => {
-                  const parent = categories.find((c) => c.id === Number(val));
-                  setSelectedParentCategory(parent ?? null);
-                  setSelectedSubCategory(null);
-                }}
-              />
-
-              {availableSubCategories.length > 0 && (
-                <Select
-                  label="Sous-catégorie"
-                  placeholder="Sélectionnez une sous-catégorie"
-                  options={availableSubCategories.map((cat) => ({
-                    value: cat.id,
-                    label: cat.name,
-                  }))}
-                  value={selectedSubCategory?.id ?? ""}
-                  onChange={(val) => {
-                    const sub = availableSubCategories.find(
-                      (c) => c.id === Number(val)
-                    );
-                    setSelectedSubCategory(sub ?? null);
-                  }}
-                />
-              )}
-            </div>
+            <CategoryPicker
+              categories={categories}
+              value={selectedCategory}
+              onChange={(cat) => {
+                setSelectedCategory(cat);
+              }}
+            />
           </ListingFormStep>
         );
 
@@ -480,7 +451,7 @@ export default function EditListingPage() {
             <ListingPreview
               data={{
                 ...formValues,
-                category: selectedSubCategory?.name || "",
+                category: selectedCategory?.name || "",
                 images: photos,
                 tags: formValues.tags || [],
               }}

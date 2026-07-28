@@ -971,7 +971,7 @@ function getDeviceIcon(userAgent) {
 }
 
 export default function SettingsPage() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const qc = useQueryClient();
   const userId = user?.id;
 
@@ -995,7 +995,7 @@ export default function SettingsPage() {
     mutationFn: usersApi.updateProfile,
     onSuccess: () => {
       toast.success("Profil mis à jour avec succès !");
-      qc.invalidateQueries({ queryKey: ["authMe"] });
+      refreshUser();
     },
     onError: () => {
       toast.error("Erreur lors de la mise à jour du profil");
@@ -1016,6 +1016,7 @@ export default function SettingsPage() {
   const { mutate: revokeOtherSessions, isPending: revokingSessions } = useMutation({
     mutationFn: authApi.revokeOtherSessions,
     onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["sessions"] });
       toast.success("Toutes les autres sessions ont été déconnectées.");
     },
     onError: () => {
@@ -1027,7 +1028,7 @@ export default function SettingsPage() {
     mutationFn: usersApi.updatePreferences,
     onSuccess: () => {
       toast.success("Préférences sauvegardées !");
-      qc.invalidateQueries({ queryKey: ["authMe"] });
+      refreshUser();
     },
     onError: () => {
       toast.error("Erreur lors de la sauvegarde des préférences");
@@ -1038,7 +1039,7 @@ export default function SettingsPage() {
     mutationFn: usersApi.updatePrivacy,
     onSuccess: () => {
       toast.success("Confidentialité sauvegardée !");
-      qc.invalidateQueries({ queryKey: ["authMe"] });
+      refreshUser();
     },
     onError: () => {
       toast.error("Erreur lors de la sauvegarde de la confidentialité");

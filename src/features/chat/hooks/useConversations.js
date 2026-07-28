@@ -36,7 +36,10 @@ export function useSendMessage(conversationId) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data) => conversationsApi.sendMessage(conversationId, data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["messages", conversationId] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["messages", conversationId] });
+      qc.invalidateQueries({ queryKey: ["conversations"] });
+    },
   });
 }
 

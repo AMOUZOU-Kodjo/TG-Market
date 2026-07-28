@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Edit3,
   Heart,
@@ -7,11 +8,17 @@ import {
   Settings,
   Package,
   Camera,
-  LogOut,
   Shield,
+  ShieldCheck,
+  ShieldOff,
   Bell,
   Trash2,
   Loader2,
+  Lock,
+  Eye,
+  EyeOff,
+  Check,
+  AlertTriangle,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import Tabs from "@/shared/ui/Tabs";
@@ -28,15 +35,19 @@ import { useAuth } from "@/shared/contexts/AuthContext";
 import { useMyProducts } from "@/features/products/hooks/useProducts";
 import { useMyReviews } from "@/features/reviews/hooks/useReviews";
 import { usersApi } from "@/features/profile/services/users.api";
+import { useKycStatus } from "@/features/verification/hooks/useKyc";
 import { cn } from "@/shared/utils/cn";
 
 export default function UserProfilePage() {
   const { user, setUser } = useAuth();
+  const queryClient = useQueryClient();
   const { data: myProductsData } = useMyProducts();
   const { data: myReviewsData } = useMyReviews();
+  const { data: kycStatus } = useKycStatus();
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const avatarInputRef = useRef(null);
+
   const [formData, setFormData] = useState({
     name: user?.name || "",
     email: user?.email || "",
@@ -45,9 +56,79 @@ export default function UserProfilePage() {
     avatar: user?.avatar || "",
   });
 
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
   const myProducts = (myProductsData?.data || myProductsData || []).filter((p) => p.seller?.id === user?.id);
   const favoriteProducts = (myProductsData?.data || myProductsData || []).slice(0, 3);
   const myReviews = (myReviewsData?.data || myReviewsData || []).filter((r) => r.reviewer?.id === user?.id);
+
+  const notificationsEmail = user?.notificationsEmail ?? true;
+  const notificationsPush = user?.notificationsPush ?? true;
+  const notificationsSms = user?.notificationsSms ?? false;
+
+  const preferencesMutation = useMutation({
+    mutationFn: (data) => usersApi.updatePreferences(data),
+    onSuccess: () => {
+      toast.success("Préférences sauvegardées !");
+    },
+    onError: (err) => {
+      toast.error(err?.response?.data?.message || "Erreur lors de la sauvegarde");
+    },
+  });
+
+  const passwordMutation = useMutation({
+    mutationFn: (data) => usersApi.changePassword(data),
+    onSuccess: () => {
+      setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      toast.success("Mot de passe modifié ! Veuillez vous reconnecter.");
+    },
+    onError: (err) => {
+      toast.error(err?.response?.data?.message || "Erreur lors du changement de mot de passe");
+    },
+  });
+
+  const handleNotificationChange = (key, value) => {
+    preferencesMutation.mutate({ [key]: value });
+    setUser((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handlePasswordChange = () => {
+    if (!passwordData.currentPassword) {
+      toast.error("Veuillez saisir votre mot de passe actuel");
+      return;
+    }
+    if (passwordData.newPassword.length < 8) {
+      toast.error("Le nouveau mot de passe doit contenir au moins 8 caractères");
+      return;
+    }
+    if (!/[A-Z]/.test(passwordData.newPassword)) {
+      toast.error("Le mot de passe doit contenir au moins une majuscule");
+      return;
+    }
+    if (!/[a-z]/.test(passwordData.newPassword)) {
+      toast.error("Le mot de passe doit contenir au moins une minuscule");
+      return;
+    }
+    if (!/[0-9]/.test(passwordData.newPassword)) {
+      toast.error("Le mot de passe doit contenir au moins un chiffre");
+      return;
+    }
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error("Les mots de passe ne correspondent pas");
+      return;
+    }
+    passwordMutation.mutate({
+      currentPassword: passwordData.currentPassword,
+      newPassword: passwordData.newPassword,
+    });
+  };
 
   const handleSave = () => {
     setEditModalOpen(false);
@@ -73,6 +154,9 @@ export default function UserProfilePage() {
       if (avatarInputRef.current) avatarInputRef.current.value = "";
     }
   };
+
+  const isEmailVerified = !!kycStatus?.emailVerified;
+  const isPhoneVerified = !!kycStatus?.phoneVerified;
 
   const tabs = [
     {
@@ -152,7 +236,8 @@ export default function UserProfilePage() {
       icon: Settings,
       content: (
         <div className="max-w-2xl space-y-6">
-          <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
+          {/* Compte */}
+          <div className="rounded-2xl bg-white p-5 dark:bg-gray-900">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
               <Shield className="h-4 w-4 text-brand-800" />
               Compte
@@ -163,45 +248,127 @@ export default function UserProfilePage() {
                   <p className="text-sm font-medium text-gray-900 dark:text-white">Email</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email}</p>
                 </div>
-                <Badge variant="success">Vérifié</Badge>
+                {isEmailVerified ? (
+                  <Badge variant="success">
+                    <ShieldCheck className="h-3 w-3" />
+                    Vérifié
+                  </Badge>
+                ) : (
+                  <Badge variant="warning">
+                    <ShieldOff className="h-3 w-3" />
+                    Non vérifié
+                  </Badge>
+                )}
               </div>
               <div className="flex items-center justify-between rounded-xl bg-gray-50 p-3 dark:bg-gray-800">
                 <div>
                   <p className="text-sm font-medium text-gray-900 dark:text-white">Téléphone</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{user?.phone}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{user?.phone || "Non renseigné"}</p>
                 </div>
-                <Badge variant="success">Vérifié</Badge>
+                {isPhoneVerified ? (
+                  <Badge variant="success">
+                    <ShieldCheck className="h-3 w-3" />
+                    Vérifié
+                  </Badge>
+                ) : (
+                  <Badge variant="warning">
+                    <ShieldOff className="h-3 w-3" />
+                    Non vérifié
+                  </Badge>
+                )}
               </div>
-              <div className="flex items-center justify-between rounded-xl bg-gray-50 p-3 dark:bg-gray-800">
-                <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">Mot de passe</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Dernière modification il y a 3 mois</p>
-                </div>
-                <Button variant="ghost" size="sm">
-                  Modifier
+            </div>
+          </div>
+
+          {/* Mot de passe */}
+          <div className="rounded-2xl bg-white p-5 dark:bg-gray-900">
+            <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+              <Lock className="h-4 w-4 text-brand-800" />
+              Mot de passe
+            </h3>
+            <div className="space-y-3">
+              <div className="relative">
+                <Input
+                  label="Mot de passe actuel"
+                  type={showCurrentPassword ? "text" : "password"}
+                  value={passwordData.currentPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                  placeholder="Saisissez votre mot de passe actuel"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  className="absolute right-3 top-9 text-gray-400 hover:text-gray-600"
+                >
+                  {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              <div className="relative">
+                <Input
+                  label="Nouveau mot de passe"
+                  type={showNewPassword ? "text" : "password"}
+                  value={passwordData.newPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                  placeholder="Min. 8 caractères, majuscule, minuscule, chiffre"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-3 top-9 text-gray-400 hover:text-gray-600"
+                >
+                  {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              <Input
+                label="Confirmer le mot de passe"
+                type="password"
+                value={passwordData.confirmPassword}
+                onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                placeholder="Retapez le nouveau mot de passe"
+              />
+              <div className="flex justify-end pt-2">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handlePasswordChange}
+                  disabled={passwordMutation.isPending}
+                >
+                  {passwordMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Lock className="h-4 w-4" />
+                  )}
+                  Modifier le mot de passe
                 </Button>
               </div>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
+          {/* Notifications */}
+          <div className="rounded-2xl bg-white p-5 dark:bg-gray-900">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
               <Bell className="h-4 w-4 text-brand-800" />
               Notifications
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {[
-                { label: "Notifications push", desc: "Recevoir les alertes sur votre téléphone" },
-                { label: "Emails marketing", desc: "Offres et promotions personnalisées" },
-                { label: "Alertes de prix", desc: "Quand un produit baisse de prix" },
+                { key: "notificationsPush", label: "Notifications push", desc: "Recevoir les alertes sur votre téléphone" },
+                { key: "notificationsEmail", label: "Notifications email", desc: "Recevoir les alertes par email" },
+                { key: "notificationsSms", label: "Notifications SMS", desc: "Recevoir les alertes par SMS" },
               ].map((item) => (
-                <div key={item.label} className="flex items-center justify-between">
+                <div key={item.key} className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-gray-900 dark:text-white">{item.label}</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">{item.desc}</p>
                   </div>
                   <label className="relative inline-flex cursor-pointer items-center">
-                    <input type="checkbox" className="peer sr-only" defaultChecked />
+                    <input
+                      type="checkbox"
+                      className="peer sr-only"
+                      checked={user?.[item.key] ?? (item.key !== "notificationsSms")}
+                      onChange={(e) => handleNotificationChange(item.key, e.target.checked)}
+                      disabled={preferencesMutation.isPending}
+                    />
                     <div className="h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all peer-checked:bg-brand-800 after:peer-checked:translate-x-full dark:bg-gray-700" />
                   </label>
                 </div>
@@ -209,15 +376,21 @@ export default function UserProfilePage() {
             </div>
           </div>
 
+          {/* Zone dangereuse */}
           <div className="rounded-2xl border border-red-100 bg-red-50 p-5 dark:border-red-950/30 dark:bg-red-950/10">
             <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-red-900 dark:text-red-400">
-              <Trash2 className="h-4 w-4" />
+              <AlertTriangle className="h-4 w-4" />
               Zone dangereuse
             </h3>
             <p className="mb-3 text-sm text-red-800/80 dark:text-red-400/70">
-              La suppression de votre compte est irréversible.
+              La suppression de votre compte est irréversible. Toutes vos données seront définitivement effacées.
             </p>
-            <Button variant="danger" size="sm">
+            <Button
+              variant="danger"
+              size="sm"
+              icon={Trash2}
+              onClick={() => setDeleteModalOpen(true)}
+            >
               Supprimer mon compte
             </Button>
           </div>
@@ -324,6 +497,40 @@ export default function UserProfilePage() {
             showCount
             rows={3}
           />
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        title="Supprimer mon compte"
+        size="md"
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button variant="ghost" onClick={() => setDeleteModalOpen(false)}>
+              Annuler
+            </Button>
+            <Button variant="danger" disabled>
+              Confirmer la suppression
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          <div className="flex items-start gap-3 rounded-xl bg-red-50 p-4 dark:bg-red-950/20">
+            <AlertTriangle className="h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
+            <div>
+              <p className="text-sm font-medium text-red-900 dark:text-red-400">
+                Cette action est irréversible
+              </p>
+              <p className="mt-1 text-sm text-red-700 dark:text-red-400/70">
+                Toutes vos annonces, messages, favoris et données seront définitivement supprimés.
+              </p>
+            </div>
+          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Pour des raisons de sécurité, la suppression de compte n'est pas encore disponible en ligne. Veuillez contacter le support à <span className="font-medium">support@akmarket.tg</span> pour demander la suppression de votre compte.
+          </p>
         </div>
       </Modal>
     </div>

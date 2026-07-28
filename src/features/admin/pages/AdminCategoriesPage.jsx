@@ -32,7 +32,7 @@ const ICONS = [
   "Hammer", "Wrench", "PartyPopper", "Camera", "Bike",
   "Footprints", "ShoppingBag", "Gem", "Flower2", "Sun",
   "Package", "Star", "MapPin", "Users", "PackageCheck",
-  "ShieldCheck", "CheckCircle2", "Download", "Play", "Apple",
+  "ShieldCheck", "CheckCircle2", "Download", "Play", "BadgeCheck",
   "Zap", "Shield", "Send", "FileText", "MessageSquare", "Heart",
 ];
 
@@ -59,32 +59,32 @@ export default function AdminCategoriesPage() {
   const [modal, setModal] = useState(null);
   const [form, setForm] = useState({ name: "", slug: "", icon: "Package", color: getRandomColor(), parentId: null, sortOrder: 0, isActive: true });
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["adminCategories"],
     queryFn: () => api.get("/admin/categories").then((r) => r.data),
   });
 
   const createMutation = useMutation({
     mutationFn: (data) => api.post("/admin/categories", data).then((r) => r.data.data),
-    onSuccess: () => { toast.success("Catégorie créée"); closeModal(); refetch(); },
+    onSuccess: () => { toast.success("Catégorie créée"); closeModal(); qc.invalidateQueries({ queryKey: ["adminCategories"] }); qc.invalidateQueries({ queryKey: ["categories"] }); },
     onError: (e) => toast.error(e.response?.data?.error ?? "Erreur"),
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }) => api.put(`/admin/categories/${id}`, data).then((r) => r.data.data),
-    onSuccess: () => { toast.success("Catégorie modifiée"); closeModal(); refetch(); },
+    onSuccess: () => { toast.success("Catégorie modifiée"); closeModal(); qc.invalidateQueries({ queryKey: ["adminCategories"] }); qc.invalidateQueries({ queryKey: ["categories"] }); },
     onError: (e) => toast.error(e.response?.data?.error ?? "Erreur"),
   });
 
   const reorderMutation = useMutation({
     mutationFn: (updates) => api.put("/admin/categories/reorder", { updates }).then((r) => r.data),
-    onSuccess: () => { toast.success("Ordre mis à jour"); refetch(); },
+    onSuccess: () => { toast.success("Ordre mis à jour"); qc.invalidateQueries({ queryKey: ["adminCategories"] }); qc.invalidateQueries({ queryKey: ["categories"] }); },
     onError: (e) => toast.error(e.response?.data?.error ?? "Erreur"),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id) => api.delete(`/admin/categories/${id}`).then((r) => r.data),
-    onSuccess: () => { toast.success("Catégorie supprimée"); refetch(); },
+    onSuccess: () => { toast.success("Catégorie supprimée"); qc.invalidateQueries({ queryKey: ["adminCategories"] }); qc.invalidateQueries({ queryKey: ["categories"] }); },
     onError: (e) => toast.error(e.response?.data?.error ?? "Erreur"),
   });
 
@@ -306,7 +306,7 @@ export default function AdminCategoriesPage() {
                   <label className="block text-xs font-medium text-gray-400 mb-1">Catégorie parente</label>
                   <select
                     value={form.parentId ?? ""}
-                    onChange={(e) => setForm({ ...form, parentId: e.target.value || null })}
+                    onChange={(e) => setForm({ ...form, parentId: e.target.value ? Number(e.target.value) : null })}
                     className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-600/50"
                   >
                     <option value="">— Aucune (mega-catégorie) —</option>

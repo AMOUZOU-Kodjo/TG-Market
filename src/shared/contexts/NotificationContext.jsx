@@ -1,74 +1,63 @@
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useState, useCallback, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSocket } from "./SocketContext";
+import { useAuth } from "./AuthContext";
+import { markNotificationRead, markAllNotificationsRead } from "../services/socket";
 
-const NotificationContext = createContext(undefined);
+export const NotificationContext = createContext(undefined);
 
 export function NotificationProvider({ children }) {
-  const [notifications, setNotifications] = useState([]);
+  const { on, connected } = useSocket();
+  const { user, setUser } = useAuth();
+  const queryClient = useQueryClient();
+  const [unreadCount, setUnreadCount] = useState(0);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  useEffect(() => {
+    if (user?.unreadNotifications !== undefined) {
+      setUnreadCount(user.unreadNotifications);
+    }
+  }, [user?.unreadNotifications]);
 
-  const addNotification = useCallback((notification) => {
-    const newNotification = {
-      id: `notif_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
-      read: false,
-      createdAt: new Date().toISOString(),
-      ...notification,
+  useEffect(() => {
+    if (!connected) return;
+
+    const unsubNotification = on("notification", (notification) => {
+      setUnreadCount((prev) => prev + 1);
+      setUser((prev) => prev ? { ...prev, unreadNotifications: (prev.unreadNotifications || 0) + 1 } : prev);
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["unreadNotificationCount"] });
+    });
+
+    return () => {
+      unsubNotification?.();
     };
-
-    setNotifications((prev) => [newNotification, ...prev]);
-    return newNotification.id;
-  }, []);
+  }, [connected, on, setUser, queryClient]);
 
   const markAsRead = useCallback((notificationId) => {
-    setNotifications((prev) =>
-      prev.map((n) =>
-        n.id === notificationId ? { ...n, read: true } : n
-      )
-    );
-  }, []);
+    markNotificationRead(notificationId);
+    setUnreadCount((prev) => Math.max(0, prev - 1));
+    setUser((prev) => prev ? { ...prev, unreadNotifications: Math.max(0, (prev.unreadNotifications || 0) - 1) } : prev);
+    queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    queryClient.invalidateQueries({ queryKey: ["unreadNotificationCount"] });
+  }, [setUser, queryClient]);
 
   const markAllAsRead = useCallback(() => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-  }, []);
-
-  const removeNotification = useCallback((notificationId) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
-  }, []);
-
-  const clearAll = useCallback(() => {
-    setNotifications([]);
-  }, []);
-
-  const setNotificationsList = useCallback((list) => {
-    setNotifications(list);
-  }, []);
+    markAllNotificationsRead();
+    setUnreadCount(0);
+    setUser((prev) => prev ? { ...prev, unreadNotifications: 0 } : prev);
+    queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    queryClient.invalidateQueries({ queryKey: ["unreadNotificationCount"] });
+  }, [setUser, queryClient]);
 
   return (
     <NotificationContext.Provider
       value={{
-        notifications,
         unreadCount,
-        addNotification,
         markAsRead,
         markAllAsRead,
-        removeNotification,
-        clearAll,
-        setNotificationsList,
       }}
     >
       {children}
     </NotificationContext.Provider>
   );
-}
-
-export function useNotifications() {
-  const context = useContext(NotificationContext);
-
-  if (context === undefined) {
-    throw new Error(
-      "useNotifications doit être utilisé dans un NotificationProvider"
-    );
-  }
-
-  return context;
 }

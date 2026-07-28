@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import Logo from "@/shared/ui/Logo";
 import { useAuth } from "@/shared/contexts/AuthContext";
+import { useNotificationContext } from "@/shared/hooks/useNotificationContext";
 import { useMyProducts } from "@/features/products/hooks/useProducts";
 import { useEscrowList, useWalletBalance } from "@/features/wallet/hooks/useWallet";
 import { useFavorites } from "@/features/favorites/hooks/useFavorites";
@@ -183,6 +184,7 @@ export default function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { unreadCount } = useNotificationContext();
 
   const { data: myProductsData } = useMyProducts();
   const { data: escrowData } = useEscrowList();
@@ -315,9 +317,9 @@ export default function DashboardLayout() {
                 className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition-colors"
               >
                 <Bell className="w-5 h-5" />
-                {user?.unreadNotifications > 0 && (
+                {unreadCount > 0 && (
                   <span className="absolute top-1 right-1 w-4 h-4 bg-brand-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                    {user?.unreadNotifications}
+                    {unreadCount}
                   </span>
                 )}
               </Link>

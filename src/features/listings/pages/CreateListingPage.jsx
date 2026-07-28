@@ -48,6 +48,7 @@ import ListingFormStep from "@/features/listings/components/ListingFormStep";
 import PhotoUploader from "@/features/listings/components/PhotoUploader";
 import ListingPreview from "@/features/listings/components/ListingPreview";
 import { useCategories } from "@/features/categories/hooks/useCategories";
+import CategoryPicker from "@/features/categories/components/CategoryPicker";
 import { useCreateProduct } from "@/features/products/hooks/useProducts";
 import api from "@/shared/services/api";
 import { CITIES, PRODUCT_CONDITIONS, MAX_IMAGES_PER_LISTING } from "@/shared/constants";
@@ -84,8 +85,7 @@ export default function CreateListingPage() {
   const createProduct = useCreateProduct();
   const [currentStep, setCurrentStep] = useState(0);
   const [photos, setPhotos] = useState([]);
-  const [selectedParentCategory, setSelectedParentCategory] = useState(null);
-  const [selectedSubCategory, setSelectedSubCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [isPublished, setIsPublished] = useState(false);
   const [publishedProductId, setPublishedProductId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -115,7 +115,7 @@ export default function CreateListingPage() {
     async (step) => {
       switch (step) {
         case 0:
-          if (!selectedSubCategory) {
+          if (!selectedCategory) {
             toast.error("Veuillez sélectionner une sous-catégorie");
             return false;
           }
@@ -136,7 +136,7 @@ export default function CreateListingPage() {
           return true;
       }
     },
-    [selectedSubCategory, photos.length, trigger]
+    [selectedCategory, photos.length, trigger]
   );
 
   const handleNext = useCallback(async () => {
@@ -153,7 +153,7 @@ export default function CreateListingPage() {
   }, [currentStep]);
 
   const handlePublish = useCallback(async () => {
-    if (!selectedSubCategory) {
+    if (!selectedCategory) {
       toast.error("Veuillez sélectionner une catégorie");
       return;
     }
@@ -175,7 +175,7 @@ export default function CreateListingPage() {
       const allImages = [...existingUrls, ...uploadedUrls];
 
       const payload = {
-        categoryId: selectedSubCategory.id,
+        categoryId: selectedCategory.id,
         title: formValues.title,
         description: formValues.description,
         condition: formValues.condition,
@@ -202,7 +202,7 @@ export default function CreateListingPage() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [selectedSubCategory, photos, formValues, createProduct]);
+  }, [selectedCategory, photos, formValues, createProduct]);
 
   const handleSaveDraft = useCallback(() => {
     toast.success("Brouillon sauvegardé !");
@@ -215,51 +215,20 @@ export default function CreateListingPage() {
   const renderStep = () => {
     switch (currentStep) {
       case 0:
-        const parentCategories = categories.filter((c) => !c.parentId);
-        const availableSubCategories = selectedParentCategory?.children ?? [];
         return (
           <ListingFormStep
             title="Choisissez une catégorie"
-            description="Sélectionnez d'abord une catégorie principale, puis une sous-catégorie"
+            description="Sélectionnez la catégorie la plus appropriée pour votre annonce"
           >
-            <div className="space-y-4">
-              <Select
-                label="Catégorie principale"
-                placeholder="Sélectionnez une catégorie"
-                options={parentCategories.map((cat) => ({
-                  value: cat.id,
-                  label: cat.name,
-                }))}
-                value={selectedParentCategory?.id ?? ""}
-                onChange={(val) => {
-                  const parent = categories.find((c) => c.id === Number(val));
-                  setSelectedParentCategory(parent ?? null);
-                  setSelectedSubCategory(null);
-                  setValue("category", "");
-                }}
-                error={errors.category?.message}
-              />
-
-              {availableSubCategories.length > 0 && (
-                <Select
-                  label="Sous-catégorie"
-                  placeholder="Sélectionnez une sous-catégorie"
-                  options={availableSubCategories.map((cat) => ({
-                    value: cat.id,
-                    label: cat.name,
-                  }))}
-                  value={selectedSubCategory?.id ?? ""}
-                  onChange={(val) => {
-                    const sub = availableSubCategories.find(
-                      (c) => c.id === Number(val)
-                    );
-                    setSelectedSubCategory(sub ?? null);
-                    setValue("category", sub?.slug ?? "");
-                  }}
-                  error={errors.category?.message}
-                />
-              )}
-            </div>
+            <CategoryPicker
+              categories={categories}
+              value={selectedCategory}
+              onChange={(cat) => {
+                setSelectedCategory(cat);
+                setValue("category", cat?.slug ?? "");
+              }}
+              error={errors.category?.message}
+            />
           </ListingFormStep>
         );
 
@@ -515,7 +484,7 @@ export default function CreateListingPage() {
               data={{
                 ...formValues,
                 // category: selectedCategory?.name || "",
-                category: selectedSubCategory?.name || "",
+                category: selectedCategory?.name || "",
                 images: photos,
                 tags: formValues.tags || [],
               }}

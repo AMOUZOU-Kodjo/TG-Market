@@ -17,6 +17,7 @@ import {
 import Button from "@/shared/ui/Button";
 import EmptyState from "@/shared/ui/EmptyState";
 import { useNotifications, useMarkNotificationRead, useMarkAllNotificationsRead } from "@/features/notifications/hooks/useNotifications";
+import { useNotificationContext } from "@/shared/hooks/useNotificationContext";
 import { formatRelativeTime } from "@/shared/utils/format";
 import { notificationsApi } from "@/features/notifications/services/notifications.api";
 import { useQueryClient } from "@tanstack/react-query";
@@ -52,6 +53,7 @@ export default function NotificationsPage() {
   const { data: notificationsData, isLoading } = useNotifications();
   const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllNotificationsRead();
+  const { markAsRead: socketMarkAsRead, markAllAsRead: socketMarkAllAsRead } = useNotificationContext();
 
   const notifications = notificationsData?.data ?? [];
 
@@ -64,10 +66,12 @@ export default function NotificationsPage() {
   });
 
   const handleMarkAsRead = (id) => {
+    socketMarkAsRead(id);
     markRead.mutate(id);
   };
 
   const handleMarkAllAsRead = () => {
+    socketMarkAllAsRead();
     markAllRead.mutate();
   };
 

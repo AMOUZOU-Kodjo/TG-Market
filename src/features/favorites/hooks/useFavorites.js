@@ -27,9 +27,10 @@ export function useToggleFavorite() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: favoritesApi.toggle,
-    onSuccess: () => {
+    onSuccess: (_, productId) => {
       qc.invalidateQueries({ queryKey: ["favorites"] });
       qc.invalidateQueries({ queryKey: ["favorite"] });
+      qc.invalidateQueries({ queryKey: ["product", String(productId)] });
     },
   });
 }
@@ -38,9 +39,10 @@ export function useRemoveFavorite() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: favoritesApi.remove,
-    onSuccess: () => {
+    onSuccess: (_, productId) => {
       qc.invalidateQueries({ queryKey: ["favorites"] });
       qc.invalidateQueries({ queryKey: ["favorite"] });
+      qc.invalidateQueries({ queryKey: ["product", String(productId)] });
     },
   });
 }

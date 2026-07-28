@@ -13,7 +13,10 @@ export function useFollowUser() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: usersApi.follow,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["seller"] }),
+    onSuccess: (_, id) => {
+      qc.invalidateQueries({ queryKey: ["seller", String(id)] });
+      qc.invalidateQueries({ queryKey: ["sellers"] });
+    },
   });
 }
 
@@ -21,6 +24,9 @@ export function useUnfollowUser() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: usersApi.unfollow,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["seller"] }),
+    onSuccess: (_, id) => {
+      qc.invalidateQueries({ queryKey: ["seller", String(id)] });
+      qc.invalidateQueries({ queryKey: ["sellers"] });
+    },
   });
 }

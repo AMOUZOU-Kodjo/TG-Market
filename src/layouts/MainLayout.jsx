@@ -19,20 +19,19 @@ import {
   Shield,
   TrendingUp,
   MapPin,
-  Phone,
-  Mail,
   Globe,
   Share2,
   ExternalLink,
   Download,
-  Apple,
-  Play,
 } from "lucide-react";
 import { FaLinkedinIn, FaFacebookF, FaTiktok } from "react-icons/fa6";
+import { SiGmail } from "react-icons/si";
 import Logo from "@/shared/ui/Logo";
 import BottomNav from "@/shared/ui/BottomNav";
+import { AppleStoreBadge, GooglePlayBadge } from "@/shared/ui/StoreBadges";
 import CategoryBar from "@/features/home/components/CategoryBar";
 import { useAuth } from "@/shared/contexts/AuthContext";
+import { useNotificationContext } from "@/shared/hooks/useNotificationContext";
 
 export default function MainLayout() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -46,6 +45,7 @@ export default function MainLayout() {
   const navigate = useNavigate();
 
   const { user, logout } = useAuth();
+  const { unreadCount } = useNotificationContext();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -104,7 +104,7 @@ export default function MainLayout() {
           {/* Header */}
           <header
             className={`transition-all shadow-2xl duration-300 ${
-              scrolled ? "bg-brand-900/90 backdrop-blur-xl shadow-xl" : "bg-brand-900"
+              scrolled ? "bg-navbar-scrolled backdrop-blur-xl shadow-xl" : "bg-navbar"
             }`}
           >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -171,9 +171,9 @@ export default function MainLayout() {
                     className="relative p-2 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors"
                   >
                     <Bell className="w-5 h-5" />
-                    {user?.unreadNotifications > 0 && (
+                    {unreadCount > 0 && (
                       <span className="absolute top-1 right-1 w-4 h-4 bg-brand-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                        {user?.unreadNotifications}
+                        {unreadCount}
                       </span>
                     )}
                   </Link>
@@ -394,7 +394,7 @@ export default function MainLayout() {
           </motion.div>
         </main>
 
-        <footer className="bg-brand-900 dark:bg-brand-950 text-gray-300">
+        <footer className="bg-footer dark:bg-footer-dark text-footer-text">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             {/* Mobile: centered layout | Desktop: 3-column grid */}
             <div className="flex flex-col items-center lg:grid lg:grid-cols-3 lg:items-start lg:gap-8">
@@ -404,28 +404,16 @@ export default function MainLayout() {
                 <div className="flex justify-center mb-4">
                   <Logo size="md" />
                 </div>
-                <h4 className="text-white font-semibold text-sm mb-3">Télécharger l'app</h4>
+                <h4 className="text-footer-heading font-semibold text-sm mb-3">Télécharger l'app</h4>
                 <div className="flex gap-2 justify-center">
-                  <button className="flex items-center gap-2 px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors">
-                    <Apple className="w-5 h-5" />
-                    <div className="text-left">
-                      <p className="text-[10px] text-gray-400">Disponible sur</p>
-                      <p className="text-xs font-medium text-white">App Store</p>
-                    </div>
-                  </button>
-                  <button className="flex items-center gap-2 px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors">
-                    <Play className="w-5 h-5" />
-                    <div className="text-left">
-                      <p className="text-[10px] text-gray-400">Disponible sur</p>
-                      <p className="text-xs font-medium text-white">Google Play</p>
-                    </div>
-                  </button>
+                  <AppleStoreBadge />
+                  <GooglePlayBadge />
                 </div>
               </div>
 
               {/* Col 2 — À propos */}
               <div className="text-center mb-8 lg:mb-0 w-full">
-                <h3 className="text-white font-semibold mb-4">À propos</h3>
+                <h3 className="text-footer-heading font-semibold mb-4">À propos</h3>
                 <ul className="space-y-2.5 text-sm">
                   {[
                     { to: "/confidentialite", label: "Politique de confidentialité" },
@@ -434,7 +422,7 @@ export default function MainLayout() {
                     { to: "/conditions", label: "CGU" },
                   ].map((link) => (
                     <li key={link.label}>
-                      <Link to={link.to} className="hover:text-white transition-colors">
+                      <Link to={link.to} className="hover:text-footer-heading transition-colors">
                         {link.label}
                       </Link>
                     </li>
@@ -442,7 +430,7 @@ export default function MainLayout() {
                   <li>
                     <Link
                       to="/faq"
-                      className="px-3 py-1 bg-gray-800 hover:bg-brand-900 rounded-full text-xs font-medium transition-colors"
+                      className="px-3 py-1 bg-gray-800 hover:bg-footer-icon-hover rounded-full text-xs font-medium transition-colors"
                     >
                       Questions fréquentes
                     </Link>
@@ -452,41 +440,41 @@ export default function MainLayout() {
 
               {/* Col 3 — Contact + Réseaux sociaux */}
               <div className="text-center w-full">
-                <h3 className="text-white font-semibold mb-4">Contact</h3>
+                <h3 className="text-footer-heading font-semibold mb-4">Contact</h3>
                 <ul className="space-y-3 text-sm mb-8">
                   <li className="flex items-center justify-center gap-2">
-                    <MapPin className="w-4 h-4 text-red-400 shrink-0" />
+                    <MapPin className="w-4 h-4 text-black shrink-0" />
                     <span>Lomé, Togo</span>
                   </li>
                   {/* <li className="flex items-center justify-center gap-2">
-                    <Phone className="w-4 h-4 text-red-400 shrink-0" />
+                    <Phone className="w-4 h-4 text-brand-400 shrink-0" />
                     <span>+228 90 00 00 00</span>
                   </li> */}
                   <li className="flex items-center justify-center gap-2">
-                    <Mail className="w-4 h-4 text-red-400 shrink-0" />
+                    <SiGmail className="w-4 h-4 text-black shrink-0" />
                     <span>contact@akmarket.tg</span>
                   </li>
                 </ul>
 
-                <h3 className="text-white font-semibold mb-4">Suivez-nous</h3>
+                <h3 className="text-footer-heading font-semibold mb-4">Suivez-nous</h3>
                 <div className="flex justify-center gap-4">
                   <a
                     href="#"
-                    className="w-9 h-9 rounded-lg bg-gray-800 text-gray-300 hover:bg-brand-800 hover:text-white flex items-center justify-center transition-colors"
+                    className="w-9 h-9 rounded-lg bg-[#0A66C2] text-white hover:opacity-80 flex items-center justify-center transition-opacity"
                     aria-label="LinkedIn"
                   >
                     <FaLinkedinIn className="w-4 h-4" />
                   </a>
                   <a
                     href="#"
-                    className="w-9 h-9 rounded-lg bg-gray-800 text-gray-300 hover:bg-brand-800 hover:text-white flex items-center justify-center transition-colors"
+                    className="w-9 h-9 rounded-lg bg-[#1877F2] text-white hover:opacity-80 flex items-center justify-center transition-opacity"
                     aria-label="Facebook"
                   >
                     <FaFacebookF className="w-4 h-4" />
                   </a>
                   <a
                     href="#"
-                    className="w-9 h-9 rounded-lg bg-gray-800 text-gray-300 hover:bg-brand-800 hover:text-white flex items-center justify-center transition-colors"
+                    className="w-9 h-9 rounded-lg bg-[#000000] text-white hover:opacity-80 flex items-center justify-center transition-opacity"
                     aria-label="TikTok"
                   >
                     <FaTiktok className="w-4 h-4" />
@@ -496,7 +484,7 @@ export default function MainLayout() {
             </div>
 
             {/* Copyright */}
-            <div className="mt-10 pt-4 pb-2 border-t text-center border-gray-800  items-center justify-between gap-4 text-sm text-gray-100">
+            <div className="mt-10 pt-4 pb-2 border-t text-center border-footer-border  items-center justify-between gap-4 text-sm text-footer-text">
               <p>&copy; 2025 TG-Market. Tous droits réservés.</p>
             </div>
           </div>

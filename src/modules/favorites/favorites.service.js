@@ -108,6 +108,7 @@ export async function getMyFavorites(userId, { page, perPage }) {
         price: f.product.price,
         condition: f.product.condition,
         city: f.product.city,
+        neighborhood: f.product.neighborhood,
         negotiable: f.product.negotiable,
         hasActiveNegotiation: f.product.has_active_negotiation,
         isUrgent: f.product.is_urgent,

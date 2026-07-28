@@ -6,25 +6,16 @@ import {
   Wallet,
   ArrowUpRight,
   ArrowDownLeft,
-  TrendingUp,
-  TrendingDown,
-  Clock,
-  CreditCard,
-  Smartphone,
   Plus,
   Download,
   Upload,
-  CheckCircle2,
-  AlertCircle,
   RefreshCw,
-  ChevronRight,
   Eye,
   EyeOff,
   Shield,
 } from "lucide-react";
 import Button from "@/shared/ui/Button";
 import Badge from "@/shared/ui/Badge";
-import StatCard from "@/shared/ui/StatCard";
 import Tabs from "@/shared/ui/Tabs";
 import { formatCFA, formatRelativeTime } from "@/shared/utils/format";
 import { useWalletBalance, useWalletTransactions, useEscrowList } from "@/features/wallet/hooks/useWallet";
@@ -58,7 +49,7 @@ export default function WalletPage() {
   const { data: txData } = useWalletTransactions();
   const { data: escrowData } = useEscrowList();
 
-  const walletBalance = balanceData?.data || balanceData || { available: 0, hold: 0, total: 0 };
+  const walletBalance = balanceData?.data || balanceData || { available: 0, pending: 0, totalEarned: 0 };
   const walletTransactions = txData?.data || txData || [];
   const escrowTransactions = escrowData?.data || escrowData || [];
 

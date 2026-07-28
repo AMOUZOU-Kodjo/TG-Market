@@ -16,6 +16,7 @@ import Modal from "@/shared/ui/Modal";
 import Tabs from "@/shared/ui/Tabs";
 import ProductCard from "@/shared/ui/ProductCard";
 import ReviewList from "@/features/profile/components/ReviewList";
+import NotificationsPage from "@/features/notifications/pages/NotificationsPage";
 import EmptyState from "@/shared/ui/EmptyState";
 
 import toast from "react-hot-toast";
@@ -364,6 +365,7 @@ export default function DashboardProfilePage() {
       )
     )},
     { id: "reviews", label: "Avis", icon: Star, count: myReviews.length, content: <ReviewList reviews={myReviews} /> },
+    { id: "notifications", label: "Notifications", icon: Bell, content: <NotificationsPage /> },
     { id: "settings", label: "Paramètres", icon: Settings, content: (
       <div className="max-w-2xl space-y-6">
         <div className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-5">

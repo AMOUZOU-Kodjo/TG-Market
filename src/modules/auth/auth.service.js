@@ -6,7 +6,7 @@ import redis from '../../config/redis.js';
 import { generateOtp } from '../../utils/helpers.js';
 import { sendEmail, passwordResetEmail } from '../../utils/email.js';
 
-function formatUser(user, unreadMessages = 0, unreadNotifications = 0) {
+export function formatUser(user, unreadMessages = 0, unreadNotifications = 0) {
   const name = `${user.first_name || ''} ${user.last_name || ''}`.trim();
   return {
     id: user.id,
@@ -30,7 +30,7 @@ function formatUser(user, unreadMessages = 0, unreadNotifications = 0) {
   };
 }
 
-async function getUnreadCounts(userId) {
+export async function getUnreadCounts(userId) {
   const [unreadMessagesResult, unreadNotifications] = await Promise.all([
     prisma.conversationParticipant.aggregate({
       where: { user_id: userId },
@@ -47,7 +47,7 @@ async function getUnreadCounts(userId) {
   };
 }
 
-function generateTokens(user) {
+export function generateTokens(user) {
   const accessToken = jwt.sign(
     { userId: user.id, role: user.role },
     jwtConfig.secret,
@@ -63,7 +63,7 @@ function generateTokens(user) {
   return { accessToken, refreshToken };
 }
 
-async function storeRefreshToken(userId, token, req) {
+export async function storeRefreshToken(userId, token, req) {
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 30);
 
@@ -144,6 +144,15 @@ export async function login(data, req) {
     const error = new Error('Email ou mot de passe incorrect');
     error.status = 401;
     throw error;
+  }
+
+  if (user.two_factor_enabled) {
+    const tempToken = jwt.sign(
+      { userId: user.id, purpose: '2fa' },
+      jwtConfig.secret,
+      { expiresIn: '5m' },
+    );
+    return { requiresTwoFactor: true, tempToken };
   }
 
   const { accessToken, refreshToken } = generateTokens(user);

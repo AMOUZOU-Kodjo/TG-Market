@@ -3,6 +3,7 @@ import { auth } from '../../middleware/auth.js';
 import { validate } from '../../middleware/validate.js';
 import { authLimiter, otpLimiter } from '../../middleware/rateLimiter.js';
 import * as authController from './auth.controller.js';
+import * as twoFactorController from './twoFactor.controller.js';
 import {
   registerSchema,
   loginSchema,
@@ -11,6 +12,9 @@ import {
   updateProfileSchema,
   changePasswordSchema,
   refreshTokenSchema,
+  enableTwoFactorSchema,
+  disableTwoFactorSchema,
+  verifyTwoFactorSchema,
 } from './auth.validation.js';
 
 const router = Router();
@@ -27,5 +31,12 @@ router.post('/reset-password', authLimiter, validate(resetPasswordSchema), authC
 router.get('/sessions', auth, authController.getSessions);
 router.delete('/sessions/others', auth, authController.revokeOtherSessions);
 router.get('/login-history', auth, authController.getLoginHistory);
+
+// 2FA
+router.get('/2fa/status', auth, twoFactorController.getTwoFactorStatus);
+router.post('/2fa/generate', auth, twoFactorController.generateSecret);
+router.post('/2fa/enable', auth, validate(enableTwoFactorSchema), twoFactorController.enableTwoFactor);
+router.post('/2fa/disable', auth, validate(disableTwoFactorSchema), twoFactorController.disableTwoFactor);
+router.post('/2fa/verify', authLimiter, validate(verifyTwoFactorSchema), twoFactorController.verifyTwoFactor);
 
 export default router;

@@ -76,3 +76,22 @@ export const refreshTokenSchema = z.object({
     refreshToken: z.string().min(1, 'Token de rafraîchissement requis'),
   }),
 });
+
+export const enableTwoFactorSchema = z.object({
+  body: z.object({
+    token: z.string().length(6, 'Le code doit contenir 6 chiffres'),
+  }),
+});
+
+export const disableTwoFactorSchema = z.object({
+  body: z.object({
+    password: z.string().min(1, 'Mot de passe requis'),
+  }),
+});
+
+export const verifyTwoFactorSchema = z.object({
+  body: z.object({
+    tempToken: z.string().min(1, 'Token temporaire requis'),
+    token: z.string().length(6, 'Le code doit contenir 6 chiffres'),
+  }),
+});

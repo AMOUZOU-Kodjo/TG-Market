@@ -58,13 +58,45 @@ import prisma from './config/database.js';
 
 app.get('/api/stats/public', async (_req, res) => {
   try {
-    const [totalUsers, totalListings] = await Promise.all([
-      prisma.user.count(),
+    const [totalUsers, totalListings, totalSales, verifiedUsers, cities] = await Promise.all([
+      prisma.user.count({ where: { is_active: true } }),
       prisma.product.count({ where: { status: 'active' } }),
+      prisma.escrowTransaction.count({ where: { status: 'released' } }),
+      prisma.user.count({ where: { email_verified_at: { not: null } } }),
+      prisma.product.findMany({
+        where: { city: { not: null } },
+        select: { city: true },
+        distinct: ['city'],
+      }).then(rows => rows.length),
     ]);
-    res.json({ totalUsers, totalListings });
+    res.json({ totalUsers, totalListings, totalSales, verifiedUsers, cities, moderationTime: 24 });
   } catch {
-    res.json({ totalUsers: 5000, totalListings: 1000 });
+    res.json({ totalUsers: 5000, totalListings: 1000, totalSales: 500, verifiedUsers: 2000, cities: 30, moderationTime: 24 });
+  }
+});
+
+app.get('/api/public/reviews', async (_req, res) => {
+  try {
+    const reviews = await prisma.review.findMany({
+      where: { rating: { gte: 4 } },
+      orderBy: { created_at: 'desc' },
+      take: 6,
+      select: {
+        id: true,
+        rating: true,
+        comment: true,
+        reviewer: { select: { first_name: true, last_name: true, city: true } },
+      },
+    });
+    res.json(reviews.map(r => ({
+      id: r.id,
+      name: `${r.reviewer.first_name} ${r.reviewer.last_name.charAt(0)}.`,
+      city: r.reviewer.city,
+      text: r.comment,
+      rating: r.rating,
+    })));
+  } catch {
+    res.json([]);
   }
 });
 

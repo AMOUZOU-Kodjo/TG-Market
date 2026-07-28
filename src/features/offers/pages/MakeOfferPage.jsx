@@ -1,51 +1,31 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, MessageSquare, AlertTriangle } from "lucide-react";
+import { ArrowLeft, MessageSquare, AlertTriangle, MapPin, Tag, Package } from "lucide-react";
 import { useCreateOffer } from "@/features/offers/hooks/useOffers";
 import { useProduct } from "@/features/products/hooks/useProducts";
 import { useAuth } from "@/shared/contexts/AuthContext";
-import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import { formatCFA } from "@/shared/utils/format";
 import Button from "@/shared/ui/Button";
 import Input from "@/shared/ui/Input";
 import Textarea from "@/shared/ui/Textarea";
 import toast from "react-hot-toast";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 260, damping: 20 } },
-};
-
 export default function MakeOfferPage() {
-  const { id } = useParams();
+  const { productId: id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { siteName } = useSiteSettings();
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
+  const [activeImage, setActiveImage] = useState(0);
 
-  const { data: product, isLoading, error } = useProduct(id);
-  const createOffer = useCreateOffer();
+  const { data: product, isLoading } = useProduct(id);
+  const createOffer = useCreateOffer(id);
 
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-800 border-t-transparent" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950">
-        <div className="text-center">
-          <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-red-700" />
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Erreur de chargement</h1>
-          <p className="mt-2 text-gray-500 dark:text-gray-400">
-            Impossible de charger cette annonce. Réessayez plus tard.
-          </p>
-        </div>
       </div>
     );
   }
@@ -62,12 +42,7 @@ export default function MakeOfferPage() {
     );
   }
 
-  if (!user) {
-    navigate("/connexion");
-    return null;
-  }
-
-  if (product.seller?.id === user.id) {
+  if (product.seller?.id === user?.id) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950">
         <div className="text-center">
@@ -89,7 +64,7 @@ export default function MakeOfferPage() {
     }
     try {
       await createOffer.mutateAsync({
-        amount: Number(amount) * 100,
+        amount: Number(amount),
         message,
       });
       toast.success("Votre offre a été soumise avec succès !");
@@ -101,78 +76,139 @@ export default function MakeOfferPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      <div className="mx-auto max-w-lg px-4 py-8 sm:px-6 lg:px-8">
-        <motion.div {...fadeUp}>
-          <button
-            onClick={() => navigate(-1)}
-            className="mb-6 flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Retour
-          </button>
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-6 flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Retour
+        </button>
 
-          <h1 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
-            Faire une offre
-          </h1>
+        <h1 className="mb-8 text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
+          Faire une offre
+        </h1>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className="mb-6 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
-          >
-            <div className="flex items-center gap-4">
-              {product.images?.[0] && (
-                <img
-                  src={product.images[0]}
-                  alt={product.title}
-                  className="h-20 w-20 rounded-xl object-cover"
-                />
+        <div className="grid gap-8 lg:grid-cols-[380px_1fr]">
+          <div className="h-full space-y-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 h-full"
+            >
+              <div className="relative aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800">
+                {product.images?.[activeImage] ? (
+                  <img
+                    src={product.images[activeImage]}
+                    alt={product.title}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center">
+                    <Package className="h-10 w-10 text-gray-300 dark:text-gray-600" />
+                  </div>
+                )}
+                {product.condition && (
+                  <div className="absolute right-2 top-2 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold text-gray-700 shadow-sm backdrop-blur-sm dark:bg-gray-900/90 dark:text-gray-300">
+                    {product.condition === "new" ? "Neuf" : product.condition === "like_new" ? "Très bon état" : product.condition === "good" ? "Bon état" : product.condition === "fair" ? "Usé" : product.condition}
+                  </div>
+                )}
+              </div>
+              {product.images?.length > 1 && (
+                <div className="flex gap-1.5 border-t border-gray-100 px-4 py-2.5 dark:border-gray-800">
+                  {product.images.map((img, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setActiveImage(i)}
+                      className={`h-12 w-12 shrink-0 overflow-hidden rounded-lg border-2 transition-all ${
+                        i === activeImage
+                          ? "border-brand-800 opacity-100 dark:border-brand-400"
+                          : "border-transparent opacity-60 hover:opacity-100"
+                      }`}
+                    >
+                      <img src={img} alt="" className="h-full w-full object-cover" />
+                    </button>
+                  ))}
+                </div>
               )}
-              <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">{product.title}</h3>
+              <div className="p-4">
+                <h2 className="truncate text-base font-semibold text-gray-900 dark:text-white">
+                  {product.title}
+                </h2>
                 <p className="mt-1 text-lg font-bold text-brand-800 dark:text-brand-400">
                   {formatCFA(product.price)}
                 </p>
+                {product.negotiable && (
+                  <span className="mt-1 inline-block rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                    Négociable
+                  </span>
+                )}
+                <div className="mt-3 space-y-1.5 text-xs text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="h-3 w-3 shrink-0" />
+                    <span className="truncate">{product.city}{product.neighborhood ? `, ${product.neighborhood}` : ""}</span>
+                  </div>
+                  {product.seller && (
+                    <div className="flex items-center gap-1.5">
+                      <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-100 text-[9px] font-bold text-brand-800 dark:bg-brand-900/30 dark:text-brand-400">
+                        {product.seller.name?.[0] || "?"}
+                      </div>
+                      <span className="truncate">{product.seller.name}</span>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
-              type="number"
-              label="Montant de votre offre (FCFA)"
-              placeholder={String(Math.round(product.price * 0.9))}
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              min={1}
-              required
-              icon={MessageSquare}
-            />
-            <Textarea
-              label="Message au vendeur (optionnel)"
-              placeholder="Bonjour, je suis intéressé par votre annonce..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows={3}
-              maxLength={500}
-            />
-            <p className="text-xs text-gray-400 dark:text-gray-600">
-              Le vendeur recevra votre offre et pourra l'accepter, la refuser ou proposer un
-              contre-prix.
-            </p>
-            <Button
-              type="submit"
-              variant="primary"
-              fullWidth
-              size="lg"
-              loading={createOffer.isPending}
-              icon={MessageSquare}
+          <div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="sticky top-8 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900"
             >
-              Soumettre l'offre
-            </Button>
-          </form>
-        </motion.div>
+              <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
+                Votre offre
+              </h2>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <Input
+                  type="number"
+                  label="Montant de votre offre (FCFA)"
+                  placeholder={String(Math.round(product.price * 0.9))}
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  min={1}
+                  required
+                  icon={Tag}
+                />
+                <Textarea
+                  label="Message au vendeur (optionnel)"
+                  placeholder="Bonjour, je suis intéressé par votre annonce..."
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  rows={4}
+                  maxLength={500}
+                />
+                <p className="text-xs text-gray-400 dark:text-gray-600">
+                  Le vendeur recevra votre offre et pourra l'accepter, la refuser ou proposer un
+                  contre-prix.
+                </p>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  fullWidth
+                  size="lg"
+                  loading={createOffer.isPending}
+                  icon={MessageSquare}
+                >
+                  Soumettre l'offre
+                </Button>
+              </form>
+            </motion.div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -8,12 +8,19 @@ import {
   Tag,
   MapPin,
   ArrowRight,
+  MessageCircle,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Send,
+  Euro,
 } from "lucide-react";
 import Button from "@/shared/ui/Button";
 import Badge from "@/shared/ui/Badge";
 import Breadcrumb from "@/shared/ui/Breadcrumb";
 import ImageGallery from "@/shared/ui/ImageGallery";
 import { useBundle } from "@/features/bundles/hooks/useBundles";
+import { useBundleProposals, useCreateBundleProposal } from "@/features/bundles/hooks/useBundleProposals";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import { formatCFA } from "@/shared/utils/format";
@@ -60,12 +67,13 @@ export default function BundleDetailPage() {
     );
   }
 
-  const products = bundle.products ?? [];
+  const items = bundle.items ?? [];
+  const products = items.map((item) => item.product).filter(Boolean);
   const totalIndividualPrice = products.reduce(
     (sum, p) => sum + (p.price || 0),
     0
   );
-  const bundlePrice = bundle.price ?? totalIndividualPrice;
+  const bundlePrice = bundle.bundlePrice ?? totalIndividualPrice;
   const savings = totalIndividualPrice - bundlePrice;
   const savingsPct =
     totalIndividualPrice > 0
@@ -79,6 +87,52 @@ export default function BundleDetailPage() {
   ];
 
   const seller = bundle.seller;
+  const isOwnBundle = user && seller && user.id === seller.id;
+  const { data: proposalsData } = useBundleProposals(isOwnBundle ? bundleId : undefined);
+  const createProposal = useCreateBundleProposal();
+  const [proposedPrice, setProposedPrice] = useState("");
+  const [proposalMessage, setProposalMessage] = useState("");
+
+  const userProposal = !isOwnBundle && user
+    ? proposalsData?.data?.find((p) => p.buyerId === user.id)
+    : null;
+
+  const handleSubmitProposal = async () => {
+    if (!user) {
+      toast.error("Connectez-vous pour faire une proposition");
+      navigate("/connexion");
+      return;
+    }
+    const price = parseInt(proposedPrice, 10);
+    if (!price || price <= 0) {
+      toast.error("Entrez un prix valide");
+      return;
+    }
+    try {
+      await createProposal.mutateAsync({ bundleId, proposedPrice: price, message: proposalMessage });
+      toast.success("Proposition envoyée !");
+      setProposedPrice("");
+      setProposalMessage("");
+    } catch {
+      toast.error("Erreur lors de l'envoi");
+    }
+  };
+
+  const proposalStatusBadge = (status) => {
+    const map = {
+      pending: { label: "En attente", icon: Clock, class: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
+      accepted: { label: "Acceptée", icon: CheckCircle, class: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
+      rejected: { label: "Refusée", icon: XCircle, class: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
+      cancelled: { label: "Annulée", icon: XCircle, class: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400" },
+    };
+    const s = map[status] || map.pending;
+    return (
+      <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${s.class}`}>
+        <s.icon className="h-3 w-3" />
+        {s.label}
+      </span>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
@@ -102,7 +156,7 @@ export default function BundleDetailPage() {
         <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
           <div className="space-y-6">
             <motion.div {...fadeUp} transition={{ delay: 0.05 }}>
-              <ImageGallery images={bundle.images ?? []} />
+              <ImageGallery images={products.flatMap((p) => p.images ?? [])} />
             </motion.div>
 
             <motion.div
@@ -234,7 +288,7 @@ export default function BundleDetailPage() {
                   )}
                 </div>
 
-                <div className="mt-5">
+                <div className="mt-5 space-y-3">
                   <Button
                     variant="primary"
                     fullWidth
@@ -244,7 +298,98 @@ export default function BundleDetailPage() {
                   >
                     Acheter le lot
                   </Button>
+
+                  {!isOwnBundle && user && !userProposal && (
+                    <Button
+                      variant="outline"
+                      fullWidth
+                      size="md"
+                      icon={MessageCircle}
+                      onClick={() => document.getElementById("proposal-form")?.classList.toggle("hidden")}
+                    >
+                      Faire une proposition
+                    </Button>
+                  )}
                 </div>
+
+                {!isOwnBundle && user && (
+                  <div id="proposal-form" className="mt-4 hidden space-y-3 rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
+                      Votre proposition
+                    </h4>
+                    <div>
+                      <label className="mb-1 block text-xs text-gray-500 dark:text-gray-400">Prix proposé (FCFA)</label>
+                      <div className="relative">
+                        <Euro className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                        <input
+                          type="number"
+                          value={proposedPrice}
+                          onChange={(e) => setProposedPrice(e.target.value)}
+                          placeholder="ex: 25000"
+                          className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-400/20 dark:border-gray-600 dark:bg-gray-900 dark:text-white"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-xs text-gray-500 dark:text-gray-400">Message (optionnel)</label>
+                      <textarea
+                        value={proposalMessage}
+                        onChange={(e) => setProposalMessage(e.target.value)}
+                        placeholder="Expliquez votre proposition..."
+                        rows={3}
+                        className="w-full resize-none rounded-xl border border-gray-200 bg-white p-2.5 text-sm focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-400/20 dark:border-gray-600 dark:bg-gray-900 dark:text-white"
+                      />
+                    </div>
+                    <Button
+                      variant="primary"
+                      fullWidth
+                      size="sm"
+                      icon={Send}
+                      onClick={handleSubmitProposal}
+                      loading={createProposal.isPending}
+                    >
+                      Envoyer la proposition
+                    </Button>
+                  </div>
+                )}
+
+                {userProposal && (
+                  <div className="mt-4 rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Ma proposition</h4>
+                      {proposalStatusBadge(userProposal.status)}
+                    </div>
+                    <p className="mt-2 text-lg font-bold text-brand-800 dark:text-brand-600">
+                      {formatCFA(userProposal.proposedPrice)}
+                    </p>
+                    {userProposal.message && (
+                      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{userProposal.message}</p>
+                    )}
+                  </div>
+                )}
+
+                {isOwnBundle && proposalsData?.data?.length > 0 && (
+                  <div className="mt-4 rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
+                    <h4 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">
+                      Propositions ({proposalsData.data.length})
+                    </h4>
+                    <div className="space-y-2">
+                      {proposalsData.data.slice(0, 3).map((p) => (
+                        <div key={p.id} className="rounded-lg bg-white p-3 text-sm dark:bg-gray-900">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium text-gray-900 dark:text-white">
+                              {[p.buyer?.firstName, p.buyer?.lastName].filter(Boolean).join(" ")}
+                            </span>
+                            {proposalStatusBadge(p.status)}
+                          </div>
+                          <p className="mt-1 font-bold text-brand-800 dark:text-brand-600">
+                            {formatCFA(p.proposedPrice)}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {seller && (
                   <div className="mt-5 pt-5 border-t border-gray-100 dark:border-gray-700">
@@ -256,26 +401,21 @@ export default function BundleDetailPage() {
                         {seller.avatar ? (
                           <img
                             src={seller.avatar}
-                            alt={seller.name}
+                            alt={`${seller.firstName ?? ""} ${seller.lastName ?? ""}`}
                             className="h-full w-full object-cover"
                           />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center text-gray-400 dark:text-gray-600">
                             <span className="text-sm font-medium">
-                              {(seller.name || "?").charAt(0).toUpperCase()}
+                              {((seller.firstName?.[0] ?? "") + (seller.lastName?.[0] ?? "") || "?")}
                             </span>
                           </div>
                         )}
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-900 dark:text-white">
-                          {seller.name}
+                          {[seller.firstName, seller.lastName].filter(Boolean).join(" ") || "Vendeur"}
                         </p>
-                        {seller.city && (
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {seller.city}
-                          </p>
-                        )}
                       </div>
                     </div>
                   </div>

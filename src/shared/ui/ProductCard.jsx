@@ -64,7 +64,7 @@ export default function ProductCard({
       )}
       {...rest}
     >
-      <div className="relative aspect-[100/120] overflow-hidden bg-gray-100 dark:bg-gray-800">
+      <div className="relative aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800">
         {!imageLoaded && (
           <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700" />
         )}

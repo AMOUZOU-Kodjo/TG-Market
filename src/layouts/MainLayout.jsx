@@ -109,7 +109,12 @@ export default function MainLayout() {
     <div className={`min-h-screen flex flex-col ${darkMode ? "dark" : ""}`}>
       <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors">
         {/* Sticky Header + Category Bar */}
-        <div className="sticky top-0 z-50">
+        <div className={`sticky top-0 z-50 relative ${location.pathname.startsWith("/vendeur/") ? "hidden" : ""}`}>
+          {/* Logo centered in combined header+category height */}
+          <Link to="/" className="absolute left-4 sm:left-6 lg:left-8 top-1/2 -translate-y-1/2 z-50 hidden md:block">
+            <Logo size="md" className="w-24 h-24" />
+          </Link>
+
           {/* Header */}
           <header
             className={`transition-all duration-300 ${
@@ -122,11 +127,9 @@ export default function MainLayout() {
           >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               {/* Desktop: single row */}
-              <div className="hidden md:flex items-center justify-between h-16">
-                {/* Logo */}
-                <Link to="/" className="flex items-center gap-2 shrink-0">
-                  <Logo size="md" />
-                </Link>
+              <div className="hidden md:flex items-center justify-between h-20">
+                {/* Logo spacer to keep layout */}
+                <div className="w-24 shrink-0" />
 
                 {/* Search */}
                 <form onSubmit={handleSearch} className="flex flex-1 max-w-xl mx-8">
@@ -452,7 +455,7 @@ export default function MainLayout() {
         <footer
           className={`bg-footer dark:bg-footer-dark text-footer-text 
 ${location.pathname.startsWith("/categories/") || location.pathname.startsWith("/vendre") || 
-location.pathname.startsWith("/annonce/") ? "hidden " : ""}`}
+location.pathname.startsWith("/annonce/") || location.pathname.startsWith("/vendeur/") ? "hidden " : ""}`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             {/* Mobile: centered layout | Desktop: 3-column grid */}

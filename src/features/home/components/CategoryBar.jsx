@@ -230,15 +230,15 @@ export default function CategoryBar() {
                    onMouseEnter={() => handleEnter(i)}
                    onMouseLeave={handleLeave}
                    onClick={() => (isActive ? closeMenu() : setOpenIndex(i))}
-                   className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-semibold whitespace-nowrap transition-all duration-200 ${
-                     isCategoryPage
-                       ? isActive
-                         ? "bg-brand-100 text-brand-800 shadow-sm"
-                         : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                       : isActive
-                         ? "bg-white text-brand-800 shadow-sm"
-                         : "text-white/80 hover:text-white hover:bg-white/10"
-                   }`}
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-semibold whitespace-nowrap transition-all duration-200 ${
+                      isCategoryPage
+                        ? isActive
+                          ? "bg-brand-100 text-brand-800 shadow-sm"
+                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                        : isActive
+                          ? "bg-white text-brand-800 shadow-sm backdrop-blur-sm"
+                          : "bg-white/10 text-white/80 hover:text-white hover:bg-white/20 backdrop-blur-sm"
+                    }`}
                  >
                    <Icon className="w-4 h-4" />
                    {group.name}
@@ -267,8 +267,8 @@ export default function CategoryBar() {
                       ? "bg-brand-100 text-brand-800 shadow-sm"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     : isActive
-                      ? "bg-white text-brand-800 shadow-sm"
-                      : "bg-white/10 text-white/80 hover:bg-white/20"
+                      ? "bg-white text-brand-800 shadow-sm backdrop-blur-sm"
+                      : "bg-white/10 text-white/80 hover:bg-white/20 backdrop-blur-sm"
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />

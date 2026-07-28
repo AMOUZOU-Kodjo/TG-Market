@@ -21,6 +21,7 @@ import {
   User,
   ShieldCheck,
   LayoutDashboard,
+  Handshake,
 } from "lucide-react";
 import Logo from "@/shared/ui/Logo";
 import { useAuth } from "@/shared/contexts/AuthContext";
@@ -111,6 +112,15 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
       >
         <Package className="w-4 h-4 shrink-0" />
         Mes Ventes et Achats
+      </Link>
+
+      <Link
+        to="/dashboard/propositions"
+        onClick={onMobileLinkClick}
+        className="mx-3 mt-1 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+      >
+        <Handshake className="w-4 h-4 shrink-0" />
+        Propositions de lots
       </Link>
 
       {/* Separator */}
@@ -212,6 +222,7 @@ export default function DashboardLayout() {
     "/dashboard/settings": "Paramètres",
     "/dashboard/analytics": "Statistiques",
     "/dashboard/promotions": "Promotions",
+    "/dashboard/propositions": "Propositions de lots",
   };
   const pageTitle = pageTitles[location.pathname] ?? "Tableau de bord";
 

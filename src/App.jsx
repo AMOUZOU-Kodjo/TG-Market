@@ -279,6 +279,10 @@ function App() {
                             path="/dashboard/promotions"
                             element={<SellerDashboardPage defaultTab="promotions" />}
                           />
+                          <Route
+                            path="/dashboard/propositions"
+                            element={<SellerDashboardPage defaultTab="bundleProposals" />}
+                          />
                           <Route path="/dashboard/settings" element={<SettingsPage />} />
                           <Route path="/dashboard/history" element={<HistoryPage />} />
                         </Route>

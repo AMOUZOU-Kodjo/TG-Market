@@ -91,6 +91,14 @@ enum ProfileVisibility {
   private
 }
 
+enum OfferStatus {
+  pending
+  accepted
+  rejected
+  cancelled
+  countered
+}
+
 // ─── TABLES ──────────────────────────────────────────
 
 model User {
@@ -145,6 +153,9 @@ model User {
   payment_methods      PaymentMethod[]
   product_views        ProductView[]
   refresh_tokens       RefreshToken[]
+  offers_received      Offer[]               @relation("OfferSeller")
+  offers_made          Offer[]               @relation("OfferBuyer")
+  bundles              Bundle[]
 
   @@index([city])
   @@index([created_at])
@@ -231,6 +242,8 @@ model Product {
   reviews             Review[]
   favorites           Favorite[]
   views_log           ProductView[]
+  offers              Offer[]
+  bundle_items        BundleItem[]
 
   @@index([user_id])
   @@index([category_id])
@@ -532,6 +545,59 @@ model ProductView {
 
   @@index([product_id, created_at])
   @@index([user_id])
+}
+
+model Offer {
+  id               Int          @id @default(autoincrement())
+  product_id       Int
+  buyer_id         Int
+  seller_id        Int
+  amount           Int
+  status           OfferStatus  @default(pending)
+  message          String?      @db.VarChar(500)
+  countered_amount Int?
+  created_at       DateTime     @default(now())
+  updated_at       DateTime     @updatedAt
+
+  product          Product      @relation(fields: [product_id], references: [id])
+  buyer            User         @relation("OfferBuyer", fields: [buyer_id], references: [id])
+  seller           User         @relation("OfferSeller", fields: [seller_id], references: [id])
+
+  @@index([product_id])
+  @@index([buyer_id])
+  @@index([seller_id])
+  @@index([status])
+}
+
+model Bundle {
+  id          Int          @id @default(autoincrement())
+  seller_id   Int
+  title       String       @db.VarChar(100)
+  description String?      @db.Text
+  total_price Int
+  bundle_price Int
+  status      String       @default("active") @db.VarChar(20)
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+
+  seller      User         @relation(fields: [seller_id], references: [id])
+  items       BundleItem[]
+
+  @@index([seller_id])
+  @@index([status])
+}
+
+model BundleItem {
+  id         Int      @id @default(autoincrement())
+  bundle_id  Int
+  product_id Int
+
+  bundle     Bundle   @relation(fields: [bundle_id], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [product_id], references: [id])
+
+  @@unique([bundle_id, product_id])
+  @@index([bundle_id])
+  @@index([product_id])
 }
 
 model SiteSetting {

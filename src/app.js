@@ -24,6 +24,8 @@ import reviewsRoutes from './modules/reviews/reviews.routes.js';
 import favoritesRoutes from './modules/favorites/favorites.routes.js';
 import kycRoutes from './modules/kyc/kyc.routes.js';
 import uploadRoutes from './modules/upload/upload.routes.js';
+import offersRoutes from './modules/offers/offers.routes.js';
+import bundlesRoutes from './modules/bundles/bundles.routes.js';
 import faqRoutes from './modules/faq/faq.routes.js';
 import adminRoutes from './modules/admin/admin.routes.js';
 
@@ -100,6 +102,8 @@ app.use('/api/reviews', reviewsRoutes);
 app.use('/api/favorites', favoritesRoutes);
 app.use('/api/kyc', kycRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/offers', offersRoutes);
+app.use('/api/bundles', bundlesRoutes);
 app.use('/api/faqs', faqRoutes);
 app.use('/api/admin', adminRoutes);
 

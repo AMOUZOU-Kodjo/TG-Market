@@ -29,7 +29,6 @@ import { useEscrowList, useWalletBalance } from "@/features/wallet/hooks/useWall
 import { useConversations } from "@/features/chat/hooks/useConversations";
 import { useReceivedBundleProposals, useAcceptBundleProposal, useRejectBundleProposal } from "@/features/bundles/hooks/useBundleProposals";
 import { usersApi } from "@/features/profile/services/users.api";
-import { cn } from "@/shared/utils/cn";
 import { formatDate, formatCFA, formatRelativeTime } from "@/shared/utils/format";
 
 const escrowStatusConfig = {
@@ -269,112 +268,6 @@ function BundleProposalsTab() {
   );
 }
 
-function AnalyticsTab() {
-  const { data: myProductsData } = useMyProducts();
-  const { data: walletData } = useWalletBalance();
-  const products = myProductsData?.data ?? [];
-  const activeProducts = products.filter((p) => p.status === "active");
-  const totalViews = products.reduce((s, p) => s + (p.views || 0), 0);
-  const totalFavorites = products.reduce((s, p) => s + (p.favorites || 0), 0);
-  const avgViews = products.length > 0 ? Math.round(totalViews / products.length) : 0;
-  const topProducts = [...products].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
-  const maxViews = Math.max(...topProducts.map((p) => p.views || 0), 1);
-
-  return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="rounded-xl bg-gradient-to-br from-violet-50 to-white dark:from-violet-950/20 dark:to-gray-800 border border-violet-100 dark:border-violet-900/30 p-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wider">Vues</span>
-            <div className="w-9 h-9 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm border border-violet-100 dark:border-violet-900/30">
-              <Eye className="h-4 w-4 text-violet-600" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalViews.toLocaleString("fr-FR")}</p>
-          <p className="text-xs text-gray-400 mt-1">Moy. {avgViews} / annonce</p>
-        </div>
-        <div className="rounded-xl bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-950/20 dark:to-gray-800 border border-emerald-100 dark:border-emerald-900/30 p-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Revenus</span>
-            <div className="w-9 h-9 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm border border-emerald-100 dark:border-emerald-900/30">
-              <TrendingUp className="h-4 w-4 text-emerald-600" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCFA(walletData?.totalEarned ?? 0)}</p>
-          <p className="text-xs text-gray-400 mt-1">FCFA</p>
-        </div>
-        <div className="rounded-xl bg-gradient-to-br from-amber-50 to-white dark:from-amber-950/20 dark:to-gray-800 border border-amber-100 dark:border-amber-900/30 p-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Annonces</span>
-            <div className="w-9 h-9 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm border border-amber-100 dark:border-amber-900/30">
-              <Package className="h-4 w-4 text-amber-600" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">{products.length}</p>
-          <p className="text-xs text-gray-400 mt-1">{activeProducts.length} active{activeProducts.length > 1 ? "s" : ""}</p>
-        </div>
-        <div className="rounded-xl bg-gradient-to-br from-rose-50 to-white dark:from-rose-950/20 dark:to-gray-800 border border-rose-100 dark:border-rose-900/30 p-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-rose-600 dark:text-rose-400 uppercase tracking-wider">Favoris</span>
-            <div className="w-9 h-9 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm border border-rose-100 dark:border-rose-900/30">
-              <Heart className="h-4 w-4 text-rose-600" />
-            </div>
-          </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalFavorites.toLocaleString("fr-FR")}</p>
-          <p className="text-xs text-gray-400 mt-1">au total</p>
-        </div>
-      </div>
-
-      <div className="rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-5">
-        <div className="flex items-center justify-between mb-5">
-          <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Produits les plus vus</h4>
-          <span className="text-xs text-gray-400">Top 5</span>
-        </div>
-        {topProducts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-10 text-gray-400">
-            <Package className="h-10 w-10 mb-2" />
-            <p className="text-sm">Aucune donnée disponible</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {topProducts.map((p, i) => (
-              <div key={p.id} className="flex items-center gap-4">
-                <div className={cn(
-                  "w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0",
-                  i === 0 && "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-                  i === 1 && "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300",
-                  i === 2 && "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
-                  i > 2 && "bg-gray-50 text-gray-400 dark:bg-gray-800 dark:text-gray-500"
-                )}>
-                  {i + 1}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="truncate text-sm font-medium text-gray-900 dark:text-white">{p.title}</p>
-                    <span className="text-xs font-semibold text-gray-500 shrink-0">{p.views || 0}</span>
-                  </div>
-                  <div className="mt-1.5 h-2 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
-                    <div
-                      className={cn(
-                        "h-full rounded-full transition-all",
-                        i === 0 && "bg-amber-500",
-                        i === 1 && "bg-gray-400",
-                        i === 2 && "bg-orange-500",
-                        i > 2 && "bg-brand-300"
-                      )}
-                      style={{ width: `${((p.views || 0) / maxViews) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 export default function DashboardProfilePage() {
   const { user, setUser } = useAuth();
   const { supportEmail } = useSiteSettings();
@@ -454,7 +347,6 @@ export default function DashboardProfilePage() {
     { id: "products", label: "Mes annonces", icon: Package, count: myProducts.length, content: <ProductsTab products={myProducts} /> },
     { id: "orders", label: "Commandes", icon: ShoppingCart, content: <OrdersTab /> },
     { id: "proposals", label: "Propositions", icon: Handshake, content: <BundleProposalsTab /> },
-    { id: "analytics", label: "Statistiques", icon: TrendingUp, content: <AnalyticsTab /> },
     { id: "favorites", label: "Favoris", icon: Heart, count: favoriteProducts.length, content: (
       favoriteProducts.length > 0 ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

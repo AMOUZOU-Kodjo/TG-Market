@@ -13,26 +13,11 @@ export async function getAllCategories() {
       image: true,
       parent_id: true,
       product_count: true,
-      children: {
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-          icon: true,
-          color: true,
-          product_count: true,
-        },
-        orderBy: { sort_order: 'asc' },
-      },
     },
     orderBy: { sort_order: 'asc' },
   });
 
-  return categories.map(formatCategory);
-}
-
-function formatCategory(c) {
-  return {
+  const flat = categories.map((c) => ({
     id: c.id,
     name: c.name,
     slug: c.slug,
@@ -42,15 +27,22 @@ function formatCategory(c) {
     image: c.image,
     parentId: c.parent_id ?? null,
     productCount: c.product_count,
-    ...(c.children ? { children: c.children.map((ch) => ({
-      id: ch.id,
-      name: ch.name,
-      slug: ch.slug,
-      icon: ch.icon,
-      color: ch.color,
-      productCount: ch.product_count,
-    })) } : {}),
-  };
+  }));
+
+  const map = new Map(flat.map((c) => [c.id, { ...c, children: [] }]));
+  const roots = [];
+
+  for (const cat of map.values()) {
+    if (cat.parentId && map.has(cat.parentId)) {
+      map.get(cat.parentId).children.push(cat);
+    } else if (!cat.parentId) {
+      roots.push(cat);
+    } else {
+      roots.push(cat);
+    }
+  }
+
+  return roots;
 }
 
 export async function getCategoryBySlug(slug) {

@@ -18,7 +18,7 @@ import Button from "@/shared/ui/Button";
 import Badge from "@/shared/ui/Badge";
 import Tabs from "@/shared/ui/Tabs";
 import { formatCFA, formatRelativeTime } from "@/shared/utils/format";
-import { useWalletBalance, useWalletTransactions, useEscrowList } from "@/features/wallet/hooks/useWallet";
+import { useWalletBalance, useWalletTransactions, useEscrowList, usePaymentMethods } from "@/features/wallet/hooks/useWallet";
 import WalletBalance from "@/features/payment/components/WalletBalance";
 import EscrowCard from "@/features/payment/components/EscrowCard";
 import EscrowTimeline from "@/features/payment/components/EscrowTimeline";
@@ -35,6 +35,13 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 260, damping: 20 } },
 };
 
+const providerConfig = {
+  tmoney: { name: "T-Money", color: "bg-brand-700" },
+  flooz: { name: "Flooz", color: "bg-orange-600" },
+  mobile_money: { name: "Mobile Money", color: "bg-blue-600" },
+  card: { name: "Carte bancaire", color: "bg-purple-600" },
+};
+
 const txTypeIcons = {
   sale: { icon: ArrowDownLeft, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
   purchase: { icon: ArrowUpRight, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
@@ -48,10 +55,12 @@ export default function WalletPage() {
   const { data: balanceData } = useWalletBalance();
   const { data: txData } = useWalletTransactions();
   const { data: escrowData } = useEscrowList();
+  const { data: methodsData } = usePaymentMethods();
 
   const walletBalance = balanceData?.data || balanceData || { available: 0, pending: 0, totalEarned: 0 };
   const walletTransactions = txData?.data || txData || [];
   const escrowTransactions = escrowData?.data || escrowData || [];
+  const paymentMethods = methodsData?.data || methodsData || [];
 
   const [activeTab, setActiveTab] = useState("transactions");
   const [showBalance, setShowBalance] = useState(true);
@@ -257,27 +266,30 @@ export default function WalletPage() {
               </h2>
             </div>
             <div className="space-y-3 p-4">
-              {[
-                { id: 1, name: "T-Money", number: "+228 99 12 34 56", icon: "📱", color: "bg-brand-700", linked: true },
-                { id: 2, name: "Moov Money", number: "+228 90 98 76 54", icon: "📱", color: "bg-brand-700", linked: true },
-                { id: 3, name: "Flooz", number: "+228 91 23 45 67", icon: "📱", color: "bg-orange-600", linked: false },
-              ].map((method) => (
-                <div
-                  key={method.id}
-                  className="flex items-center gap-3 rounded-xl border border-gray-100 p-3 transition-colors hover:border-gray-200 dark:border-gray-800 dark:hover:border-gray-700"
-                >
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${method.color} text-white text-lg`}>
-                    {method.icon}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">{method.name}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{method.number}</p>
-                  </div>
-                  <Badge variant={method.linked ? "success" : "secondary"} size="sm">
-                    {method.linked ? "Connecté" : "Non lié"}
-                  </Badge>
-                </div>
-              ))}
+              {paymentMethods.length === 0 ? (
+                <div className="py-6 text-center text-sm text-gray-400">Aucun moyen de paiement enregistré</div>
+              ) : (
+                paymentMethods.map((method) => {
+                  const cfg = providerConfig[method.provider] || { name: method.provider, color: "bg-gray-600" };
+                  return (
+                    <div
+                      key={method.id}
+                      className="flex items-center gap-3 rounded-xl border border-gray-100 p-3 transition-colors hover:border-gray-200 dark:border-gray-800 dark:hover:border-gray-700"
+                    >
+                      <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${cfg.color} text-white text-lg`}>
+                        📱
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">{cfg.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{method.providerUserId ?? method.label ?? "—"}</p>
+                      </div>
+                      <Badge variant={method.isDefault ? "success" : "secondary"} size="sm">
+                        {method.isDefault ? "Principal" : "Connecté"}
+                      </Badge>
+                    </div>
+                  );
+                })
+              )}
               <button className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-200 p-4 text-sm font-medium text-gray-500 transition-colors hover:border-brand-400 hover:text-brand-800 dark:border-gray-700 dark:hover:border-brand-800/50 dark:hover:text-brand-700">
                 <Plus className="h-4 w-4" />
                 Ajouter un moyen de paiement

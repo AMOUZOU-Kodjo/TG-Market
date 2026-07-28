@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ShieldCheck,
@@ -284,7 +285,10 @@ export default function ConversationPanel({ conversation, messages: initialMessa
       </div>
 
       {product && (
-        <div className="flex items-center gap-3 border-b border-gray-100 bg-gray-50/50 px-4 py-2.5 dark:border-gray-800 dark:bg-gray-800/50">
+        <Link
+          to={`/annonce/${product.id}`}
+          className="flex items-center gap-3 border-b border-gray-100 bg-gray-50/50 px-4 py-2.5 hover:bg-gray-100 transition-colors dark:border-gray-800 dark:bg-gray-800/50 dark:hover:bg-gray-800"
+        >
           <img
             src={product.image}
             alt={product.title}
@@ -298,10 +302,8 @@ export default function ConversationPanel({ conversation, messages: initialMessa
               {formatCFA(product.price)}
             </p>
           </div>
-          <button className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800">
-            <ExternalLink className="h-4 w-4" />
-          </button>
-        </div>
+          <ExternalLink className="h-4 w-4 shrink-0 text-gray-400" />
+        </Link>
       )}
 
       <div className="flex-1 overflow-y-auto px-4 py-4">

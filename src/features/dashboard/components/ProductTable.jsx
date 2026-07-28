@@ -123,7 +123,7 @@ export default function ProductTable() {
                       <div className="min-w-0">
                         <p
                           className="cursor-pointer truncate text-sm font-medium text-gray-900 hover:text-brand-800 dark:text-white dark:hover:text-brand-400"
-                          onClick={() => navigate(`/annonces/${product.id}`)}
+                           onClick={() => navigate(`/annonce/${product.id}`)}
                         >
                           {product.title}
                         </p>
@@ -171,7 +171,7 @@ export default function ProductTable() {
                         )}
                       </button>
                       <button
-                        // onClick={() => navigate(`/annonces/${product.id}/modifier`)}
+                        // onClick={() => navigate(`/annonce/${product.id}/modifier`)}
                         onClick={() => navigate(`/modifier/${product.id}`)}
                         className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-brand-800 dark:hover:bg-gray-800 dark:hover:text-brand-400"
                         title="Modifier"

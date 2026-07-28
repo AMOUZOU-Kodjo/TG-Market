@@ -297,6 +297,16 @@ function HeroSection() {
                 Vendre un article
               </Button>
             </Link>
+            <Link to="/comment-ca-marche">
+              <Button
+                size="xl"
+                icon={BookOpen}
+                variant="outline"
+                className="border-white/40 text-white hover:bg-white/10 text-sm sm:text-base px-4 py-2 sm:px-6 sm:py-3"
+              >
+                Comment ça marche
+              </Button>
+            </Link>
           </motion.div>
 
           <motion.div

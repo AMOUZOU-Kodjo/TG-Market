@@ -33,7 +33,7 @@ export default function HowItWorksPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-yellow-600 px-4 py-20 text-white sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden bg-brand-800 px-4 py-20 text-white sm:px-6 lg:px-8">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.15),transparent_70%)]" />
         <div className="relative mx-auto max-w-3xl text-center">
           <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={0}>
@@ -80,7 +80,7 @@ export default function HowItWorksPage() {
               },
             ].map((item, i) => (
               <motion.div key={i} variants={fadeUp} custom={i + 1} className="relative rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md dark:border-gray-800 dark:bg-gray-800">
-                <span className="absolute -top-3 left-6 rounded-full bg-yellow-600 px-3 py-1 text-xs font-bold text-white shadow-sm">
+                <span className="absolute -top-3 left-6 rounded-full bg-brand-800 px-3 py-1 text-xs font-bold text-white shadow-sm">
                   {item.step}
                 </span>
                 <div className="mb-4 mt-2 h-64 w-full overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800">
@@ -121,7 +121,7 @@ export default function HowItWorksPage() {
             </motion.div>
 
             <motion.div variants={fadeUp} custom={1} className="overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-gray-800">
-              <div className="h-64 overflow-hidden bg-yellow-50 dark:bg-yellow-900/10">
+              <div className="h-64 overflow-hidden bg-brand-50 dark:bg-brand-900/10">
                 <StepImage
                   src="https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=600&h=400&fit=crop"
                   alt="Livreur avec colis"
@@ -150,7 +150,7 @@ export default function HowItWorksPage() {
 
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="mt-12 grid gap-8 md:grid-cols-2">
             <motion.div variants={fadeUp} custom={0} className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-800">
-              <div className="h-64 overflow-hidden bg-yellow-50 dark:bg-yellow-900/10">
+              <div className="h-64 overflow-hidden bg-brand-50 dark:bg-brand-900/10">
                 <StepImage
                   src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?w=600&h=400&fit=crop"
                   alt="Personne qui fait ses courses"
@@ -214,7 +214,7 @@ export default function HowItWorksPage() {
                 image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=600&h=400&fit=crop",
                 title: "Remise en main propre",
                 desc: "Rencontre près de chez toi, scanne le QR Code et c'est réglé. Idéal pour tester un article sur place.",
-                border: "border-amber-200 dark:border-amber-800/30",
+                border: "border-brand-200 dark:border-brand-800/30",
               },
             ].map((item, i) => (
               <motion.div
@@ -244,9 +244,9 @@ export default function HowItWorksPage() {
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeUp}
-            className="overflow-hidden rounded-2xl border border-yellow-200 bg-yellow-50 text-center dark:border-yellow-800/30 dark:bg-yellow-900/10"
+            className="overflow-hidden rounded-2xl border border-brand-200 bg-brand-50 text-center dark:border-brand-800/30 dark:bg-brand-900/10"
           >
-            <div className="h-72 overflow-hidden bg-yellow-100/50 dark:bg-yellow-900/20">
+            <div className="h-72 overflow-hidden bg-brand-100/50 dark:bg-brand-900/20">
               <StepImage
                 src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&h=400&fit=crop"
                 alt="Scan de QR Code pour validation"
@@ -260,7 +260,7 @@ export default function HowItWorksPage() {
                 Ce scan valide la transaction — il enregistre l'horodatage, le lieu et les identités des parties.
                 C'est ta preuve de sécurité et la clé pour débloquer le paiement.
               </p>
-              <p className="mt-3 text-sm font-medium text-yellow-800 dark:text-yellow-400">
+              <p className="mt-3 text-sm font-medium text-brand-800 dark:text-brand-400">
                 Sans scan QR, l'échange n'est pas sécurisé par {siteName}.
               </p>
             </div>
@@ -269,7 +269,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* ═══════════════ CTA ═══════════════ */}
-      <section className="bg-yellow-600 px-4 py-16 text-white sm:px-6 lg:px-8">
+      <section className="bg-brand-800 px-4 py-16 text-white sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
             <h2 className="text-3xl font-bold sm:text-4xl">Prêt à commencer ?</h2>
@@ -278,7 +278,7 @@ export default function HowItWorksPage() {
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <Link to="/inscription">
-                <Button size="lg" className="bg-white text-yellow-700 hover:bg-gray-100">
+                <Button size="lg" className="bg-white text-brand-700 hover:bg-gray-100">
                   Créer un compte gratuit
                 </Button>
               </Link>

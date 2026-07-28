@@ -5,6 +5,7 @@ import Button from "@/shared/ui/Button";
 import Input from "@/shared/ui/Input";
 import Textarea from "@/shared/ui/Textarea";
 import toast from "react-hot-toast";
+import api from "@/shared/services/api";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -17,7 +18,6 @@ const fadeUp = {
 
 const contactInfo = [
   { icon: Mail, label: "Email", value: "contact@akmarket.tg", href: "mailto:contact@akmarket.tg" },
-  { icon: Phone, label: "Téléphone", value: "+228 90 12 34 56", href: "tel:+22890123456" },
   { icon: MapPin, label: "Adresse", value: "Lomé, Togo", href: null },
   { icon: Clock, label: "Disponibilité", value: "Lun – Sam, 8h – 18h", href: null },
 ];
@@ -31,18 +31,22 @@ export default function ContactPage() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) {
       toast.error("Veuillez remplir les champs obligatoires.");
       return;
     }
     setSending(true);
-    setTimeout(() => {
-      setSending(false);
+    try {
+      await api.post("/contact", form);
       setSent(true);
       toast.success("Message envoyé !");
-    }, 1200);
+    } catch {
+      toast.error("Erreur lors de l'envoi du message. Réessayez plus tard.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -139,18 +143,8 @@ export default function ContactPage() {
                       required
                     />
                   </div>
-                  <Button type="submit" size="lg" disabled={sending} className="w-full sm:w-auto">
-                    {sending ? (
-                      <>
-                        <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                        Envoi en cours...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="mr-2 h-4 w-4" />
-                        Envoyer le message
-                      </>
-                    )}
+                  <Button type="submit" size="lg" icon={Send} loading={sending} className="w-full sm:w-auto">
+                    {sending ? "Envoi en cours..." : "Envoyer le message"}
                   </Button>
                 </form>
               )}

@@ -43,6 +43,7 @@ import {
   AdminCategoriesPage,
   AdminPaymentsPage,
   AdminReportsPage,
+  AdminContactMessagesPage,
   AdminSettingsPage,
   AboutPage,
   FAQPage,
@@ -58,6 +59,7 @@ import {
   CheckoutPage,
   OrderDetailPage,
   HistoryPage,
+  DashboardProfilePage,
   MakeOfferPage,
   CreateBundlePage,
   BundleDetailPage,
@@ -275,7 +277,7 @@ function App() {
                           />
                           <Route
                             path="/dashboard/profile"
-                            element={<SellerDashboardPage defaultTab="profile" />}
+                            element={<DashboardProfilePage />}
                           />
                           <Route
                             path="/dashboard/promotions"
@@ -302,6 +304,7 @@ function App() {
                           <Route path="/admin/categories" element={<AdminCategoriesPage />} />
                           <Route path="/admin/payments" element={<AdminPaymentsPage />} />
                           <Route path="/admin/reports" element={<AdminReportsPage />} />
+                          <Route path="/admin/contact-messages" element={<AdminContactMessagesPage />} />
                           <Route path="/admin/settings" element={<AdminSettingsPage />} />
                         </Route>
 

@@ -91,7 +91,6 @@ export default function MainLayout() {
   const navLinks = [
     { to: "/", label: "Accueil", icon: Home },
     { to: "/vendre", label: "Vendre", icon: PlusCircle },
-    { to: "/comment-ca-marche", label: "Comment ça marche", icon: HelpCircle },
   ];
 
   const userMenuItems = [
@@ -457,15 +456,21 @@ export default function MainLayout() {
         <footer
           className={`bg-footer dark:bg-footer-dark text-footer-text 
 ${location.pathname.startsWith("/categories/") || location.pathname.startsWith("/vendre") || 
-location.pathname.startsWith("/annonce/") || location.pathname.startsWith("/vendeur/") ? "hidden " : ""}`}
+location.pathname.startsWith("/annonce/") || location.pathname.startsWith("/vendeur/") || 
+location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWith("/contact")|| location.pathname.startsWith("/a-propos") ? "hidden " : ""}`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             {/* Mobile: centered layout | Desktop: 3-column grid */}
             <div className="flex flex-col items-center lg:grid lg:grid-cols-3 lg:items-start lg:gap-8">
-              {/* Col 1 — Logo + Télécharger */}
+              {/* Col 1 — Logo + Nous écrire + Télécharger */}
               <div className="text-center mb-8 lg:mb-0 w-full">
-                <div className="flex justify-center mb-4">
+                <div className="flex justify-center mb-2">
                   <Logo size="md" />
+                </div>
+                <div className="mb-2">
+                  <Link to="/contact" className="text-sm text-footer-heading font-semibold">
+                    Nous écrire
+                  </Link>
                 </div>
                 <h4 className="text-footer-heading font-semibold text-sm mb-3">
                   Télécharger l'app
@@ -551,10 +556,15 @@ location.pathname.startsWith("/annonce/") || location.pathname.startsWith("/vend
             {/* Copyright */}
             <div className="mt-10 pt-4 pb-2 border-t text-center border-footer-border  items-center justify-between gap-4 text-sm text-footer-text">
               <p>
-                &copy; 2025 {settings.siteName}. Tous droits réservés. v{settings.siteVersion}
+                &copy; 2025 {settings.siteName}. Tous droits réservés. {"   "} v{settings.siteVersion}
               </p>
             </div>
           </div>
         </footer>
 
-      
+        {/* Mobile Bottom Nav */}
+        <BottomNav />
+      </div>
+    </div>
+  );
+}

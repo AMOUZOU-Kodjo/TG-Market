@@ -36,63 +36,79 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
   return (
     <>
       {/* Sidebar Header */}
-      <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100 dark:border-gray-700">
-        <Link to="/" className="flex items-center gap-2">
-          <Logo size="sm" />
-          {sidebarOpen && <span className="text-lg font-bold text-brand-900">{siteName ?? "Market"}</span>}
-        </Link>
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="hidden lg:flex p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 transition-colors"
-        >
-          <ChevronLeft
-            className={`w-4 h-4 transition-transform ${!sidebarOpen ? "rotate-180" : ""}`}
-          />
-        </button>
-      </div>
-
-      {/* Mon espace */}
-      <div className="px-4 pt-4 pb-2">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-          MON ESPACE
-        </h3>
-      </div>
-
-      {/* Wallet */}
-      <div className="mx-3 rounded-xl bg-brand-600 p-4 text-white shadow-lg">
-        <div className="flex items-end justify-between">
-          <div>
-            <div className="mb-3 flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
-                <Wallet size={18} className="text-amber-300" />
-              </div>
-              <span className="text-sm font-semibold text-white/80">Portefeuille {siteName?.split("-")[0] ?? "TGM"}</span>
-            </div>
-            <h2 className="text-2xl font-bold tracking-tight">{formatCFA(totalEarned)}</h2>
-          </div>
+      <div className="h-16 flex items-center px-4 border-b border-gray-100 dark:border-gray-700">
+        {sidebarOpen && (
+          <Link to="/" className="flex items-center gap-2">
+            <Logo size="sm" />
+            <span className="text-lg font-bold text-brand-900">{siteName ?? "Market"}</span>
+          </Link>
+        )}
+        <div className={sidebarOpen ? "ml-auto" : "mx-auto"}>
           <button
-            onClick={() => { onMobileLinkClick(); navigate("/dashboard/analytics"); }}
-            className="rounded-xl border border-white/25 bg-white/15 px-5 py-3 text-sm font-medium text-white backdrop-blur transition-all hover:bg-white/20"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="hidden lg:flex p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 transition-colors"
           >
-            Voir →
+            <ChevronLeft
+              className={`w-4 h-4 transition-transform ${!sidebarOpen ? "rotate-180" : ""}`}
+            />
           </button>
         </div>
+      </div>
+
+      {sidebarOpen && (
+        <div className="px-4 pt-4 pb-2">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+            MON ESPACE
+          </h3>
+        </div>
+      )}
+
+      {/* Wallet */}
+      <div className="mx-3 rounded-xl bg-brand-600 text-white shadow-lg">
+        {sidebarOpen ? (
+          <div className="p-4">
+            <div className="flex items-end justify-between">
+              <div>
+                <div className="mb-3 flex items-center gap-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
+                    <Wallet size={18} className="text-amber-300" />
+                  </div>
+                  <span className="text-sm font-semibold text-white/80">Portefeuille {siteName?.split("-")[0] ?? "TGM"}</span>
+                </div>
+                <h2 className="text-2xl font-bold tracking-tight">{formatCFA(totalEarned)}</h2>
+              </div>
+              <button
+                onClick={() => { onMobileLinkClick(); navigate("/dashboard/analytics"); }}
+                className="rounded-xl border border-white/25 bg-white/15 px-5 py-3 text-sm font-medium text-white backdrop-blur transition-all hover:bg-white/20"
+              >
+                Voir →
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center py-3 gap-1">
+            <Wallet size={18} className="text-amber-300" />
+            <span className="text-xs font-bold text-white">{formatCFA(totalEarned)}</span>
+          </div>
+        )}
       </div>
 
       {/* Devenir membre certifié */}
       <Link
         to="/dashboard/settings"
         onClick={onMobileLinkClick}
-        className="mx-3 mt-3 block rounded-xl bg-brand-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-green-700 transition-colors"
+        className={`mx-3 mt-3 block rounded-xl bg-brand-600 text-center text-sm font-semibold text-white hover:bg-green-700 transition-colors ${sidebarOpen ? "px-4 py-3" : "mx-auto mt-3 w-10 h-10 flex items-center justify-center"}`}
+        title={!sidebarOpen ? "Certification" : undefined}
       >
-        Devenir un membre certifié
+        {sidebarOpen ? "Devenir un membre certifié" : <ShieldCheck className="w-5 h-5" />}
       </Link>
 
       {/* Profile */}
       <Link
         to="/dashboard/profile"
         onClick={onMobileLinkClick}
-        className="mx-3 mt-4 flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+        className={`mx-3 mt-4 flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+        title={!sidebarOpen ? "Mon Profil" : undefined}
       >
         {user?.avatar ? (
           <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full object-cover shrink-0" />
@@ -101,49 +117,52 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
             {user?.name?.charAt(0)?.toUpperCase() || "?"}
           </div>
         )}
-        <span className="text-sm font-medium text-gray-900 dark:text-white">Mon Profil</span>
+        {sidebarOpen && <span className="text-sm font-medium text-gray-900 dark:text-white">Mon Profil</span>}
       </Link>
 
       {/* Mes Ventes et Achats */}
       <Link
         to="/dashboard/history"
         onClick={onMobileLinkClick}
-        className="mx-3 mt-1 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+        className={`mx-3 mt-1 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+        title={!sidebarOpen ? "Mes Ventes et Achats" : undefined}
       >
         <Package className="w-4 h-4 shrink-0" />
-        Mes Ventes et Achats
+        {sidebarOpen && <span>Mes Ventes et Achats</span>}
       </Link>
 
       <Link
         to="/dashboard/propositions"
         onClick={onMobileLinkClick}
-        className="mx-3 mt-1 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+        className={`mx-3 mt-1 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+        title={!sidebarOpen ? "Propositions de lots" : undefined}
       >
         <Handshake className="w-4 h-4 shrink-0" />
-        Propositions de lots
+        {sidebarOpen && <span>Propositions de lots</span>}
       </Link>
 
-      {/* Separator */}
-      <div className="mx-3 mt-4 border-t border-gray-100 dark:border-gray-700" />
+      {sidebarOpen && <div className="mx-3 mt-4 border-t border-gray-100 dark:border-gray-700" />}
 
       {/* Messages */}
       <Link
         to="/dashboard/messages"
         onClick={onMobileLinkClick}
-        className="mx-3 mt-2 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+        className={`mx-3 mt-2 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+        title={!sidebarOpen ? "Messages" : undefined}
       >
         <MessageCircle className="w-4 h-4 shrink-0" />
-        Messages
+        {sidebarOpen && <span>Messages</span>}
       </Link>
 
       {/* Notifications */}
       <Link
         to="/dashboard/notifications"
         onClick={onMobileLinkClick}
-        className="mx-3 mt-1 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+        className={`mx-3 mt-1 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+        title={!sidebarOpen ? "Notifications" : undefined}
       >
         <Bell className="w-4 h-4 shrink-0" />
-        Notifications
+        {sidebarOpen && <span>Notifications</span>}
       </Link>
 
       {/* Admin - visible only for admins */}
@@ -151,38 +170,42 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
         <Link
           to="/admin"
           onClick={onMobileLinkClick}
-          className="mx-3 mt-2 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+          className={`mx-3 mt-2 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+          title={!sidebarOpen ? "Administration" : undefined}
         >
           <LayoutDashboard className="w-4 h-4 shrink-0" />
-          Administration
+          {sidebarOpen && <span>Administration</span>}
         </Link>
       )}
 
       {/* Footer */}
-      <div className="mx-3 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 space-y-1 pb-4">
+      <div className={`mx-3 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 space-y-1 pb-4 ${!sidebarOpen ? "flex flex-col items-center" : ""}`}>
         <Link
           to="/"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors"
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+          title={!sidebarOpen ? "Retour au site" : undefined}
         >
           <ArrowLeft className="w-4 h-4 shrink-0" />
-          Retour au site
+          {sidebarOpen && <span>Retour au site</span>}
         </Link>
         <Link
           to="/faq"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors"
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+          title={!sidebarOpen ? "Aide" : undefined}
         >
           <HelpCircle className="w-4 h-4 shrink-0" />
-          Aide
+          {sidebarOpen && <span>Aide</span>}
         </Link>
         <button
           onClick={async () => {
             await logout();
             navigate("/");
           }}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-800 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-800 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors ${!sidebarOpen ? "justify-center w-auto" : ""}`}
+          title={!sidebarOpen ? "Déconnexion" : undefined}
         >
           <LogOut className="w-4 h-4 shrink-0" />
-          Déconnexion
+          {sidebarOpen && <span>Déconnexion</span>}
         </button>
       </div>
     </>
@@ -238,7 +261,7 @@ export default function DashboardLayout() {
       <div className="flex">
         {/* ===== DESKTOP SIDEBAR (lg+) ===== */}
         <aside
-          className={`hidden lg:flex fixed lg:sticky top-0 z-40 h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ${
+          className={`hidden lg:flex fixed lg:sticky top-0 z-40 h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 overflow-x-hidden ${
             sidebarOpen ? "w-80" : "w-20"
           } flex-col`}
         >

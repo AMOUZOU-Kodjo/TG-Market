@@ -168,7 +168,7 @@ export default function AboutPage() {
               À propos de nous
             </p>
             <h1 className="text-4xl font-bold sm:text-5xl lg:text-6xl">
-              La marketplace du{" "}
+              Le {siteName} du{" "}
               <span className="text-yellow-400">Togo</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-white/80">
@@ -183,9 +183,8 @@ export default function AboutPage() {
             className="mt-8 flex flex-wrap items-center justify-center gap-4"
           >
             <Link to="/">
-              <Button size="lg" className="bg-white text-brand-900 hover:bg-gray-100">
+              <Button size="lg" icon={ArrowRight} iconPosition="right" className="bg-white text-brand-900 hover:bg-gray-100">
                 Explorer {siteName}
-                <ArrowRight className="ml-1 h-5 w-5" />
               </Button>
             </Link>
             <Link to="/faq">

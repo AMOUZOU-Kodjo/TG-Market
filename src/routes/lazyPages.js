@@ -28,6 +28,7 @@ const AdminListingsPage = lazy(() => import("@/features/admin/pages/AdminListing
 const AdminCategoriesPage = lazy(() => import("@/features/admin/pages/AdminCategoriesPage"));
 const AdminPaymentsPage = lazy(() => import("@/features/admin/pages/AdminPaymentsPage"));
 const AdminReportsPage = lazy(() => import("@/features/admin/pages/AdminReportsPage"));
+const AdminContactMessagesPage = lazy(() => import("@/features/admin/pages/AdminContactMessagesPage"));
 const AdminSettingsPage = lazy(() => import("@/features/admin/pages/AdminSettingsPage"));
 const AboutPage = lazy(() => import("@/features/static/pages/AboutPage"));
 const FAQPage = lazy(() => import("@/features/static/pages/FAQPage"));
@@ -43,6 +44,7 @@ const ContactPage = lazy(() => import("@/features/static/pages/ContactPage"));
 const CheckoutPage = lazy(() => import("@/features/payment/pages/CheckoutPage"));
 const OrderDetailPage = lazy(() => import("@/features/payment/pages/OrderDetailPage"));
 const HistoryPage = lazy(() => import("@/features/dashboard/pages/HistoryPage"));
+const DashboardProfilePage = lazy(() => import("@/features/dashboard/pages/DashboardProfilePage"));
 const MakeOfferPage = lazy(() => import("@/features/offers/pages/MakeOfferPage"));
 const CreateBundlePage = lazy(() => import("@/features/bundles/pages/CreateBundlePage"));
 const BundleDetailPage = lazy(() => import("@/features/bundles/pages/BundleDetailPage"));
@@ -76,6 +78,7 @@ export {
   AdminCategoriesPage,
   AdminPaymentsPage,
   AdminReportsPage,
+  AdminContactMessagesPage,
   AdminSettingsPage,
   AboutPage,
   FAQPage,
@@ -91,6 +94,7 @@ export {
   CheckoutPage,
   OrderDetailPage,
   HistoryPage,
+  DashboardProfilePage,
   MakeOfferPage,
   CreateBundlePage,
   BundleDetailPage,

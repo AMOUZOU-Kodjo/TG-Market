@@ -3,6 +3,34 @@ import { cn } from "@/shared/utils/cn";
 import Avatar from "@/shared/ui/Avatar";
 import { formatRelativeTime } from "@/shared/utils/format";
 import { ShieldCheck, X } from "lucide-react";
+import { useTheme } from "@/shared/contexts/ThemeContext";
+
+const userColors = [
+  "#014D46",
+  "#01796F",
+  "#4F46E5",
+  "#2563EB",
+  "#059669",
+  "#D97706",
+  "#E11D48",
+  "#0891B2",
+];
+
+function getColor(name) {
+  if (!name) return userColors[0];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return userColors[Math.abs(hash) % userColors.length];
+}
+
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
 
 export default function ConversationItem({
   conversation,
@@ -11,17 +39,22 @@ export default function ConversationItem({
   onDelete,
 }) {
   const { participant, lastMessage, lastMessageAt, unreadCount, product } = conversation;
+  const { isDark } = useTheme();
+  const userColor = getColor(participant?.name);
 
   return (
     <motion.div
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
       className={cn(
-        "group relative flex w-full cursor-pointer items-start gap-3 rounded-xl px-3 py-3 text-left transition-colors",
+        "group relative flex w-full cursor-pointer items-start gap-3 px-4 py-4 text-left transition-colors",
         isSelected
           ? "bg-brand-50 dark:bg-brand-800/10"
           : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
       )}
+      style={
+        !isSelected ? { backgroundColor: hexToRgba(userColor, isDark ? 0.12 : 0.06) } : undefined
+      }
     >
       <Avatar
         src={participant?.avatar}

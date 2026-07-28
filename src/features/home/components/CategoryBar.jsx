@@ -393,23 +393,23 @@ export default function CategoryBar() {
             onMouseLeave={handleLeave}
             className="hidden md:block absolute top-full left-0 right-0 z-[100]"
           >
-            <div className="bg-white shadow-[0_20px_60px_-12px_rgba(0,0,0,0.12)] border-t border-gray-100">
+            <div className="bg-white dark:bg-gray-900 shadow-[0_20px_60px_-12px_rgba(0,0,0,0.12)] border-t border-gray-100 dark:border-gray-800">
               <div className="max-w-350 mx-auto flex">
                 {/* ── Left Panel: Image ── */}
                 <div className="relative w-87.5 shrink-0 flex flex-col">
-                  <div className="border-r border-gray-200 mb-6">
-                    <div className="flex items-center justify-between px-6 py-4  bg-gray-50">
-                      <h3 className="text-base font-bold text-gray-900">{activeParent.name}</h3>
+                  <div className="border-r border-gray-200 dark:border-gray-700 mb-6">
+                    <div className="flex items-center justify-between px-6 py-4 bg-gray-50 dark:bg-gray-800">
+                      <h3 className="text-base font-bold text-gray-900 dark:text-white">{activeParent.name}</h3>
                       <Link
                         to={`/categories/${activeParent.slug}`}
                         onClick={closeMenu}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-50 text-brand-700 hover:bg-brand-100 rounded-lg text-xs font-semibold transition-colors shrink-0"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-900/30 rounded-lg text-xs font-semibold transition-colors shrink-0"
                       >
                         Voir tout
                         <FaArrowRight className="w-3 h-3" />
                       </Link>
                     </div>
-                    <div className="mx-6  mt-0 border border-gray-200 rounded-lg overflow-hidden">
+                    <div className="mx-6 mt-0 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                       <img
                         src={groupImages[activeParent.slug] || groupImages.multimedia}
                         alt={activeParent.name}
@@ -432,10 +432,10 @@ export default function CategoryBar() {
                               onClick={closeMenu}
                               className="group inline-flex items-center gap-1.5 mb-3"
                             >
-                              <h4 className="text-base font-semibold text-gray-900 group-hover:text-brand-700 transition-colors">
+                              <h4 className="text-base font-semibold text-gray-900 dark:text-white group-hover:text-brand-700 dark:group-hover:text-brand-400 transition-colors">
                                 {sub.name}
                               </h4>
-                              <FaChevronRight className="w-3 h-3 text-gray-300 group-hover:text-brand-600 transition-colors opacity-0 group-hover:opacity-100" />
+                              <FaChevronRight className="w-3 h-3 text-gray-300 dark:text-gray-600 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors opacity-0 group-hover:opacity-100" />
                             </Link>
                             {hasSubChildren && (
                               <ul className="space-y-1">
@@ -444,7 +444,7 @@ export default function CategoryBar() {
                                     <Link
                                       to={`/categories/${subSub.slug}`}
                                       onClick={closeMenu}
-                                      className="block py-1 text-sm text-gray-500 hover:text-brand-700 transition-colors"
+                                      className="block py-1 text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-brand-700 dark:hover:text-brand-400 transition-colors"
                                     >
                                       {subSub.name}
                                     </Link>
@@ -458,7 +458,7 @@ export default function CategoryBar() {
                     </div>
                   ) : (
                     <div className="flex items-center justify-center h-full">
-                      <p className="text-gray-400 text-sm">Aucune sous-catégorie</p>
+                      <p className="text-gray-400 dark:text-gray-500 text-sm">Aucune sous-catégorie</p>
                     </div>
                   )}
                 </div>

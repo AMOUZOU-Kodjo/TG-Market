@@ -35,7 +35,7 @@ export default function MessageBubble({
         className="flex justify-center"
       >
         <Link
-          to={`/annonces/${prod.id}`}
+           to={`/annonce/${prod.id}`}
           className="mx-4 flex max-w-xs items-center gap-3 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
         >
           <img

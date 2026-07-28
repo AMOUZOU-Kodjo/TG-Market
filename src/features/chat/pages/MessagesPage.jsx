@@ -62,7 +62,7 @@ export default function MessagesPage() {
       {/* Conversation List Sidebar */}
       <div
         className={cn(
-          "flex w-full min-h-0 flex-col border-r border-gray-100 dark:border-gray-800 sm:w-80 lg:w-96",
+          "flex w-full min-h-0 flex-col border-r border-gray-100 dark:border-gray-800 sm:w-72 lg:w-80",
           showMobileList ? "flex" : "hidden sm:flex"
         )}
       >

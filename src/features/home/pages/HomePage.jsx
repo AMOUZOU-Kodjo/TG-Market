@@ -202,9 +202,9 @@ function HeroSection() {
     n >= 1000 ? (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1).replace(".", ",") + " 000" : String(n);
 
   const bgImages = [
-    "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1920&q=80",
-    "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=1920&q=80",
-    "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1920&q=80",
+    // "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1920&q=80",
+    // "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=1920&q=80",
+    // "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1920&q=80",
     "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=80",
   ];
 
@@ -244,7 +244,8 @@ function HeroSection() {
 
       <div className="absolute inset-0 bg-gray-900/60" style={{ zIndex: 1 }} />
 
-      <div className="absolute inset-0 flex  items-center justify-center px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}>
+      {/* <div className="absolute inset-0 flex  items-center justify-center px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}> */}
+      <div className="absolute inset-0 flex items-start justify-center pt-24 sm:pt-10 px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}>
         <div className="mx-auto max-w-3xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

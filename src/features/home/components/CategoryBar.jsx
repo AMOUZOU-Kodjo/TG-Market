@@ -432,9 +432,9 @@ export default function CategoryBar() {
                               onClick={closeMenu}
                               className="group inline-flex items-center gap-1.5 mb-3"
                             >
-                              <h4 className="text-base font-semibold text-gray-900 dark:text-white group-hover:text-brand-700 dark:group-hover:text-brand-400 transition-colors">
+                              <h6 className="text-sm font-semibold text-black dark:text-white group-hover:text-brand-700 dark:group-hover:text-brand-400 transition-colors">
                                 {sub.name}
-                              </h4>
+                              </h6>
                               <FaChevronRight className="w-3 h-3 text-gray-300 dark:text-gray-600 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors opacity-0 group-hover:opacity-100" />
                             </Link>
                             {hasSubChildren && (
@@ -444,7 +444,7 @@ export default function CategoryBar() {
                                     <Link
                                       to={`/categories/${subSub.slug}`}
                                       onClick={closeMenu}
-                                      className="block py-1 text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-brand-700 dark:hover:text-brand-400 transition-colors"
+                                      className="block py-1 text-xs font-medium text-gray-800 dark:text-gray-400 hover:text-brand-700 dark:hover:text-brand-400 transition-colors"
                                     >
                                       {subSub.name}
                                     </Link>

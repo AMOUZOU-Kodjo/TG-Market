@@ -112,7 +112,7 @@ export default function MainLayout() {
         {/* Sticky Header + Category Bar */}
         <div className={`sticky top-0 z-50 relative ${location.pathname.startsWith("/vendeur/") ? "hidden" : ""}`}>
           {/* Logo centered in combined header+category height */}
-          <Link to="/" className="absolute left-4 sm:left-6 lg:left-8 top-1/2 -translate-y-1/2 z-50 hidden md:block">
+          <Link to="/" className="absolute left-4 sm:left-6 lg:left-8 top-1/3 -translate-y-1/2 z-50 hidden md:block">
             <Logo size="md" className="w-24 h-24" />
           </Link>
 

@@ -16,6 +16,7 @@ function formatEscrow(escrow) {
     status: escrow.status,
     paymentMethod: escrow.payment_method ?? null,
     confirmationToken: escrow.confirmation_token ?? null,
+    confirmationCode: escrow.confirmation_code ?? null,
     createdAt: escrow.created_at,
     confirmedAt: escrow.confirmed_at ?? null,
     releasedAt: escrow.released_at ?? null,
@@ -260,7 +261,7 @@ export async function verifyPayment(id) {
 export async function scanConfirm(token, userId) {
   const escrow = await prisma.escrowTransaction.findUnique({
     where: { confirmation_token: token },
-    select: { id: true, buyer_id: true, status: true, amount: true, fee: true, product_id: true },
+    select: { id: true, buyer_id: true, status: true, amount: true, fee: true, product_id: true, confirmation_code: true },
   });
 
   if (!escrow) {
@@ -280,52 +281,6 @@ export async function scanConfirm(token, userId) {
     error.status = 400;
     throw error;
   }
-
-  const sellerPayout = escrow.amount - escrow.fee;
-
-  await prisma.$transaction(async (tx) => {
-    await tx.escrowTransaction.update({
-      where: { id: escrow.id },
-      data: {
-        status: 'completed',
-        confirmed_at: new Date(),
-        released_at: new Date(),
-      },
-    });
-
-    await tx.product.update({
-      where: { id: escrow.product_id },
-      data: { status: 'sold' },
-    });
-
-    const buyerTransaction = await tx.walletTransaction.findFirst({
-      where: { reference_type: 'escrow', reference_id: escrow.id, user_id: escrow.buyer_id, status: 'pending' },
-    });
-
-    if (buyerTransaction) {
-      await tx.walletTransaction.update({
-        where: { id: buyerTransaction.id },
-        data: { status: 'completed' },
-      });
-    }
-
-    const escrowRecord = await tx.escrowTransaction.findUnique({
-      where: { id: escrow.id },
-      include: { product: { select: { title: true } } },
-    });
-
-    await tx.walletTransaction.create({
-      data: {
-        user_id: escrowRecord.seller_id,
-        type: 'sale',
-        amount: sellerPayout,
-        description: `Vente : ${escrowRecord.product.title}`,
-        status: 'completed',
-        reference_type: 'escrow',
-        reference_id: escrow.id,
-      },
-    });
-  });
 
   const full = await prisma.escrowTransaction.findUnique({
     where: { id: escrow.id },
@@ -368,9 +323,104 @@ export async function markAsShipped(id, sellerId) {
     throw error;
   }
 
+  const code = String(Math.floor(1000 + Math.random() * 9000));
+
   await prisma.escrowTransaction.update({
     where: { id },
-    data: { status: 'pending_delivery' },
+    data: { status: 'pending_delivery', confirmation_code: code },
+  });
+
+  const full = await prisma.escrowTransaction.findUnique({
+    where: { id },
+    include: {
+      buyer: { select: { first_name: true, last_name: true } },
+      seller: { select: { first_name: true, last_name: true } },
+      product: {
+        select: {
+          title: true,
+          images: { select: { url: true }, orderBy: { sort_order: 'asc' }, take: 1 },
+        },
+      },
+    },
+  });
+
+  return formatEscrow(full);
+}
+
+export async function confirmWithCode(id, sellerId, code) {
+  const escrow = await prisma.escrowTransaction.findUnique({
+    where: { id },
+    select: { id: true, seller_id: true, confirmation_code: true, amount: true, fee: true, status: true, product_id: true, buyer_id: true },
+  });
+
+  if (!escrow) {
+    const error = new Error('Transaction introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  if (escrow.seller_id !== sellerId) {
+    const error = new Error('Seul le vendeur peut confirmer le code de livraison');
+    error.status = 403;
+    throw error;
+  }
+
+  if (escrow.status !== 'pending_delivery') {
+    const error = new Error('Cette commande n\'est pas en attente de confirmation');
+    error.status = 400;
+    throw error;
+  }
+
+  if (escrow.confirmation_code !== code) {
+    const error = new Error('Code de confirmation invalide');
+    error.status = 400;
+    throw error;
+  }
+
+  const sellerPayout = escrow.amount - escrow.fee;
+
+  await prisma.$transaction(async (tx) => {
+    await tx.escrowTransaction.update({
+      where: { id },
+      data: {
+        status: 'completed',
+        confirmed_at: new Date(),
+        released_at: new Date(),
+      },
+    });
+
+    await tx.product.update({
+      where: { id: escrow.product_id },
+      data: { status: 'sold' },
+    });
+
+    const buyerTransaction = await tx.walletTransaction.findFirst({
+      where: { reference_type: 'escrow', reference_id: id, user_id: escrow.buyer_id, status: 'pending' },
+    });
+
+    if (buyerTransaction) {
+      await tx.walletTransaction.update({
+        where: { id: buyerTransaction.id },
+        data: { status: 'completed' },
+      });
+    }
+
+    const escrowRecord = await tx.escrowTransaction.findUnique({
+      where: { id },
+      include: { product: { select: { title: true } } },
+    });
+
+    await tx.walletTransaction.create({
+      data: {
+        user_id: escrow.seller_id,
+        type: 'sale',
+        amount: sellerPayout,
+        description: `Vente : ${escrowRecord.product.title}`,
+        status: 'completed',
+        reference_type: 'escrow',
+        reference_id: id,
+      },
+    });
   });
 
   const full = await prisma.escrowTransaction.findUnique({

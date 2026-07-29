@@ -8,6 +8,7 @@ import {
   getEscrowSchema,
   disputeEscrowSchema,
   scanConfirmSchema,
+  confirmCodeSchema,
 } from './escrow.validation.js';
 
 const router = Router();
@@ -21,5 +22,6 @@ router.put('/:id/confirm-delivery', auth, validate(getEscrowSchema), escrowContr
 router.put('/:id/dispute', auth, validate(disputeEscrowSchema), escrowController.disputeEscrow);
 router.post('/scan-confirm', auth, validate(scanConfirmSchema), escrowController.scanConfirm);
 router.put('/:id/cancel', auth, validate(getEscrowSchema), escrowController.cancelEscrow);
+router.put('/:id/confirm-code', auth, validate(confirmCodeSchema), escrowController.confirmWithCode);
 
 export default router;

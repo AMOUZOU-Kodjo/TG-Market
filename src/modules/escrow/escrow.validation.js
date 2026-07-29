@@ -28,3 +28,12 @@ export const disputeEscrowSchema = z.object({
     reason: z.string().min(10, 'La raison doit contenir au moins 10 caractères').max(2000),
   }),
 });
+
+export const confirmCodeSchema = z.object({
+  params: z.object({
+    id: z.coerce.number().int().positive(),
+  }),
+  body: z.object({
+    code: z.string().length(4, 'Le code doit contenir exactement 4 chiffres').regex(/^\d{4}$/, 'Code invalide'),
+  }),
+});

@@ -424,6 +424,7 @@ model EscrowTransaction {
   disputed_at       DateTime?
   dispute_reason    String?      @db.Text
   confirmation_token String?     @db.VarChar(64)
+  confirmation_code  String?     @db.VarChar(6)
   created_at        DateTime     @default(now())
   updated_at     DateTime     @updatedAt
 

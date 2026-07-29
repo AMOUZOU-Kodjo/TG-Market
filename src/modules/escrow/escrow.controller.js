@@ -147,3 +147,27 @@ export async function cancelEscrow(req, res, next) {
     next(err);
   }
 }
+
+export async function confirmWithCode(req, res, next) {
+  try {
+    const id = Number(req.params.id);
+    const { code } = req.validated.body;
+    const escrow = await escrowService.confirmWithCode(id, req.user.id, code);
+
+    const io = req.app.get('io');
+    if (io) {
+      const { notifyUser } = await import('../notifications/notifications.service.js');
+      await notifyUser(io, escrow.buyerId, {
+        type: 'delivery_confirmed',
+        title: 'Livraison confirmée',
+        description: `La livraison pour "${escrow.productTitle}" a été confirmée. Les fonds ont été libérés.`,
+        productId: escrow.productId,
+        metadata: { escrowId: escrow.id },
+      });
+    }
+
+    res.json(escrow);
+  } catch (err) {
+    next(err);
+  }
+}

@@ -29,7 +29,7 @@ export default function ImageGallery({
     <>
       <div className={cn("w-full", className)} {...rest}>
         <div className="relative mb-3 overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-800">
-          <div className="relative aspect-6/4">
+          <div className="relative aspect-[6/4]">
             <AnimatePresence mode="wait">
               <motion.img
                 key={activeIndex}

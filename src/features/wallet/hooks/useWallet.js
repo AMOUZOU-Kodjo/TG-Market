@@ -33,6 +33,16 @@ export function usePaymentMethods() {
   });
 }
 
+export function useAddPaymentMethod() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: walletApi.addPaymentMethod,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["paymentMethods"] });
+    },
+  });
+}
+
 export function useEscrowList(params) {
   return useQuery({
     queryKey: ["escrow", params],

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import BackButton from "@/shared/ui/BackButton";
+import Logo from "@/shared/ui/Logo";
 import { useNavigate } from "react-router-dom";
 import {
   Wallet,
@@ -11,8 +12,6 @@ import {
   Download,
   Upload,
   RefreshCw,
-  Eye,
-  EyeOff,
   Shield,
 } from "lucide-react";
 import Button from "@/shared/ui/Button";
@@ -64,7 +63,7 @@ export default function WalletPage() {
   const paymentMethods = methodsData?.data || methodsData || [];
 
   const [activeTab, setActiveTab] = useState("transactions");
-  const [showBalance, setShowBalance] = useState(true);
+  const [showBalance] = useState(true);
   const [selectedEscrow, setSelectedEscrow] = useState(null);
   const [showWithdraw, setShowWithdraw] = useState(false);
 
@@ -95,20 +94,15 @@ export default function WalletPage() {
         {/* Balance Card */}
         <motion.div variants={itemVariants}>
           <div className="relative overflow-hidden rounded-2xl bg-brand-800 p-6 text-white shadow-xl sm:p-8">
-            <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-white/10" />
+            <div className="absolute -right-8 -top-8 h-45 w-45 rounded-full bg-white/80" />
             <div className="absolute -bottom-4 -left-4 h-24 w-24 rounded-full bg-white/5" />
             <div className="relative">
               <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Wallet className="h-6 w-6" />
+                  <Wallet className="h-10 w-10" />
                   <span className="text-sm font-medium text-white/80">Solde disponible</span>
                 </div>
-                <button
-                  onClick={() => setShowBalance(!showBalance)}
-                  className="rounded-lg bg-white/10 p-1.5 transition-colors hover:bg-white/20"
-                >
-                  {showBalance ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-                </button>
+                <Logo size="md" className="opacity-100" />
               </div>
               <div className="mb-6">
                 <span className="text-3xl font-bold sm:text-4xl">

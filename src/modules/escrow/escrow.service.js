@@ -530,7 +530,7 @@ export async function disputeEscrow(id, userId, reason) {
 export async function cancelEscrow(id, userId) {
   const escrow = await prisma.escrowTransaction.findUnique({
     where: { id },
-    select: { id: true, buyer_id: true, status: true },
+    select: { id: true, buyer_id: true, seller_id: true, status: true },
   });
 
   if (!escrow) {
@@ -539,14 +539,23 @@ export async function cancelEscrow(id, userId) {
     throw error;
   }
 
-  if (escrow.buyer_id !== userId) {
-    const error = new Error('Seul l\'acheteur peut annuler la transaction');
+  const isBuyer = escrow.buyer_id === userId;
+  const isSeller = escrow.seller_id === userId;
+
+  if (!isBuyer && !isSeller) {
+    const error = new Error('Vous n\'êtes pas autorisé à annuler cette transaction');
     error.status = 403;
     throw error;
   }
 
-  if (escrow.status !== 'pending') {
-    const error = new Error('Seules les transactions en attente peuvent être annulées');
+  if (isBuyer && escrow.status !== 'pending') {
+    const error = new Error('Vous ne pouvez annuler que les commandes en attente de paiement');
+    error.status = 400;
+    throw error;
+  }
+
+  if (isSeller && !['awaiting_verification', 'paid'].includes(escrow.status)) {
+    const error = new Error('Vous ne pouvez annuler que les commandes dont la livraison n\'a pas encore été faite');
     error.status = 400;
     throw error;
   }
@@ -558,7 +567,7 @@ export async function cancelEscrow(id, userId) {
     });
 
     const pendingTx = await tx.walletTransaction.findFirst({
-      where: { reference_type: 'escrow', reference_id: id, user_id: userId, status: 'pending' },
+      where: { reference_type: 'escrow', reference_id: id, status: 'pending' },
     });
 
     if (pendingTx) {

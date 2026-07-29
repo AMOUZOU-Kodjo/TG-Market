@@ -132,7 +132,8 @@ export async function cancelEscrow(req, res, next) {
     const io = req.app.get('io');
     if (io) {
       const { notifyUser } = await import('../notifications/notifications.service.js');
-      await notifyUser(io, escrow.sellerId, {
+      const notifiedUserId = req.user.id === escrow.buyerId ? escrow.sellerId : escrow.buyerId;
+      await notifyUser(io, notifiedUserId, {
         type: 'escrow_cancelled',
         title: 'Transaction annulée',
         description: `La transaction pour "${escrow.productTitle}" a été annulée`,

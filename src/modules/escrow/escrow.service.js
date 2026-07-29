@@ -617,14 +617,8 @@ export async function cancelEscrow(id, userId) {
     throw error;
   }
 
-  if (isBuyer && escrow.status !== 'pending') {
-    const error = new Error('Vous ne pouvez annuler que les commandes en attente de paiement');
-    error.status = 400;
-    throw error;
-  }
-
-  if (isSeller && !['awaiting_verification', 'paid'].includes(escrow.status)) {
-    const error = new Error('Vous ne pouvez annuler que les commandes dont la livraison n\'a pas encore été faite');
+  if (['completed', 'cancelled', 'refunded', 'disputed'].includes(escrow.status)) {
+    const error = new Error('Cette transaction ne peut plus être annulée');
     error.status = 400;
     throw error;
   }

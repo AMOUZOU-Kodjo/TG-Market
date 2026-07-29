@@ -206,6 +206,10 @@ export default function DashboardProfilePage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Bienvenue, {user?.name?.split(" ")[0] || "👋"}</h1>
+        <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">Gérez votre profil, vos annonces et vos activités.</p>
+      </div>
       {/* Profile Header */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6">
         <div className="flex items-center gap-5">

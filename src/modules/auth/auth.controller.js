@@ -1,4 +1,5 @@
 import * as authService from './auth.service.js';
+import * as googleAuthService from './auth.google.service.js';
 
 export async function register(req, res, next) {
   try {
@@ -12,6 +13,19 @@ export async function register(req, res, next) {
 export async function login(req, res, next) {
   try {
     const result = await authService.login(req.validated.body, req);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function googleLogin(req, res, next) {
+  try {
+    const { code } = req.body;
+    if (!code) {
+      return res.status(400).json({ error: 'Code d\'autorisation requis' });
+    }
+    const result = await googleAuthService.googleLogin(code, req);
     res.json(result);
   } catch (err) {
     next(err);

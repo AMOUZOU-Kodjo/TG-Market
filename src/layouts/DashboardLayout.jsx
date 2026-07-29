@@ -12,11 +12,8 @@ import {
   Search,
   LogOut,
   HelpCircle,
-  TrendingUp,
   Wallet,
   ArrowLeft,
-  Eye,
-  Heart,
   X,
   User,
   ShieldCheck,
@@ -26,9 +23,7 @@ import Logo from "@/shared/ui/Logo";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import { useNotificationContext } from "@/shared/hooks/useNotificationContext";
-import { useMyProducts } from "@/features/products/hooks/useProducts";
-import { useEscrowList, useWalletBalance } from "@/features/wallet/hooks/useWallet";
-import { useFavorites } from "@/features/favorites/hooks/useFavorites";
+import { useWalletBalance } from "@/features/wallet/hooks/useWallet";
 import { formatCFA } from "@/shared/utils/format";
 
 function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, totalEarned, navigate, logout, siteName }) {
@@ -199,14 +194,7 @@ export default function DashboardLayout() {
   const { unreadCount } = useNotificationContext();
   const settings = useSiteSettings();
 
-  const { data: myProductsData } = useMyProducts();
-  const { data: escrowData } = useEscrowList();
   const { data: walletData } = useWalletBalance();
-  const { data: favoritesData } = useFavorites();
-
-  const totalViews = myProductsData?.data?.reduce((s, p) => s + (p.views || 0), 0) ?? 0;
-  const totalFavorites = favoritesData?.meta?.total ?? favoritesData?.total ?? 0;
-  const completedSales = escrowData?.data?.filter((e) => e.status === "completed").length ?? 0;
   const totalEarned = walletData?.totalEarned ?? 0;
 
   useEffect(() => {
@@ -226,13 +214,6 @@ export default function DashboardLayout() {
     "/dashboard/propositions": "Propositions de lots",
   };
   const pageTitle = pageTitles[location.pathname] ?? "Tableau de bord";
-
-  const quickStats = [
-    { label: "Vues totales", value: totalViews.toLocaleString("fr-FR"), icon: Eye, color: "blue" },
-    { label: "Favoris", value: totalFavorites.toLocaleString("fr-FR"), icon: Heart, color: "pink" },
-    { label: "Ventes", value: completedSales.toLocaleString("fr-FR"), icon: TrendingUp, color: "green" },
-    { label: "Revenus", value: formatCFA(totalEarned), icon: Wallet, color: "purple" },
-  ];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">

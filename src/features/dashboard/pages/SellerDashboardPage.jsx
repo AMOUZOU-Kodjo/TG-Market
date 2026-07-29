@@ -3,15 +3,14 @@ import { motion } from "framer-motion";
 import {
   TrendingUp,
   Package,
-  ShoppingCart,
   BarChart3,
-  Bell,
   User,
   Handshake,
   CheckCircle,
   XCircle,
   MessageCircle,
   Clock,
+  Megaphone,
 } from "lucide-react";
 import { cn } from "@/shared/utils/cn";
 import { formatCFA, formatRelativeTime } from "@/shared/utils/format";
@@ -19,21 +18,10 @@ import Badge from "@/shared/ui/Badge";
 import DashboardStats from "@/features/dashboard/components/DashboardStats";
 import ProductTable from "@/features/dashboard/components/ProductTable";
 import { useMyProducts } from "@/features/products/hooks/useProducts";
-import { useEscrowList, useWalletBalance } from "@/features/wallet/hooks/useWallet";
+import { useWalletBalance } from "@/features/wallet/hooks/useWallet";
 import { useNavigate } from "react-router-dom";
 import UserProfilePage from "@/features/profile/pages/UserProfilePage";
-import NotificationsPage from "@/features/notifications/pages/NotificationsPage";
 import { useReceivedBundleProposals, useAcceptBundleProposal, useRejectBundleProposal } from "@/features/bundles/hooks/useBundleProposals";
-
-const escrowStatusConfig = {
-  completed: { label: "Terminée", variant: "success" },
-  pending: { label: "En attente", variant: "warning" },
-  paid: { label: "Payée", variant: "primary" },
-  pending_delivery: { label: "Expédiée", variant: "info" },
-  delivered: { label: "Livrée", variant: "info" },
-  disputed: { label: "Litige", variant: "danger" },
-  cancelled: { label: "Annulée", variant: "danger" },
-};
 
 function OverviewTab() {
   return (
@@ -66,92 +54,6 @@ function ProductsTab() {
         </button>
       </div>
       <ProductTable />
-    </div>
-  );
-}
-
-function OrdersTab() {
-  const navigate = useNavigate();
-  const { data: escrowData, isLoading } = useEscrowList();
-  const escrows = escrowData?.data ?? escrowData?.escrows ?? [];
-
-  return (
-    <div className="space-y-4">
-      <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-        Mes commandes
-      </h3>
-      {isLoading ? (
-        <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-800" />
-          <p className="mt-3 text-sm text-gray-500">Chargement...</p>
-        </div>
-      ) : escrows.length === 0 ? (
-        <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
-          <ShoppingCart className="mx-auto h-10 w-10 text-gray-300" />
-          <p className="mt-3 text-sm text-gray-500">Aucune commande pour le moment</p>
-        </div>
-      ) : (
-        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-100 dark:border-gray-800">
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                    Commande
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                    Produit
-                  </th>
-                  <th className="hidden px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 sm:table-cell">
-                    Acheteur
-                  </th>
-                  <th className="hidden px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 md:table-cell">
-                    Montant
-                  </th>
-                  <th className="hidden px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 lg:table-cell">
-                    Date
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                    Statut
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
-                {escrows.map((order) => {
-                  const status = escrowStatusConfig[order.status] || {
-                    label: order.status,
-                    variant: "neutral",
-                  };
-                  return (
-                    <tr key={order.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/30 cursor-pointer" onClick={() => navigate(`/commandes/${order.id}`)}>
-                      <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
-                        #{order.id.toString().slice(0, 8)}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                        {order.productTitle}
-                      </td>
-                      <td className="hidden whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400 sm:table-cell">
-                        {order.buyerName}
-                      </td>
-                      <td className="hidden whitespace-nowrap px-4 py-3 text-sm font-semibold text-gray-900 dark:text-white md:table-cell">
-                        {formatCFA(order.amount)}
-                      </td>
-                      <td className="hidden whitespace-nowrap px-4 py-3 text-sm text-gray-500 dark:text-gray-400 lg:table-cell">
-                        {formatRelativeTime(order.createdAt)}
-                      </td>
-                      <td className="px-4 py-3">
-                        <Badge variant={status.variant} dot>
-                          {status.label}
-                        </Badge>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -362,17 +264,71 @@ function ProfilTab() {
   return <UserProfilePage />;
 }
 
-function NotificationsTab() {
-  return <NotificationsPage />;
+function PromotionsTab() {
+  const navigate = useNavigate();
+  const { data: myProductsData } = useMyProducts();
+  const products = myProductsData?.data ?? [];
+  const promotedProducts = products.filter((p) => p.isPromoted || p.isFeatured);
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white">Promotions</h3>
+        <button
+          onClick={() => navigate("/vendre")}
+          className="flex items-center gap-2 rounded-xl bg-brand-800 px-4 py-2 text-sm font-medium text-white shadow-sm shadow-brand-800/25 hover:bg-brand-900 transition-colors"
+        >
+          <Package className="h-4 w-4" />
+          Nouvelle annonce
+        </button>
+      </div>
+
+      {promotedProducts.length > 0 ? (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {promotedProducts.map((p) => (
+            <div key={p.id} className="rounded-2xl border border-amber-100 bg-white p-4 dark:border-amber-900/30 dark:bg-gray-800">
+              <div className="flex items-start gap-3">
+                {p.images?.[0] && (
+                  <img src={p.images[0]} alt={p.title} className="h-16 w-16 rounded-xl object-cover shrink-0" />
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-gray-900 dark:text-white">{p.title}</p>
+                  <p className="text-sm font-semibold text-brand-800">{formatCFA(p.price)}</p>
+                  <div className="mt-1 flex gap-1.5">
+                    {p.isPromoted && <Badge variant="warning">Promu</Badge>}
+                    {p.isFeatured && <Badge variant="primary">Featured</Badge>}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
+          <Megaphone className="mx-auto h-10 w-10 text-gray-300 dark:text-gray-600" />
+          <h4 className="mt-3 text-sm font-semibold text-gray-900 dark:text-white">Aucune annonce promue</h4>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Mettez en avant vos annonces pour toucher plus d'acheteurs.
+          </p>
+          <button
+            onClick={() => navigate("/vendre")}
+            className="mt-4 inline-flex items-center gap-2 rounded-xl bg-brand-800 px-5 py-2 text-sm font-medium text-white hover:bg-brand-900 transition-colors"
+          >
+            <Megaphone className="h-4 w-4" />
+            Publier une annonce
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }
 
 const tabs = [
   { id: "overview", label: "Vue d'ensemble", icon: BarChart3 },
   { id: "products", label: "Mes annonces", icon: Package },
-  { id: "orders", label: "Commandes", icon: ShoppingCart },
   { id: "bundleProposals", label: "Propositions", icon: Handshake },
+  { id: "promotions", label: "Promotions", icon: Megaphone },
   { id: "analytics", label: "Statistiques", icon: TrendingUp },
-  { id: "notifications", label: "Notifications", icon: Bell },
   { id: "profile", label: "Profil", icon: User },
 ];
 
@@ -382,10 +338,9 @@ export default function SellerDashboardPage({ defaultTab = "overview" }) {
   const tabContent = {
     overview: <OverviewTab />,
     products: <ProductsTab />,
-    orders: <OrdersTab />,
     bundleProposals: <BundleProposalsTab />,
+    promotions: <PromotionsTab />,
     analytics: <AnalyticsTab />,
-    notifications: <NotificationsTab />,
     profile: <ProfilTab />,
   };
 

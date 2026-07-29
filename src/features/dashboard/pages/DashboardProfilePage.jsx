@@ -1,15 +1,12 @@
 import { useState, useRef } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Package, Star, Heart, Edit3, ShieldCheck, Lock, Bell, Trash2,
-  Loader2, Eye, EyeOff, AlertTriangle, Shield, ShieldOff, Camera,
-  ShoppingCart, BarChart3, Handshake, TrendingUp, MapPin, Calendar,
-  CheckCircle, XCircle, MessageCircle, Clock, Settings,
+  Package, Star, Heart, Edit3, ShieldCheck, Bell,
+  Loader2, Camera, Eye, Trash2,
+  TrendingUp, MapPin, MessageCircle, Settings, ArrowRight,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Avatar from "@/shared/ui/Avatar";
 import Button from "@/shared/ui/Button";
-import Badge from "@/shared/ui/Badge";
 import Input from "@/shared/ui/Input";
 import Textarea from "@/shared/ui/Textarea";
 import Modal from "@/shared/ui/Modal";
@@ -21,30 +18,16 @@ import EmptyState from "@/shared/ui/EmptyState";
 
 import toast from "react-hot-toast";
 import { useAuth } from "@/shared/contexts/AuthContext";
-import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import { useMyProducts, useDeleteProduct } from "@/features/products/hooks/useProducts";
 import { useMyReviews } from "@/features/reviews/hooks/useReviews";
 import { useFavorites } from "@/features/favorites/hooks/useFavorites";
-import { useKycStatus } from "@/features/verification/hooks/useKyc";
-import { useEscrowList, useWalletBalance } from "@/features/wallet/hooks/useWallet";
+import { useWalletBalance } from "@/features/wallet/hooks/useWallet";
 import { useConversations } from "@/features/chat/hooks/useConversations";
-import { useReceivedBundleProposals, useAcceptBundleProposal, useRejectBundleProposal } from "@/features/bundles/hooks/useBundleProposals";
 import { usersApi } from "@/features/profile/services/users.api";
 import { formatDate, formatCFA, formatRelativeTime } from "@/shared/utils/format";
 
-const escrowStatusConfig = {
-  completed: { label: "Terminée", variant: "success" },
-  pending: { label: "En attente", variant: "warning" },
-  paid: { label: "Payée", variant: "primary" },
-  pending_delivery: { label: "Expédiée", variant: "info" },
-  delivered: { label: "Livrée", variant: "info" },
-  disputed: { label: "Litige", variant: "danger" },
-  cancelled: { label: "Annulée", variant: "danger" },
-};
-
 function ProductsTab({ products }) {
   const navigate = useNavigate();
-  const qc = useQueryClient();
   const deleteProduct = useDeleteProduct();
 
   const handleDelete = async (product) => {
@@ -153,131 +136,12 @@ function ProductsTab({ products }) {
   );
 }
 
-function OrdersTab() {
-  const navigate = useNavigate();
-  const { data: escrowData, isLoading } = useEscrowList();
-  const escrows = escrowData?.data ?? escrowData?.escrows ?? [];
-
-  return (
-    <div className="space-y-4">
-      <h3 className="text-base font-semibold text-gray-900 dark:text-white">Mes commandes</h3>
-      {isLoading ? (
-        <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-800" />
-          <p className="mt-3 text-sm text-gray-500">Chargement...</p>
-        </div>
-      ) : escrows.length === 0 ? (
-        <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
-          <ShoppingCart className="mx-auto h-10 w-10 text-gray-300" />
-          <p className="mt-3 text-sm text-gray-500">Aucune commande pour le moment</p>
-        </div>
-      ) : (
-        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-100 dark:border-gray-800">
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Commande</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Produit</th>
-                  <th className="hidden px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 sm:table-cell">Acheteur</th>
-                  <th className="hidden px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 md:table-cell">Montant</th>
-                  <th className="hidden px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 lg:table-cell">Date</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Statut</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
-                {escrows.map((order) => {
-                  const status = escrowStatusConfig[order.status] || { label: order.status, variant: "neutral" };
-                  return (
-                    <tr key={order.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/30 cursor-pointer" onClick={() => navigate(`/commandes/${order.id}`)}>
-                      <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">#{order.id.toString().slice(0, 8)}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{order.productTitle}</td>
-                      <td className="hidden whitespace-nowrap px-4 py-3 text-sm text-gray-600 sm:table-cell">{order.buyerName}</td>
-                      <td className="hidden whitespace-nowrap px-4 py-3 text-sm font-semibold text-gray-900 md:table-cell">{formatCFA(order.amount)}</td>
-                      <td className="hidden whitespace-nowrap px-4 py-3 text-sm text-gray-500 lg:table-cell">{formatRelativeTime(order.createdAt)}</td>
-                      <td className="px-4 py-3"><Badge variant={status.variant} dot>{status.label}</Badge></td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function BundleProposalsTab() {
-  const navigate = useNavigate();
-  const { data, isLoading } = useReceivedBundleProposals();
-  const acceptProposal = useAcceptBundleProposal();
-  const rejectProposal = useRejectBundleProposal();
-  const proposals = data?.data ?? [];
-
-  const statusBadge = (status) => {
-    const map = {
-      pending: { label: "En attente", icon: Clock, class: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
-      accepted: { label: "Acceptée", icon: CheckCircle, class: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
-      rejected: { label: "Refusée", icon: XCircle, class: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
-      cancelled: { label: "Annulée", icon: XCircle, class: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400" },
-    };
-    const s = map[status] || map.pending;
-    return <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${s.class}`}><s.icon className="h-3 w-3" />{s.label}</span>;
-  };
-
-  return (
-    <div className="space-y-4">
-      <h3 className="text-base font-semibold text-gray-900 dark:text-white">Propositions de lots</h3>
-      {isLoading ? (
-        <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-800" />
-          <p className="mt-3 text-sm text-gray-500">Chargement...</p>
-        </div>
-      ) : proposals.length === 0 ? (
-        <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
-          <Handshake className="mx-auto h-10 w-10 text-gray-300" />
-          <p className="mt-3 text-sm text-gray-500">Aucune proposition reçue</p>
-        </div>
-      ) : (
-        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-100 dark:border-gray-800">
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Acheteur</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Lot</th>
-                <th className="hidden px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 sm:table-cell">Montant</th>
-                <th className="hidden px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 md:table-cell">Date</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Statut</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
-              {proposals.map((p) => (
-                <tr key={p.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/30">
-                  <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900">{p.buyer?.firstName || "Acheteur"}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{p.bundle?.title ?? `Lot #${p.bundleId}`}</td>
-                  <td className="hidden whitespace-nowrap px-4 py-3 text-sm font-semibold text-gray-900 sm:table-cell">{formatCFA(p.proposedPrice)}</td>
-                  <td className="hidden whitespace-nowrap px-4 py-3 text-sm text-gray-500 md:table-cell">{formatRelativeTime(p.createdAt)}</td>
-                  <td className="px-4 py-3">{statusBadge(p.status)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
-}
-
 export default function DashboardProfilePage() {
   const { user, setUser } = useAuth();
-  const { supportEmail } = useSiteSettings();
   const navigate = useNavigate();
-  const qc = useQueryClient();
   const { data: myProductsData } = useMyProducts();
   const { data: myReviewsData } = useMyReviews();
   const { data: favoritesData } = useFavorites();
-  const { data: kycStatus } = useKycStatus();
   const { data: walletData } = useWalletBalance();
   const { data: conversationsData } = useConversations();
 
@@ -289,37 +153,6 @@ export default function DashboardProfilePage() {
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const avatarInputRef = useRef(null);
   const [formData, setFormData] = useState({ name: user?.name || "", email: user?.email || "", phone: user?.phone || "", bio: user?.bio || "", avatar: user?.avatar || "" });
-  const [passwordData, setPasswordData] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-
-  const preferencesMutation = useMutation({
-    mutationFn: (data) => usersApi.updatePreferences(data),
-    onSuccess: () => toast.success("Préférences sauvegardées !"),
-    onError: (err) => toast.error(err?.response?.data?.message || "Erreur"),
-  });
-
-  const passwordMutation = useMutation({
-    mutationFn: (data) => usersApi.changePassword(data),
-    onSuccess: () => { setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" }); toast.success("Mot de passe modifié !"); },
-    onError: (err) => toast.error(err?.response?.data?.message || "Erreur"),
-  });
-
-  const handleNotificationChange = (key, value) => {
-    preferencesMutation.mutate({ [key]: value });
-    setUser((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const handlePasswordChange = () => {
-    if (!passwordData.currentPassword) { toast.error("Saisissez votre mot de passe actuel"); return; }
-    if (passwordData.newPassword.length < 8) { toast.error("Min. 8 caractères"); return; }
-    if (!/[A-Z]/.test(passwordData.newPassword)) { toast.error("Une majuscule requise"); return; }
-    if (!/[a-z]/.test(passwordData.newPassword)) { toast.error("Une minuscule requise"); return; }
-    if (!/[0-9]/.test(passwordData.newPassword)) { toast.error("Un chiffre requis"); return; }
-    if (passwordData.newPassword !== passwordData.confirmPassword) { toast.error("Les mots de passe ne correspondent pas"); return; }
-    passwordMutation.mutate({ currentPassword: passwordData.currentPassword, newPassword: passwordData.newPassword });
-  };
 
   const handleAvatarUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -339,15 +172,10 @@ export default function DashboardProfilePage() {
     }
   };
 
-  const isEmailVerified = !!kycStatus?.emailVerified;
-  const isPhoneVerified = !!kycStatus?.phoneVerified;
-
   const roleLabel = user?.role === "admin" ? "Admin" : myProducts.length > 0 ? "Vendeur" : "Acheteur";
 
   const tabs = [
     { id: "products", label: "Mes annonces", icon: Package, count: myProducts.length, content: <ProductsTab products={myProducts} /> },
-    { id: "orders", label: "Commandes", icon: ShoppingCart, content: <OrdersTab /> },
-    { id: "proposals", label: "Propositions", icon: Handshake, content: <BundleProposalsTab /> },
     { id: "favorites", label: "Favoris", icon: Heart, count: favoriteProducts.length, content: (
       favoriteProducts.length > 0 ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -366,72 +194,15 @@ export default function DashboardProfilePage() {
     )},
     { id: "reviews", label: "Avis", icon: Star, count: myReviews.length, content: <ReviewList reviews={myReviews} /> },
     { id: "notifications", label: "Notifications", icon: Bell, content: <NotificationsPage /> },
-    { id: "settings", label: "Paramètres", icon: Settings, content: (
-      <div className="max-w-2xl space-y-6">
-        <div className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-5">
-          <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white"><Shield className="h-4 w-4 text-brand-800" />Compte</h3>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between rounded-xl bg-gray-50 dark:bg-gray-800 p-3">
-              <div><p className="text-sm font-medium text-gray-900 dark:text-white">Email</p><p className="text-xs text-gray-500">{user?.email}</p></div>
-              {isEmailVerified ? <Badge variant="success"><ShieldCheck className="h-3 w-3" />Vérifié</Badge> : <Badge variant="warning"><ShieldOff className="h-3 w-3" />Non vérifié</Badge>}
-            </div>
-            <div className="flex items-center justify-between rounded-xl bg-gray-50 dark:bg-gray-800 p-3">
-              <div><p className="text-sm font-medium text-gray-900 dark:text-white">Téléphone</p><p className="text-xs text-gray-500">{user?.phone || "Non renseigné"}</p></div>
-              {isPhoneVerified ? <Badge variant="success"><ShieldCheck className="h-3 w-3" />Vérifié</Badge> : <Badge variant="warning"><ShieldOff className="h-3 w-3" />Non vérifié</Badge>}
-            </div>
-          </div>
-        </div>
-        <div className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-5">
-          <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white"><Lock className="h-4 w-4 text-brand-800" />Mot de passe</h3>
-          <div className="space-y-3">
-            <div className="relative">
-              <Input label="Mot de passe actuel" type={showCurrentPassword ? "text" : "password"} value={passwordData.currentPassword}
-                onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })} placeholder="Saisissez votre mot de passe actuel" />
-              <button type="button" onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                className="absolute right-3 top-9 text-gray-400 hover:text-gray-600">{showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
-            </div>
-            <div className="relative">
-              <Input label="Nouveau mot de passe" type={showNewPassword ? "text" : "password"} value={passwordData.newPassword}
-                onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })} placeholder="Min. 8 caractères, majuscule, minuscule, chiffre" />
-              <button type="button" onClick={() => setShowNewPassword(!showNewPassword)}
-                className="absolute right-3 top-9 text-gray-400 hover:text-gray-600">{showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
-            </div>
-            <Input label="Confirmer le mot de passe" type="password" value={passwordData.confirmPassword}
-              onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })} placeholder="Retapez le nouveau mot de passe" />
-            <div className="flex justify-end pt-2">
-              <Button variant="primary" size="sm" onClick={handlePasswordChange} disabled={passwordMutation.isPending}>
-                {passwordMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Lock className="h-4 w-4" />}Modifier le mot de passe
-              </Button>
-            </div>
-          </div>
-        </div>
-        <div className="rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-5">
-          <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white"><Bell className="h-4 w-4 text-brand-800" />Notifications</h3>
-          <div className="space-y-4">
-            {[
-              { key: "notificationsPush", label: "Notifications push", desc: "Recevoir les alertes sur votre téléphone" },
-              { key: "notificationsEmail", label: "Notifications email", desc: "Recevoir les alertes par email" },
-              { key: "notificationsSms", label: "Notifications SMS", desc: "Recevoir les alertes par SMS" },
-            ].map((item) => (
-              <div key={item.key} className="flex items-center justify-between">
-                <div><p className="text-sm font-medium text-gray-900 dark:text-white">{item.label}</p><p className="text-xs text-gray-500">{item.desc}</p></div>
-                <label className="relative inline-flex cursor-pointer items-center">
-                  <input type="checkbox" className="peer sr-only" checked={user?.[item.key] ?? (item.key !== "notificationsSms")}
-                    onChange={(e) => handleNotificationChange(item.key, e.target.checked)} disabled={preferencesMutation.isPending} />
-                  <div className="h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all peer-checked:bg-brand-800 after:peer-checked:translate-x-full dark:bg-gray-700" />
-                </label>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="rounded-2xl border border-red-100 bg-red-50 p-5 dark:border-red-950/30 dark:bg-red-950/10">
-          <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-red-900 dark:text-red-400"><AlertTriangle className="h-4 w-4" />Zone dangereuse</h3>
-          <p className="mb-3 text-sm text-red-800/80 dark:text-red-400/70">La suppression de votre compte est irréversible. Toutes vos données seront définitivement effacées.</p>
-          <Button variant="danger" size="sm" icon={Trash2} onClick={() => setDeleteModalOpen(true)}>Supprimer mon compte</Button>
-        </div>
-      </div>
-    )},
   ];
+
+  const settingsLink = (
+    <button onClick={() => navigate("/dashboard/settings")}
+      className="flex w-full items-center justify-between rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800 p-4 text-sm font-medium text-gray-900 dark:text-white hover:border-brand-400 dark:hover:border-brand-800/50 transition-colors">
+      <span className="flex items-center gap-2"><Settings className="h-4 w-4" />Paramètres du compte</span>
+      <ArrowRight className="h-4 w-4 text-gray-400" />
+    </button>
+  );
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -507,6 +278,9 @@ export default function DashboardProfilePage() {
       {/* Dashboard Tabs */}
       <Tabs tabs={tabs} />
 
+      {/* Settings Link */}
+      {settingsLink}
+
       {/* Edit Profile Modal */}
       <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} title="Modifier le profil" size="md"
         footer={<div className="flex justify-end gap-2"><Button variant="ghost" onClick={() => setEditModalOpen(false)}>Annuler</Button><Button variant="primary" onClick={() => setEditModalOpen(false)}>Enregistrer</Button></div>}>
@@ -529,21 +303,6 @@ export default function DashboardProfilePage() {
           <Input label="Email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
           <Input label="Téléphone" type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
           <Textarea label="Bio" value={formData.bio} onChange={(e) => setFormData({ ...formData, bio: e.target.value })} maxLength={200} showCount rows={3} />
-        </div>
-      </Modal>
-
-      {/* Delete Account Modal */}
-      <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} title="Supprimer mon compte" size="md"
-        footer={<div className="flex justify-end gap-2"><Button variant="ghost" onClick={() => setDeleteModalOpen(false)}>Annuler</Button><Button variant="danger" disabled>Confirmer la suppression</Button></div>}>
-        <div className="space-y-4">
-          <div className="flex items-start gap-3 rounded-xl bg-red-50 p-4 dark:bg-red-950/20">
-            <AlertTriangle className="h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
-            <div>
-              <p className="text-sm font-medium text-red-900 dark:text-red-400">Cette action est irréversible</p>
-              <p className="mt-1 text-sm text-red-700 dark:text-red-400/70">Toutes vos annonces, messages, favoris et données seront définitivement supprimés.</p>
-            </div>
-          </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Pour des raisons de sécurité, la suppression de compte n'est pas encore disponible en ligne. Veuillez contacter le support à <span className="font-medium">{supportEmail}</span> pour demander la suppression de votre compte.</p>
         </div>
       </Modal>
     </div>

@@ -29,12 +29,24 @@ export default function AdminPaymentsPage() {
     },
   });
 
+  const verifyMutation = useMutation({
+    mutationFn: (escrowId) => api.put(`/admin/escrow/${escrowId}/verify`).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["adminEscrow"] });
+      toast.success("Paiement vérifié avec succès");
+    },
+    onError: (err) => {
+      toast.error(err?.response?.data?.error || "Erreur");
+    },
+  });
+
   const transactions = data?.data ?? [];
   const meta = data?.meta;
 
   const statusColors = {
     completed: "success",
     pending: "warning",
+    awaiting_verification: "warning",
     paid: "primary",
     pending_delivery: "info",
     delivered: "info",
@@ -46,6 +58,7 @@ export default function AdminPaymentsPage() {
   const statusLabels = {
     completed: "Terminé",
     pending: "En attente",
+    awaiting_verification: "À vérifier",
     paid: "Payé",
     pending_delivery: "Expédié",
     delivered: "Livré",
@@ -106,6 +119,16 @@ export default function AdminPaymentsPage() {
                       </Badge>
                     </td>
                     <td className="px-6 py-3">
+                      {tx.status === "awaiting_verification" && (
+                        <button
+                          onClick={() => verifyMutation.mutate(tx.id)}
+                          disabled={verifyMutation.isPending}
+                          className="flex items-center gap-1 rounded-lg bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700 transition-colors disabled:opacity-50"
+                        >
+                          {verifyMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle className="h-3.5 w-3.5" />}
+                          Vérifier
+                        </button>
+                      )}
                       {tx.status === "pending" && (
                         <button
                           onClick={() => setConfirmEscrow(tx)}

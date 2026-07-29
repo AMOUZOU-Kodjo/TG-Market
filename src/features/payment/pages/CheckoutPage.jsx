@@ -134,14 +134,19 @@ export default function CheckoutPage() {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="rounded-2xl border border-green-100 bg-green-50 p-8 text-center dark:border-green-800 dark:bg-green-900/10"
+              className="rounded-2xl border border-amber-100 bg-amber-50 p-8 text-center dark:border-amber-800 dark:bg-amber-900/10"
             >
-              <CheckCircle2 className="mx-auto mb-4 h-16 w-16 text-green-600" />
-              <h1 className="text-xl font-bold text-green-800 dark:text-green-400">
-                Paiement confirmé !
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-800/30">
+                <Smartphone className="h-8 w-8 text-amber-600" />
+              </div>
+              <h1 className="text-xl font-bold text-amber-800 dark:text-amber-400">
+                Paiement envoyé !
               </h1>
-              <p className="mt-2 text-sm text-green-700 dark:text-green-500">
-                {formatCFA(total)} — Réf: {refCode}
+              <p className="mt-2 text-sm text-amber-700 dark:text-amber-500">
+                {formatCFA(total)} via {methodName} — Réf: {refCode}
+              </p>
+              <p className="mt-4 text-xs text-amber-600 dark:text-amber-400">
+                Votre paiement sera vérifié par notre équipe sous 24h. Le vendeur sera notifié dès confirmation.
               </p>
             </motion.div>
 
@@ -152,7 +157,7 @@ export default function CheckoutPage() {
               className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-800"
             >
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Le vendeur a été notifié. Vous serez informé dès que la commande sera expédiée.
+                Vous recevrez une notification dès que votre paiement sera vérifié.
               </p>
             </motion.div>
 

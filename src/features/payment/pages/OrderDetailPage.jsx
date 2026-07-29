@@ -13,6 +13,7 @@ import {
   QrCode,
   ScanLine,
   Loader2,
+  Smartphone,
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import QrScanner from "@/features/payment/components/QrScanner";
@@ -26,6 +27,7 @@ import toast from "react-hot-toast";
 
 const statusConfig = {
   pending: { label: "En attente de paiement", variant: "warning" },
+  awaiting_verification: { label: "Paiement en vérification", variant: "warning" },
   paid: { label: "Payée", variant: "primary" },
   pending_delivery: { label: "Expédiée", variant: "info" },
   delivered: { label: "Livrée", variant: "info" },
@@ -219,6 +221,18 @@ export default function OrderDetailPage() {
             <h2 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">Suivi</h2>
             <EscrowTimeline transaction={escrow} />
           </motion.div>
+
+          {escrow.status === "awaiting_verification" && isBuyer && (
+            <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4 text-center dark:border-amber-800 dark:bg-amber-900/10">
+              <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-800/30">
+                <Smartphone className="h-5 w-5 text-amber-600" />
+              </div>
+              <p className="text-sm font-medium text-amber-800 dark:text-amber-400">Paiement en cours de vérification</p>
+              <p className="mt-1 text-xs text-amber-600 dark:text-amber-500">
+                Votre paiement est en cours de vérification par notre équipe. Vous serez notifié dès confirmation.
+              </p>
+            </div>
+          )}
 
           {escrow.status === "pending" && isBuyer && (
             <button

@@ -421,6 +421,25 @@ export async function confirmWithCode(id, sellerId, code) {
         reference_id: id,
       },
     });
+
+    const admin = await tx.user.findFirst({
+      where: { role: 'admin' },
+      select: { id: true },
+    });
+
+    if (admin) {
+      await tx.walletTransaction.create({
+        data: {
+          user_id: admin.id,
+          type: 'commission',
+          amount: escrow.fee,
+          description: `Commission 5% - ${escrowRecord.product.title}`,
+          status: 'completed',
+          reference_type: 'escrow',
+          reference_id: id,
+        },
+      });
+    }
   });
 
   const full = await prisma.escrowTransaction.findUnique({

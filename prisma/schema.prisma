@@ -47,6 +47,7 @@ enum TransactionType {
   withdrawal
   deposit
   refund
+  commission
 }
 
 enum TransactionStatus {

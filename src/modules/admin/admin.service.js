@@ -621,6 +621,9 @@ export async function updateProductAdmin(productId, data) {
       }
     }
 
+    if (data.categoryId !== undefined) {
+      updateData.category_id = data.categoryId;
+    }
     if (data.categoryId && data.categoryId !== product.category_id) {
       await tx.category.update({ where: { id: product.category_id }, data: { product_count: { decrement: 1 } } });
       await tx.category.update({ where: { id: data.categoryId }, data: { product_count: { increment: 1 } } });

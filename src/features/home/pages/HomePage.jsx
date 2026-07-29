@@ -480,21 +480,23 @@ function PopularProductsSection() {
           {popularProducts.slice(0, 30).map((product) => (
             <motion.div key={product.id} variants={staggerItem}>
               <Link to={`/annonce/${product.id}`}>
-                <ProductCard
-                  productId={product.id}
-                  image={product.images?.[0]}
-                  title={product.title}
-                  price={product.price}
-                  originalPrice={product.originalPrice}
-                  location={product.city}
-                  neighborhood={product.neighborhood}
-                  condition={product.condition}
-                  hasActiveNegotiation={product.hasActiveNegotiation}
-                  isUrgent={product.isUrgent}
-                  isPromoted={product.isPromoted}
-                  isFeatured={product.isFeatured}
-                  negotiable={product.negotiable}
-                />
+                  <ProductCard
+                    productId={product.id}
+                    image={product.images?.[0]}
+                    title={product.title}
+                    price={product.price}
+                    originalPrice={product.originalPrice}
+                    location={product.city}
+                    neighborhood={product.neighborhood}
+                    condition={product.condition}
+                    hasActiveNegotiation={product.hasActiveNegotiation}
+                    hasActiveEscrow={product.hasActiveEscrow}
+                    status={product.status}
+                    isUrgent={product.isUrgent}
+                    isPromoted={product.isPromoted}
+                    isFeatured={product.isFeatured}
+                    negotiable={product.negotiable}
+                  />
               </Link>
             </motion.div>
           ))}

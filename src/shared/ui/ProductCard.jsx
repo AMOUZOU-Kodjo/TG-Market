@@ -22,6 +22,8 @@ export default function ProductCard({
   negotiable = false,
   productId,
   isFavorite: isFavoriteProp,
+  hasActiveEscrow = false,
+  status,
   onClick,
   className,
   ...rest
@@ -112,8 +114,26 @@ export default function ProductCard({
           </button>
         )}
 
+        {/* Vendu badge - full overlay */}
+        {status === "sold" && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50">
+            <span className="rounded-lg bg-white/90 px-4 py-2 text-sm font-bold text-gray-900 shadow-lg">
+              Vendu
+            </span>
+          </div>
+        )}
+
+        {/* Déjà commandé badge */}
+        {hasActiveEscrow && status !== "sold" && (
+          <div className="absolute bottom-0 left-0 right-0 z-10 bg-orange-500/95 backdrop-blur-sm px-3 py-1.5">
+            <span className="text-[9px] font-bold text-white flex items-center justify-center gap-1.5">
+              Déjà commandé
+            </span>
+          </div>
+        )}
+
         {/* Promoted badge */}
-        {isPromoted && (
+        {isPromoted && status !== "sold" && (
           <div className="absolute bottom-12 left-3 z-10 flex items-center gap-1 rounded-full bg-brand-600 px-2.5 py-1 shadow-md">
             <Star className="h-3 w-3 fill-white text-white" />
             <span className="text-[10px] font-bold text-white">Promu</span>
@@ -121,7 +141,7 @@ export default function ProductCard({
         )}
 
         {/* Negotiation in progress overlay - yellow like FIZZ */}
-        {hasActiveNegotiation && (
+        {hasActiveNegotiation && status !== "sold" && (
           <div className="absolute bottom-0 left-0 right-0 z-10 bg-yellow-500/95 backdrop-blur-sm px-3 py-1.5">
             <span className="text-[9px] font-bold text-white flex items-center justify-center gap-1.5">
               <MessageCircle className="w-3.5 h-3.5" />

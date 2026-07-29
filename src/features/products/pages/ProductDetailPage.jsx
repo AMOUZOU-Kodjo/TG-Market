@@ -155,6 +155,7 @@ export default function ProductDetailPage() {
                   {product.condition}
                 </Badge>
                 {product.negotiable && <Badge variant="neutral">Négociable</Badge>}
+                {product.hasActiveEscrow && <Badge variant="danger">Déjà commandé</Badge>}
                 {product.deliveryAvailable && (
                   <Badge variant="secondary">
                     <span className="flex items-center gap-1">
@@ -259,7 +260,7 @@ export default function ProductDetailPage() {
 
           <div className="space-y-5 ">
             <div className="lg:sticky lg:top-24 rounded-2xl border border-gray-100 bg-white  shadow-sm ">
-              <SellerCard seller={product.seller} productId={product.id} />
+              <SellerCard seller={product.seller} productId={product.id} hasActiveEscrow={product.hasActiveEscrow} productStatus={product.status} />
 
               <motion.div
                 {...fadeUp}

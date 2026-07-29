@@ -86,6 +86,8 @@ export default function CategoryPage() {
                 neighborhood={product.neighborhood}
                 condition={product.condition}
                 hasActiveNegotiation={product.hasActiveNegotiation}
+                hasActiveEscrow={product.hasActiveEscrow}
+                status={product.status}
                 isUrgent={product.isUrgent}
                 isPromoted={product.isPromoted}
                 negotiable={product.negotiable}

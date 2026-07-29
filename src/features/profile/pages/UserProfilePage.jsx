@@ -180,6 +180,8 @@ export default function UserProfilePage() {
               neighborhood={product.neighborhood}
               condition={product.condition}
               hasActiveNegotiation={product.hasActiveNegotiation}
+              hasActiveEscrow={product.hasActiveEscrow}
+              status={product.status}
               isUrgent={product.isUrgent}
               isPromoted={product.isPromoted}
               isFeatured={product.isFeatured}
@@ -219,6 +221,8 @@ export default function UserProfilePage() {
               neighborhood={product.neighborhood}
               condition={product.condition}
               hasActiveNegotiation={product.hasActiveNegotiation}
+              hasActiveEscrow={product.hasActiveEscrow}
+              status={product.status}
               isUrgent={product.isUrgent}
               isPromoted={product.isPromoted}
               isFeatured={product.isFeatured}

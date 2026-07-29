@@ -16,7 +16,7 @@ import { formatRelativeTime } from "@/shared/utils/format";
 import { useCreateConversation } from "@/features/chat/hooks/useConversations";
 import { useAuth } from "@/shared/contexts/AuthContext";
 
-export default function SellerCard({ seller, productId }) {
+export default function SellerCard({ seller, productId, hasActiveEscrow, productStatus }) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const isOwn = user?.id === seller?.id;
@@ -108,11 +108,21 @@ export default function SellerCard({ seller, productId }) {
         </Link>
         {!isOwn ? (
           <>
-            <Link to={`/acheter/${productId}`} className="flex-1 min-w-[130px]">
-              <Button variant="primary" fullWidth size="md" icon={ShoppingCart} className="border border-brand-600">
-                Acheter
-              </Button>
-            </Link>
+            {productStatus === "sold" ? (
+              <div className="w-full rounded-xl bg-gray-100 px-4 py-3 text-center text-sm font-semibold text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                Vendu
+              </div>
+            ) : hasActiveEscrow ? (
+              <div className="w-full rounded-xl bg-orange-50 px-4 py-3 text-center text-sm font-semibold text-orange-700 dark:bg-orange-900/20 dark:text-orange-400">
+                Déjà commandé
+              </div>
+            ) : (
+              <Link to={`/acheter/${productId}`} className="flex-1 min-w-[130px]">
+                <Button variant="primary" fullWidth size="md" icon={ShoppingCart} className="border border-brand-600">
+                  Acheter
+                </Button>
+              </Link>
+            )}
             <div className="flex-1 min-w-[130px]">
               <Button
                 variant="outline"

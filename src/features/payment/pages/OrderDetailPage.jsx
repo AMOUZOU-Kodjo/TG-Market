@@ -49,13 +49,16 @@ export default function OrderDetailPage() {
   const [showScanner, setShowScanner] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
   const [actionLoading, setActionLoading] = useState(null);
+  const [scannedCode, setScannedCode] = useState(null);
+  const [sellerCode, setSellerCode] = useState("");
 
   const handleScan = useCallback(async (token) => {
     setShowScanner(false);
     setActionLoading("scan");
     try {
-      await escrowApi.scanConfirm(token);
-      toast.success("Livraison confirmée ! QR code scanné avec succès.");
+      const data = await escrowApi.scanConfirm(token);
+      setScannedCode(data.confirmationCode);
+      toast.success("QR code scanné ! Communiquez le code à 4 chiffres au vendeur.");
       refetch();
     } catch (err) {
       toast.error(err?.response?.data?.error || "QR code invalide");
@@ -63,6 +66,24 @@ export default function OrderDetailPage() {
       setActionLoading(null);
     }
   }, [refetch]);
+
+  const handleConfirmCode = async () => {
+    if (sellerCode.length !== 4) {
+      toast.error("Le code doit contenir exactement 4 chiffres");
+      return;
+    }
+    setActionLoading("confirmCode");
+    try {
+      await escrowApi.confirmWithCode(escrow.id, sellerCode);
+      toast.success("Livraison confirmée ! Les fonds ont été libérés.");
+      setSellerCode("");
+      refetch();
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Code invalide");
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -292,19 +313,41 @@ export default function OrderDetailPage() {
 
           {escrow.status === "pending_delivery" && isBuyer && (
             <div className="space-y-3">
-              <div className="rounded-xl bg-blue-50 p-3 dark:bg-blue-900/10">
-                <p className="text-xs text-blue-700 dark:text-blue-400">
-                  Scannez le QR code du vendeur pour confirmer la réception et libérer les fonds.
-                </p>
-              </div>
-              <button
-                onClick={() => setShowScanner(true)}
-                disabled={actionLoading === "scan"}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-800 px-6 py-3 text-sm font-semibold text-white shadow-sm shadow-brand-800/25 transition-colors hover:bg-brand-900 disabled:opacity-50"
-              >
-                {actionLoading === "scan" ? <Loader2 className="h-4 w-4 animate-spin" /> : <ScanLine className="h-4 w-4" />}
-                Scanner le QR code
-              </button>
+              {scannedCode ? (
+                <div className="rounded-2xl border border-green-100 bg-green-50 p-6 text-center dark:border-green-800 dark:bg-green-900/10">
+                  <p className="text-sm font-medium text-green-800 dark:text-green-400">
+                    QR code vérifié !
+                  </p>
+                  <p className="mt-3 text-4xl font-bold tracking-widest text-green-700 dark:text-green-300">
+                    {scannedCode}
+                  </p>
+                  <p className="mt-3 text-xs text-green-600 dark:text-green-500">
+                    Communiquez ce code à 4 chiffres au vendeur pour finaliser la transaction.
+                  </p>
+                  <button
+                    onClick={() => setScannedCode(null)}
+                    className="mt-4 text-xs text-green-600 underline hover:text-green-800 dark:text-green-500"
+                  >
+                    Scanner à nouveau
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="rounded-xl bg-blue-50 p-3 dark:bg-blue-900/10">
+                    <p className="text-xs text-blue-700 dark:text-blue-400">
+                      Scannez le QR code du vendeur pour obtenir le code de confirmation.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowScanner(true)}
+                    disabled={actionLoading === "scan"}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-800 px-6 py-3 text-sm font-semibold text-white shadow-sm shadow-brand-800/25 transition-colors hover:bg-brand-900 disabled:opacity-50"
+                  >
+                    {actionLoading === "scan" ? <Loader2 className="h-4 w-4 animate-spin" /> : <ScanLine className="h-4 w-4" />}
+                    Scanner le QR code
+                  </button>
+                </>
+              )}
             </div>
           )}
 
@@ -312,7 +355,7 @@ export default function OrderDetailPage() {
             <div className="space-y-3">
               <div className="rounded-xl bg-green-50 p-3 text-center dark:bg-green-900/10">
                 <p className="text-xs font-medium text-green-700 dark:text-green-400">
-                  Faites scanner ce QR code par l'acheteur pour confirmer la livraison
+                  Faites scanner ce QR code par l'acheteur, puis saisissez le code à 4 chiffres qu'il vous communique.
                 </p>
               </div>
               {showQrCode ? (
@@ -337,6 +380,25 @@ export default function OrderDetailPage() {
                   Afficher le QR code
                 </button>
               )}
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={4}
+                  value={sellerCode}
+                  onChange={(e) => setSellerCode(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                  placeholder="Code à 4 chiffres"
+                  className="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3 text-center text-lg font-bold tracking-widest text-gray-900 placeholder:text-sm placeholder:tracking-normal placeholder:font-normal placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                />
+                <button
+                  onClick={handleConfirmCode}
+                  disabled={actionLoading === "confirmCode" || sellerCode.length !== 4}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-brand-800 px-6 py-3 text-sm font-semibold text-white shadow-sm shadow-brand-800/25 transition-colors hover:bg-brand-900 disabled:opacity-50"
+                >
+                  {actionLoading === "confirmCode" ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                  Confirmer
+                </button>
+              </div>
             </div>
           )}
 

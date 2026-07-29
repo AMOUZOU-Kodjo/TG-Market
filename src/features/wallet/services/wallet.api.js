@@ -19,4 +19,5 @@ export const escrowApi = {
   confirmDelivery: (id) => api.put(`/escrow/${id}/confirm-delivery`).then((r) => r.data),
   dispute: (id, data) => api.put(`/escrow/${id}/dispute`, data).then((r) => r.data),
   cancel: (id) => api.put(`/escrow/${id}/cancel`).then((r) => r.data),
+  confirmWithCode: (id, code) => api.put(`/escrow/${id}/confirm-code`, { code }).then((r) => r.data),
 };

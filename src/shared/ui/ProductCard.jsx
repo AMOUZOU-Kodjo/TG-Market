@@ -125,8 +125,8 @@ export default function ProductCard({
 
         {/* Déjà commandé badge */}
         {hasActiveEscrow && status !== "sold" && (
-          <div className="absolute bottom-0 left-0 right-0 z-10 bg-orange-500/95 backdrop-blur-sm px-3 py-1.5">
-            <span className="text-[9px] font-bold text-white flex items-center justify-center gap-1.5">
+          <div className="absolute bottom-0 left-0 right-0 z-10 bg-orange-500/95 backdrop-blur-sm px-3 py-2">
+            <span className="text-xs font-bold text-white flex items-center justify-center gap-1.5">
               Déjà commandé
             </span>
           </div>
@@ -140,11 +140,11 @@ export default function ProductCard({
           </div>
         )}
 
-        {/* Negotiation in progress overlay - yellow like FIZZ */}
+        {/* Negotiation in progress overlay */}
         {hasActiveNegotiation && status !== "sold" && (
-          <div className="absolute bottom-0 left-0 right-0 z-10 bg-yellow-500/95 backdrop-blur-sm px-3 py-1.5">
-            <span className="text-[9px] font-bold text-white flex items-center justify-center gap-1.5">
-              <MessageCircle className="w-3.5 h-3.5" />
+          <div className="absolute bottom-0 left-0 right-0 z-10 bg-yellow-500/95 backdrop-blur-sm px-3 py-2">
+            <span className="text-xs font-bold text-white flex items-center justify-center gap-1.5">
+              <MessageCircle className="w-4 h-4" />
               Négociation en cours
             </span>
           </div>

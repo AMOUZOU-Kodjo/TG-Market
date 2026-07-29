@@ -31,6 +31,7 @@ router.post('/reset-password', authLimiter, validate(resetPasswordSchema), authC
 router.get('/sessions', auth, authController.getSessions);
 router.delete('/sessions/others', auth, authController.revokeOtherSessions);
 router.get('/login-history', auth, authController.getLoginHistory);
+router.delete('/account', auth, authController.deleteAccount);
 
 // 2FA
 router.get('/2fa/status', auth, twoFactorController.getTwoFactorStatus);

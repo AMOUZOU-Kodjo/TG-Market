@@ -506,6 +506,29 @@ export async function revokeOtherSessions(userId) {
   return { message: 'Autres sessions déconnectées avec succès' };
 }
 
+export async function deleteAccount(userId) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, role: true },
+  });
+
+  if (!user) {
+    const error = new Error('Utilisateur introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  if (user.role === 'admin') {
+    const error = new Error('Impossible de supprimer un compte administrateur');
+    error.status = 403;
+    throw error;
+  }
+
+  await prisma.refreshToken.deleteMany({ where: { user_id: userId } });
+  await prisma.user.delete({ where: { id: userId } });
+  return { message: 'Compte supprimé avec succès' };
+}
+
 export async function getLoginHistory(userId) {
   const tokens = await prisma.refreshToken.findMany({
     where: { user_id: userId },

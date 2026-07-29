@@ -107,3 +107,12 @@ export async function getLoginHistory(req, res, next) {
     next(err);
   }
 }
+
+export async function deleteAccount(req, res, next) {
+  try {
+    const result = await authService.deleteAccount(req.user.id);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}

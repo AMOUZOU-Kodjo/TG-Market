@@ -8,6 +8,7 @@ function formatProduct(product, userId = null) {
     price: product.price,
     originalPrice: product.original_price,
     condition: product.condition,
+    status: product.status,
     category: product.category
       ? { id: product.category.id, name: product.category.name, slug: product.category.slug }
       : undefined,
@@ -39,6 +40,7 @@ function formatProduct(product, userId = null) {
     isUrgent: product.is_urgent,
     isPromoted: product.is_promoted,
     isFeatured: product.is_featured,
+    hasActiveEscrow: product.has_active_escrow ?? false,
     specifications: product.specifications
       ? product.specifications.map((s) => ({ label: s.label, value: s.value }))
       : [],
@@ -146,8 +148,19 @@ export async function listProducts(filters, userId = null) {
     prisma.product.count({ where }),
   ]);
 
+  const productIds = products.map((p) => p.id);
+  const activeEscrows = await prisma.escrowTransaction.findMany({
+    where: {
+      product_id: { in: productIds },
+      status: { notIn: ['cancelled', 'refunded', 'completed'] },
+    },
+    select: { product_id: true },
+    distinct: ['product_id'],
+  });
+  const escrowedIds = new Set(activeEscrows.map((e) => e.product_id));
+
   return {
-    products: products.map((p) => formatProduct(p, userId)),
+    products: products.map((p) => formatProduct({ ...p, has_active_escrow: escrowedIds.has(p.id) }, userId)),
     total,
   };
 }
@@ -167,7 +180,15 @@ export async function getProductById(productId, userId = null) {
     throw error;
   }
 
-  return formatProduct(product, userId);
+  const activeEscrow = await prisma.escrowTransaction.findFirst({
+    where: {
+      product_id: productId,
+      status: { notIn: ['cancelled', 'refunded', 'completed'] },
+    },
+    select: { id: true },
+  });
+
+  return formatProduct({ ...product, has_active_escrow: !!activeEscrow }, userId);
 }
 
 export async function createProduct(userId, data) {

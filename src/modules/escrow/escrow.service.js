@@ -260,7 +260,7 @@ export async function verifyPayment(id) {
 export async function scanConfirm(token, userId) {
   const escrow = await prisma.escrowTransaction.findUnique({
     where: { confirmation_token: token },
-    select: { id: true, buyer_id: true, status: true, amount: true, fee: true },
+    select: { id: true, buyer_id: true, status: true, amount: true, fee: true, product_id: true },
   });
 
   if (!escrow) {
@@ -291,6 +291,11 @@ export async function scanConfirm(token, userId) {
         confirmed_at: new Date(),
         released_at: new Date(),
       },
+    });
+
+    await tx.product.update({
+      where: { id: escrow.product_id },
+      data: { status: 'sold' },
     });
 
     const buyerTransaction = await tx.walletTransaction.findFirst({
@@ -388,7 +393,7 @@ export async function markAsShipped(id, sellerId) {
 export async function confirmDelivery(id, buyerId) {
   const escrow = await prisma.escrowTransaction.findUnique({
     where: { id },
-    select: { id: true, buyer_id: true, seller_id: true, amount: true, fee: true, status: true },
+    select: { id: true, buyer_id: true, seller_id: true, amount: true, fee: true, status: true, product_id: true },
   });
 
   if (!escrow) {
@@ -447,6 +452,11 @@ export async function confirmDelivery(id, buyerId) {
         reference_type: 'escrow',
         reference_id: id,
       },
+    });
+
+    await tx.product.update({
+      where: { id: escrow.product_id },
+      data: { status: 'sold' },
     });
   });
 

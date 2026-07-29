@@ -132,14 +132,7 @@ export default function OrderDetailPage() {
   };
 
   const handleCancel = async () => {
-    const isBuyerCancelling = escrow.status === "pending" && isBuyer;
-    const isSellerCancelling = ["awaiting_verification", "paid"].includes(escrow.status) && !isBuyer;
-    const message = isBuyerCancelling
-      ? "Annuler cette commande ? Le produit sera remis en vente."
-      : isSellerCancelling
-        ? "Annuler cette commande ? Le paiement sera annulé et le produit remis en vente."
-        : "Confirmer l'annulation ?";
-    if (!window.confirm(message)) return;
+    if (!window.confirm("Annuler cette commande ? Cette action est irréversible.")) return;
     setActionLoading("cancel");
     try {
       await escrowApi.cancel(escrow.id);
@@ -263,17 +256,6 @@ export default function OrderDetailPage() {
             </div>
           )}
 
-          {escrow.status === "pending" && isBuyer && (
-            <button
-              onClick={handleCancel}
-              disabled={actionLoading === "cancel"}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-6 py-3 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 disabled:opacity-50 dark:border-red-800 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-red-900/20"
-            >
-              {actionLoading === "cancel" ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
-              Annuler la commande
-            </button>
-          )}
-
           {escrow.status === "paid" && !isBuyer && (
             <div className="space-y-2">
               <div className="rounded-xl bg-amber-50 p-3 dark:bg-amber-900/10">
@@ -289,26 +271,7 @@ export default function OrderDetailPage() {
                 {actionLoading === "ship" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Truck className="h-4 w-4" />}
                 Marquer comme envoyé
               </button>
-              <button
-                onClick={handleCancel}
-                disabled={actionLoading === "cancel"}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-6 py-3 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 disabled:opacity-50 dark:border-red-800 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-red-900/20"
-              >
-                {actionLoading === "cancel" ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
-                Annuler la commande
-              </button>
             </div>
-          )}
-
-          {escrow.status === "awaiting_verification" && !isBuyer && (
-            <button
-              onClick={handleCancel}
-              disabled={actionLoading === "cancel"}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-6 py-3 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 disabled:opacity-50 dark:border-red-800 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-red-900/20"
-            >
-              {actionLoading === "cancel" ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
-              Annuler la commande
-            </button>
           )}
 
           {escrow.status === "pending_delivery" && isBuyer && (
@@ -400,6 +363,17 @@ export default function OrderDetailPage() {
                 </button>
               </div>
             </div>
+          )}
+
+          {!["completed", "cancelled", "refunded", "disputed"].includes(escrow.status) && (
+            <button
+              onClick={handleCancel}
+              disabled={actionLoading === "cancel"}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-6 py-3 text-sm font-medium text-red-700 transition-colors hover:bg-red-50 disabled:opacity-50 dark:border-red-800 dark:bg-gray-800 dark:text-red-400 dark:hover:bg-red-900/20"
+            >
+              {actionLoading === "cancel" ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
+              Annuler la commande
+            </button>
           )}
 
           {(escrow.status === "pending" || escrow.status === "paid" || escrow.status === "pending_delivery") && (

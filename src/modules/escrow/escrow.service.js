@@ -197,6 +197,46 @@ export async function confirmPayment(id, buyerId) {
 
   await prisma.escrowTransaction.update({
     where: { id },
+    data: { status: 'awaiting_verification' },
+  });
+
+  const full = await prisma.escrowTransaction.findUnique({
+    where: { id },
+    include: {
+      buyer: { select: { first_name: true, last_name: true } },
+      seller: { select: { first_name: true, last_name: true } },
+      product: {
+        select: {
+          title: true,
+          images: { select: { url: true }, orderBy: { sort_order: 'asc' }, take: 1 },
+        },
+      },
+    },
+  });
+
+  return formatEscrow(full);
+}
+
+export async function verifyPayment(id) {
+  const escrow = await prisma.escrowTransaction.findUnique({
+    where: { id },
+    select: { id: true, status: true },
+  });
+
+  if (!escrow) {
+    const error = new Error('Transaction introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  if (escrow.status !== 'awaiting_verification') {
+    const error = new Error('Cette transaction n\'est pas en attente de vérification');
+    error.status = 400;
+    throw error;
+  }
+
+  await prisma.escrowTransaction.update({
+    where: { id },
     data: { status: 'paid' },
   });
 

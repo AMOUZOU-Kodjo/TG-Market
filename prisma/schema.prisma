@@ -57,6 +57,7 @@ enum TransactionStatus {
 
 enum EscrowStatus {
   pending
+  awaiting_verification
   paid
   pending_delivery
   delivered

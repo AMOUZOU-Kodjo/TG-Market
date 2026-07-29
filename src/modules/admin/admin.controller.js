@@ -1,5 +1,6 @@
 import prisma from '../../config/database.js';
 import * as adminService from './admin.service.js';
+import * as escrowService from '../escrow/escrow.service.js';
 import { buildPaginationMeta } from '../../utils/pagination.js';
 import { sendEmail } from '../../utils/email.js';
 import { execSync } from 'child_process';
@@ -353,6 +354,36 @@ export async function creditWallet(req, res, next) {
     });
 
     res.json({ message: 'Wallet crédité', transaction: tx });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function verifyPaymentAdmin(req, res, next) {
+  try {
+    const id = Number(req.params.id);
+    const escrow = await escrowService.verifyPayment(id);
+
+    const io = req.app.get('io');
+    if (io) {
+      const { notifyUser } = await import('../notifications/notifications.service.js');
+      await notifyUser(io, escrow.buyerId, {
+        type: 'payment_verified',
+        title: 'Paiement vérifié',
+        description: `Votre paiement pour "${escrow.productTitle}" a été vérifié par l'administrateur`,
+        productId: escrow.productId,
+        metadata: { escrowId: escrow.id },
+      });
+      await notifyUser(io, escrow.sellerId, {
+        type: 'payment_verified',
+        title: 'Paiement vérifié',
+        description: `Le paiement pour "${escrow.productTitle}" a été vérifié`,
+        productId: escrow.productId,
+        metadata: { escrowId: escrow.id },
+      });
+    }
+
+    res.json(escrow);
   } catch (err) {
     next(err);
   }

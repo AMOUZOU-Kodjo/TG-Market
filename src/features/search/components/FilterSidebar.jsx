@@ -57,15 +57,18 @@ function CollapsibleSection({ title, icon: Icon, defaultOpen = true, children })
 
 function ToggleSwitch({ checked, onChange, label }) {
   return (
-    <label className="flex cursor-pointer items-center justify-between py-1.5">
+    <div
+      onClick={() => onChange?.(!checked)}
+      className="flex cursor-pointer items-center justify-between py-1.5"
+    >
       <span className="text-sm text-gray-700 dark:text-gray-300">{label}</span>
       <button
         type="button"
         role="switch"
         aria-checked={checked}
-        onClick={() => onChange?.(!checked)}
+        tabIndex={-1}
         className={cn(
-          "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200",
+          "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 pointer-events-none",
           checked
             ? "bg-brand-800"
             : "bg-gray-200 dark:bg-gray-700"
@@ -78,7 +81,7 @@ function ToggleSwitch({ checked, onChange, label }) {
           )}
         />
       </button>
-    </label>
+    </div>
   );
 }
 
@@ -91,6 +94,7 @@ export default function FilterSidebar({
   onClose,
 }) {
   const { data: allCategories = [] } = useCategories();
+  const [showAllCities, setShowAllCities] = useState(false);
   const {
     categories = [],
     minPrice = "",
@@ -230,10 +234,11 @@ export default function FilterSidebar({
         </CollapsibleSection>
 
         <CollapsibleSection title="Ville" icon={MapPin} defaultOpen={false}>
-          <div className="max-h-48 space-y-1 overflow-y-auto pr-1">
-            {CITIES.slice(0, 12).map((c) => (
+          <div className="max-h-64 space-y-1 overflow-y-auto pr-1">
+            {(showAllCities ? CITIES : CITIES.slice(0, 12)).map((c) => (
               <label
                 key={c}
+                onClick={() => updateFilter("city", city === c ? "" : c)}
                 className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
               >
                 <div
@@ -249,6 +254,14 @@ export default function FilterSidebar({
                 <span className="text-sm text-gray-700 dark:text-gray-300">{c}</span>
               </label>
             ))}
+            {CITIES.length > 12 && (
+              <button
+                onClick={() => setShowAllCities(!showAllCities)}
+                className="w-full mt-1 text-xs font-medium text-brand-800 hover:text-brand-900 dark:text-brand-400 dark:hover:text-brand-300"
+              >
+                {showAllCities ? "Voir moins" : `Voir plus (${CITIES.length - 12})`}
+              </button>
+            )}
           </div>
         </CollapsibleSection>
 

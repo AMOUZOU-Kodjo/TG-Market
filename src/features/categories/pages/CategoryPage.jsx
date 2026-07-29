@@ -31,24 +31,18 @@ export default function CategoryPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <BackButton />
-        <button
-          onClick={() => navigate("/")}
-          className="hidden md:flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors mb-6"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          Retour
-        </button>
-
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="mb-8"
         >
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
-            {categoryName}
-          </h1>
+          <div className="flex items-center gap-3">
+            <BackButton />
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
+              {categoryName}
+            </h1>
+          </div>
           {category?.description && (
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               {category.description}

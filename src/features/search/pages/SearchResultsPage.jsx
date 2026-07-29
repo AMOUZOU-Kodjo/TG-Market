@@ -217,6 +217,11 @@ export default function SearchResultsPage() {
     if (filters.maxPrice) params.maxPrice = Number(filters.maxPrice);
     if (filters.conditions.length > 0) params.conditions = filters.conditions.join(",");
     if (filters.city) params.city = filters.city;
+    if (filters.verifiedSeller) params.verifiedSeller = true;
+    if (filters.deliveryAvailable) params.deliveryAvailable = true;
+    if (filters.negotiable) params.negotiable = true;
+    if (filters.urgent) params.urgent = true;
+    if (filters.onPromotion) params.onPromotion = true;
     return params;
   }, [query, sort, page, filters]);
 
@@ -242,9 +247,11 @@ export default function SearchResultsPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <BackButton />
-        <div className="mb-6">
-          <div className="mx-auto max-w-2xl">
+        <div className="relative flex items-center justify-center mb-6">
+          <div className="absolute left-0">
+            <BackButton />
+          </div>
+          <div className="w-full max-w-xl mx-auto">
             <SearchBar
               value={query}
               onSearch={handleSearch}

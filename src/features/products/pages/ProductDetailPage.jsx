@@ -99,16 +99,10 @@ export default function ProductDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <div className="relative mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-        <BackButton />
         <div className="sticky top-28 h-17 z-40 -mx-4 mt-[-1rem] bg-white px-4 py-3 backdrop-blur-sm dark:bg-gray-950/80 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
           <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-between">
-            <div className="flex items-center   gap-10">
-              <Link
-                to="/"
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
-              >
-                <ChevronLeft className="h-4 w-4 text-gray-600 dark:text-gray-300" />
-              </Link>
+            <div className="flex items-center gap-10">
+              <BackButton />
               <h1 className="flex-1 min-w-0 truncate text-sm font-bold text-gray-900 dark:text-white sm:text-base sm:truncate-none">
                 {product.title}
               </h1>

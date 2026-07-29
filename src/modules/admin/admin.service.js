@@ -589,6 +589,7 @@ export async function updateProductAdmin(productId, data) {
     if (data.isUrgent !== undefined) updateData.is_urgent = data.isUrgent;
     if (data.isPromoted !== undefined) updateData.is_promoted = data.isPromoted;
     if (data.isFeatured !== undefined) updateData.is_featured = data.isFeatured;
+    if (data.categoryId !== undefined) updateData.category_id = data.categoryId;
 
     if (Object.keys(updateData).length > 0) {
       await tx.product.update({ where: { id: productId }, data: updateData });
@@ -621,9 +622,6 @@ export async function updateProductAdmin(productId, data) {
       }
     }
 
-    if (data.categoryId !== undefined) {
-      updateData.category_id = data.categoryId;
-    }
     if (data.categoryId && data.categoryId !== product.category_id) {
       await tx.category.update({ where: { id: product.category_id }, data: { product_count: { decrement: 1 } } });
       await tx.category.update({ where: { id: data.categoryId }, data: { product_count: { increment: 1 } } });

@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import {
   Package, Star, Heart, Edit3, ShieldCheck, Bell,
   Loader2, Camera, Eye, Trash2,
-  TrendingUp, MapPin, MessageCircle, Settings, ArrowRight,
+  TrendingUp, MapPin, MessageCircle, Settings,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Avatar from "@/shared/ui/Avatar";
@@ -196,14 +196,6 @@ export default function DashboardProfilePage() {
     { id: "notifications", label: "Notifications", icon: Bell, content: <NotificationsPage /> },
   ];
 
-  const settingsLink = (
-    <button onClick={() => navigate("/dashboard/settings")}
-      className="flex w-full items-center justify-between rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800 p-4 text-sm font-medium text-gray-900 dark:text-white hover:border-brand-400 dark:hover:border-brand-800/50 transition-colors">
-      <span className="flex items-center gap-2"><Settings className="h-4 w-4" />Paramètres du compte</span>
-      <ArrowRight className="h-4 w-4 text-gray-400" />
-    </button>
-  );
-
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <div>
@@ -281,9 +273,6 @@ export default function DashboardProfilePage() {
 
       {/* Dashboard Tabs */}
       <Tabs tabs={tabs} />
-
-      {/* Settings Link */}
-      {settingsLink}
 
       {/* Edit Profile Modal */}
       <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} title="Modifier le profil" size="md"

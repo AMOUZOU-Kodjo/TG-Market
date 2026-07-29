@@ -13,4 +13,5 @@ export const authApi = {
   enable2FA: (data) => api.post("/auth/2fa/enable", data).then((r) => r.data),
   disable2FA: (data) => api.post("/auth/2fa/disable", data).then((r) => r.data),
   verify2FA: (data) => api.post("/auth/2fa/verify", data).then((r) => r.data),
+  deleteAccount: () => api.delete("/auth/account").then((r) => r.data),
 };

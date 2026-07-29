@@ -851,7 +851,7 @@
 //   );
 // }
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -888,6 +888,7 @@ import Input from "@/shared/ui/Input";
 import Textarea from "@/shared/ui/Textarea";
 import Avatar from "@/shared/ui/Avatar";
 import { useAuth } from "@/shared/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import { useKycStatus, useKycBadges } from "@/features/verification/hooks/useKyc";
 import { usersApi } from "@/features/profile/services/users.api";
 import { authApi } from "@/features/auth/services/auth.api";
@@ -972,7 +973,8 @@ function getDeviceIcon(userAgent) {
 }
 
 export default function SettingsPage() {
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUser, logout } = useAuth();
+  const navigate = useNavigate();
   const qc = useQueryClient();
   const userId = user?.id;
 
@@ -1077,6 +1079,17 @@ export default function SettingsPage() {
     },
   });
 
+  const { mutate: deleteAccount, isPending: deletingAccount } = useMutation({
+    mutationFn: authApi.deleteAccount,
+    onSuccess: () => {
+      toast.success("Compte supprimé avec succès.");
+      setTimeout(() => { logout(); navigate("/"); }, 2000);
+    },
+    onError: (err) => {
+      toast.error(err?.response?.data?.message || "Erreur lors de la suppression du compte");
+    },
+  });
+
   const { mutate: savePrivacy } = useMutation({
     mutationFn: usersApi.updatePrivacy,
     onSuccess: () => {
@@ -1150,6 +1163,8 @@ export default function SettingsPage() {
     confirm: false,
   });
   const [activeTab, setActiveTab] = useState("profile");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
 
   const {
     register,
@@ -1943,16 +1958,67 @@ export default function SettingsPage() {
             variant="danger"
             size="sm"
             icon={Trash2}
-            onClick={() =>
-              toast.error(
-                "Cette action est irréversible. Contactez le support pour supprimer votre compte."
-              )
-            }
+            onClick={() => setShowDeleteConfirm(true)}
           >
             Supprimer mon compte
           </Button>
         </motion.section>
       </div>
+
+      {/* Delete Account Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            onClick={() => { if (!deletingAccount) { setShowDeleteConfirm(false); setDeleteConfirmText("") } }}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md rounded-2xl bg-white p-6 dark:bg-gray-800"
+            >
+              <h3 className="text-lg font-bold text-red-800 dark:text-red-400">Supprimer mon compte</h3>
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                Cette action est <strong>irréversible</strong>. Toutes vos données (annonces, messages, favoris) seront définitivement effacées.
+              </p>
+              <p className="mt-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+                Tapez <strong className="text-red-700">SUPPRIMER</strong> pour confirmer :
+              </p>
+              <input
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder="SUPPRIMER"
+                className="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              />
+              <div className="mt-6 flex items-center gap-3">
+                <Button
+                  variant="danger"
+                  className="flex-1"
+                  icon={Trash2}
+                  loading={deletingAccount}
+                  disabled={deleteConfirmText !== "SUPPRIMER"}
+                  onClick={() => deleteAccount()}
+                >
+                  {deletingAccount ? "Suppression..." : "Confirmer la suppression"}
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="flex-1"
+                  onClick={() => { setShowDeleteConfirm(false); setDeleteConfirmText("") }}
+                  disabled={deletingAccount}
+                >
+                  Annuler
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

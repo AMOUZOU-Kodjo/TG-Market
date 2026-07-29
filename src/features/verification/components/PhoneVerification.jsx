@@ -5,7 +5,10 @@ import Button from "@/shared/ui/Button";
 import { useSendOtp, useVerifyOtp } from "@/features/verification/hooks/useKyc";
 import toast from "react-hot-toast";
 
-export default function PhoneVerification({ phone = "+228 90 12 34 56", onVerify }) {
+export default function PhoneVerification({ phone: initialPhone = "+228 90 12 34 56", onVerify }) {
+  const [phone, setPhone] = useState(initialPhone);
+  const [editing, setEditing] = useState(false);
+  const [editValue, setEditValue] = useState(initialPhone.replace(/^\+228\s*/, ""));
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [sent, setSent] = useState(false);
   const [verified, setVerified] = useState(false);
@@ -83,13 +86,40 @@ export default function PhoneVerification({ phone = "+228 90 12 34 56", onVerify
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 dark:bg-gray-800">
-        <div className="flex items-center gap-2">
-          <Phone className="h-4 w-4 text-gray-500" />
-          <span className="text-sm text-gray-700 dark:text-gray-300">{phone}</span>
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <Phone className="h-4 w-4 text-gray-500 shrink-0" />
+          {editing ? (
+            <div className="flex items-center gap-1">
+              <span className="text-sm text-gray-500">+228</span>
+              <input
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                className="w-36 rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                placeholder="XX XX XX XX"
+                maxLength={14}
+              />
+              <button
+                onClick={() => {
+                  const cleaned = editValue.replace(/\D/g, "");
+                  if (cleaned.length < 8) { toast.error("Numéro invalide"); return }
+                  setPhone(`+228 ${cleaned.replace(/(\d{2})(\d{2})(\d{2})(\d{2})/, "$1 $2 $3 $4")}`);
+                  setEditing(false);
+                }}
+                className="rounded-lg bg-red-800 px-2 py-1 text-xs text-white hover:bg-red-900"
+              >
+                OK
+              </button>
+              <button onClick={() => { setEditing(false); setEditValue(phone.replace(/^\+228\s*/, "")) }} className="text-xs text-gray-400 hover:text-gray-600">Annuler</button>
+            </div>
+          ) : (
+            <span className="text-sm text-gray-700 dark:text-gray-300">{phone}</span>
+          )}
         </div>
-        <button className="text-xs font-medium text-red-700 hover:text-red-800 flex items-center gap-1">
-          <Edit3 className="h-3 w-3" /> Modifier
-        </button>
+        {!editing && (
+          <button onClick={() => setEditing(true)} className="text-xs font-medium text-red-700 hover:text-red-800 flex items-center gap-1">
+            <Edit3 className="h-3 w-3" /> Modifier
+          </button>
+        )}
       </div>
 
       {!sent ? (

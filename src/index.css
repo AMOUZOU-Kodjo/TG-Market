@@ -28,23 +28,39 @@
   --warning-light: #FFFDE7;
 
   /* ═══ Navbar ═══ */
-  --navbar-bg: #01353095;
-  --navbar-bg-scrolled: #01353095;
-  --navbar-text: rgba(255, 255, 255, 0.85);
-  --navbar-text-hover: #ffffff;
-  --navbar-search-bg: rgba(255, 255, 255, 0.15);
-  --navbar-search-bg-focus: rgba(255, 255, 255, 0.25);
-  --navbar-border: rgba(255, 255, 255, 0.1);
+  --navbar-bg: #ffffff;
+  --navbar-bg-scrolled: #ffffff;
+  --navbar-text: #4B5563;
+  --navbar-text-hover: #111827;
+  --navbar-search-bg: #F3F4F6;
+  --navbar-search-bg-focus: #E5E7EB;
+  --navbar-border: #E5E7EB;
 
   /* ═══ Footer ═══ */
-  --footer-bg: #01353095;
-  --footer-bg-dark: #012520;
-  --footer-text: #D1D5DB;
-  --footer-heading: #FFFFFF;
-  --footer-link-hover: #FFFFFF;
-  --footer-border: rgba(255, 255, 255, 0.1);
+  --footer-bg: #ffffff;
+  --footer-bg-dark: #111827;
+  --footer-text: #374151;
+  --footer-heading: #111827;
+  --footer-link-hover: var(--brand-800);
+  --footer-border: #E5E7EB;
   --footer-icon-bg: rgba(255, 255, 255, 0.08);
   --footer-icon-bg-hover: var(--brand-800);
+}
+
+.dark {
+  --navbar-bg: #1F2937;
+  --navbar-bg-scrolled: #1F2937;
+  --navbar-text: #D1D5DB;
+  --navbar-text-hover: #FFFFFF;
+  --navbar-search-bg: #374151;
+  --navbar-search-bg-focus: #4B5563;
+  --navbar-border: #374151;
+
+  --footer-bg: #111827;
+  --footer-text: #D1D5DB;
+  --footer-heading: #FFFFFF;
+  --footer-border: #374151;
+  --footer-icon-bg: rgba(255, 255, 255, 0.08);
 }
 
 @theme {
@@ -134,7 +150,7 @@
   }
 
   html {
-    font-size: 18px;
+    font-size: 19px;
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

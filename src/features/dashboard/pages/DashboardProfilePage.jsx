@@ -4,6 +4,7 @@ import {
   Loader2, Camera, Eye, Trash2,
   TrendingUp, MapPin, MessageCircle, Settings,
 } from "lucide-react";
+import BackButton from "@/shared/ui/BackButton";
 import { useNavigate } from "react-router-dom";
 import Avatar from "@/shared/ui/Avatar";
 import Button from "@/shared/ui/Button";
@@ -198,6 +199,7 @@ export default function DashboardProfilePage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
+      <BackButton />
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Bienvenue, {user?.name?.split(" ")[0] || "👋"}</h1>
         <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">Gérez votre profil, vos annonces et vos activités.</p>

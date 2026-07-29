@@ -244,7 +244,7 @@ function HeroSection() {
 
       <div className="absolute inset-0 bg-gray-900/60" style={{ zIndex: 1 }} />
 
-      <div className="absolute inset-0 flex items-center justify-center px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}>
+      <div className="absolute inset-0 flex  items-center justify-center px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}>
         <div className="mx-auto max-w-3xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -808,7 +808,7 @@ function PopularProductsSection() {
 
 export default function HomePage() {
   return (
-    <div>
+    <div className="bg-white">
       <HeroSection />
       {/* <CategoriesSection /> */}
       {/* <RecentListingsSection /> */}

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useEscrowList } from "@/features/wallet/hooks/useWallet";
 import { formatCFA } from "@/shared/utils/format";
+import BackButton from "@/shared/ui/BackButton";
 import Badge from "@/shared/ui/Badge";
 
 const statusConfig = {
@@ -60,6 +61,7 @@ export default function HistoryPage() {
 
   return (
     <div className="space-y-6">
+      <BackButton />
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Historique</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">

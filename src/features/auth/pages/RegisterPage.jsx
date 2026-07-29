@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { registerSchema } from "@/shared/utils/validators";
+import BackButton from "@/shared/ui/BackButton";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import Input from "@/shared/ui/Input";
@@ -95,6 +96,7 @@ export default function RegisterPage() {
 
   return (
     <div>
+      <BackButton />
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}

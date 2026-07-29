@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
+import BackButton from "@/shared/ui/BackButton";
 import { useNavigate } from "react-router-dom";
 import {
   Wallet,
@@ -77,9 +78,7 @@ export default function WalletPage() {
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-1">
-          <button onClick={() => navigate(-1)} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition-colors">
-            <ArrowLeft className="h-5 w-5" />
-          </button>
+          <BackButton />
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Mon portefeuille</h1>
         </div>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">

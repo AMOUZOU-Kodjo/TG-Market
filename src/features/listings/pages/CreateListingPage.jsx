@@ -751,6 +751,7 @@ import {
   Wrench,
   Package,
 } from "lucide-react";
+import BackButton from "@/shared/ui/BackButton";
 import { cn } from "@/shared/utils/cn";
 import Button from "@/shared/ui/Button";
 import Input from "@/shared/ui/Input";
@@ -1342,6 +1343,7 @@ export default function CreateListingPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <div className="mx-auto max-w-8xl px-4 py-6 sm:px-6">
+        <BackButton />
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             Nouvelle annonce

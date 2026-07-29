@@ -23,6 +23,7 @@ import { productsApi } from "@/features/products/services/products.api";
 import { useCategories } from "@/features/categories/hooks/useCategories";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { formatCFA, formatRelativeTime, formatNumber } from "@/shared/utils/format";
+import BackButton from "@/shared/ui/BackButton";
 import Breadcrumb from "@/shared/ui/Breadcrumb";
 import Badge from "@/shared/ui/Badge";
 import Button from "@/shared/ui/Button";
@@ -97,7 +98,8 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+      <div className="relative mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+        <BackButton />
         <div className="sticky top-28 h-17 z-40 -mx-4 mt-[-1rem] bg-white px-4 py-3 backdrop-blur-sm dark:bg-gray-950/80 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
           <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-between">
             <div className="flex items-center   gap-10">

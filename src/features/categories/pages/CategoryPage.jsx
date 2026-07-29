@@ -1,5 +1,6 @@
 import { useParams, Link, Navigate, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import BackButton from "@/shared/ui/BackButton";
 import { ChevronLeft, Package } from "lucide-react";
 import { useCategory, useCategoryProducts } from "@/features/categories/hooks/useCategories";
 import ProductCard from "@/shared/ui/ProductCard";
@@ -30,6 +31,7 @@ export default function CategoryPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <BackButton />
         <button
           onClick={() => navigate("/")}
           className="hidden md:flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors mb-6"

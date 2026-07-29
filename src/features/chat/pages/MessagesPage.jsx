@@ -15,6 +15,7 @@ import ConversationPanel from "@/features/chat/components/ConversationPanel";
 import EmptyState from "@/shared/ui/EmptyState";
 import { useConversations, useMessages, useDeleteConversation } from "@/features/chat/hooks/useConversations";
 import { useAuth } from "@/shared/contexts/AuthContext";
+import BackButton from "@/shared/ui/BackButton";
 import { cn } from "@/shared/utils/cn";
 
 export default function MessagesPage() {
@@ -68,13 +69,7 @@ export default function MessagesPage() {
       >
         {/* Header */}
         <div className="flex items-center gap-2 border-b border-gray-100 px-3 py-3 dark:border-gray-800">
-          <Link
-            to="/tableau-de-bord"
-            className="flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
-            title="Retour au tableau de bord"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
+          <BackButton />
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">
             Messages
           </h2>

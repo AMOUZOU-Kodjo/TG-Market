@@ -4,6 +4,7 @@ import { ChevronDown, Search, HelpCircle, MessageCircle, Shield, Tag, Truck, Cre
 import { useFaqs } from "@/features/static/hooks/useFaqs";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import { Link } from "react-router-dom";
+import BackButton from "@/shared/ui/BackButton";
 import Button from "@/shared/ui/Button";
 
 const categoryIcons = {
@@ -112,6 +113,7 @@ export default function FAQPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <BackButton />
       {/* Hero */}
       <section className="bg-brand-800 px-4 py-16 text-white sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl text-center">

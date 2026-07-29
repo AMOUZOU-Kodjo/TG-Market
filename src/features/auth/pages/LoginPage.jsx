@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, LogIn, CircleDot, ExternalLink } from "lucide-react";
 import toast from "react-hot-toast";
 import { loginSchema } from "@/shared/utils/validators";
+import BackButton from "@/shared/ui/BackButton";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import Input from "@/shared/ui/Input";
 import Button from "@/shared/ui/Button";
@@ -53,6 +54,7 @@ export default function LoginPage() {
 
   return (
     <div>
+      <BackButton />
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}

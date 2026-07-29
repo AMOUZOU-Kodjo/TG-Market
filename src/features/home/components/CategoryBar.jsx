@@ -215,7 +215,7 @@ export default function CategoryBar() {
   const activeParent = openIndex !== null ? parents[openIndex] : null;
 
   return (
-    <div ref={containerRef} className={`relative ${isCategoryPage ? "border-b border-gray-200 md:border-white/10" : "border-b border-white/10"}`}>
+    <div ref={containerRef} className={`relative ${isCategoryPage ? "border-b border-gray-200 md:border-gray-200" : "border-b border-gray-200"}`}>
       {/* ═══ Desktop: Category pills ═══ */}
       <div className="hidden md:block">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -236,8 +236,8 @@ export default function CategoryBar() {
                           ? "bg-brand-100 text-brand-800 shadow-sm"
                           : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                         : isActive
-                          ? "bg-white text-brand-800 shadow-sm backdrop-blur-sm"
-                          : "bg-white/10 text-white/80 hover:text-white hover:bg-white/20 backdrop-blur-sm"
+                          ? "bg-white text-brand-800 shadow-sm"
+                          : "bg-gray-100 text-gray-600 hover:text-gray-900 hover:bg-gray-200"
                     }`}
                  >
                    <Icon className="w-4 h-4" />
@@ -267,8 +267,8 @@ export default function CategoryBar() {
                       ? "bg-brand-100 text-brand-800 shadow-sm"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     : isActive
-                      ? "bg-white text-brand-800 shadow-sm backdrop-blur-sm"
-                      : "bg-white/10 text-white/80 hover:bg-white/20 backdrop-blur-sm"
+                      ? "bg-white text-brand-800 shadow-sm"
+                      : "bg-gray-100 text-gray-600 hover:text-gray-900 hover:bg-gray-200"
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />

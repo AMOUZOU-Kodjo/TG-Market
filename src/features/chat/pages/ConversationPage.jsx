@@ -1,5 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Loader2, LayoutDashboard } from "lucide-react";
+import BackButton from "@/shared/ui/BackButton";
 import { useConversations, useMessages, useDeleteConversation } from "@/features/chat/hooks/useConversations";
 import ConversationPanel from "@/features/chat/components/ConversationPanel";
 import ConversationItem from "@/features/chat/components/ConversationItem";
@@ -37,13 +38,7 @@ export default function ConversationPage() {
     <div className="flex h-dvh min-h-0 overflow-hidden bg-white dark:bg-gray-800">
       <div className="hidden sm:flex w-80 min-h-0 flex-col border-r border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-2 border-b border-gray-200 px-3 py-3 dark:border-gray-700">
-          <Link
-            to="/tableau-de-bord"
-            className="flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
-            title="Retour au tableau de bord"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
+          <BackButton />
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">
             Messages
           </h2>

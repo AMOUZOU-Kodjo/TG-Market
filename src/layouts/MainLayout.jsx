@@ -118,12 +118,8 @@ export default function MainLayout() {
 
           {/* Header */}
           <header
-            className={`transition-all duration-300 ${
-              location.pathname.startsWith("/categories/")
-                ? "bg-white md:bg-navbar shadow-sm md:shadow-2xl"
-                : scrolled
-                  ? "bg-navbar-scrolled backdrop-blur-xl shadow-xl"
-                  : "bg-navbar shadow-2xl"
+            className={`transition-all duration-300 bg-white border-b border-gray-100 ${
+              scrolled ? "shadow-md" : "shadow-sm"
             }`}
           >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -147,7 +143,7 @@ export default function MainLayout() {
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onFocus={() => setSearchFocused(true)}
                       onBlur={() => setSearchFocused(false)}
-                      className="w-full pl-10 pr-4 py-2.5 bg-white/20 border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder-white/70 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 bg-gray-100 border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-gray-900 placeholder-gray-400 transition-all"
                     />
                   </div>
                 </form>
@@ -160,10 +156,10 @@ export default function MainLayout() {
                       to={link.to}
                       className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                         link.to === "/vendre"
-                          ? "bg-white text-red-800 hover:bg-red-50 shadow-md"
+                          ? "bg-brand-800 text-white hover:bg-brand-700 shadow-md"
                           : location.pathname === link.to
-                            ? "bg-white/20 text-white"
-                            : "text-white/80 hover:bg-white/10 hover:text-white"
+                            ? "bg-gray-100 text-gray-900"
+                            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                       }`}
                     >
                       <link.icon className="w-4 h-4" />
@@ -175,21 +171,21 @@ export default function MainLayout() {
                 {/* Right Actions */}
                 <div className="flex items-center gap-2">
                   {/* Dark Mode Toggle */}
-                  <button
+                  {/* <button
                     onClick={toggleTheme}
-                    className="p-2 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+                    className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
                   >
                     {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-                  </button>
+                  </button> */}
 
                   {/* Notifications */}
                   <Link
                     to="/notifications"
-                    className="relative p-2 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+                    className="relative p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
                   >
                     <Bell className="w-5 h-5" />
                     {unreadCount > 0 && (
-                      <span className="absolute top-1 right-1 w-4 h-4 bg-brand-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                      <span className="absolute top-1 right-1 w-4 h-4 bg-brand-700 text-white text-[10px] font-extrabold rounded-full flex items-center justify-center">
                         {unreadCount}
                       </span>
                     )}
@@ -200,15 +196,15 @@ export default function MainLayout() {
                     <div className="relative" ref={desktopMenuRef}>
                       <button
                         onClick={() => navigate("/dashboard")}
-                        className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-white/10 transition-colors"
+                        className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-gray-100 transition-colors"
                       >
                         <img
                           src={user?.avatar}
                           alt={user?.name}
-                          className="w-8 h-8 rounded-full object-cover ring-2 ring-white/30"
+                          className="w-8 h-8 rounded-full object-cover ring-2 ring-gray-200"
                         />
                         <ChevronDown
-                          className={`w-4 h-4 text-white/80 transition-transform ${
+                          className={`w-4 h-4 text-gray-500 transition-transform ${
                             userMenuOpen ? "rotate-180" : ""
                           }`}
                         />
@@ -241,7 +237,7 @@ export default function MainLayout() {
                                   <item.icon className="w-4 h-4 text-gray-400" />
                                   <span className="flex-1">{item.label}</span>
                                   {item.badge > 0 && (
-                                    <span className="px-2 py-0.5 bg-brand-700 text-white text-[10px] font-bold rounded-full">
+                                    <span className="px-2 py-0.5 bg-brand-700 text-white text-[10px] font-extrabold rounded-full">
                                       {item.badge}
                                     </span>
                                   )}
@@ -276,13 +272,13 @@ export default function MainLayout() {
                     <div className="flex items-center gap-2">
                       <Link
                         to="/connexion"
-                        className="px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                        className="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
                       >
                         Connexion
                       </Link>
                       <Link
                         to="/inscription"
-                        className="px-3 py-2 rounded-lg text-sm font-medium bg-white text-brand-900 hover:bg-white/90 transition-colors"
+                        className="px-3 py-2 rounded-lg text-sm font-medium bg-brand-800 text-white hover:bg-brand-700 transition-colors"
                       >
                         Inscription
                       </Link>
@@ -316,33 +312,19 @@ export default function MainLayout() {
                   )}
                   <form onSubmit={handleSearch} className="flex-1">
                     <div className="relative">
-                      <Search
-                        className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${
-                          location.pathname.startsWith("/categories/")
-                            ? "text-gray-400"
-                            : "text-white/50"
-                        }`}
-                      />
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <input
                         type="text"
                         placeholder="Rechercher..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className={`w-full pl-10 pr-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2 ${
-                          location.pathname.startsWith("/categories/")
-                            ? "bg-gray-100 text-gray-900 placeholder-gray-400 focus:ring-gray-300"
-                            : "bg-white/20 text-white placeholder-white/60 focus:ring-white/50"
-                        }`}
+                        className="w-full pl-10 pr-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2 bg-gray-100 text-gray-900 placeholder-gray-400 focus:ring-gray-300"
                       />
                     </div>
                   </form>
                   <button
                     onClick={toggleTheme}
-                    className={`p-2 rounded-lg transition-colors ${
-                      location.pathname.startsWith("/categories/")
-                        ? "text-gray-600 hover:bg-gray-100"
-                        : "text-white/80 hover:bg-white/10"
-                    }`}
+                    className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
                   >
                     {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                   </button>
@@ -350,16 +332,12 @@ export default function MainLayout() {
                     <div className="relative" ref={mobileMenuRef}>
                       <button
                         onClick={() => navigate("/dashboard")}
-                        className={`p-1 rounded-full transition-colors ${
-                          location.pathname.startsWith("/categories/")
-                            ? "hover:bg-gray-100"
-                            : "hover:bg-white/10"
-                        }`}
+                        className="p-1 rounded-full hover:bg-gray-100 transition-colors"
                       >
                         <img
                           src={user?.avatar}
                           alt={user?.name}
-                          className="w-8 h-8 rounded-full object-cover ring-2 ring-white/30"
+                          className="w-8 h-8 rounded-full object-cover ring-2 ring-gray-200"
                         />
                       </button>
 
@@ -390,7 +368,7 @@ export default function MainLayout() {
                                   <item.icon className="w-4 h-4 text-gray-400" />
                                   <span className="flex-1">{item.label}</span>
                                   {item.badge > 0 && (
-                                    <span className="px-2 py-0.5 bg-brand-700 text-white text-[10px] font-bold rounded-full">
+                                    <span className="px-2 py-0.5 bg-brand-700 text-white text-[10px] font-extrabold rounded-full">
                                       {item.badge}
                                     </span>
                                   )}
@@ -423,11 +401,7 @@ export default function MainLayout() {
                   ) : (
                     <Link
                       to="/connexion"
-                      className={`p-2 rounded-lg text-sm font-medium transition-colors ${
-                        location.pathname.startsWith("/categories/")
-                          ? "text-gray-600 hover:bg-gray-100"
-                          : "text-white/80 hover:text-white hover:bg-white/10"
-                      }`}
+                      className="p-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100 transition-colors"
                     >
                       <User className="w-5 h-5" />
                     </Link>
@@ -459,7 +433,9 @@ ${location.pathname.startsWith("/categories/") || location.pathname.startsWith("
 location.pathname.startsWith("/annonce/") || location.pathname.startsWith("/vendeur/") || 
 location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWith("/contact")|| location.pathname.startsWith("/a-propos") ? "hidden " : ""}`}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          {/* <hr className="max-w-full font-extrabold text-gray-400"/> */}
+          <hr className="border-t border-footer-border w-full" />
+          <div className="max-w-8xl mx-auto px-3 sm:px-4 lg:px-6 py-6">
             {/* Mobile: centered layout | Desktop: 3-column grid */}
             <div className="flex flex-col items-center lg:grid lg:grid-cols-3 lg:items-start lg:gap-8">
               {/* Col 1 — Logo + Nous écrire + Télécharger */}
@@ -468,12 +444,12 @@ location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWit
                   <Logo size="md" />
                 </div>
                 <div className="mb-2">
-                  <Link to="/contact" className="text-sm text-footer-heading font-semibold">
+                  <Link to="/contact" className="text-md text-gray-600 text-footer-heading font-extrabold">
                     Nous écrire
                   </Link>
                 </div>
-                <h4 className="text-footer-heading font-semibold text-sm mb-3">
-                  Télécharger l'app
+                <h4 className="text-footer-heading font-extrabold text-md mb-3">
+                  Télécharger l'application : 
                 </h4>
                 <div className="flex gap-2 justify-center">
                   <AppleStoreBadge />
@@ -483,8 +459,8 @@ location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWit
 
               {/* Col 2 — À propos */}
               <div className="text-center mb-8 lg:mb-0 w-full">
-                <h3 className="text-footer-heading font-semibold mb-4">À propos</h3>
-                <ul className="space-y-2.5 text-sm">
+                <h3 className="text-footer-heading font-extrabold text-xl mb-4">À propos</h3>
+                <ul className="space-y-3 text-sm font-bold">
                   {[
                     { to: "/confidentialite", label: "Politique de confidentialité" },
                     { to: "/mentions-legales", label: "Mentions légales" },
@@ -500,7 +476,7 @@ location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWit
                   <li>
                     <Link
                       to="/faq"
-                      className="px-3 py-1 bg-gray-800 hover:bg-footer-icon-hover rounded-full text-xs font-medium transition-colors"
+                      className="px-3 py-3 bg-yellow-400 hover:bg-footer-icon-hover rounded-full text-md font-extrabold transition-colors"
                     >
                       Questions fréquentes
                     </Link>
@@ -510,8 +486,8 @@ location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWit
 
               {/* Col 3 — Contact + Réseaux sociaux */}
               <div className="text-center w-full">
-                <h3 className="text-footer-heading font-semibold mb-4">Contact</h3>
-                <ul className="space-y-3 text-sm mb-8">
+                <h3 className="text-footer-heading font-extrabold text-xl mb-4">Contact</h3>
+                <ul className="space-y-3  font-semibold mb-4">
                   <li className="flex items-center justify-center gap-2">
                     <MapPin className="w-4 h-4 text-black shrink-0" />
                     <span>Lomé, Togo</span>
@@ -526,7 +502,7 @@ location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWit
                   </li>
                 </ul>
 
-                <h3 className="text-footer-heading font-semibold mb-4">Suivez-nous</h3>
+                <h3 className="text-footer-heading font-extrabold mb-4">Suivez-nous</h3>
                 <div className="flex justify-center gap-4">
                   <a
                     href="#"
@@ -554,9 +530,9 @@ location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWit
             </div>
 
             {/* Copyright */}
-            <div className="mt-10 pt-4 pb-2 border-t text-center border-footer-border  items-center justify-between gap-4 text-sm text-footer-text">
+            <div className="mt-8 pt-4 border-t text-center border-footer-border  items-center justify-between gap-4 text-md font-extrabold text-footer-text">
               <p>
-                &copy; 2025 {settings.siteName}. Tous droits réservés. {"   "} v{settings.siteVersion}
+                Copyright &copy; 2025 - {settings.siteName} {"   "} v{settings.siteVersion} - Tous droits réservés
               </p>
             </div>
           </div>

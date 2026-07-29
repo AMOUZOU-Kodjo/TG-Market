@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Button from "@/shared/ui/Button";
 import EmptyState from "@/shared/ui/EmptyState";
+import BackButton from "@/shared/ui/BackButton";
 import { useNotifications, useMarkNotificationRead, useMarkAllNotificationsRead } from "@/features/notifications/hooks/useNotifications";
 import { useNotificationContext } from "@/shared/hooks/useNotificationContext";
 import { formatRelativeTime } from "@/shared/utils/format";
@@ -123,6 +124,7 @@ export default function NotificationsPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
+      <BackButton />
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">

@@ -898,6 +898,7 @@ import BadgeGrid from "@/features/verification/components/BadgeGrid";
 import DocumentUpload from "@/features/verification/components/DocumentUpload";
 import PhoneVerification from "@/features/verification/components/PhoneVerification";
 import EmailVerification from "@/features/verification/components/EmailVerification";
+import BackButton from "@/shared/ui/BackButton";
 import { useSubmitKyc } from "@/features/verification/hooks/useKyc";
 
 const sectionVariants = {
@@ -1196,6 +1197,7 @@ export default function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
+      <BackButton />
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Paramètres</h1>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">

@@ -1,3 +1,4 @@
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
@@ -88,6 +89,7 @@ function PageLoader() {
 
 function App() {
   return (
+    <GoogleOAuthProvider clientId="106947888287-6o72a1vfmo03ejt20bt0m1gsieq03jml.apps.googleusercontent.com">
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
@@ -342,7 +344,7 @@ function App() {
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
+    </GoogleOAuthProvider>
   );
 }
-
 export default App;

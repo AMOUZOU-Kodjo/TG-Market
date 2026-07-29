@@ -1,3 +1,4 @@
+import { useGoogleLogin } from "@react-oauth/google";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -16,7 +17,7 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const [socialLoading, setSocialLoading] = useState(null);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, googleLogin } = useAuth();
 
   const {
     register,
@@ -40,16 +41,39 @@ export default function LoginPage() {
     }
   };
 
-  const handleSocialLogin = (provider) => {
-    setSocialLoading(provider);
-    toast.loading(`Connexion avec ${provider} en cours...`, {
-      id: provider,
-    });
-    setTimeout(() => {
-      toast.dismiss(provider);
-      toast.error(`Connexion ${provider} pas encore disponible`);
+  const googleSignIn = useGoogleLogin({
+    flow: "auth-code",
+    onSuccess: async (codeResponse) => {
+      setSocialLoading("Google");
+      toast.loading("Connexion avec Google en cours...", { id: "google" });
+      const result = await googleLogin(codeResponse.code);
+      toast.dismiss("google");
       setSocialLoading(null);
-    }, 1500);
+      if (result.success) {
+        toast.success("Connexion réussie !");
+        navigate("/");
+      } else {
+        toast.error(result.error || "Erreur de connexion Google");
+      }
+    },
+    onError: () => {
+      setSocialLoading(null);
+      toast.error("Connexion Google annulée");
+    },
+  });
+
+  const handleSocialLogin = (provider) => {
+    if (provider === "Google") {
+      googleSignIn();
+    } else {
+      setSocialLoading(provider);
+      toast.loading(`Connexion avec ${provider} en cours...`, { id: provider });
+      setTimeout(() => {
+        toast.dismiss(provider);
+        toast.error(`Connexion ${provider} pas encore disponible`);
+        setSocialLoading(null);
+      }, 1500);
+    }
   };
 
   return (

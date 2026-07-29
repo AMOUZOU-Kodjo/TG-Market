@@ -1,3 +1,4 @@
+import { useGoogleLogin } from "@react-oauth/google";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -41,8 +42,43 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [socialLoading, setSocialLoading] = useState(null);
   const navigate = useNavigate();
-  const { register: registerUser } = useAuth();
+  const { register: registerUser, login: googleLogin } = useAuth();
   const { siteName } = useSiteSettings();
+
+  const googleSignIn = useGoogleLogin({
+    flow: "auth-code",
+    onSuccess: async (codeResponse) => {
+      setSocialLoading("Google");
+      toast.loading("Inscription avec Google en cours...", { id: "google-register" });
+      const result = await googleLogin(codeResponse.code);
+      toast.dismiss("google-register");
+      setSocialLoading(null);
+      if (result.success) {
+        toast.success(`Inscription réussie ! Bienvenue sur ${siteName} 🎉`);
+        navigate("/");
+      } else {
+        toast.error(result.error || "Erreur lors de l'inscription Google");
+      }
+    },
+    onError: () => {
+      setSocialLoading(null);
+      toast.error("Inscription Google annulée");
+    },
+  });
+
+  const handleSocialRegister = (provider) => {
+    if (provider === "Google") {
+      googleSignIn();
+    } else {
+      setSocialLoading(provider);
+      toast.loading(`Inscription avec ${provider} en cours...`, { id: provider });
+      setTimeout(() => {
+        toast.dismiss(provider);
+        toast.error(`Inscription ${provider} pas encore disponible`);
+        setSocialLoading(null);
+      }, 1500);
+    }
+  };
 
   const {
     register,
@@ -80,18 +116,6 @@ export default function RegisterPage() {
     } else {
       toast.error(result.error || "Erreur lors de l'inscription");
     }
-  };
-
-  const handleSocialRegister = (provider) => {
-    setSocialLoading(provider);
-    toast.loading(`Inscription avec ${provider} en cours...`, {
-      id: provider,
-    });
-    setTimeout(() => {
-      toast.dismiss(provider);
-      toast.error(`Inscription ${provider} pas encore disponible`);
-      setSocialLoading(null);
-    }, 1500);
   };
 
   return (

@@ -57,6 +57,19 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  const googleLogin = useCallback(async (code) => {
+    try {
+      const { data } = await api.post("/auth/google", { code });
+      setAuthTokens(data.accessToken, data.refreshToken);
+      setUser(data.user);
+      return { success: true };
+    } catch (error) {
+      const message =
+        error.response?.data?.error || "Erreur lors de la connexion Google";
+      return { success: false, error: message };
+    }
+  }, []);
+
   const register = useCallback(async (userData) => {
     try {
       const { data } = await api.post("/auth/register", userData);
@@ -111,6 +124,7 @@ export function AuthProvider({ children }) {
         isAuthenticated,
         isAdmin,
         login,
+        googleLogin,
         register,
         logout,
         updateProfile,

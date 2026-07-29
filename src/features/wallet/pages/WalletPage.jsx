@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import BackButton from "@/shared/ui/BackButton";
 import Logo from "@/shared/ui/Logo";
+import Modal from "@/shared/ui/Modal";
+import Button from "@/shared/ui/Button";
 import { useNavigate } from "react-router-dom";
 import {
   Wallet,
@@ -13,12 +15,13 @@ import {
   Upload,
   RefreshCw,
   Shield,
+  Smartphone,
+  CreditCard,
 } from "lucide-react";
-import Button from "@/shared/ui/Button";
 import Badge from "@/shared/ui/Badge";
 import Tabs from "@/shared/ui/Tabs";
 import { formatCFA, formatRelativeTime } from "@/shared/utils/format";
-import { useWalletBalance, useWalletTransactions, useEscrowList, usePaymentMethods } from "@/features/wallet/hooks/useWallet";
+import { useWalletBalance, useWalletTransactions, useEscrowList, usePaymentMethods, useAddPaymentMethod } from "@/features/wallet/hooks/useWallet";
 import WalletBalance from "@/features/payment/components/WalletBalance";
 import EscrowCard from "@/features/payment/components/EscrowCard";
 import EscrowTimeline from "@/features/payment/components/EscrowTimeline";
@@ -66,6 +69,9 @@ export default function WalletPage() {
   const [showBalance] = useState(true);
   const [selectedEscrow, setSelectedEscrow] = useState(null);
   const [showWithdraw, setShowWithdraw] = useState(false);
+  const [showAddPayment, setShowAddPayment] = useState(false);
+  const [newMethod, setNewMethod] = useState({ provider: "flooz", providerUserId: "" });
+  const addPayment = useAddPaymentMethod();
 
   const tabs = [
     { id: "transactions", label: "Transactions" },
@@ -283,7 +289,10 @@ export default function WalletPage() {
                   );
                 })
               )}
-              <button className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-200 p-4 text-sm font-medium text-gray-500 transition-colors hover:border-brand-400 hover:text-brand-800 dark:border-gray-700 dark:hover:border-brand-800/50 dark:hover:text-brand-700">
+              <button
+                onClick={() => { setNewMethod({ provider: "flooz", providerUserId: "" }); setShowAddPayment(true); }}
+                className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-200 p-4 text-sm font-medium text-gray-500 transition-colors hover:border-brand-400 hover:text-brand-800 dark:border-gray-700 dark:hover:border-brand-800/50 dark:hover:text-brand-700"
+              >
                 <Plus className="h-4 w-4" />
                 Ajouter un moyen de paiement
               </button>
@@ -291,6 +300,66 @@ export default function WalletPage() {
           </motion.div>
         )}
       </motion.div>
+
+      <Modal
+        isOpen={showAddPayment}
+        onClose={() => setShowAddPayment(false)}
+        title="Ajouter un moyen de paiement"
+        size="sm"
+        footer={
+          <div className="flex gap-3 justify-end">
+            <Button variant="ghost" size="sm" onClick={() => setShowAddPayment(false)}>Annuler</Button>
+            <Button
+              variant="primary"
+              size="sm"
+              disabled={!newMethod.providerUserId || addPayment.isPending}
+              onClick={async () => {
+                await addPayment.mutateAsync(newMethod);
+                setShowAddPayment(false);
+                toast.success("Moyen de paiement ajouté");
+              }}
+            >
+              {addPayment.isPending ? "Ajout..." : "Ajouter"}
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Opérateur</label>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { value: "flooz", label: "Flooz", icon: Smartphone },
+                { value: "tmoney", label: "T-Money", icon: Smartphone },
+              ].map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setNewMethod({ ...newMethod, provider: opt.value })}
+                  className={`flex items-center gap-2 rounded-xl border p-3 text-sm font-medium transition-colors ${
+                    newMethod.provider === opt.value
+                      ? "border-brand-600 bg-brand-50 text-brand-700 dark:border-brand-500 dark:bg-brand-700/10 dark:text-brand-400"
+                      : "border-gray-200 text-gray-600 hover:border-gray-300 dark:border-gray-700 dark:text-gray-400"
+                  }`}
+                >
+                  <opt.icon className="h-5 w-5" />
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Numéro de téléphone</label>
+            <input
+              type="tel"
+              value={newMethod.providerUserId}
+              onChange={(e) => setNewMethod({ ...newMethod, providerUserId: e.target.value })}
+              placeholder="+228 XX XX XX XX"
+              className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+            />
+          </div>
+        </div>
+      </Modal>
 
       <WithdrawModal
         isOpen={showWithdraw}

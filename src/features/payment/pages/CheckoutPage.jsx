@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ArrowLeft,
   ShoppingCart,
@@ -9,8 +9,9 @@ import {
   Loader2,
   CheckCircle2,
   ExternalLink,
-  Phone,
   Smartphone,
+  Copy,
+  Check,
 } from "lucide-react";
 import { useProduct } from "@/features/products/hooks/useProducts";
 import { escrowApi } from "@/features/wallet/services/wallet.api";
@@ -24,6 +25,11 @@ const PAYMENT_METHODS = [
   { id: "tmoney", name: "TMoney", color: "#00A651", bgClass: "bg-green-50" },
 ];
 
+const PLATFORM_ACCOUNTS = {
+  flooz: { number: "+228 90 00 00 01", name: "TG-Market Flooz" },
+  tmoney: { number: "+228 90 00 00 02", name: "TG-Market T-Money" },
+};
+
 const PLATFORM_FEE = 0.05;
 
 export default function CheckoutPage() {
@@ -33,16 +39,11 @@ export default function CheckoutPage() {
   const { data: product, isLoading } = useProduct(productId);
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [phone, setPhone] = useState("");
+  const [transactionRef, setTransactionRef] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [createdEscrow, setCreatedEscrow] = useState(null);
   const [paymentStep, setPaymentStep] = useState(null);
-  const [countdown, setCountdown] = useState(5);
-  const [paid, setPaid] = useState(false);
-  const timerRef = useRef(null);
-
-  useEffect(() => {
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, []);
+  const [copied, setCopied] = useState(false);
 
   if (isLoading) {
     return (
@@ -73,8 +74,9 @@ export default function CheckoutPage() {
   const amount = Number(product.price);
   const fee = Math.round(amount * PLATFORM_FEE);
   const total = amount + fee;
-
   const methodName = PAYMENT_METHODS.find((m) => m.id === selectedMethod)?.name || selectedMethod;
+  const account = PLATFORM_ACCOUNTS[selectedMethod];
+  const refCode = createdEscrow ? `TGM-${createdEscrow.id}` : "";
 
   const handleSubmit = async () => {
     if (!selectedMethod) {
@@ -94,7 +96,7 @@ export default function CheckoutPage() {
         paymentMethod: selectedMethod,
       });
       setCreatedEscrow(escrow);
-      setPaymentStep("confirm");
+      setPaymentStep("instructions");
     } catch (err) {
       toast.error(err?.response?.data?.error || "Erreur lors de l'achat");
     } finally {
@@ -102,30 +104,26 @@ export default function CheckoutPage() {
     }
   };
 
-  const startSimulation = async () => {
-    setPaymentStep("processing");
-    setCountdown(5);
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
-    timerRef.current = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timerRef.current);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    setTimeout(async () => {
-      try {
-        await escrowApi.confirmPayment(createdEscrow.id);
-        setPaid(true);
-        setPaymentStep("success");
-      } catch {
-        toast.error("Erreur lors du paiement");
-        setPaymentStep("confirm");
-      }
-    }, 6000);
+  const handleConfirmPayment = async () => {
+    if (!transactionRef.trim()) {
+      toast.error("Veuillez entrer le numéro de transaction Flooz/TMoney");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await escrowApi.confirmPayment(createdEscrow.id);
+      setPaymentStep("success");
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Erreur lors de la confirmation");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (paymentStep === "success") {
@@ -143,7 +141,7 @@ export default function CheckoutPage() {
                 Paiement confirmé !
               </h1>
               <p className="mt-2 text-sm text-green-700 dark:text-green-500">
-                {formatCFA(total)} payé via {methodName}
+                {formatCFA(total)} — Réf: {refCode}
               </p>
             </motion.div>
 
@@ -164,55 +162,6 @@ export default function CheckoutPage() {
             >
               Voir ma commande
             </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (paymentStep === "processing") {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-        <div className="mx-auto max-w-2xl px-4 py-6 sm:px-6">
-          <div className="space-y-5">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800"
-            >
-              <motion.div
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{ repeat: Infinity, duration: 1.5 }}
-                className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-800/20"
-              >
-                <Smartphone className="h-10 w-10 text-brand-800" />
-              </motion.div>
-
-              <h1 className="text-lg font-bold text-gray-900 dark:text-white">
-                Paiement en cours
-              </h1>
-              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                Une demande de paiement de <strong>{formatCFA(total)}</strong> a été envoyée à votre <strong>{methodName}</strong>
-              </p>
-
-              <div className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-gray-50 p-3 dark:bg-gray-800">
-                <Phone className="h-4 w-4 text-gray-400" />
-                <span className="text-sm font-medium text-gray-900 dark:text-white">{phone}</span>
-              </div>
-
-              <div className="mt-6">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border-4 border-brand-200 border-t-brand-800 animate-spin">
-                  <span className="text-sm font-bold text-brand-800">{countdown}</span>
-                </div>
-                <p className="mt-3 text-xs text-gray-400">
-                  Confirmation automatique dans {countdown} seconde{countdown > 1 ? "s" : ""}...
-                </p>
-              </div>
-
-              <p className="mt-6 text-xs text-gray-400">
-                Ne quittez pas cette page. Le paiement est en cours de traitement.
-              </p>
-            </motion.div>
           </div>
         </div>
       </div>
@@ -315,7 +264,7 @@ export default function CheckoutPage() {
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Votre numéro {methodName === 'Flooz' ? 'Flooz' : 'TMoney'}"
+                  placeholder="Votre numéro Flooz / TMoney"
                   className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                 />
               </motion.div>
@@ -349,7 +298,7 @@ export default function CheckoutPage() {
         ) : (
           <>
             <h1 className="mb-6 text-xl font-bold text-gray-900 dark:text-white">
-              Confirmer le paiement
+              Instructions de paiement
             </h1>
 
             <div className="space-y-5">
@@ -374,19 +323,72 @@ export default function CheckoutPage() {
                 </div>
               </motion.div>
 
-              <div className="rounded-xl bg-amber-50 p-4 dark:bg-amber-900/10">
-                <p className="text-sm text-amber-800 dark:text-amber-400">
-                  Vous allez recevoir une demande de paiement de <strong>{formatCFA(total)}</strong> sur votre <strong>{methodName}</strong> au <strong>{phone}</strong>.
+              <div className="rounded-2xl border border-amber-100 bg-amber-50 p-5 dark:border-amber-800 dark:bg-amber-900/10">
+                <h3 className="mb-3 text-sm font-bold text-amber-900 dark:text-amber-400">
+                  Envoyez l'argent sur ce compte
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between rounded-xl bg-white px-4 py-3 dark:bg-gray-800">
+                    <div>
+                      <p className="text-xs text-gray-500">Compte</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-white">{account?.name}</p>
+                    </div>
+                    <button
+                      onClick={() => handleCopy(account?.number)}
+                      className="flex items-center gap-1 rounded-lg bg-amber-100 px-3 py-1.5 text-xs font-medium text-amber-800 transition-colors hover:bg-amber-200 dark:bg-amber-800/30 dark:text-amber-400"
+                    >
+                      {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                      {account?.number}
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between rounded-xl bg-white px-4 py-3 dark:bg-gray-800">
+                    <div>
+                      <p className="text-xs text-gray-500">Montant</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-white">{formatCFA(total)}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-gray-500">Référence</p>
+                      <p className="text-sm font-mono font-bold text-amber-700 dark:text-amber-400">{refCode}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-800">
+                <h3 className="mb-2 text-sm font-semibold text-gray-900 dark:text-white">
+                  Numéro de transaction reçu
+                </h3>
+                <p className="mb-3 text-xs text-gray-500">
+                  Après avoir envoyé l'argent, entrez le numéro de transaction Flooz/TMoney reçu par SMS.
                 </p>
+                <input
+                  type="text"
+                  value={transactionRef}
+                  onChange={(e) => setTransactionRef(e.target.value)}
+                  placeholder="Ex: TRX789XYZ"
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                />
               </div>
 
               <button
-                onClick={startSimulation}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-800 px-6 py-3.5 text-sm font-semibold text-white shadow-sm shadow-brand-800/25 transition-colors hover:bg-brand-900"
+                onClick={handleConfirmPayment}
+                disabled={submitting || !transactionRef.trim()}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-800 px-6 py-3.5 text-sm font-semibold text-white shadow-sm shadow-brand-800/25 transition-colors hover:bg-brand-900 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <Smartphone className="h-4 w-4" />
-                Confirmer le paiement
+                {submitting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Smartphone className="h-4 w-4" />
+                )}
+                {submitting ? "Confirmation..." : "J'ai payé"}
               </button>
+
+              <div className="flex items-start gap-2 rounded-xl bg-blue-50 p-3 dark:bg-blue-900/10">
+                <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" />
+                <p className="text-xs text-blue-700 dark:text-blue-400">
+                  Votre paiement sera vérifié et la commande sera traitée. Les fonds sont sécurisés jusqu'à la livraison.
+                </p>
+              </div>
             </div>
           </>
         )}

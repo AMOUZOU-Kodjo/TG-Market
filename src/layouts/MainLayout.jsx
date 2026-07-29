@@ -431,7 +431,7 @@ export default function MainLayout() {
           className={`bg-footer dark:bg-footer-dark text-footer-text 
 ${location.pathname.startsWith("/categories/") || location.pathname.startsWith("/vendre") || 
 location.pathname.startsWith("/annonce/") || location.pathname.startsWith("/vendeur/") || 
-location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWith("/contact")|| location.pathname.startsWith("/a-propos") ? "hidden " : ""}`}
+location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWith("/portefeuille") ||location.pathname.startsWith("/contact")|| location.pathname.startsWith("/a-propos") ? "hidden " : ""}`}
         >
           {/* <hr className="max-w-full font-extrabold text-gray-400"/> */}
           <hr className="border-t border-footer-border w-full" />

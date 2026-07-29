@@ -1,16 +1,32 @@
 import { useState } from "react";
-import { CreditCard } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { CreditCard, CheckCircle, Loader2, X } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/shared/services/api";
 import { formatCFA } from "@/shared/utils/format";
 import Badge from "@/shared/ui/Badge";
+import toast from "react-hot-toast";
 
 export default function AdminPaymentsPage() {
   const [page, setPage] = useState(1);
+  const [confirmEscrow, setConfirmEscrow] = useState(null);
+  const qc = useQueryClient();
 
   const { data, isLoading } = useQuery({
     queryKey: ["adminEscrow", page],
     queryFn: () => api.get(`/admin/escrow?page=${page}&perPage=20`).then((r) => r.data),
+  });
+
+  const creditMutation = useMutation({
+    mutationFn: ({ userId, amount, escrowId }) =>
+      api.post("/admin/wallet/credit", { userId, amount, description: `Paiement manuel escrow #${escrowId}` }).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["adminEscrow"] });
+      toast.success("Wallet crédité avec succès");
+      setConfirmEscrow(null);
+    },
+    onError: (err) => {
+      toast.error(err?.response?.data?.error || "Erreur");
+    },
   });
 
   const transactions = data?.data ?? [];
@@ -19,15 +35,21 @@ export default function AdminPaymentsPage() {
   const statusColors = {
     completed: "success",
     pending: "warning",
-    released: "primary",
+    paid: "primary",
+    pending_delivery: "info",
+    delivered: "info",
+    disputed: "danger",
     refunded: "danger",
     cancelled: "secondary",
   };
 
   const statusLabels = {
-    completed: "Complété",
+    completed: "Terminé",
     pending: "En attente",
-    released: "Libéré",
+    paid: "Payé",
+    pending_delivery: "Expédié",
+    delivered: "Livré",
+    disputed: "Litige",
     refunded: "Remboursé",
     cancelled: "Annulé",
   };
@@ -60,6 +82,7 @@ export default function AdminPaymentsPage() {
                   <th className="px-6 py-3 hidden lg:table-cell">Acheteur</th>
                   <th className="px-6 py-3 hidden lg:table-cell">Vendeur</th>
                   <th className="px-6 py-3">Statut</th>
+                  <th className="px-6 py-3">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -81,6 +104,17 @@ export default function AdminPaymentsPage() {
                       <Badge variant={statusColors[tx.status] ?? "secondary"}>
                         {statusLabels[tx.status] ?? tx.status}
                       </Badge>
+                    </td>
+                    <td className="px-6 py-3">
+                      {tx.status === "pending" && (
+                        <button
+                          onClick={() => setConfirmEscrow(tx)}
+                          className="flex items-center gap-1 rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-700 transition-colors"
+                        >
+                          <CheckCircle className="h-3.5 w-3.5" />
+                          Créditer
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -113,6 +147,46 @@ export default function AdminPaymentsPage() {
           </div>
         )}
       </div>
+
+      {confirmEscrow && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-800">
+            <button
+              onClick={() => setConfirmEscrow(null)}
+              className="absolute right-4 top-4 rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Confirmer le paiement
+            </h2>
+            <div className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+              <p><strong>Produit :</strong> {confirmEscrow.product?.title}</p>
+              <p><strong>Acheteur :</strong> {confirmEscrow.buyer?.firstName} {confirmEscrow.buyer?.lastName} (#{confirmEscrow.buyer?.id})</p>
+              <p><strong>Montant :</strong> {formatCFA(confirmEscrow.amount)}</p>
+              <p className="text-xs text-amber-600">
+                Cette action créditera le wallet de l'acheteur et confirmera le paiement.
+              </p>
+            </div>
+            <div className="mt-5 flex gap-3">
+              <button
+                onClick={() => setConfirmEscrow(null)}
+                className="flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={() => creditMutation.mutate({ userId: confirmEscrow.buyerId, amount: confirmEscrow.amount, escrowId: confirmEscrow.id })}
+                disabled={creditMutation.isPending}
+                className="flex-1 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {creditMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
+                {creditMutation.isPending ? "Traitement..." : "Créditer + Valider"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

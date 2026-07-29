@@ -332,3 +332,28 @@ export async function replyContactMessage(req, res, next) {
     next(err);
   }
 }
+
+export async function creditWallet(req, res, next) {
+  try {
+    const { userId, amount, description } = req.body;
+    if (!userId || !amount || amount < 100) {
+      return res.status(400).json({ error: 'Montant minimum 100 FCFA' });
+    }
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
+
+    const tx = await prisma.walletTransaction.create({
+      data: {
+        user_id: userId,
+        type: 'deposit',
+        amount,
+        description: description || 'Crédit manuel (admin)',
+        status: 'completed',
+      },
+    });
+
+    res.json({ message: 'Wallet crédité', transaction: tx });
+  } catch (err) {
+    next(err);
+  }
+}

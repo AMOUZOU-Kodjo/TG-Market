@@ -79,5 +79,6 @@ router.get('/contact-messages', pagination, adminController.getContactMessages);
 router.get('/contact-messages/:id', adminController.getContactMessage);
 router.put('/contact-messages/:id/read', adminController.markContactMessageRead);
 router.post('/contact-messages/:id/reply', adminController.replyContactMessage);
+router.post('/wallet/credit', adminController.creditWallet);
 
 export default router;

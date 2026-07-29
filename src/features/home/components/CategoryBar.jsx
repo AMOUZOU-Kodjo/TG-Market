@@ -220,7 +220,7 @@ export default function CategoryBar() {
       <div className="hidden md:block">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
            <div className="overflow-x-auto hide-scrollbar text-center py-2">
-            <div className="inline-flex items-center gap-1 text-left">
+            <div className="inline-flex  items-center gap-1 text-left">
              {parents.map((group, i) => {
                const Icon = faIconMap[group.icon] || FaLaptop;
                const isActive = openIndex === i;
@@ -230,7 +230,7 @@ export default function CategoryBar() {
                    onMouseEnter={() => handleEnter(i)}
                    onMouseLeave={handleLeave}
                    onClick={() => (isActive ? closeMenu() : setOpenIndex(i))}
-                    className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-semibold whitespace-nowrap transition-all duration-200 ${
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-bold whitespace-nowrap transition-all duration-200 ${
                       isCategoryPage
                         ? isActive
                           ? "bg-brand-100 text-brand-800 shadow-sm"

@@ -232,8 +232,9 @@ model Product {
   delivery_available     Boolean        @default(false)
   delivery_price         Int?
   views                  Int            @default(0)
-  favorites_count        Int            @default(0)
-  is_urgent              Boolean        @default(false)
+   favorites_count        Int            @default(0)
+   quantity               Int            @default(1)
+   is_urgent              Boolean        @default(false)
   is_promoted            Boolean        @default(false)
   is_featured            Boolean        @default(false)
   status                 ProductStatus  @default(active)

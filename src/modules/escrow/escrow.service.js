@@ -26,7 +26,7 @@ function formatEscrow(escrow) {
 export async function createEscrow(buyerId, data) {
   const product = await prisma.product.findUnique({
     where: { id: data.productId },
-    select: { id: true, user_id: true, title: true, status: true, price: true },
+    select: { id: true, user_id: true, title: true, status: true, price: true, quantity: true },
   });
 
   if (!product || product.status !== 'active') {
@@ -56,8 +56,21 @@ export async function createEscrow(buyerId, data) {
   });
 
   if (existing) {
-    const error = new Error('Une escrow active existe déjà pour ce produit');
+    const error = new Error('Une commande active existe déjà pour ce produit');
     error.status = 409;
+    throw error;
+  }
+
+  const activeCount = await prisma.escrowTransaction.count({
+    where: {
+      product_id: data.productId,
+      status: { notIn: ['cancelled', 'refunded', 'completed'] },
+    },
+  });
+
+  if (activeCount >= product.quantity) {
+    const error = new Error('Ce produit n\'est plus en stock');
+    error.status = 400;
     throw error;
   }
 
@@ -391,8 +404,20 @@ export async function confirmWithCode(id, sellerId, code) {
 
     await tx.product.update({
       where: { id: escrow.product_id },
-      data: { status: 'sold' },
+      data: { quantity: { decrement: 1 } },
     });
+
+    const updatedProduct = await tx.product.findUnique({
+      where: { id: escrow.product_id },
+      select: { quantity: true },
+    });
+
+    if (updatedProduct.quantity === 0) {
+      await tx.product.update({
+        where: { id: escrow.product_id },
+        data: { status: 'sold' },
+      });
+    }
 
     const buyerTransaction = await tx.walletTransaction.findFirst({
       where: { reference_type: 'escrow', reference_id: id, user_id: escrow.buyer_id, status: 'pending' },
@@ -495,6 +520,23 @@ export async function confirmDelivery(id, buyerId) {
       },
     });
 
+    await tx.product.update({
+      where: { id: escrow.product_id },
+      data: { quantity: { decrement: 1 } },
+    });
+
+    const updatedProduct = await tx.product.findUnique({
+      where: { id: escrow.product_id },
+      select: { quantity: true },
+    });
+
+    if (updatedProduct.quantity === 0) {
+      await tx.product.update({
+        where: { id: escrow.product_id },
+        data: { status: 'sold' },
+      });
+    }
+
     const buyerTransaction = await tx.walletTransaction.findFirst({
       where: { reference_type: 'escrow', reference_id: id, user_id: buyerId, status: 'pending' },
     });
@@ -523,10 +565,24 @@ export async function confirmDelivery(id, buyerId) {
       },
     });
 
-    await tx.product.update({
-      where: { id: escrow.product_id },
-      data: { status: 'sold' },
+    const admin = await tx.user.findFirst({
+      where: { role: 'admin' },
+      select: { id: true },
     });
+
+    if (admin) {
+      await tx.walletTransaction.create({
+        data: {
+          user_id: admin.id,
+          type: 'commission',
+          amount: escrow.fee,
+          description: `Commission 5% - ${escrowRecord.product.title}`,
+          status: 'completed',
+          reference_type: 'escrow',
+          reference_id: id,
+        },
+      });
+    }
   });
 
   const full = await prisma.escrowTransaction.findUnique({

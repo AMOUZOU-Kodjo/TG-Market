@@ -40,6 +40,8 @@ function formatProduct(product, userId = null) {
     isUrgent: product.is_urgent,
     isPromoted: product.is_promoted,
     isFeatured: product.is_featured,
+    quantity: product.quantity,
+    inStock: product.quantity > 0,
     hasActiveEscrow: product.has_active_escrow ?? false,
     specifications: product.specifications
       ? product.specifications.map((s) => ({ label: s.label, value: s.value }))
@@ -219,6 +221,7 @@ export async function createProduct(userId, data) {
         negotiable: data.negotiable ?? false,
         delivery_available: data.deliveryAvailable ?? false,
         delivery_price: data.deliveryPrice ?? null,
+        quantity: data.quantity ?? 1,
       },
     });
 
@@ -312,6 +315,7 @@ export async function updateProduct(productId, userId, data) {
     if (data.negotiable !== undefined) updateData.negotiable = data.negotiable;
     if (data.deliveryAvailable !== undefined) updateData.delivery_available = data.deliveryAvailable;
     if (data.deliveryPrice !== undefined) updateData.delivery_price = data.deliveryPrice;
+    if (data.quantity !== undefined) updateData.quantity = data.quantity;
 
     if (Object.keys(updateData).length > 0) {
       await tx.product.update({ where: { id: productId }, data: updateData });

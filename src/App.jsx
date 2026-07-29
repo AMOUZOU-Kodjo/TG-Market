@@ -256,8 +256,8 @@ function App() {
                             </AuthGuard>
                           }
                         >
-                          <Route path="/tableau-de-bord" element={<SellerDashboardPage />} />
-                          <Route path="/dashboard" element={<SellerDashboardPage />} />
+                          <Route path="/tableau-de-bord" element={<Navigate to="/dashboard/profile" replace />} />
+                          <Route path="/dashboard" element={<Navigate to="/dashboard/profile" replace />} />
                           <Route
                             path="/dashboard/products"
                             element={<SellerDashboardPage defaultTab="products" />}
@@ -269,7 +269,7 @@ function App() {
                           <Route path="/dashboard/messages" element={<MessagesPage />} />
                           <Route
                             path="/dashboard/notifications"
-                            element={<SellerDashboardPage defaultTab="notifications" />}
+                            element={<Navigate to="/dashboard/profile" replace />}
                           />
                           <Route
                             path="/dashboard/analytics"

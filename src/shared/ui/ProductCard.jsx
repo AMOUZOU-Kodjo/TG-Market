@@ -24,6 +24,7 @@ export default function ProductCard({
   isFavorite: isFavoriteProp,
   hasActiveEscrow = false,
   status,
+  quantity = 1,
   onClick,
   className,
   ...rest
@@ -123,12 +124,19 @@ export default function ProductCard({
           </div>
         )}
 
-        {/* Déjà commandé badge */}
-        {hasActiveEscrow && status !== "sold" && (
+        {/* Déjà commandé badge - only if single item */}
+        {hasActiveEscrow && quantity <= 1 && status !== "sold" && (
           <div className="absolute bottom-0 left-0 right-0 z-10 bg-orange-500/95 backdrop-blur-sm px-3 py-2">
             <span className="text-xs font-bold text-white flex items-center justify-center gap-1.5">
               Déjà commandé
             </span>
+          </div>
+        )}
+
+        {/* Stock badge */}
+        {quantity > 1 && status !== "sold" && (
+          <div className="absolute bottom-2 left-2 z-10 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-gray-700 shadow-sm backdrop-blur-sm dark:bg-gray-900/90 dark:text-gray-300">
+            {quantity} en stock
           </div>
         )}
 

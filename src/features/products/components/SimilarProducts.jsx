@@ -68,6 +68,7 @@ export default function SimilarProducts({ products = [], title = "Produits simil
               condition={product.condition}
               hasActiveNegotiation={product.hasActiveNegotiation}
               hasActiveEscrow={product.hasActiveEscrow}
+              quantity={product.quantity}
               status={product.status}
               isUrgent={product.isUrgent}
               isPromoted={product.isPromoted}

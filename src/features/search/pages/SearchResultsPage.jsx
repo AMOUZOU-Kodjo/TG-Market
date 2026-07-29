@@ -380,6 +380,7 @@ export default function SearchResultsPage() {
                       condition={product.condition}
                       hasActiveNegotiation={product.hasActiveNegotiation}
                       hasActiveEscrow={product.hasActiveEscrow}
+                      quantity={product.quantity}
                       status={product.status}
                       isUrgent={product.isUrgent}
                       isPromoted={product.isPromoted}
@@ -410,6 +411,7 @@ export default function SearchResultsPage() {
                       condition={product.condition}
                       hasActiveNegotiation={product.hasActiveNegotiation}
                       hasActiveEscrow={product.hasActiveEscrow}
+                      quantity={product.quantity}
                       status={product.status}
                       isUrgent={product.isUrgent}
                       isPromoted={product.isPromoted}

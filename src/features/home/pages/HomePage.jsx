@@ -491,6 +491,7 @@ function PopularProductsSection() {
                     condition={product.condition}
                     hasActiveNegotiation={product.hasActiveNegotiation}
                     hasActiveEscrow={product.hasActiveEscrow}
+                    quantity={product.quantity}
                     status={product.status}
                     isUrgent={product.isUrgent}
                     isPromoted={product.isPromoted}

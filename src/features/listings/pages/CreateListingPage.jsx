@@ -792,6 +792,7 @@ const defaultFormValues = {
   images: [],
   deliveryAvailable: false,
   deliveryPrice: "",
+  quantity: 1,
 };
 
 export default function CreateListingPage() {
@@ -904,6 +905,7 @@ export default function CreateListingPage() {
         deliveryPrice: formValues.deliveryAvailable
           ? Math.round(Number(formValues.deliveryPrice) || 0) || undefined
           : undefined,
+        quantity: formValues.quantity || 1,
         city: formValues.city,
         neighborhood: formValues.neighborhood || undefined,
       };
@@ -1061,6 +1063,23 @@ export default function CreateListingPage() {
                 </div>
                 {errors.price && (
                   <p className="mt-1.5 text-xs text-red-700">{errors.price.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Quantité en stock
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="999"
+                  defaultValue={1}
+                  className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors focus:border-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                  {...register("quantity", { valueAsNumber: true, min: 1 })}
+                />
+                {errors.quantity && (
+                  <p className="mt-1.5 text-xs text-red-700">{errors.quantity.message}</p>
                 )}
               </div>
 

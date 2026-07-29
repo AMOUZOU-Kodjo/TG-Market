@@ -181,7 +181,7 @@ export default function ProductDetailPage() {
                 )}
               </div>
 
-              <div className="mb-5 flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+              <div className="mb-5 flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                 <span className="flex items-center gap-1.5">
                   <Eye className="h-4 w-4" />
                   {formatNumber(product.views)} vues

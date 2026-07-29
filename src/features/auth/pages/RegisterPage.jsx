@@ -42,7 +42,7 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [socialLoading, setSocialLoading] = useState(null);
   const navigate = useNavigate();
-  const { register: registerUser, login: googleLogin } = useAuth();
+  const { register: registerUser, googleLogin } = useAuth();
   const { siteName } = useSiteSettings();
 
   const googleSignIn = useGoogleLogin({

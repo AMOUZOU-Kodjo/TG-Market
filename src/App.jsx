@@ -15,6 +15,7 @@ import AdminLayout from "@/layouts/AdminLayout";
 import { AuthGuard, GuestGuard, AdminGuard } from "@/guards/AuthGuard";
 import { MaintenanceGuard } from "@/guards/MaintenanceGuard";
 import { AuthLogoutHandler } from "@/shared/contexts/AuthContext";
+import { RealtimeSync } from "@/shared/components/RealtimeSync";
 
 import {
   HomePage,
@@ -101,6 +102,7 @@ function App() {
               <SiteSettingsProvider>
                 <BrowserRouter>
                   <AuthLogoutHandler />
+                  <RealtimeSync />
                   <MaintenanceGuard>
                     <Suspense fallback={<PageLoader />}>
                       <Routes>

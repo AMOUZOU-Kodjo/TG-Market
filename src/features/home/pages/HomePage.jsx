@@ -200,7 +200,7 @@ function HeroSection() {
 
   const formatCount = (n) =>
     n >= 1000 ? (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1).replace(".", ",") + " 000" : String(n);
-
+//images de HomePage Héro
   const bgImages = [
     // "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1920&q=80",
     "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=1920&q=80",

@@ -124,7 +124,7 @@ export default function MainLayout() {
           >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               {/* Desktop: single row */}
-              <div className="hidden md:flex items-center justify-between h-20">
+              <div className="hidden md:flex items-center justify-between h-15">
                 {/* Logo spacer to keep layout */}
                 <div className="w-24 shrink-0" />
 
@@ -135,7 +135,7 @@ export default function MainLayout() {
                       searchFocused ? "scale-[1.02]" : ""
                     }`}
                   >
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-800" />
                     <input
                       type="text"
                       placeholder="Rechercher des produits, catégories..."
@@ -143,7 +143,7 @@ export default function MainLayout() {
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onFocus={() => setSearchFocused(true)}
                       onBlur={() => setSearchFocused(false)}
-                      className="w-full pl-10 pr-4 py-2.5 bg-gray-100 border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-gray-900 placeholder-gray-400 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 bg-gray-200 border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-gray-900 placeholder-gray-400 transition-all"
                     />
                   </div>
                 </form>

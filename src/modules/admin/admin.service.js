@@ -888,6 +888,7 @@ const DEFAULT_SETTINGS = {
   social_facebook: 'https://facebook.com/tgmarket',
   social_twitter: 'https://twitter.com/tgmarket',
   social_instagram: 'https://instagram.com/tgmarket',
+  social_linkedin: 'https://linkedin.com/company/tgmarket',
 };
 
 export async function getSettings() {
@@ -917,7 +918,7 @@ export async function updateSettings(data) {
 
 export async function getPublicSettings() {
   const rows = await prisma.siteSetting.findMany({
-    where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode', 'maintenance_message', 'maintenance_estimated_return', 'maintenance_improvements', 'social_facebook', 'social_twitter', 'social_instagram'] } },
+    where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode', 'maintenance_message', 'maintenance_estimated_return', 'maintenance_improvements', 'social_facebook', 'social_twitter', 'social_instagram', 'social_linkedin'] } },
   });
   const map = {};
   for (const row of rows) map[row.key] = row.value;
@@ -932,5 +933,6 @@ export async function getPublicSettings() {
     socialFacebook: map.social_facebook ?? DEFAULT_SETTINGS.social_facebook,
     socialTwitter: map.social_twitter ?? DEFAULT_SETTINGS.social_twitter,
     socialInstagram: map.social_instagram ?? DEFAULT_SETTINGS.social_instagram,
+    socialLinkedin: map.social_linkedin ?? DEFAULT_SETTINGS.social_linkedin,
   };
 }

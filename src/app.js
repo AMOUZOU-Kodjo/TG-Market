@@ -105,7 +105,7 @@ app.get('/api/public/reviews', async (_req, res) => {
 app.get('/api/settings/public', async (_req, res) => {
   try {
     const rows = await prisma.siteSetting.findMany({
-      where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode', 'support_email', 'maintenance_message', 'maintenance_estimated_return', 'maintenance_improvements', 'social_facebook', 'social_twitter', 'social_instagram'] } },
+      where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode', 'support_email', 'maintenance_message', 'maintenance_estimated_return', 'maintenance_improvements', 'social_facebook', 'social_twitter', 'social_instagram', 'social_linkedin'] } },
     });
     const map = {};
     for (const row of rows) map[row.key] = row.value;
@@ -121,6 +121,7 @@ app.get('/api/settings/public', async (_req, res) => {
       socialFacebook: map.social_facebook ?? 'https://facebook.com/tgmarket',
       socialTwitter: map.social_twitter ?? 'https://twitter.com/tgmarket',
       socialInstagram: map.social_instagram ?? 'https://instagram.com/tgmarket',
+      socialLinkedin: map.social_linkedin ?? 'https://linkedin.com/company/tgmarket',
     });
   } catch {
     res.json({ siteName: 'TG-Market', siteVersion: '1.0.0', siteDescription: '', maintenanceMode: false, supportEmail: 'support@akmarket.tg' });

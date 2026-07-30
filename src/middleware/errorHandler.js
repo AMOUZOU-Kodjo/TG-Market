@@ -10,6 +10,10 @@ export function errorHandler(err, req, res, _next) {
     }
   }
 
+  if (err.message?.includes('Seules les images')) {
+    return res.status(400).json({ error: err.message });
+  }
+
   if (err.message === 'Not allowed by CORS') {
     return res.status(403).json({ error: 'Origine non autorisée' });
   }

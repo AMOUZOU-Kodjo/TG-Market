@@ -68,6 +68,12 @@ enum EscrowStatus {
   cancelled
 }
 
+enum ReportStatus {
+  pending
+  dismissed
+  resolved
+}
+
 enum PaymentProvider {
   flooz
   tmoney

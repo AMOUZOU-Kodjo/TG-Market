@@ -90,13 +90,13 @@ export default function HistoryPage() {
 
   return (
     <div className="space-y-6">
-      <BackButton />
-      <div>
+      <div className="flex items-center gap-3 mb-1">
+        <BackButton />
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Historique</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+      </div>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 ml-10">
           Suivez et gérez vos ventes et achats
         </p>
-      </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-800">

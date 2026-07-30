@@ -336,78 +336,54 @@ export default function AdminListingsPage() {
             <p>Aucune annonce trouvée</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-100 text-left text-xs font-medium uppercase tracking-wider text-gray-400">
-                  <th className="px-6 py-3">Annonce</th>
-                  <th className="px-6 py-3 hidden md:table-cell">Prix</th>
-                  <th className="px-6 py-3 hidden lg:table-cell">Vendeur</th>
-                  <th className="px-6 py-3 hidden lg:table-cell">Catégorie</th>
-                  <th className="px-6 py-3">Statut</th>
-                  <th className="px-6 py-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {filtered.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-3">
-                      <p className="text-sm font-medium text-gray-900 truncate max-w-[200px]">{product.title}</p>
-                      <p className="text-xs text-gray-400 md:hidden">{formatCFA(product.price)}</p>
-                    </td>
-                    <td className="px-6 py-3 hidden md:table-cell text-sm text-gray-900 font-medium">{formatCFA(product.price)}</td>
-                    <td className="px-6 py-3 hidden lg:table-cell text-sm text-gray-500">
-                      {product.user?.firstName} {product.user?.lastName}
-                    </td>
-                    <td className="px-6 py-3 hidden lg:table-cell">
-                      <span className="text-xs text-gray-500">{product.category?.name}</span>
-                    </td>
-                    <td className="px-6 py-3">
-                      <Badge variant={statusColors[product.status] ?? "secondary"}>
-                        {statusLabels[product.status] ?? product.status}
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-3">
-                      <div className="flex items-center gap-1">
-                        {product.status !== "active" && (
-                          <button
-                            onClick={() => updateStatus.mutate({ id: product.id, status: "active" })}
-                            className="p-1.5 rounded-lg text-green-600 hover:bg-green-50 transition-colors"
-                            title="Approuver"
-                          >
-                            <CheckCircle className="w-4 h-4" />
-                          </button>
-                        )}
-                        {product.status !== "rejected" && (
-                          <button
-                            onClick={() => updateStatus.mutate({ id: product.id, status: "rejected" })}
-                            className="p-1.5 rounded-lg text-orange-500 hover:bg-orange-50 transition-colors"
-                            title="Rejeter"
-                          >
-                            <XCircle className="w-4 h-4" />
-                          </button>
-                        )}
-                        <button
-                          onClick={() => setViewProduct(product.id)}
-                          className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 transition-colors"
-                          title="Voir / Modifier"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => { if (confirm("Supprimer cette annonce ?")) deleteProduct.mutate(product.id); }}
-                          disabled={deleteProduct.isPending}
-                          className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-colors disabled:opacity-30"
-                          title="Supprimer"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4">
+            {filtered.map((product) => (
+              <div key={product.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col">
+                <div className="relative aspect-square bg-gray-100">
+                  {product.images?.[0] ? (
+                    <img src={product.images[0]} alt={product.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-gray-300"><Package className="w-10 h-10" /></div>
+                  )}
+                  <div className="absolute top-2 left-2">
+                    <Badge variant={statusColors[product.status] ?? "secondary"} size="sm">
+                      {statusLabels[product.status] ?? product.status}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="p-3 flex flex-col flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">{product.title}</p>
+                  <p className="text-xs text-gray-400 truncate mt-0.5">{product.user?.firstName} {product.user?.lastName}</p>
+                  <p className="text-sm font-bold text-brand-700 mt-1">{formatCFA(product.price)}</p>
+                  {product.category?.name && (
+                    <p className="text-[10px] text-gray-400 mt-0.5 truncate">{product.category.name}</p>
+                  )}
+                  <div className="flex items-center gap-1 mt-auto pt-2 border-t border-gray-100">
+                    {product.status !== "active" && (
+                      <button onClick={() => updateStatus.mutate({ id: product.id, status: "active" })}
+                        className="p-1.5 rounded-lg text-green-600 hover:bg-green-50 transition-colors" title="Approuver">
+                        <CheckCircle className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                    {product.status !== "rejected" && (
+                      <button onClick={() => updateStatus.mutate({ id: product.id, status: "rejected" })}
+                        className="p-1.5 rounded-lg text-orange-500 hover:bg-orange-50 transition-colors" title="Rejeter">
+                        <XCircle className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                    <button onClick={() => setViewProduct(product.id)}
+                      className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 transition-colors" title="Voir / Modifier">
+                      <Eye className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => { if (confirm("Supprimer cette annonce ?")) deleteProduct.mutate(product.id); }}
+                      disabled={deleteProduct.isPending}
+                      className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-colors disabled:opacity-30" title="Supprimer">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 

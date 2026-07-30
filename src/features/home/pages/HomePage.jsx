@@ -209,7 +209,7 @@ function HeroSection() {
   ];
 
   return (
-    <section className="relative h-100 overflow-hidden sm:h-162.5 lg:h-175">
+    <section className="relative h-70 overflow-hidden sm:h-80 lg:h-90">
       <style>{`
         .hero-swiper .swiper-pagination-bullet {
           width: 10px;
@@ -246,25 +246,25 @@ function HeroSection() {
 
       {/* <div className="absolute inset-0 flex  items-center justify-center px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}> */}
       <div className="absolute inset-0 flex items-start justify-center pt-24 sm:pt-10 px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}>
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="relative -left-80 top-20 rounded-3xl bg-white/80 p-3  mx-auto max-w-3xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Badge variant="secondary" size="md" className="mb-6 bg-white/20 text-white border-white/30">
+            {/* <Badge variant="secondary" size="md" className="mb-6 bg-white/20 text-white border-white/30">
               <Sparkles className="h-3 w-3" />
               Bienvenue au marché togolais
-            </Badge>
+            </Badge> */}
           </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl lg:text-6xl"
+            className="text-sm font-extrabold leading-tight text-black sm:text-xl md:text-2xl lg:text-3xl"
           >
-            Achetez et vendez au Togo,{" "}
+            Achetez et vendez au Togo,{" "} <br />
             <span className="relative">
               en toute simplicité
               <svg className="absolute -bottom-2 left-0 h-3 w-full" viewBox="0 0 200 12" fill="none">
@@ -273,39 +273,39 @@ function HeroSection() {
             </span>
           </motion.h1>
 
-          <motion.p
+          {/* <motion.p
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="mt-6 text-base text-white/80 hidden sm:block sm:text-lg lg:text-xl"
+            className="mt-6 text-base text-white/80 hidden sm:block sm:text-xl lg:text-md"
           >
             La première plateforme de marketplace au Togo. Trouvez des milliers d'articles d'occasion
             à prix imbattables ou vendez les vôtres en quelques clics.
-          </motion.p>
+          </motion.p> */}
 
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4"
+            className=" flex  flex-wrap items-center mt-3  justify-center gap-2 sm:gap-3"
           >
             <Link to="/vendre">
               <Button
                 size="xl"
-                icon={Send}
-                className="bg-white text-black hover:bg-white border-2 border-white/30 text-sm sm:text-base px-4 py-2 sm:px-6 sm:py-3"
+                // icon={Send}
+                className="bg-yellow-700 text-white  border-2 border-white/30 text-sm  px-4 py-2 sm:px-2 sm:py-2"
               >
                 Vendre un article
               </Button>
             </Link>
-            <Link to="/comment-ca-marche">
+            <Link to="/lots">
               <Button
                 size="xl"
-                icon={BookOpen}
+                // icon={BookOpen}
                 variant="outline"
-                className="border-white/40 text-white hover:bg-white/10 text-sm sm:text-base px-4 py-2 sm:px-6 sm:py-3"
+                className="border-black/60 text-black hover:bg-yellow/10 text-sm sm:text-base px-4 py-2 sm:px-2 sm:py-2"
               >
-                Comment ça marche
+                Voir les lots
               </Button>
             </Link>
           </motion.div>
@@ -314,24 +314,27 @@ function HeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.7, delay: 0.6 }}
-            className="mt-6 sm:mt-10 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-white/70"
+            className="mt-2  flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs sm:text-sm text-white/70"
           >
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-brand-300" />
+            <div className="flex items-center text-black gap-2">
+              <ShieldCheck className="h-4 w-4 text-gray-900" />
               <span>Paiement sécurisé</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-brand-300" />
+            <div className="flex items-center text-black gap-2">
+              <Users className="h-4 w-4 text-black" />
               <span>{stats?.totalUsers ? `${stats.totalUsers.toLocaleString("fr-FR")}+` : "5 000+"} utilisateurs</span>
             </div>
-            <div className="flex items-center gap-2">
-              <PackageCheck className="h-4 w-4 text-brand-300" />
+            <div className="flex items-center text-gray-900 gap-2">
+              <PackageCheck className="h-4 w-4 text-black" />
               <span>Livraison disponible</span>
             </div>
+            
           </motion.div>
         </div>
       </div>
+     
     </section>
+    
   );
 }
 
@@ -461,11 +464,11 @@ function PopularProductsSection() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-60px" }}
-      className="py-16 sm:py-20"
+      className="py-16 sm:py-5"
     >
       <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          title="Dernières annonces"
+          title="Disponibles en ce moment"
           subtitle="Les 30 produits les plus récemment publiés"
           action="/recherche?sort=newest"
         />
@@ -814,10 +817,12 @@ function PopularProductsSection() {
 export default function HomePage() {
   return (
     <div className="bg-white">
+      
       <HeroSection />
+      
       {/* <CategoriesSection /> */}
       {/* <RecentListingsSection /> */}
-      <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8 pt-8">
+      {/* <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8 pt-8">
         <Link
           to="/lots"
           className="inline-flex items-center gap-2 rounded-xl bg-brand-800 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-900"
@@ -825,7 +830,7 @@ export default function HomePage() {
           <Package className="h-4 w-4" />
           Voir les lots
         </Link>
-      </div>
+      </div> */}
       <PopularProductsSection />
       {/* <VerifiedSellersSection /> */}
       {/* <HowItWorksSection /> */}

@@ -338,8 +338,8 @@ export default function AdminListingsPage() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4">
             {filtered.map((product) => (
-              <div key={product.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col">
-                <div className="relative aspect-square bg-gray-100">
+              <div key={product.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col aspect-square">
+                <div className="flex-1 overflow-hidden bg-gray-100 min-h-0 relative">
                   {product.images?.[0] ? (
                     <img src={product.images[0]} alt={product.title} className="w-full h-full object-cover" />
                   ) : (
@@ -351,34 +351,31 @@ export default function AdminListingsPage() {
                     </Badge>
                   </div>
                 </div>
-                <div className="p-3 flex flex-col flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">{product.title}</p>
-                  <p className="text-xs text-gray-400 truncate mt-0.5">{product.user?.firstName} {product.user?.lastName}</p>
-                  <p className="text-sm font-bold text-brand-700 mt-1">{formatCFA(product.price)}</p>
-                  {product.category?.name && (
-                    <p className="text-[10px] text-gray-400 mt-0.5 truncate">{product.category.name}</p>
-                  )}
-                  <div className="flex items-center gap-1 mt-auto pt-2 border-t border-gray-100">
+                <div className="p-2 min-w-0">
+                  <p className="text-xs font-medium text-gray-900 truncate">{product.title}</p>
+                  <p className="text-[10px] text-gray-400 truncate">{product.user?.firstName} {product.user?.lastName}</p>
+                  <p className="text-xs font-bold text-brand-700 mt-0.5">{formatCFA(product.price)}</p>
+                  <div className="flex items-center justify-center gap-2 mt-1 pt-1 border-t border-gray-100">
                     {product.status !== "active" && (
                       <button onClick={() => updateStatus.mutate({ id: product.id, status: "active" })}
                         className="p-1.5 rounded-lg text-green-600 hover:bg-green-50 transition-colors" title="Approuver">
-                        <CheckCircle className="w-3.5 h-3.5" />
+                        <CheckCircle className="w-4 h-4" />
                       </button>
                     )}
                     {product.status !== "rejected" && (
                       <button onClick={() => updateStatus.mutate({ id: product.id, status: "rejected" })}
                         className="p-1.5 rounded-lg text-orange-500 hover:bg-orange-50 transition-colors" title="Rejeter">
-                        <XCircle className="w-3.5 h-3.5" />
+                        <XCircle className="w-4 h-4" />
                       </button>
                     )}
                     <button onClick={() => setViewProduct(product.id)}
                       className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 transition-colors" title="Voir / Modifier">
-                      <Eye className="w-3.5 h-3.5" />
+                      <Eye className="w-4 h-4" />
                     </button>
                     <button onClick={() => { if (confirm("Supprimer cette annonce ?")) deleteProduct.mutate(product.id); }}
                       disabled={deleteProduct.isPending}
                       className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-colors disabled:opacity-30" title="Supprimer">
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>

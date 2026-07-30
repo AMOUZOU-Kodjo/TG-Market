@@ -40,7 +40,9 @@ export default function AdminPaymentsPage() {
     },
   });
 
-  const transactions = data?.data ?? [];
+  const transactions = (data?.data ?? []).filter(
+    (t) => !["cancelled", "refunded"].includes(t.status)
+  );
   const meta = data?.meta;
 
   const statusColors = {
@@ -71,7 +73,7 @@ export default function AdminPaymentsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-gray-900">Paiements & Escrow</h1>
-        <span className="text-sm text-gray-400">{meta?.total ?? 0} transactions</span>
+        <span className="text-sm text-gray-400">{transactions.length} transactions</span>
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
@@ -85,64 +87,52 @@ export default function AdminPaymentsPage() {
             <p>Aucune transaction</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-100 text-left text-xs font-medium uppercase tracking-wider text-gray-400">
-                  <th className="px-6 py-3">Produit</th>
-                  <th className="px-6 py-3 hidden md:table-cell">Montant</th>
-                  <th className="px-6 py-3 hidden lg:table-cell">Frais</th>
-                  <th className="px-6 py-3 hidden lg:table-cell">Acheteur</th>
-                  <th className="px-6 py-3 hidden lg:table-cell">Vendeur</th>
-                  <th className="px-6 py-3">Statut</th>
-                  <th className="px-6 py-3">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {transactions.map((tx) => (
-                  <tr key={tx.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-3">
-                      <p className="text-sm font-medium text-gray-900 truncate max-w-[180px]">{tx.product?.title ?? "—"}</p>
-                      <p className="text-xs text-gray-400 md:hidden">{formatCFA(tx.amount)}</p>
-                    </td>
-                    <td className="px-6 py-3 hidden md:table-cell text-sm text-gray-900 font-medium">{formatCFA(tx.amount)}</td>
-                    <td className="px-6 py-3 hidden lg:table-cell text-sm text-gray-500">{formatCFA(tx.fee ?? 0)}</td>
-                    <td className="px-6 py-3 hidden lg:table-cell text-sm text-gray-500">
-                      {tx.buyer?.firstName} {tx.buyer?.lastName}
-                    </td>
-                    <td className="px-6 py-3 hidden lg:table-cell text-sm text-gray-500">
-                      {tx.seller?.firstName} {tx.seller?.lastName}
-                    </td>
-                    <td className="px-6 py-3">
-                      <Badge variant={statusColors[tx.status] ?? "secondary"}>
-                        {statusLabels[tx.status] ?? tx.status}
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-3">
-                      {tx.status === "awaiting_verification" && (
-                        <button
-                          onClick={() => verifyMutation.mutate(tx.id)}
-                          disabled={verifyMutation.isPending}
-                          className="flex items-center gap-1 rounded-lg bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700 transition-colors disabled:opacity-50"
-                        >
-                          {verifyMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle className="h-3.5 w-3.5" />}
-                          Vérifier
-                        </button>
-                      )}
-                      {tx.status === "pending" && (
-                        <button
-                          onClick={() => setConfirmEscrow(tx)}
-                          className="flex items-center gap-1 rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-700 transition-colors"
-                        >
-                          <CheckCircle className="h-3.5 w-3.5" />
-                          Créditer
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
+            {transactions.map((tx) => (
+              <div key={tx.id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 hover:shadow-md transition-shadow flex flex-col">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <p className="text-sm font-medium text-gray-900 truncate flex-1">{tx.product?.title ?? "—"}</p>
+                  <Badge variant={statusColors[tx.status] ?? "secondary"} size="sm" className="shrink-0">
+                    {statusLabels[tx.status] ?? tx.status}
+                  </Badge>
+                </div>
+                <div className="space-y-1 text-xs text-gray-500 flex-1">
+                  <div className="flex justify-between">
+                    <span>Montant</span>
+                    <span className="font-medium text-gray-900">{formatCFA(tx.amount)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Frais</span>
+                    <span className="font-medium text-gray-900">{formatCFA(tx.fee ?? 0)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Acheteur</span>
+                    <span className="text-gray-700 truncate max-w-[140px] text-right">{tx.buyer?.firstName} {tx.buyer?.lastName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Vendeur</span>
+                    <span className="text-gray-700 truncate max-w-[140px] text-right">{tx.seller?.firstName} {tx.seller?.lastName}</span>
+                  </div>
+                </div>
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  {tx.status === "awaiting_verification" && (
+                    <button onClick={() => verifyMutation.mutate(tx.id)}
+                      disabled={verifyMutation.isPending}
+                      className="w-full flex items-center justify-center gap-1 rounded-lg bg-green-600 px-3 py-2 text-xs font-medium text-white hover:bg-green-700 transition-colors disabled:opacity-50">
+                      {verifyMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle className="h-3.5 w-3.5" />}
+                      Vérifier
+                    </button>
+                  )}
+                  {tx.status === "pending" && (
+                    <button onClick={() => setConfirmEscrow(tx)}
+                      className="w-full flex items-center justify-center gap-1 rounded-lg bg-brand-600 px-3 py-2 text-xs font-medium text-white hover:bg-brand-700 transition-colors">
+                      <CheckCircle className="h-3.5 w-3.5" />
+                      Créditer
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         )}
 

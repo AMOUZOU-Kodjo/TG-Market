@@ -110,7 +110,7 @@ export default function MainLayout() {
     <div className="min-h-screen flex flex-col">
       <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors">
         {/* Sticky Header + Category Bar */}
-        <div className={`sticky top-0 z-50 relative ${location.pathname.startsWith("/vendeur/") || location.pathname.startsWith("/recherche") ? "hidden" : ""}`}>
+        <div className={`sticky top-0 z-50 relative ${location.pathname.startsWith("/vendeur/") || location.pathname.startsWith("/recherche") || location.pathname.startsWith("/a-propos") ? "hidden" : ""}`}>
           {/* Logo centered in combined header+category height */}
           <Link to="/" className="absolute left-4 sm:left-6 lg:left-8 top-1/3 -translate-y-1/2 z-50 hidden md:block">
             <Logo size="md" className="w-24 h-24" />

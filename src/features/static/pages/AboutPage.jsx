@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import { FaLinkedinIn, FaFacebookF, FaXTwitter, FaInstagram, FaGithub } from "react-icons/fa6";
 import {
   Heart,
@@ -68,11 +69,10 @@ const TEAM_FALLBACKS = [
 ];
 
 const timeline = [
-  { year: "2021", title: "L\u2019idée est née", description: "Face au manque de plateforme locale, les fondateurs imaginent un marketplace 100% togolais." },
-  { year: "2022", title: "Premier prototype", description: "L\u2019app est testée à Lomé avec 200 beta-testeurs. Les premières ventes ont lieu." },
-  { year: "2023", title: "Lancement officiel", description: "TG-Market est lancé publiquement. 5 000 utilisateurs en 3 mois." },
-  { year: "2024", title: "Expansion nationale", description: "Déploiement à Kara, Sokodé, Kpalimé et Atakpamé. 24 000 utilisateurs actifs." },
-  { year: "2025", title: "Paiement & Livraison", description: "Intégration Flooz, TMoney et livraison locale. Le séquestre s\u2019étoffe." },
+  { year: "2025", title: "Lancement officiel", description: "TG-Market est lancé publiquement à Lomé, connectant les premiers vendeurs et acheteurs togolais." },
+  { year: "2025", title: "Paiement Mobile", description: "Intégration de Flooz et TMoney. Les utilisateurs peuvent désormais payer directement depuis l\u2019application." },
+  { year: "2026", title: "Expansion nationale", description: "Déploiement à Kara, Sokodé, Kpalimé et Atakpamé. Plus de 24 000 utilisateurs actifs." },
+  { year: "2026", title: "Séquestre & Confiance", description: "Mise en place du système de séquestre et de livraison locale pour des transactions 100% sécurisées." },
 ];
 
 const features = [
@@ -109,6 +109,7 @@ const features = [
 ];
 
 export default function AboutPage() {
+  const navigate = useNavigate();
   const [openTimeline, setOpenTimeline] = useState(0);
   const { siteName, teamMembers } = useSiteSettings();
   const members = Array.isArray(teamMembers) && teamMembers.length > 0 ? teamMembers : TEAM_FALLBACKS;
@@ -143,6 +144,9 @@ export default function AboutPage() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-brand-800 px-4 py-24 text-white sm:px-6 lg:px-8">
+        <button onClick={() => navigate(-1)} className="absolute top-4 left-4 z-20 w-9 h-9 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-colors">
+          <ArrowLeft className="w-5 h-5" />
+        </button>
         <div className="absolute inset-0 grid h-full w-full grid-cols-3 gap-0 sm:grid-cols-4 md:grid-cols-6">
           {Array.from({ length: 18 }).map((_, i) => {
             const m = members[i % members.length];

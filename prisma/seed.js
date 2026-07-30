@@ -1,216 +1,506 @@
-// import 'dotenv/config';
-// import { PrismaClient } from '@prisma/client';
-// import bcrypt from 'bcryptjs';
-
-// const prisma = new PrismaClient();
-
-// // Mega-catégories (parents)
-// const megaCategories = [
-//   { name: "Multimédia", slug: "multimedia", icon: "Smartphone", color: "#3B82F6", sort_order: 1 },
-//   { name: "Véhicules", slug: "vehicules", icon: "Car", color: "#6366F1", sort_order: 2 },
-//   { name: "Maison", slug: "maison", icon: "Home", color: "#10B981", sort_order: 3 },
-//   { name: "Mode & Beauté", slug: "mode", icon: "Shirt", color: "#F59E0B", sort_order: 4 },
-//   { name: "Loisirs", slug: "loisirs", icon: "Gamepad2", color: "#EF4444", sort_order: 5 },
-//   { name: "Famille", slug: "famille", icon: "Baby", color: "#F97316", sort_order: 6 },
-//   { name: "Bricolage & Jardin", slug: "bricolage-jardin", icon: "Wrench", color: "#78716C", sort_order: 7 },
-//   { name: "Immobilier", slug: "immobilier", icon: "Building", color: "#2563EB", sort_order: 8 },
-//   { name: "Pro & Services", slug: "pro-services", icon: "Briefcase", color: "#7C3AED", sort_order: 9 },
-// ];
-
-// // Sous-catégories (enfants) liées à leur parent par slug
-// const subCategories = [
-//   // ── Multimédia ──
-//   { name: "Téléphones & Accessoires", slug: "telephones", icon: "Smartphone", color: "#2563EB", sort_order: 1, parentSlug: "multimedia" },
-//   { name: "Téléphonie portable", slug: "telephonie", icon: "Smartphone", color: "#1D4ED8", sort_order: 2, parentSlug: "multimedia" },
-//   { name: "Informatique", slug: "informatique", icon: "Laptop", color: "#8B5CF6", sort_order: 3, parentSlug: "multimedia" },
-//   { name: "Tablettes", slug: "tablettes", icon: "Tablet", color: "#7C3AED", sort_order: 4, parentSlug: "multimedia" },
-//   { name: "Électronique", slug: "electronique", icon: "Tv", color: "#EC4899", sort_order: 5, parentSlug: "multimedia" },
-//   { name: "Accessoires tech", slug: "accessoires-tech", icon: "Cable", color: "#64748B", sort_order: 6, parentSlug: "multimedia" },
-//   { name: "Appareils Photo & Vidéo", slug: "photo-video", icon: "Camera", color: "#D946EF", sort_order: 7, parentSlug: "multimedia" },
-//   { name: "Lunettes", slug: "lunettes", icon: "Glasses", color: "#1E293B", sort_order: 8, parentSlug: "multimedia" },
-
-//   // ── Véhicules ──
-//   { name: "Voitures", slug: "voitures", icon: "Car", color: "#2563EB", sort_order: 1, parentSlug: "vehicules" },
-//   { name: "Motos & Scooters", slug: "motos", icon: "Bike", color: "#F97316", sort_order: 2, parentSlug: "vehicules" },
-//   { name: "Vélos", slug: "velos", icon: "Bike", color: "#10B981", sort_order: 3, parentSlug: "vehicules" },
-
-//   // ── Maison ──
-//   { name: "Maison & Décoration", slug: "maison-decoration", icon: "Home", color: "#059669", sort_order: 1, parentSlug: "maison" },
-//   { name: "Meubles", slug: "meubles", icon: "Sofa", color: "#B45309", sort_order: 2, parentSlug: "maison" },
-//   { name: "Électroménager", slug: "electromenager", icon: "Refrigerator", color: "#0891B2", sort_order: 3, parentSlug: "maison" },
-
-//   // ── Mode & Beauté ──
-//   { name: "Vêtements & Mode", slug: "vetements", icon: "Shirt", color: "#F59E0B", sort_order: 1, parentSlug: "mode" },
-//   { name: "Vêtements Homme", slug: "vetements-homme", icon: "User", color: "#3B82F6", sort_order: 2, parentSlug: "mode" },
-//   { name: "Vêtements Femme", slug: "vetements-femme", icon: "Heart", color: "#EC4899", sort_order: 3, parentSlug: "mode" },
-//   { name: "Chaussures", slug: "chaussures", icon: "Footprints", color: "#F59E0B", sort_order: 4, parentSlug: "mode" },
-//   { name: "Maroquinerie & Sacs", slug: "maroquinerie", icon: "BaggageClaim", color: "#92400E", sort_order: 5, parentSlug: "mode" },
-//   { name: "Montres & Bijoux", slug: "montres", icon: "Watch", color: "#D4AF37", sort_order: 6, parentSlug: "mode" },
-//   { name: "Beauté & Santé", slug: "beaute", icon: "Sparkles", color: "#F472B6", sort_order: 7, parentSlug: "mode" },
-
-//   // ── Loisirs ──
-//   { name: "Sports & Loisirs", slug: "sports", icon: "Dumbbell", color: "#14B8A6", sort_order: 1, parentSlug: "loisirs" },
-//   { name: "Jeux & Jouets", slug: "jouets", icon: "Gamepad2", color: "#A855F7", sort_order: 2, parentSlug: "loisirs" },
-//   { name: "Livres & Médias", slug: "livres", icon: "BookOpen", color: "#0EA5E9", sort_order: 3, parentSlug: "loisirs" },
-//   { name: "Instruments de musique", slug: "musique", icon: "Music", color: "#D946EF", sort_order: 4, parentSlug: "loisirs" },
-//   { name: "Art & Artisanat", slug: "art", icon: "Palette", color: "#E11D48", sort_order: 5, parentSlug: "loisirs" },
-
-//   // ── Famille ──
-//   { name: "Enfants & Bébé", slug: "enfants", icon: "Baby", color: "#F97316", sort_order: 1, parentSlug: "famille" },
-//   { name: "Bébé & Puériculture", slug: "bebe", icon: "Heart", color: "#F472B6", sort_order: 2, parentSlug: "famille" },
-//   { name: "Animaux", slug: "animaux", icon: "PawPrint", color: "#84CC16", sort_order: 3, parentSlug: "famille" },
-
-//   // ── Bricolage & Jardin ──
-//   { name: "Outillage & Bricolage", slug: "outils", icon: "Wrench", color: "#78716C", sort_order: 1, parentSlug: "bricolage-jardin" },
-//   { name: "Jardin & Extérieur", slug: "jardin", icon: "TreePine", color: "#059669", sort_order: 2, parentSlug: "bricolage-jardin" },
-//   { name: "Énergie & Solaire", slug: "energie-solaire", icon: "Sun", color: "#CA8A04", sort_order: 3, parentSlug: "bricolage-jardin" },
-
-//   // ── Immobilier ──
-//   { name: "Appartements & Maisons", slug: "appartements", icon: "Building", color: "#2563EB", sort_order: 1, parentSlug: "immobilier" },
-//   { name: "Terrains", slug: "terrains", icon: "TreePine", color: "#059669", sort_order: 2, parentSlug: "immobilier" },
-//   { name: "Bureaux & Commerces", slug: "bureaux", icon: "Building2", color: "#6366F1", sort_order: 3, parentSlug: "immobilier" },
-
-//   // ── Pro & Services ──
-//   { name: "Services", slug: "services", icon: "Briefcase", color: "#7C3AED", sort_order: 1, parentSlug: "pro-services" },
-//   { name: "Emploi & Formation", slug: "emploi", icon: "GraduationCap", color: "#0D9488", sort_order: 2, parentSlug: "pro-services" },
-//   { name: "Équipement Professionnel", slug: "equipement-pro", icon: "Briefcase", color: "#475569", sort_order: 3, parentSlug: "pro-services" },
-//   { name: "Alimentation & Boissons", slug: "alimentation", icon: "Coffee", color: "#CA8A04", sort_order: 4, parentSlug: "pro-services" },
-//   { name: "Événementiel", slug: "evenements", icon: "Calendar", color: "#DC2626", sort_order: 5, parentSlug: "pro-services" },
-//   { name: "Divers", slug: "divers", icon: "Package", color: "#6B7280", sort_order: 6, parentSlug: "pro-services" },
-// ];
-
-// const faqs = [
-//   { question: "Comment créer une annonce ?", answer: "Cliquez sur 'Vendre' dans le menu, remplissez le formulaire avec les détails de votre article, ajoutez des photos et publiez. C'est gratuit !", category: "annonces", sort_order: 1 },
-//   { question: "Comment contacter un vendeur ?", answer: "Sur la page d'une annonce, cliquez sur 'Contacter le vendeur' pour démarrer une conversation. Vous devez être connecté.", category: "annonces", sort_order: 2 },
-//   { question: "Les frais de commission sont-ils obligatoires ?", answer: "TG-Market prend une commission de 5% uniquement sur les transactions sécurisées (séquestre). La publication d'annonces est gratuite.", category: "paiements", sort_order: 3 },
-//   { question: "Comment fonctionne le paiement séquestre ?", answer: "L'acheteur paie, les fonds sont bloqués. Une fois la livraison confirmée, les fonds sont libérés au vendeur (moins 5% de commission). En cas de litige, notre équipe intervient.", category: "paiements", sort_order: 4 },
-//   { question: "Comment devenir vendeur vérifié ?", answer: "Passez la vérification KYC dans votre profil : vérifiez votre téléphone par OTP, puis soumettez une pièce d'identité et un selfie.", category: "compte", sort_order: 5 },
-//   { question: "Comment modifier mon profil ?", answer: "Allez dans Paramètres > Profil pour modifier vos informations personnelles, photo, bio et préférences.", category: "compte", sort_order: 6 },
-//   { question: "Comment ajouter un favori ?", answer: "Cliquez sur l'icône cœur sur n'importe quelle annonce pour l'ajouter à vos favoris. Retrouvez-les dans l'onglet Favoris.", category: "annonces", sort_order: 7 },
-//   { question: "Comment modifier ou supprimer une annonce ?", answer: "Dans votre tableau de bord, allez dans 'Mes annonces', cliquez sur l'annonce concernée et choisissez Modifier ou Supprimer.", category: "annonces", sort_order: 8 },
-//   { question: "Comment retirer mes gains ?", answer: "Allez dans Portefeuille > Retrait, choisissez votre moyen de paiement (Flooz, TMoney, Mobile Money) et entrez le montant. Le minimum est de 1 000 FCFA.", category: "paiements", sort_order: 9 },
-//   { question: "Comment signaler une annonce suspecte ?", answer: "Sur la page de l'annonce, cliquez sur 'Signaler' et sélectionnez le motif. Notre équipe examinera le signalement dans les 24h.", category: "securite", sort_order: 10 },
-//   { question: "Puis-je utiliser TG-Market en dehors du Togo ?", answer: "TG-Market est actuellement disponible uniquement au Togo. Nous prévoyons d'élargir à d'autres pays d'Afrique de l'Ouest prochainement.", category: "generale", sort_order: 11 },
-//   { question: "Comment contacter le support ?", answer: "Envoyez-nous un email à support@tgmarket.tg ou utilisez la page Contact. Nous répondons sous 24h.", category: "generale", sort_order: 12 },
-// ];
-
-// async function main() {
-//   console.log('🌱 Seeding database...');
-
-//   // 1. Admin user
-//   const adminPassword = await bcrypt.hash('Admin@TGMarket2026', 12);
-//   await prisma.user.upsert({
-//     where: { email: 'admin@tgmarket.tg' },
-//     update: {},
-//     create: {
-//       first_name: 'Admin',
-//       last_name: 'TG-Market',
-//       email: 'admin@tgmarket.tg',
-//       phone: '+22890000000',
-//       password: adminPassword,
-//       city: 'Lomé',
-//       role: 'admin',
-//       email_verified_at: new Date(),
-//       phone_verified_at: new Date(),
-//     },
-//   });
-//   console.log('✓ Admin user created');
-
-//   // 2. Mega-categories (parents)
-//   for (const cat of megaCategories) {
-//     await prisma.category.upsert({
-//       where: { slug: cat.slug },
-//       update: { name: cat.name, icon: cat.icon, color: cat.color, sort_order: cat.sort_order },
-//       create: cat,
-//     });
-//   }
-//   console.log(`✓ ${megaCategories.length} mega-categories seeded`);
-
-//   // 3. Sub-categories (children)
-//   for (const sub of subCategories) {
-//     const parent = await prisma.category.findUnique({ where: { slug: sub.parentSlug } });
-//     if (!parent) {
-//       console.warn(`⚠ Parent not found for slug "${sub.parentSlug}", skipping "${sub.name}"`);
-//       continue;
-//     }
-//     const { parentSlug, ...data } = sub;
-//     await prisma.category.upsert({
-//       where: { slug: data.slug },
-//       update: { ...data, parent_id: parent.id },
-//       create: { ...data, parent_id: parent.id },
-//     });
-//   }
-//   console.log(`✓ ${subCategories.length} sub-categories seeded`);
-
-//   // 4. FAQs
-//   await prisma.faq.deleteMany({});
-//   for (const faq of faqs) {
-//     await prisma.faq.create({ data: faq });
-//   }
-//   console.log(`✓ ${faqs.length} FAQs seeded`);
-
-//   console.log('🌱 Seed completed!');
-// }
-
-// main()
-//   .catch((e) => {
-//     console.error('Seed error:', e);
-//     process.exit(1);
-//   })
-//   .finally(() => prisma.$disconnect());
-// prisma/seed.js
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
-// ✅ FORCER l'utilisation de DATABASE_URL
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL
-    }
-  }
-});
+const prisma = new PrismaClient();
 
-// ... le reste de votre code reste identique ...
-
-// Mega-catégories (parents)
 const megaCategories = [
-  { name: "Multimédia", slug: "multimedia", icon: "Smartphone", color: "#3B82F6", sort_order: 1 },
-  // ... etc (gardez votre code existant)
+  { name: "Multimédia & Électronique", slug: "multimedia-electronique", icon: "Smartphone", color: "#01796F", sort_order: 1 },
+  { name: "Véhicules & Accessoires", slug: "vehicules-accessoires", icon: "Car", color: "#01796F", sort_order: 2 },
+  { name: "Mode & Accessoires", slug: "mode-accessoires", icon: "Shirt", color: "#01796F", sort_order: 3 },
+  { name: "Maison & Décoration", slug: "maison-decoration", icon: "Home", color: "#01796F", sort_order: 4 },
+  { name: "Sports & Loisirs", slug: "sports-loisirs", icon: "Dumbbell", color: "#01796F", sort_order: 5 },
+  { name: "Enfants & Bébés", slug: "enfants-bebes", icon: "Baby", color: "#01796F", sort_order: 6 },
+  { name: "Santé & Beauté", slug: "sante-beaute", icon: "Sparkles", color: "#01796F", sort_order: 7 },
+  { name: "Bricolage & Jardin", slug: "bricolage-jardin", icon: "Wrench", color: "#01796F", sort_order: 8 },
+  { name: "Animaux domestiques", slug: "animaux-domestiques", icon: "PawPrint", color: "#01796F", sort_order: 9 },
+  { name: "Services & Professionnel", slug: "services-professionnel", icon: "Briefcase", color: "#01796F", sort_order: 10 },
 ];
 
-// ... tout le reste du code reste le même ...
+const subCategories = [
+  { name: "Téléphones & Smartphones", slug: "telephones-smartphones", icon: "Smartphone", color: "#01796F", sort_order: 1, parentSlug: "multimedia-electronique" },
+  { name: "Ordinateurs & Tablettes", slug: "ordinateurs-tablettes", icon: "Laptop", color: "#01796F", sort_order: 2, parentSlug: "multimedia-electronique" },
+  { name: "TV, Audio & Vidéo", slug: "tv-audio-video", icon: "Tv", color: "#01796F", sort_order: 3, parentSlug: "multimedia-electronique" },
+  { name: "Jeux Vidéo & Consoles", slug: "jeux-video-consoles", icon: "Gamepad2", color: "#01796F", sort_order: 4, parentSlug: "multimedia-electronique" },
+  { name: "Appareils Photo & Caméras", slug: "appareils-photo-cameras", icon: "Camera", color: "#01796F", sort_order: 5, parentSlug: "multimedia-electronique" },
+  { name: "Accessoires Multimédia", slug: "accessoires-multimedia", icon: "Cable", color: "#01796F", sort_order: 6, parentSlug: "multimedia-electronique" },
+  { name: "Voitures d'occasion", slug: "autos-occasion", icon: "Car", color: "#01796F", sort_order: 1, parentSlug: "vehicules-accessoires" },
+  { name: "Motos & Cyclos", slug: "motos-cyclos", icon: "Bike", color: "#01796F", sort_order: 2, parentSlug: "vehicules-accessoires" },
+  { name: "Pièces détachées", slug: "pieces-detachees", icon: "Wrench", color: "#01796F", sort_order: 3, parentSlug: "vehicules-accessoires" },
+  { name: "Accessoires auto", slug: "accessoires-auto", icon: "Car", color: "#01796F", sort_order: 4, parentSlug: "vehicules-accessoires" },
+  { name: "Pneus & Jantes", slug: "pneus-jantes", icon: "CircleDot", color: "#01796F", sort_order: 5, parentSlug: "vehicules-accessoires" },
+  { name: "Équipements intérieur auto", slug: "equipements-interieur-auto", icon: "Car", color: "#01796F", sort_order: 6, parentSlug: "vehicules-accessoires" },
+  { name: "Vêtements Homme", slug: "vetements-homme", icon: "User", color: "#01796F", sort_order: 1, parentSlug: "mode-accessoires" },
+  { name: "Vêtements Femme", slug: "vetements-femme", icon: "Heart", color: "#01796F", sort_order: 2, parentSlug: "mode-accessoires" },
+  { name: "Chaussures", slug: "chaussures-mode", icon: "Footprints", color: "#01796F", sort_order: 3, parentSlug: "mode-accessoires" },
+  { name: "Sacs & Maroquinerie", slug: "sacs-maroquinerie", icon: "BaggageClaim", color: "#01796F", sort_order: 4, parentSlug: "mode-accessoires" },
+  { name: "Montres & Bijoux", slug: "montres-bijoux", icon: "Watch", color: "#01796F", sort_order: 5, parentSlug: "mode-accessoires" },
+  { name: "Accessoires", slug: "accessoires-mode", icon: "Glasses", color: "#01796F", sort_order: 6, parentSlug: "mode-accessoires" },
+  { name: "Meubles", slug: "meubles", icon: "Sofa", color: "#01796F", sort_order: 1, parentSlug: "maison-decoration" },
+  { name: "Électroménager", slug: "electromenager-neuf", icon: "Refrigerator", color: "#01796F", sort_order: 2, parentSlug: "maison-decoration" },
+  { name: "Décoration & Art", slug: "decoration-art", icon: "Palette", color: "#01796F", sort_order: 3, parentSlug: "maison-decoration" },
+  { name: "Linge de maison", slug: "linge-maison", icon: "Package", color: "#01796F", sort_order: 4, parentSlug: "maison-decoration" },
+  { name: "Ustensiles de cuisine", slug: "ustensiles-cuisine", icon: "CookingPot", color: "#01796F", sort_order: 5, parentSlug: "maison-decoration" },
+  { name: "Cuisine & Gastronomie", slug: "cuisine-gastronomie", icon: "ChefHat", color: "#01796F", sort_order: 6, parentSlug: "maison-decoration" },
+  { name: "Équipement sportif", slug: "equipement-sportif", icon: "Dumbbell", color: "#01796F", sort_order: 1, parentSlug: "sports-loisirs" },
+  { name: "Vélos & Trottinettes", slug: "velos-trottinettes", icon: "Bike", color: "#01796F", sort_order: 2, parentSlug: "sports-loisirs" },
+  { name: "Camping & Randonnée", slug: "camping-randonnee", icon: "TreePine", color: "#01796F", sort_order: 3, parentSlug: "sports-loisirs" },
+  { name: "Livres & Revues", slug: "livres-revues", icon: "BookOpen", color: "#01796F", sort_order: 4, parentSlug: "sports-loisirs" },
+  { name: "Instruments de musique", slug: "instruments-musique", icon: "Music", color: "#01796F", sort_order: 5, parentSlug: "sports-loisirs" },
+  { name: "Fitness & Yoga", slug: "fitness-yoga", icon: "Dumbbell", color: "#01796F", sort_order: 6, parentSlug: "sports-loisirs" },
+  { name: "Vêtements bébé & enfant", slug: "vetements-bebe-enfant", icon: "Baby", color: "#01796F", sort_order: 1, parentSlug: "enfants-bebes" },
+  { name: "Poussettes & Sièges auto", slug: "poussettes-sieges-auto", icon: "Baby", color: "#01796F", sort_order: 2, parentSlug: "enfants-bebes" },
+  { name: "Lits bébé & Meubles", slug: "lits-bebe-meubles", icon: "Bed", color: "#01796F", sort_order: 3, parentSlug: "enfants-bebes" },
+  { name: "Jouets & Jeux d'éveil", slug: "jouets-jeux-eveil", icon: "Blocks", color: "#01796F", sort_order: 4, parentSlug: "enfants-bebes" },
+  { name: "Puériculture & Allaitement", slug: "puericulture-allaitement", icon: "Baby", color: "#01796F", sort_order: 5, parentSlug: "enfants-bebes" },
+  { name: "Scolaire & Éveil", slug: "scolaire-eveil", icon: "Backpack", color: "#01796F", sort_order: 6, parentSlug: "enfants-bebes" },
+  { name: "Soins du visage & Corps", slug: "soins-visage-corps", icon: "Sparkles", color: "#01796F", sort_order: 1, parentSlug: "sante-beaute" },
+  { name: "Maquillage", slug: "maquillage", icon: "Sparkles", color: "#01796F", sort_order: 2, parentSlug: "sante-beaute" },
+  { name: "Parfums", slug: "parfums", icon: "Sparkles", color: "#01796F", sort_order: 3, parentSlug: "sante-beaute" },
+  { name: "Coiffure & Accessoires", slug: "coiffure-accessoires", icon: "Scissors", color: "#01796F", sort_order: 4, parentSlug: "sante-beaute" },
+  { name: "Soins dentaires & Optique", slug: "soins-dentaires-optique", icon: "Eye", color: "#01796F", sort_order: 5, parentSlug: "sante-beaute" },
+  { name: "Bien-être & Minceur", slug: "bien-etre-minceur", icon: "Heart", color: "#01796F", sort_order: 6, parentSlug: "sante-beaute" },
+  { name: "Outillage", slug: "outillage", icon: "Wrench", color: "#01796F", sort_order: 1, parentSlug: "bricolage-jardin" },
+  { name: "Jardin & Extérieur", slug: "jardin-exterieur", icon: "TreePine", color: "#01796F", sort_order: 2, parentSlug: "bricolage-jardin" },
+  { name: "Plomberie & Électricité", slug: "plomberie-electricite", icon: "Wrench", color: "#01796F", sort_order: 3, parentSlug: "bricolage-jardin" },
+  { name: "Peinture & Revêtements", slug: "peinture-revetements", icon: "Paintbrush", color: "#01796F", sort_order: 4, parentSlug: "bricolage-jardin" },
+  { name: "Quincaillerie", slug: "quincaillerie", icon: "Wrench", color: "#01796F", sort_order: 5, parentSlug: "bricolage-jardin" },
+  { name: "Sécurité & Éclairage", slug: "securite-eclairage", icon: "Shield", color: "#01796F", sort_order: 6, parentSlug: "bricolage-jardin" },
+  { name: "Chiens", slug: "chiens", icon: "Dog", color: "#01796F", sort_order: 1, parentSlug: "animaux-domestiques" },
+  { name: "Chats", slug: "chats", icon: "PawPrint", color: "#01796F", sort_order: 2, parentSlug: "animaux-domestiques" },
+  { name: "Oiseaux & Rongeurs", slug: "oiseaux-rongeurs", icon: "PawPrint", color: "#01796F", sort_order: 3, parentSlug: "animaux-domestiques" },
+  { name: "Accessoires & Alimentation", slug: "accessoires-alimentation-animaux", icon: "Dog", color: "#01796F", sort_order: 4, parentSlug: "animaux-domestiques" },
+  { name: "Poissons & Aquariophilie", slug: "poissons-aquariophilie", icon: "Fish", color: "#01796F", sort_order: 5, parentSlug: "animaux-domestiques" },
+  { name: "Lapins & Rongeurs", slug: "lapins-rongeurs", icon: "Rabbit", color: "#01796F", sort_order: 6, parentSlug: "animaux-domestiques" },
+  { name: "Services aux particuliers", slug: "services-particuliers", icon: "Briefcase", color: "#01796F", sort_order: 1, parentSlug: "services-professionnel" },
+  { name: "Services aux entreprises", slug: "services-entreprises", icon: "Briefcase", color: "#01796F", sort_order: 2, parentSlug: "services-professionnel" },
+  { name: "Matériel professionnel", slug: "materiel-professionnel", icon: "Briefcase", color: "#01796F", sort_order: 3, parentSlug: "services-professionnel" },
+  { name: "Services informatiques", slug: "services-informatiques", icon: "Monitor", color: "#01796F", sort_order: 4, parentSlug: "services-professionnel" },
+  { name: "Services domestiques", slug: "services-domestiques", icon: "Home", color: "#01796F", sort_order: 5, parentSlug: "services-professionnel" },
+  { name: "Transport & Déménagement", slug: "transport-demenagement", icon: "Truck", color: "#01796F", sort_order: 6, parentSlug: "services-professionnel" },
+];
+
+const leafCategories = [
+  { name: "Samsung Galaxy", slug: "samsung-galaxy", icon: "Circle", color: "#01796F", sort_order: 158, parentSlug: "telephones-smartphones" },
+  { name: "iPhone", slug: "iphone", icon: "Circle", color: "#01796F", sort_order: 159, parentSlug: "telephones-smartphones" },
+  { name: "Tecno & Itel", slug: "tecno-itel", icon: "Circle", color: "#01796F", sort_order: 160, parentSlug: "telephones-smartphones" },
+  { name: "Xiaomi & Redmi", slug: "xiaomi-redmi", icon: "Circle", color: "#01796F", sort_order: 161, parentSlug: "telephones-smartphones" },
+  { name: "Nokia & Autres marques", slug: "nokia-autres-marques", icon: "Circle", color: "#01796F", sort_order: 162, parentSlug: "telephones-smartphones" },
+  { name: "Smartphones reconditionnés", slug: "smartphones-reconditionnes", icon: "Circle", color: "#01796F", sort_order: 163, parentSlug: "telephones-smartphones" },
+  { name: "PC Portables", slug: "pc-portables", icon: "Laptop", color: "#01796F", sort_order: 1, parentSlug: "ordinateurs-tablettes" },
+  { name: "PC de Bureau", slug: "pc-bureau", icon: "Monitor", color: "#01796F", sort_order: 2, parentSlug: "ordinateurs-tablettes" },
+  { name: "Tablettes", slug: "tablettes", icon: "Tablet", color: "#01796F", sort_order: 3, parentSlug: "ordinateurs-tablettes" },
+  { name: "MacBook & Apple", slug: "macbook-apple", icon: "Circle", color: "#01796F", sort_order: 164, parentSlug: "ordinateurs-tablettes" },
+  { name: "Moniteurs & Écrans", slug: "moniteurs-ecrans", icon: "Circle", color: "#01796F", sort_order: 165, parentSlug: "ordinateurs-tablettes" },
+  { name: "Claviers & Souris", slug: "claviers-souris", icon: "Circle", color: "#01796F", sort_order: 166, parentSlug: "ordinateurs-tablettes" },
+  { name: "Téléviseurs", slug: "televiseurs", icon: "Tv", color: "#01796F", sort_order: 1, parentSlug: "tv-audio-video" },
+  { name: "Chaînes Hifi & Enceintes", slug: "chaines-hifi-enceintes", icon: "Music", color: "#01796F", sort_order: 2, parentSlug: "tv-audio-video" },
+  { name: "Casques & Écouteurs", slug: "casques-ecouteurs", icon: "Headphones", color: "#01796F", sort_order: 3, parentSlug: "tv-audio-video" },
+  { name: "Home Cinéma", slug: "home-cinema", icon: "Circle", color: "#01796F", sort_order: 167, parentSlug: "tv-audio-video" },
+  { name: "Barres de son", slug: "barres-de-son", icon: "Circle", color: "#01796F", sort_order: 168, parentSlug: "tv-audio-video" },
+  { name: "Amplificateurs", slug: "amplificateurs", icon: "Circle", color: "#01796F", sort_order: 169, parentSlug: "tv-audio-video" },
+  { name: "PlayStation", slug: "playstation", icon: "Gamepad2", color: "#01796F", sort_order: 1, parentSlug: "jeux-video-consoles" },
+  { name: "Xbox", slug: "xbox", icon: "Gamepad2", color: "#01796F", sort_order: 2, parentSlug: "jeux-video-consoles" },
+  { name: "Nintendo", slug: "nintendo", icon: "Gamepad2", color: "#01796F", sort_order: 3, parentSlug: "jeux-video-consoles" },
+  { name: "Jeux PC", slug: "jeux-pc", icon: "Circle", color: "#01796F", sort_order: 170, parentSlug: "jeux-video-consoles" },
+  { name: "Accessoires gaming", slug: "accessoires-gaming", icon: "Circle", color: "#01796F", sort_order: 171, parentSlug: "jeux-video-consoles" },
+  { name: "Sièges & Simulateurs", slug: "sieges-simulateurs", icon: "Circle", color: "#01796F", sort_order: 172, parentSlug: "jeux-video-consoles" },
+  { name: "Appareils photo numériques", slug: "appareils-photo-numeriques", icon: "Circle", color: "#01796F", sort_order: 173, parentSlug: "appareils-photo-cameras" },
+  { name: "Objectifs", slug: "objectifs", icon: "Circle", color: "#01796F", sort_order: 174, parentSlug: "appareils-photo-cameras" },
+  { name: "Trépieds & Stabilisateurs", slug: "trepieds-stabilisateurs", icon: "Circle", color: "#01796F", sort_order: 175, parentSlug: "appareils-photo-cameras" },
+  { name: "Drones & Accessoires", slug: "drones-accessoires", icon: "Circle", color: "#01796F", sort_order: 176, parentSlug: "appareils-photo-cameras" },
+  { name: "Caméras d'action", slug: "cameras-d-action", icon: "Circle", color: "#01796F", sort_order: 177, parentSlug: "appareils-photo-cameras" },
+  { name: "Accessoires photo", slug: "accessoires-photo", icon: "Circle", color: "#01796F", sort_order: 178, parentSlug: "appareils-photo-cameras" },
+  { name: "Coques & Protecteurs", slug: "coques-protecteurs", icon: "Smartphone", color: "#01796F", sort_order: 1, parentSlug: "accessoires-multimedia" },
+  { name: "Chargeurs & Câbles", slug: "chargeurs-cables", icon: "Cable", color: "#01796F", sort_order: 2, parentSlug: "accessoires-multimedia" },
+  { name: "Cartes mémoire & Disques durs", slug: "cartes-memoire-disques", icon: "Package", color: "#01796F", sort_order: 3, parentSlug: "accessoires-multimedia" },
+  { name: "Supports & Stations d'accueil", slug: "supports-stations-d-accueil", icon: "Circle", color: "#01796F", sort_order: 179, parentSlug: "accessoires-multimedia" },
+  { name: "Écouteurs Bluetooth", slug: "ecouteurs-bluetooth", icon: "Circle", color: "#01796F", sort_order: 180, parentSlug: "accessoires-multimedia" },
+  { name: "Power Banks", slug: "power-banks", icon: "Circle", color: "#01796F", sort_order: 181, parentSlug: "accessoires-multimedia" },
+  { name: "Berlines", slug: "berlines", icon: "Car", color: "#01796F", sort_order: 1, parentSlug: "autos-occasion" },
+  { name: "4x4 / SUV", slug: "4x4-suv", icon: "Car", color: "#01796F", sort_order: 2, parentSlug: "autos-occasion" },
+  { name: "Utility / Pick-up", slug: "utility-pickup", icon: "Truck", color: "#01796F", sort_order: 3, parentSlug: "autos-occasion" },
+  { name: "Citadines", slug: "citadines", icon: "Circle", color: "#01796F", sort_order: 182, parentSlug: "autos-occasion" },
+  { name: "Berlines de luxe", slug: "berlines-de-luxe", icon: "Circle", color: "#01796F", sort_order: 183, parentSlug: "autos-occasion" },
+  { name: "Break & Familiales", slug: "break-familiales", icon: "Circle", color: "#01796F", sort_order: 184, parentSlug: "autos-occasion" },
+  { name: "Motos tout-terrain", slug: "motos-tout-terrain", icon: "Circle", color: "#01796F", sort_order: 185, parentSlug: "motos-cyclos" },
+  { name: "Scooters", slug: "scooters", icon: "Circle", color: "#01796F", sort_order: 186, parentSlug: "motos-cyclos" },
+  { name: "Cyclomoteurs", slug: "cyclomoteurs", icon: "Circle", color: "#01796F", sort_order: 187, parentSlug: "motos-cyclos" },
+  { name: "Casques & Protections", slug: "casques-protections", icon: "Circle", color: "#01796F", sort_order: 188, parentSlug: "motos-cyclos" },
+  { name: "Pièces moto", slug: "pieces-moto", icon: "Circle", color: "#01796F", sort_order: 189, parentSlug: "motos-cyclos" },
+  { name: "Accessoires moto", slug: "accessoires-moto", icon: "Circle", color: "#01796F", sort_order: 190, parentSlug: "motos-cyclos" },
+  { name: "Moteurs & Boîtes", slug: "moteurs-boites", icon: "Circle", color: "#01796F", sort_order: 191, parentSlug: "pieces-detachees" },
+  { name: "Freins & Embrayages", slug: "freins-embrayages", icon: "Circle", color: "#01796F", sort_order: 192, parentSlug: "pieces-detachees" },
+  { name: "Suspensions & Amortisseurs", slug: "suspensions-amortisseurs", icon: "Circle", color: "#01796F", sort_order: 193, parentSlug: "pieces-detachees" },
+  { name: "Échappements", slug: "echappements", icon: "Circle", color: "#01796F", sort_order: 194, parentSlug: "pieces-detachees" },
+  { name: "Alternateurs & Batteries", slug: "alternateurs-batteries", icon: "Circle", color: "#01796F", sort_order: 195, parentSlug: "pieces-detachees" },
+  { name: "Filtres & Courroies", slug: "filtres-courroies", icon: "Circle", color: "#01796F", sort_order: 196, parentSlug: "pieces-detachees" },
+  { name: "Antivols & Sécurité", slug: "antivols-securite", icon: "Circle", color: "#01796F", sort_order: 197, parentSlug: "accessoires-auto" },
+  { name: "Galerie & Coffre de toit", slug: "galerie-coffre-de-toit", icon: "Circle", color: "#01796F", sort_order: 198, parentSlug: "accessoires-auto" },
+  { name: "Support téléphone", slug: "support-telephone", icon: "Circle", color: "#01796F", sort_order: 199, parentSlug: "accessoires-auto" },
+  { name: "Chargeurs voiture", slug: "chargeurs-voiture", icon: "Circle", color: "#01796F", sort_order: 200, parentSlug: "accessoires-auto" },
+  { name: "Kits de premiers secours", slug: "kits-de-premiers-secours", icon: "Circle", color: "#01796F", sort_order: 201, parentSlug: "accessoires-auto" },
+  { name: "Câbles de démarrage", slug: "cables-de-demarrage", icon: "Circle", color: "#01796F", sort_order: 202, parentSlug: "accessoires-auto" },
+  { name: "Pneus été", slug: "pneus-ete", icon: "Circle", color: "#01796F", sort_order: 1, parentSlug: "pneus-jantes" },
+  { name: "Pneus toutes saisons", slug: "pneus-toutes-saisons", icon: "Circle", color: "#01796F", sort_order: 2, parentSlug: "pneus-jantes" },
+  { name: "Jantes aluminium", slug: "jantes-aluminium", icon: "Circle", color: "#01796F", sort_order: 3, parentSlug: "pneus-jantes" },
+  { name: "Jantes tôle", slug: "jantes-tole", icon: "Circle", color: "#01796F", sort_order: 4, parentSlug: "pneus-jantes" },
+  { name: "Enjoliveurs", slug: "enjoliveurs", icon: "Circle", color: "#01796F", sort_order: 5, parentSlug: "pneus-jantes" },
+  { name: "Valves & Accessoires", slug: "valves-accessoires", icon: "Circle", color: "#01796F", sort_order: 6, parentSlug: "pneus-jantes" },
+  { name: "Sièges & Housses", slug: "sieges-housses", icon: "Circle", color: "#01796F", sort_order: 1, parentSlug: "equipements-interieur-auto" },
+  { name: "Tapis de sol", slug: "tapis-de-sol", icon: "Circle", color: "#01796F", sort_order: 2, parentSlug: "equipements-interieur-auto" },
+  { name: "Volants & Accessoires", slug: "volants-accessoires", icon: "Circle", color: "#01796F", sort_order: 3, parentSlug: "equipements-interieur-auto" },
+  { name: "Autoradios & GPS", slug: "autoradios-gps", icon: "Circle", color: "#01796F", sort_order: 4, parentSlug: "equipements-interieur-auto" },
+  { name: "Parfums auto", slug: "parfums-auto", icon: "Circle", color: "#01796F", sort_order: 5, parentSlug: "equipements-interieur-auto" },
+  { name: "Organiseurs & Rangements", slug: "organiseurs-rangements", icon: "Circle", color: "#01796F", sort_order: 6, parentSlug: "equipements-interieur-auto" },
+  { name: "Chemises & Polo", slug: "chemises-polo", icon: "Circle", color: "#01796F", sort_order: 203, parentSlug: "vetements-homme" },
+  { name: "T-shirts & Débardeurs", slug: "t-shirts-debardeurs", icon: "Circle", color: "#01796F", sort_order: 204, parentSlug: "vetements-homme" },
+  { name: "Costumes & Vestes", slug: "costumes-vestes", icon: "Circle", color: "#01796F", sort_order: 205, parentSlug: "vetements-homme" },
+  { name: "Jeans & Pantalons", slug: "jeans-pantalons", icon: "Circle", color: "#01796F", sort_order: 206, parentSlug: "vetements-homme" },
+  { name: "Shorts & Bermudas", slug: "shorts-bermudas", icon: "Circle", color: "#01796F", sort_order: 207, parentSlug: "vetements-homme" },
+  { name: "Vêtements traditionnels homme", slug: "vetements-traditionnels-homme", icon: "Circle", color: "#01796F", sort_order: 208, parentSlug: "vetements-homme" },
+  { name: "Robes & Jupes", slug: "robes-jupes", icon: "Circle", color: "#01796F", sort_order: 209, parentSlug: "vetements-femme" },
+  { name: "Tops & Chemisiers", slug: "tops-chemisiers", icon: "Circle", color: "#01796F", sort_order: 210, parentSlug: "vetements-femme" },
+  { name: "Ensembles & Tailleurs", slug: "ensembles-tailleurs", icon: "Circle", color: "#01796F", sort_order: 211, parentSlug: "vetements-femme" },
+  { name: "Pantalons femmes", slug: "pantalons-femmes", icon: "Circle", color: "#01796F", sort_order: 212, parentSlug: "vetements-femme" },
+  { name: "Leggings & Jean femmes", slug: "leggings-jean-femmes", icon: "Circle", color: "#01796F", sort_order: 213, parentSlug: "vetements-femme" },
+  { name: "Pagnes & Wax femmes", slug: "pagnes-wax-femmes", icon: "Circle", color: "#01796F", sort_order: 214, parentSlug: "vetements-femme" },
+  { name: "Chaussures Homme", slug: "chaussures-homme", icon: "Footprints", color: "#01796F", sort_order: 1, parentSlug: "chaussures-mode" },
+  { name: "Chaussures Femme", slug: "chaussures-femme", icon: "Footprints", color: "#01796F", sort_order: 2, parentSlug: "chaussures-mode" },
+  { name: "Chaussures Enfant", slug: "chaussures-enfant", icon: "Footprints", color: "#01796F", sort_order: 3, parentSlug: "chaussures-mode" },
+  { name: "Baskets & Sneakers", slug: "baskets-sneakers", icon: "Circle", color: "#01796F", sort_order: 215, parentSlug: "chaussures-mode" },
+  { name: "Sandales & Mules", slug: "sandales-mules", icon: "Circle", color: "#01796F", sort_order: 216, parentSlug: "chaussures-mode" },
+  { name: "Chaussures de sport", slug: "chaussures-de-sport", icon: "Circle", color: "#01796F", sort_order: 217, parentSlug: "chaussures-mode" },
+  { name: "Sacs à main", slug: "sacs-a-main", icon: "Circle", color: "#01796F", sort_order: 218, parentSlug: "sacs-maroquinerie" },
+  { name: "Sacs à dos mode", slug: "sacs-a-dos-mode", icon: "Circle", color: "#01796F", sort_order: 219, parentSlug: "sacs-maroquinerie" },
+  { name: "Portefeuilles", slug: "portefeuilles", icon: "Circle", color: "#01796F", sort_order: 220, parentSlug: "sacs-maroquinerie" },
+  { name: "Ceintures", slug: "ceintures", icon: "Circle", color: "#01796F", sort_order: 221, parentSlug: "sacs-maroquinerie" },
+  { name: "Bagages & Valises", slug: "bagages-valises", icon: "Circle", color: "#01796F", sort_order: 222, parentSlug: "sacs-maroquinerie" },
+  { name: "Pochettes & Sacs soirée", slug: "pochettes-sacs-soiree", icon: "Circle", color: "#01796F", sort_order: 223, parentSlug: "sacs-maroquinerie" },
+  { name: "Montres homme", slug: "montres-homme", icon: "Circle", color: "#01796F", sort_order: 224, parentSlug: "montres-bijoux" },
+  { name: "Montres femme", slug: "montres-femme", icon: "Circle", color: "#01796F", sort_order: 225, parentSlug: "montres-bijoux" },
+  { name: "Montres connectées", slug: "montres-connectees", icon: "Circle", color: "#01796F", sort_order: 226, parentSlug: "montres-bijoux" },
+  { name: "Colliers & Chaînes", slug: "colliers-chaines", icon: "Circle", color: "#01796F", sort_order: 227, parentSlug: "montres-bijoux" },
+  { name: "Bagues & Alliances", slug: "bagues-alliances", icon: "Circle", color: "#01796F", sort_order: 228, parentSlug: "montres-bijoux" },
+  { name: "Boucles d'oreilles", slug: "boucles-d-oreilles", icon: "Circle", color: "#01796F", sort_order: 229, parentSlug: "montres-bijoux" },
+  { name: "Lunettes de soleil", slug: "lunettes-de-soleil", icon: "Circle", color: "#01796F", sort_order: 230, parentSlug: "accessoires-mode" },
+  { name: "Casquettes & Bonnets", slug: "casquettes-bonnets", icon: "Circle", color: "#01796F", sort_order: 231, parentSlug: "accessoires-mode" },
+  { name: "Écharpes & Foulards", slug: "echarpes-foulards", icon: "Circle", color: "#01796F", sort_order: 232, parentSlug: "accessoires-mode" },
+  { name: "Gants", slug: "gants", icon: "Circle", color: "#01796F", sort_order: 233, parentSlug: "accessoires-mode" },
+  { name: "Cravates & Nœuds papillons", slug: "cravates-n-uds-papillons", icon: "Circle", color: "#01796F", sort_order: 234, parentSlug: "accessoires-mode" },
+  { name: "Parapluies", slug: "parapluies", icon: "Circle", color: "#01796F", sort_order: 235, parentSlug: "accessoires-mode" },
+  { name: "Canapés & Fauteuils", slug: "canapes-fauteuils", icon: "Sofa", color: "#01796F", sort_order: 1, parentSlug: "meubles" },
+  { name: "Tables & Chaises", slug: "tables-chaises", icon: "Table", color: "#01796F", sort_order: 2, parentSlug: "meubles" },
+  { name: "Lits & Matelas", slug: "lits-matelas", icon: "Bed", color: "#01796F", sort_order: 3, parentSlug: "meubles" },
+  { name: "Armoires & Dressings", slug: "armoires-dressings", icon: "Circle", color: "#01796F", sort_order: 236, parentSlug: "meubles" },
+  { name: "Bibliothèques & Étagères", slug: "bibliotheques-etageres", icon: "Circle", color: "#01796F", sort_order: 237, parentSlug: "meubles" },
+  { name: "Meubles TV", slug: "meubles-tv", icon: "Circle", color: "#01796F", sort_order: 238, parentSlug: "meubles" },
+  { name: "Réfrigérateurs", slug: "refrigerateurs", icon: "Refrigerator", color: "#01796F", sort_order: 1, parentSlug: "electromenager-neuf" },
+  { name: "Machines à laver", slug: "machines-a-laver", icon: "WashingMachine", color: "#01796F", sort_order: 2, parentSlug: "electromenager-neuf" },
+  { name: "Cuisinières & Fours", slug: "cuisinieres-fours", icon: "CookingPot", color: "#01796F", sort_order: 3, parentSlug: "electromenager-neuf" },
+  { name: "Micro-ondes", slug: "micro-ondes", icon: "Circle", color: "#01796F", sort_order: 239, parentSlug: "electromenager-neuf" },
+  { name: "Climatiseurs & Ventilateurs", slug: "climatiseurs-ventilateurs", icon: "Circle", color: "#01796F", sort_order: 240, parentSlug: "electromenager-neuf" },
+  { name: "Aspirateurs", slug: "aspirateurs", icon: "Circle", color: "#01796F", sort_order: 241, parentSlug: "electromenager-neuf" },
+  { name: "Tableaux & Cadres", slug: "tableaux-cadres", icon: "Circle", color: "#01796F", sort_order: 242, parentSlug: "decoration-art" },
+  { name: "Vases & Pots", slug: "vases-pots", icon: "Circle", color: "#01796F", sort_order: 243, parentSlug: "decoration-art" },
+  { name: "Bougies & Bougeoirs", slug: "bougies-bougeoirs", icon: "Circle", color: "#01796F", sort_order: 244, parentSlug: "decoration-art" },
+  { name: "Tapis & Carpettes", slug: "tapis-carpettes", icon: "Circle", color: "#01796F", sort_order: 245, parentSlug: "decoration-art" },
+  { name: "Miroirs", slug: "miroirs", icon: "Circle", color: "#01796F", sort_order: 246, parentSlug: "decoration-art" },
+  { name: "Artisanat local", slug: "artisanat-local", icon: "Circle", color: "#01796F", sort_order: 247, parentSlug: "decoration-art" },
+  { name: "Draps & Parures", slug: "draps-parures", icon: "Circle", color: "#01796F", sort_order: 248, parentSlug: "linge-maison" },
+  { name: "Couvertures & Plaids", slug: "couvertures-plaids", icon: "Circle", color: "#01796F", sort_order: 249, parentSlug: "linge-maison" },
+  { name: "Oreillers & Traversins", slug: "oreillers-traversins", icon: "Circle", color: "#01796F", sort_order: 250, parentSlug: "linge-maison" },
+  { name: "Serviettes de bain", slug: "serviettes-de-bain", icon: "Circle", color: "#01796F", sort_order: 251, parentSlug: "linge-maison" },
+  { name: "Nappes & Sets de table", slug: "nappes-sets-de-table", icon: "Circle", color: "#01796F", sort_order: 252, parentSlug: "linge-maison" },
+  { name: "Moustiquaires", slug: "moustiquaires", icon: "Circle", color: "#01796F", sort_order: 253, parentSlug: "linge-maison" },
+  { name: "Casseroles & Poêles", slug: "casseroles-poeles", icon: "Circle", color: "#01796F", sort_order: 254, parentSlug: "ustensiles-cuisine" },
+  { name: "Couteaux & Planches", slug: "couteaux-planches", icon: "Circle", color: "#01796F", sort_order: 255, parentSlug: "ustensiles-cuisine" },
+  { name: "Vaisselle & Assiettes", slug: "vaisselle-assiettes", icon: "Circle", color: "#01796F", sort_order: 256, parentSlug: "ustensiles-cuisine" },
+  { name: "Verrerie & Tasses", slug: "verrerie-tasses", icon: "Circle", color: "#01796F", sort_order: 257, parentSlug: "ustensiles-cuisine" },
+  { name: "Bols & Saladiers", slug: "bols-saladiers", icon: "Circle", color: "#01796F", sort_order: 258, parentSlug: "ustensiles-cuisine" },
+  { name: "Ustensiles de cuisson africains", slug: "ustensiles-de-cuisson-africains", icon: "Circle", color: "#01796F", sort_order: 259, parentSlug: "ustensiles-cuisine" },
+  { name: "Marmites & Cocottes", slug: "marmites-cocottes", icon: "Circle", color: "#01796F", sort_order: 1, parentSlug: "cuisine-gastronomie" },
+  { name: "Poêles & Woks", slug: "poeles-woks", icon: "Circle", color: "#01796F", sort_order: 2, parentSlug: "cuisine-gastronomie" },
+  { name: "Ustensiles africains", slug: "ustensiles-africains", icon: "Circle", color: "#01796F", sort_order: 3, parentSlug: "cuisine-gastronomie" },
+  { name: "Plats & Assiettes", slug: "plats-assiettes", icon: "Circle", color: "#01796F", sort_order: 4, parentSlug: "cuisine-gastronomie" },
+  { name: "Couverts & Ménagères", slug: "couverts-menageres", icon: "Circle", color: "#01796F", sort_order: 5, parentSlug: "cuisine-gastronomie" },
+  { name: "Accessoires cuisine", slug: "accessoires-cuisine", icon: "Circle", color: "#01796F", sort_order: 6, parentSlug: "cuisine-gastronomie" },
+  { name: "Fitness & Musculation", slug: "fitness-musculation", icon: "Dumbbell", color: "#01796F", sort_order: 1, parentSlug: "equipement-sportif" },
+  { name: "Football", slug: "football", icon: "Dumbbell", color: "#01796F", sort_order: 2, parentSlug: "equipement-sportif" },
+  { name: "Basketball", slug: "basketball", icon: "Circle", color: "#01796F", sort_order: 260, parentSlug: "equipement-sportif" },
+  { name: "Tennis", slug: "tennis", icon: "Circle", color: "#01796F", sort_order: 261, parentSlug: "equipement-sportif" },
+  { name: "Natation", slug: "natation", icon: "Circle", color: "#01796F", sort_order: 262, parentSlug: "equipement-sportif" },
+  { name: "Arts martiaux", slug: "arts-martiaux", icon: "Circle", color: "#01796F", sort_order: 263, parentSlug: "equipement-sportif" },
+  { name: "Vélos de route", slug: "velos-de-route", icon: "Circle", color: "#01796F", sort_order: 264, parentSlug: "velos-trottinettes" },
+  { name: "VTT", slug: "vtt", icon: "Circle", color: "#01796F", sort_order: 265, parentSlug: "velos-trottinettes" },
+  { name: "Vélos électriques", slug: "velos-electriques", icon: "Circle", color: "#01796F", sort_order: 266, parentSlug: "velos-trottinettes" },
+  { name: "Trottinettes électriques", slug: "trottinettes-electriques", icon: "Circle", color: "#01796F", sort_order: 267, parentSlug: "velos-trottinettes" },
+  { name: "Vélos enfant", slug: "velos-enfant", icon: "Circle", color: "#01796F", sort_order: 268, parentSlug: "velos-trottinettes" },
+  { name: "Accessoires vélo", slug: "accessoires-velo", icon: "Circle", color: "#01796F", sort_order: 269, parentSlug: "velos-trottinettes" },
+  { name: "Tentes & Bâches", slug: "tentes-baches", icon: "Circle", color: "#01796F", sort_order: 270, parentSlug: "camping-randonnee" },
+  { name: "Sacs de couchage", slug: "sacs-de-couchage", icon: "Circle", color: "#01796F", sort_order: 271, parentSlug: "camping-randonnee" },
+  { name: "Réchauds & Gaz", slug: "rechauds-gaz", icon: "Circle", color: "#01796F", sort_order: 272, parentSlug: "camping-randonnee" },
+  { name: "Gourdes & Filtres", slug: "gourdes-filtres", icon: "Circle", color: "#01796F", sort_order: 273, parentSlug: "camping-randonnee" },
+  { name: "Lampes frontales", slug: "lampes-frontales", icon: "Circle", color: "#01796F", sort_order: 274, parentSlug: "camping-randonnee" },
+  { name: "Boussoles & GPS", slug: "boussoles-gps", icon: "Circle", color: "#01796F", sort_order: 275, parentSlug: "camping-randonnee" },
+  { name: "Romans & Littérature", slug: "romans-litterature", icon: "Circle", color: "#01796F", sort_order: 276, parentSlug: "livres-revues" },
+  { name: "Livres scolaires & universitaires", slug: "livres-scolaires-universitaires", icon: "Circle", color: "#01796F", sort_order: 277, parentSlug: "livres-revues" },
+  { name: "BD & Mangas", slug: "bd-mangas", icon: "Circle", color: "#01796F", sort_order: 278, parentSlug: "livres-revues" },
+  { name: "Revues & Magazines", slug: "revues-magazines", icon: "Circle", color: "#01796F", sort_order: 279, parentSlug: "livres-revues" },
+  { name: "Livres religieux", slug: "livres-religieux", icon: "Circle", color: "#01796F", sort_order: 280, parentSlug: "livres-revues" },
+  { name: "Dictionnaires & Encyclopédies", slug: "dictionnaires-encyclopedies", icon: "Circle", color: "#01796F", sort_order: 281, parentSlug: "livres-revues" },
+  { name: "Guitares", slug: "guitares", icon: "Circle", color: "#01796F", sort_order: 282, parentSlug: "instruments-musique" },
+  { name: "Pianos & Claviers", slug: "pianos-claviers", icon: "Circle", color: "#01796F", sort_order: 283, parentSlug: "instruments-musique" },
+  { name: "Batteries & Percussions", slug: "batteries-percussions", icon: "Circle", color: "#01796F", sort_order: 284, parentSlug: "instruments-musique" },
+  { name: "Instruments à vent", slug: "instruments-a-vent", icon: "Circle", color: "#01796F", sort_order: 285, parentSlug: "instruments-musique" },
+  { name: "Instruments traditionnels africains", slug: "instruments-traditionnels-africains", icon: "Circle", color: "#01796F", sort_order: 286, parentSlug: "instruments-musique" },
+  { name: "Sonorisation & Micros", slug: "sonorisation-micros", icon: "Circle", color: "#01796F", sort_order: 287, parentSlug: "instruments-musique" },
+  { name: "Tapis de fitness", slug: "tapis-de-fitness", icon: "Circle", color: "#01796F", sort_order: 1, parentSlug: "fitness-yoga" },
+  { name: "Haltères & Altères", slug: "halteres-alteres", icon: "Circle", color: "#01796F", sort_order: 2, parentSlug: "fitness-yoga" },
+  { name: "Cordes à sauter", slug: "cordes-a-sauter", icon: "Circle", color: "#01796F", sort_order: 3, parentSlug: "fitness-yoga" },
+  { name: "Ballons fitness", slug: "ballons-fitness", icon: "Circle", color: "#01796F", sort_order: 4, parentSlug: "fitness-yoga" },
+  { name: "Accessoires yoga", slug: "accessoires-yoga", icon: "Circle", color: "#01796F", sort_order: 5, parentSlug: "fitness-yoga" },
+  { name: "Vêtements de sport", slug: "vetements-de-sport", icon: "Circle", color: "#01796F", sort_order: 6, parentSlug: "fitness-yoga" },
+  { name: "Bodies & Grenouillères", slug: "bodies-grenouilleres", icon: "Circle", color: "#01796F", sort_order: 288, parentSlug: "vetements-bebe-enfant" },
+  { name: "Pyjamas bébé", slug: "pyjamas-bebe", icon: "Circle", color: "#01796F", sort_order: 289, parentSlug: "vetements-bebe-enfant" },
+  { name: "Chaussons & Baskets bébé", slug: "chaussons-baskets-bebe", icon: "Circle", color: "#01796F", sort_order: 290, parentSlug: "vetements-bebe-enfant" },
+  { name: "Tenues filles", slug: "tenues-filles", icon: "Circle", color: "#01796F", sort_order: 291, parentSlug: "vetements-bebe-enfant" },
+  { name: "Tenues garçons", slug: "tenues-garcons", icon: "Circle", color: "#01796F", sort_order: 292, parentSlug: "vetements-bebe-enfant" },
+  { name: "Accessoires bébé", slug: "accessoires-bebe", icon: "Circle", color: "#01796F", sort_order: 293, parentSlug: "vetements-bebe-enfant" },
+  { name: "Poussettes canne", slug: "poussettes-canne", icon: "Circle", color: "#01796F", sort_order: 294, parentSlug: "poussettes-sieges-auto" },
+  { name: "Poussettes tout-terrain", slug: "poussettes-tout-terrain", icon: "Circle", color: "#01796F", sort_order: 295, parentSlug: "poussettes-sieges-auto" },
+  { name: "Sièges auto bébé", slug: "sieges-auto-bebe", icon: "Circle", color: "#01796F", sort_order: 296, parentSlug: "poussettes-sieges-auto" },
+  { name: "Sièges auto enfant", slug: "sieges-auto-enfant", icon: "Circle", color: "#01796F", sort_order: 297, parentSlug: "poussettes-sieges-auto" },
+  { name: "Porte-bébés", slug: "porte-bebes", icon: "Circle", color: "#01796F", sort_order: 298, parentSlug: "poussettes-sieges-auto" },
+  { name: "Harnais & Accessoires", slug: "harnais-accessoires", icon: "Circle", color: "#01796F", sort_order: 299, parentSlug: "poussettes-sieges-auto" },
+  { name: "Lits à barreaux", slug: "lits-a-barreaux", icon: "Circle", color: "#01796F", sort_order: 300, parentSlug: "lits-bebe-meubles" },
+  { name: "Couffins & Berceaux", slug: "couffins-berceaux", icon: "Circle", color: "#01796F", sort_order: 301, parentSlug: "lits-bebe-meubles" },
+  { name: "Lits évolutifs", slug: "lits-evolutifs", icon: "Circle", color: "#01796F", sort_order: 302, parentSlug: "lits-bebe-meubles" },
+  { name: "Matelas bébé", slug: "matelas-bebe", icon: "Circle", color: "#01796F", sort_order: 303, parentSlug: "lits-bebe-meubles" },
+  { name: "Parks & Cages", slug: "parks-cages", icon: "Circle", color: "#01796F", sort_order: 304, parentSlug: "lits-bebe-meubles" },
+  { name: "Armoires bébé", slug: "armoires-bebe", icon: "Circle", color: "#01796F", sort_order: 305, parentSlug: "lits-bebe-meubles" },
+  { name: "Peluches & Doudous", slug: "peluches-doudous", icon: "Circle", color: "#01796F", sort_order: 306, parentSlug: "jouets-jeux-eveil" },
+  { name: "Voitures & Camions", slug: "voitures-camions", icon: "Circle", color: "#01796F", sort_order: 307, parentSlug: "jouets-jeux-eveil" },
+  { name: "Poupées & Figurines", slug: "poupees-figurines", icon: "Circle", color: "#01796F", sort_order: 308, parentSlug: "jouets-jeux-eveil" },
+  { name: "Jeux de construction", slug: "jeux-de-construction", icon: "Circle", color: "#01796F", sort_order: 309, parentSlug: "jouets-jeux-eveil" },
+  { name: "Jeux éducatifs & scientifiques", slug: "jeux-educatifs-scientifiques", icon: "Circle", color: "#01796F", sort_order: 310, parentSlug: "jouets-jeux-eveil" },
+  { name: "Jeux de société", slug: "jeux-de-societe", icon: "Circle", color: "#01796F", sort_order: 311, parentSlug: "jouets-jeux-eveil" },
+  { name: "Biberons & Tétines", slug: "biberons-tetines", icon: "Circle", color: "#01796F", sort_order: 1, parentSlug: "puericulture-allaitement" },
+  { name: "Chaises hautes", slug: "chaises-hautes", icon: "Circle", color: "#01796F", sort_order: 2, parentSlug: "puericulture-allaitement" },
+  { name: "Babyphones", slug: "babyphones", icon: "Circle", color: "#01796F", sort_order: 3, parentSlug: "puericulture-allaitement" },
+  { name: "Chauffe-biberons", slug: "chauffe-biberons", icon: "Circle", color: "#01796F", sort_order: 4, parentSlug: "puericulture-allaitement" },
+  { name: "Tire-laits", slug: "tire-laits", icon: "Circle", color: "#01796F", sort_order: 5, parentSlug: "puericulture-allaitement" },
+  { name: "Tables à langer", slug: "tables-a-langer", icon: "Circle", color: "#01796F", sort_order: 6, parentSlug: "puericulture-allaitement" },
+  { name: "Kits scolaires", slug: "kits-scolaires", icon: "Circle", color: "#01796F", sort_order: 1, parentSlug: "scolaire-eveil" },
+  { name: "Sacs à dos", slug: "sacs-a-dos", icon: "Circle", color: "#01796F", sort_order: 2, parentSlug: "scolaire-eveil" },
+  { name: "Ardoises & Tableaux", slug: "ardoises-tableaux", icon: "Circle", color: "#01796F", sort_order: 3, parentSlug: "scolaire-eveil" },
+  { name: "Jeux éducatifs", slug: "jeux-educatifs", icon: "Circle", color: "#01796F", sort_order: 4, parentSlug: "scolaire-eveil" },
+  { name: "Livres enfants", slug: "livres-enfants", icon: "Circle", color: "#01796F", sort_order: 5, parentSlug: "scolaire-eveil" },
+  { name: "Cartables & Trousse", slug: "cartables-trousse", icon: "Circle", color: "#01796F", sort_order: 6, parentSlug: "scolaire-eveil" },
+  { name: "Crèmes visage", slug: "cremes-visage", icon: "Circle", color: "#01796F", sort_order: 312, parentSlug: "soins-visage-corps" },
+  { name: "Sérums & Contours", slug: "serums-contours", icon: "Circle", color: "#01796F", sort_order: 313, parentSlug: "soins-visage-corps" },
+  { name: "Gommages & Masques", slug: "gommages-masques", icon: "Circle", color: "#01796F", sort_order: 314, parentSlug: "soins-visage-corps" },
+  { name: "Soins corps", slug: "soins-corps", icon: "Circle", color: "#01796F", sort_order: 315, parentSlug: "soins-visage-corps" },
+  { name: "Savons & Gel douche", slug: "savons-gel-douche", icon: "Circle", color: "#01796F", sort_order: 316, parentSlug: "soins-visage-corps" },
+  { name: "Déodorants", slug: "deodorants", icon: "Circle", color: "#01796F", sort_order: 317, parentSlug: "soins-visage-corps" },
+  { name: "Fonds de teint", slug: "fonds-de-teint", icon: "Circle", color: "#01796F", sort_order: 318, parentSlug: "maquillage" },
+  { name: "Rouges à lèvres", slug: "rouges-a-levres", icon: "Circle", color: "#01796F", sort_order: 319, parentSlug: "maquillage" },
+  { name: "Fards & Palettes", slug: "fards-palettes", icon: "Circle", color: "#01796F", sort_order: 320, parentSlug: "maquillage" },
+  { name: "Mascaras & Eye-liners", slug: "mascaras-eye-liners", icon: "Circle", color: "#01796F", sort_order: 321, parentSlug: "maquillage" },
+  { name: "Vernis à ongles", slug: "vernis-a-ongles", icon: "Circle", color: "#01796F", sort_order: 322, parentSlug: "maquillage" },
+  { name: "Pinceaux & Éponges", slug: "pinceaux-eponges", icon: "Circle", color: "#01796F", sort_order: 323, parentSlug: "maquillage" },
+  { name: "Parfums homme", slug: "parfums-homme", icon: "Circle", color: "#01796F", sort_order: 324, parentSlug: "parfums" },
+  { name: "Parfums femme", slug: "parfums-femme", icon: "Circle", color: "#01796F", sort_order: 325, parentSlug: "parfums" },
+  { name: "Eaux de toilette", slug: "eaux-de-toilette", icon: "Circle", color: "#01796F", sort_order: 326, parentSlug: "parfums" },
+  { name: "Coffrets parfums", slug: "coffrets-parfums", icon: "Circle", color: "#01796F", sort_order: 327, parentSlug: "parfums" },
+  { name: "Déodorants parfumés", slug: "deodorants-parfumes", icon: "Circle", color: "#01796F", sort_order: 328, parentSlug: "parfums" },
+  { name: "Huiles parfumées", slug: "huiles-parfumees", icon: "Circle", color: "#01796F", sort_order: 329, parentSlug: "parfums" },
+  { name: "Shampoings & Après-shampoings", slug: "shampoings-apres-shampoings", icon: "Circle", color: "#01796F", sort_order: 330, parentSlug: "coiffure-accessoires" },
+  { name: "Défrisants & Lissages", slug: "defrisants-lissages", icon: "Circle", color: "#01796F", sort_order: 331, parentSlug: "coiffure-accessoires" },
+  { name: "Extensions & Perruques", slug: "extensions-perruques", icon: "Circle", color: "#01796F", sort_order: 332, parentSlug: "coiffure-accessoires" },
+  { name: "Brosses & Peignes", slug: "brosses-peignes", icon: "Circle", color: "#01796F", sort_order: 333, parentSlug: "coiffure-accessoires" },
+  { name: "Sèche-cheveux & Lisseurs", slug: "seche-cheveux-lisseurs", icon: "Circle", color: "#01796F", sort_order: 334, parentSlug: "coiffure-accessoires" },
+  { name: "Accessoires coiffure", slug: "accessoires-coiffure", icon: "Circle", color: "#01796F", sort_order: 335, parentSlug: "coiffure-accessoires" },
+  { name: "Brosses à dents électriques", slug: "brosses-a-dents-electriques", icon: "Circle", color: "#01796F", sort_order: 1, parentSlug: "soins-dentaires-optique" },
+  { name: "Dentifrices & Soins", slug: "dentifrices-soins", icon: "Circle", color: "#01796F", sort_order: 2, parentSlug: "soins-dentaires-optique" },
+  { name: "Blanchiment dentaire", slug: "blanchiment-dentaire", icon: "Circle", color: "#01796F", sort_order: 3, parentSlug: "soins-dentaires-optique" },
+  { name: "Lunettes de vue", slug: "lunettes-de-vue", icon: "Circle", color: "#01796F", sort_order: 4, parentSlug: "soins-dentaires-optique" },
+  { name: "Lentilles & Solutions", slug: "lentilles-solutions", icon: "Circle", color: "#01796F", sort_order: 5, parentSlug: "soins-dentaires-optique" },
+  { name: "Étuis & Accessoires", slug: "etuis-accessoires", icon: "Circle", color: "#01796F", sort_order: 6, parentSlug: "soins-dentaires-optique" },
+  { name: "Compléments alimentaires", slug: "complements-alimentaires", icon: "Circle", color: "#01796F", sort_order: 1, parentSlug: "bien-etre-minceur" },
+  { name: "Infusions & Thés minceur", slug: "infusions-thes-minceur", icon: "Circle", color: "#01796F", sort_order: 2, parentSlug: "bien-etre-minceur" },
+  { name: "Huiles de massage", slug: "huiles-de-massage", icon: "Circle", color: "#01796F", sort_order: 3, parentSlug: "bien-etre-minceur" },
+  { name: "Appareils de massage", slug: "appareils-de-massage", icon: "Circle", color: "#01796F", sort_order: 4, parentSlug: "bien-etre-minceur" },
+  { name: "Tapis de yoga", slug: "tapis-de-yoga", icon: "Circle", color: "#01796F", sort_order: 5, parentSlug: "bien-etre-minceur" },
+  { name: "Pèse-personnes", slug: "pese-personnes", icon: "Circle", color: "#01796F", sort_order: 6, parentSlug: "bien-etre-minceur" },
+  { name: "Perceuses & Visseuses", slug: "perceuses-visseuses", icon: "Circle", color: "#01796F", sort_order: 336, parentSlug: "outillage" },
+  { name: "Scies & Scieries", slug: "scies-scieries", icon: "Circle", color: "#01796F", sort_order: 337, parentSlug: "outillage" },
+  { name: "Marteaux & Massettes", slug: "marteaux-massettes", icon: "Circle", color: "#01796F", sort_order: 338, parentSlug: "outillage" },
+  { name: "Clés & Tournevis", slug: "cles-tournevis", icon: "Circle", color: "#01796F", sort_order: 339, parentSlug: "outillage" },
+  { name: "Meuleuses & Polisseuses", slug: "meuleuses-polisseuses", icon: "Circle", color: "#01796F", sort_order: 340, parentSlug: "outillage" },
+  { name: "Malettes & Rangements", slug: "malettes-rangements", icon: "Circle", color: "#01796F", sort_order: 341, parentSlug: "outillage" },
+  { name: "Tondeuses & Débroussailleuses", slug: "tondeuses-debroussailleuses", icon: "Circle", color: "#01796F", sort_order: 342, parentSlug: "jardin-exterieur" },
+  { name: "Tronçonneuses", slug: "tronconneuses", icon: "Circle", color: "#01796F", sort_order: 343, parentSlug: "jardin-exterieur" },
+  { name: "Arrosoirs & Tuyaux", slug: "arrosoirs-tuyaux", icon: "Circle", color: "#01796F", sort_order: 344, parentSlug: "jardin-exterieur" },
+  { name: "Potagers & Semences", slug: "potagers-semences", icon: "Circle", color: "#01796F", sort_order: 345, parentSlug: "jardin-exterieur" },
+  { name: "Mobilier jardin", slug: "mobilier-jardin", icon: "Circle", color: "#01796F", sort_order: 346, parentSlug: "jardin-exterieur" },
+  { name: "Barbecues & Planchas", slug: "barbecues-planchas", icon: "Circle", color: "#01796F", sort_order: 347, parentSlug: "jardin-exterieur" },
+  { name: "Tuyaux & Raccords", slug: "tuyaux-raccords", icon: "Circle", color: "#01796F", sort_order: 348, parentSlug: "plomberie-electricite" },
+  { name: "Robinets & Mitigeurs", slug: "robinets-mitigeurs", icon: "Circle", color: "#01796F", sort_order: 349, parentSlug: "plomberie-electricite" },
+  { name: "Éviers & Vasques", slug: "eviers-vasques", icon: "Circle", color: "#01796F", sort_order: 350, parentSlug: "plomberie-electricite" },
+  { name: "Chauffe-eaux", slug: "chauffe-eaux", icon: "Circle", color: "#01796F", sort_order: 351, parentSlug: "plomberie-electricite" },
+  { name: "Fils & Câbles électriques", slug: "fils-cables-electriques", icon: "Circle", color: "#01796F", sort_order: 352, parentSlug: "plomberie-electricite" },
+  { name: "Prises & Interrupteurs", slug: "prises-interrupteurs", icon: "Circle", color: "#01796F", sort_order: 353, parentSlug: "plomberie-electricite" },
+  { name: "Peintures murales", slug: "peintures-murales", icon: "Circle", color: "#01796F", sort_order: 1, parentSlug: "peinture-revetements" },
+  { name: "Peintures bois & métal", slug: "peintures-bois-metal", icon: "Circle", color: "#01796F", sort_order: 2, parentSlug: "peinture-revetements" },
+  { name: "Papiers peints", slug: "papiers-peints", icon: "Circle", color: "#01796F", sort_order: 3, parentSlug: "peinture-revetements" },
+  { name: "Enduits & Mastics", slug: "enduits-mastics", icon: "Circle", color: "#01796F", sort_order: 4, parentSlug: "peinture-revetements" },
+  { name: "Vernis & lasures", slug: "vernis-lasures", icon: "Circle", color: "#01796F", sort_order: 5, parentSlug: "peinture-revetements" },
+  { name: "Pinceaux & Rouleaux", slug: "pinceaux-rouleaux", icon: "Circle", color: "#01796F", sort_order: 6, parentSlug: "peinture-revetements" },
+  { name: "Vis & Clous", slug: "vis-clous", icon: "Circle", color: "#01796F", sort_order: 1, parentSlug: "quincaillerie" },
+  { name: "Serrures & Verrous", slug: "serrures-verrous", icon: "Circle", color: "#01796F", sort_order: 2, parentSlug: "quincaillerie" },
+  { name: "Charnières & Poignées", slug: "charnieres-poignees", icon: "Circle", color: "#01796F", sort_order: 3, parentSlug: "quincaillerie" },
+  { name: "Cadenas & Antivols", slug: "cadenas-antivols", icon: "Circle", color: "#01796F", sort_order: 4, parentSlug: "quincaillerie" },
+  { name: "Roulettes & Pieds", slug: "roulettes-pieds", icon: "Circle", color: "#01796F", sort_order: 5, parentSlug: "quincaillerie" },
+  { name: "Colles & Adhésifs", slug: "colles-adhesifs", icon: "Circle", color: "#01796F", sort_order: 6, parentSlug: "quincaillerie" },
+  { name: "Lampes & Lustres", slug: "lampes-lustres", icon: "Circle", color: "#01796F", sort_order: 1, parentSlug: "securite-eclairage" },
+  { name: "Ampoules & LED", slug: "ampoules-led", icon: "Circle", color: "#01796F", sort_order: 2, parentSlug: "securite-eclairage" },
+  { name: "Détecteurs de mouvement", slug: "detecteurs-de-mouvement", icon: "Circle", color: "#01796F", sort_order: 3, parentSlug: "securite-eclairage" },
+  { name: "Caméras de surveillance", slug: "cameras-de-surveillance", icon: "Circle", color: "#01796F", sort_order: 4, parentSlug: "securite-eclairage" },
+  { name: "Alarmes", slug: "alarmes", icon: "Circle", color: "#01796F", sort_order: 5, parentSlug: "securite-eclairage" },
+  { name: "Extincteurs", slug: "extincteurs", icon: "Circle", color: "#01796F", sort_order: 6, parentSlug: "securite-eclairage" },
+  { name: "Croquettes & Pâtées", slug: "croquettes-patees", icon: "Circle", color: "#01796F", sort_order: 354, parentSlug: "chiens" },
+  { name: "Friandises & Os", slug: "friandises-os", icon: "Circle", color: "#01796F", sort_order: 355, parentSlug: "chiens" },
+  { name: "Paniers & Cousins", slug: "paniers-cousins", icon: "Circle", color: "#01796F", sort_order: 356, parentSlug: "chiens" },
+  { name: "Laisse & Collier", slug: "laisse-collier", icon: "Circle", color: "#01796F", sort_order: 357, parentSlug: "chiens" },
+  { name: "Jouets pour chien", slug: "jouets-pour-chien", icon: "Circle", color: "#01796F", sort_order: 358, parentSlug: "chiens" },
+  { name: "Soins & Toilettage", slug: "soins-toilettage", icon: "Circle", color: "#01796F", sort_order: 359, parentSlug: "chiens" },
+  { name: "Croquettes & Pâtées chat", slug: "croquettes-patees-chat", icon: "Circle", color: "#01796F", sort_order: 360, parentSlug: "chats" },
+  { name: "Arbres à chat", slug: "arbres-a-chat", icon: "Circle", color: "#01796F", sort_order: 361, parentSlug: "chats" },
+  { name: "Litières & Bacs", slug: "litieres-bacs", icon: "Circle", color: "#01796F", sort_order: 362, parentSlug: "chats" },
+  { name: "Griffoirs", slug: "griffoirs", icon: "Circle", color: "#01796F", sort_order: 363, parentSlug: "chats" },
+  { name: "Jouets pour chat", slug: "jouets-pour-chat", icon: "Circle", color: "#01796F", sort_order: 364, parentSlug: "chats" },
+  { name: "Colliers & Harnais", slug: "colliers-harnais", icon: "Circle", color: "#01796F", sort_order: 365, parentSlug: "chats" },
+  { name: "Cages & Volières", slug: "cages-volieres", icon: "Circle", color: "#01796F", sort_order: 366, parentSlug: "oiseaux-rongeurs" },
+  { name: "Graines & Mélanges", slug: "graines-melanges", icon: "Circle", color: "#01796F", sort_order: 367, parentSlug: "oiseaux-rongeurs" },
+  { name: "Nourriture oiseaux", slug: "nourriture-oiseaux", icon: "Circle", color: "#01796F", sort_order: 368, parentSlug: "oiseaux-rongeurs" },
+  { name: "Nids & Accessoires", slug: "nids-accessoires", icon: "Circle", color: "#01796F", sort_order: 369, parentSlug: "oiseaux-rongeurs" },
+  { name: "Jouets oiseaux", slug: "jouets-oiseaux", icon: "Circle", color: "#01796F", sort_order: 370, parentSlug: "oiseaux-rongeurs" },
+  { name: "Soins vétérinaires", slug: "soins-veterinaires", icon: "Circle", color: "#01796F", sort_order: 371, parentSlug: "oiseaux-rongeurs" },
+  { name: "Gamelles", slug: "gamelles", icon: "Circle", color: "#01796F", sort_order: 372, parentSlug: "accessoires-alimentation-animaux" },
+  { name: "Vêtements animaux", slug: "vetements-animaux", icon: "Circle", color: "#01796F", sort_order: 373, parentSlug: "accessoires-alimentation-animaux" },
+  { name: "Laisse & Harnais", slug: "laisse-harnais", icon: "Circle", color: "#01796F", sort_order: 374, parentSlug: "accessoires-alimentation-animaux" },
+  { name: "Toilettage & Soins", slug: "toilettage-soins", icon: "Circle", color: "#01796F", sort_order: 375, parentSlug: "accessoires-alimentation-animaux" },
+  { name: "Transporteurs & Cages", slug: "transporteurs-cages", icon: "Circle", color: "#01796F", sort_order: 376, parentSlug: "accessoires-alimentation-animaux" },
+  { name: "Paniers & Couvertures", slug: "paniers-couvertures", icon: "Circle", color: "#01796F", sort_order: 377, parentSlug: "accessoires-alimentation-animaux" },
+  { name: "Aquariums & Terrariums", slug: "aquariums-terrariums", icon: "Circle", color: "#01796F", sort_order: 1, parentSlug: "poissons-aquariophilie" },
+  { name: "Poissons d'ornement", slug: "poissons-d-ornement", icon: "Circle", color: "#01796F", sort_order: 2, parentSlug: "poissons-aquariophilie" },
+  { name: "Plantes aquatiques", slug: "plantes-aquatiques", icon: "Circle", color: "#01796F", sort_order: 3, parentSlug: "poissons-aquariophilie" },
+  { name: "Filtres & Pompes", slug: "filtres-pompes", icon: "Circle", color: "#01796F", sort_order: 4, parentSlug: "poissons-aquariophilie" },
+  { name: "Nourriture", slug: "nourriture", icon: "Circle", color: "#01796F", sort_order: 5, parentSlug: "poissons-aquariophilie" },
+  { name: "Accessoires d'aquarium", slug: "accessoires-d-aquarium", icon: "Circle", color: "#01796F", sort_order: 6, parentSlug: "poissons-aquariophilie" },
+  { name: "Lapins", slug: "lapins", icon: "Circle", color: "#01796F", sort_order: 1, parentSlug: "lapins-rongeurs" },
+  { name: "Hamsters", slug: "hamsters", icon: "Circle", color: "#01796F", sort_order: 2, parentSlug: "lapins-rongeurs" },
+  { name: "Cobayes", slug: "cobayes", icon: "Circle", color: "#01796F", sort_order: 3, parentSlug: "lapins-rongeurs" },
+  { name: "Cages & Enclos", slug: "cages-enclos", icon: "Circle", color: "#01796F", sort_order: 4, parentSlug: "lapins-rongeurs" },
+  { name: "Litière & Foin", slug: "litiere-foin", icon: "Circle", color: "#01796F", sort_order: 5, parentSlug: "lapins-rongeurs" },
+  { name: "Nourriture rongeurs", slug: "nourriture-rongeurs", icon: "Circle", color: "#01796F", sort_order: 6, parentSlug: "lapins-rongeurs" },
+  { name: "Coiffure & Barbier", slug: "coiffure-barbier", icon: "Circle", color: "#01796F", sort_order: 378, parentSlug: "services-particuliers" },
+  { name: "Esthétique & Soins", slug: "esthetique-soins", icon: "Circle", color: "#01796F", sort_order: 379, parentSlug: "services-particuliers" },
+  { name: "Cours & Soutien scolaire", slug: "cours-soutien-scolaire", icon: "Circle", color: "#01796F", sort_order: 380, parentSlug: "services-particuliers" },
+  { name: "Photographie & Vidéo", slug: "photographie-video", icon: "Circle", color: "#01796F", sort_order: 381, parentSlug: "services-particuliers" },
+  { name: "Réparation électroménager", slug: "reparation-electromenager", icon: "Circle", color: "#01796F", sort_order: 382, parentSlug: "services-particuliers" },
+  { name: "Blanchisserie", slug: "blanchisserie", icon: "Circle", color: "#01796F", sort_order: 383, parentSlug: "services-particuliers" },
+  { name: "Consulting & Conseil", slug: "consulting-conseil", icon: "Circle", color: "#01796F", sort_order: 384, parentSlug: "services-entreprises" },
+  { name: "Communication & Marketing", slug: "communication-marketing", icon: "Circle", color: "#01796F", sort_order: 385, parentSlug: "services-entreprises" },
+  { name: "Comptabilité & Fiscalité", slug: "comptabilite-fiscalite", icon: "Circle", color: "#01796F", sort_order: 386, parentSlug: "services-entreprises" },
+  { name: "Nettoyage professionnel", slug: "nettoyage-professionnel", icon: "Circle", color: "#01796F", sort_order: 387, parentSlug: "services-entreprises" },
+  { name: "Sécurité & Gardiennage", slug: "securite-gardiennage", icon: "Circle", color: "#01796F", sort_order: 388, parentSlug: "services-entreprises" },
+  { name: "Location de matériel", slug: "location-de-materiel", icon: "Circle", color: "#01796F", sort_order: 389, parentSlug: "services-entreprises" },
+  { name: "Outillage professionnel", slug: "outillage-professionnel", icon: "Circle", color: "#01796F", sort_order: 390, parentSlug: "materiel-professionnel" },
+  { name: "Matériel agricole", slug: "materiel-agricole", icon: "Circle", color: "#01796F", sort_order: 391, parentSlug: "materiel-professionnel" },
+  { name: "Matériel de cuisine pro", slug: "materiel-de-cuisine-pro", icon: "Circle", color: "#01796F", sort_order: 392, parentSlug: "materiel-professionnel" },
+  { name: "Équipements bureaux", slug: "equipements-bureaux", icon: "Circle", color: "#01796F", sort_order: 393, parentSlug: "materiel-professionnel" },
+  { name: "Matériel médical", slug: "materiel-medical", icon: "Circle", color: "#01796F", sort_order: 394, parentSlug: "materiel-professionnel" },
+  { name: "Matériel BTP", slug: "materiel-btp", icon: "Circle", color: "#01796F", sort_order: 395, parentSlug: "materiel-professionnel" },
+  { name: "Réparation PC & Mac", slug: "reparation-pc-mac", icon: "Circle", color: "#01796F", sort_order: 1, parentSlug: "services-informatiques" },
+  { name: "Création de sites web", slug: "creation-de-sites-web", icon: "Circle", color: "#01796F", sort_order: 2, parentSlug: "services-informatiques" },
+  { name: "Installation réseaux", slug: "installation-reseaux", icon: "Circle", color: "#01796F", sort_order: 3, parentSlug: "services-informatiques" },
+  { name: "Dépannage à domicile", slug: "depannage-a-domicile", icon: "Circle", color: "#01796F", sort_order: 4, parentSlug: "services-informatiques" },
+  { name: "Formation informatique", slug: "formation-informatique", icon: "Circle", color: "#01796F", sort_order: 5, parentSlug: "services-informatiques" },
+  { name: "Maintenance & Support", slug: "maintenance-support", icon: "Circle", color: "#01796F", sort_order: 6, parentSlug: "services-informatiques" },
+  { name: "Ménage & Nettoyage", slug: "menage-nettoyage", icon: "Circle", color: "#01796F", sort_order: 1, parentSlug: "services-domestiques" },
+  { name: "Repassage & Couture", slug: "repassage-couture", icon: "Circle", color: "#01796F", sort_order: 2, parentSlug: "services-domestiques" },
+  { name: "Jardinage & Espaces verts", slug: "jardinage-espaces-verts", icon: "Circle", color: "#01796F", sort_order: 3, parentSlug: "services-domestiques" },
+  { name: "Garde d'enfants", slug: "garde-d-enfants", icon: "Circle", color: "#01796F", sort_order: 4, parentSlug: "services-domestiques" },
+  { name: "Gardiennage & Surveillance", slug: "gardiennage-surveillance", icon: "Circle", color: "#01796F", sort_order: 5, parentSlug: "services-domestiques" },
+  { name: "Livraison & Courses", slug: "livraison-courses", icon: "Circle", color: "#01796F", sort_order: 6, parentSlug: "services-domestiques" },
+  { name: "Taxis & VTC", slug: "taxis-vtc", icon: "Circle", color: "#01796F", sort_order: 1, parentSlug: "transport-demenagement" },
+  { name: "Location de véhicules", slug: "location-de-vehicules", icon: "Circle", color: "#01796F", sort_order: 2, parentSlug: "transport-demenagement" },
+  { name: "Camions de déménagement", slug: "camions-de-demenagement", icon: "Circle", color: "#01796F", sort_order: 3, parentSlug: "transport-demenagement" },
+  { name: "Déménagement local", slug: "demenagement-local", icon: "Circle", color: "#01796F", sort_order: 4, parentSlug: "transport-demenagement" },
+  { name: "Déménagement longue distance", slug: "demenagement-longue-distance", icon: "Circle", color: "#01796F", sort_order: 5, parentSlug: "transport-demenagement" },
+  { name: "Transport de colis", slug: "transport-de-colis", icon: "Circle", color: "#01796F", sort_order: 6, parentSlug: "transport-demenagement" },
+];
+
+const faqs = [
+  { question: "Comment créer une annonce ?", answer: "Cliquez sur 'Vendre' dans le menu, remplissez le formulaire avec les détails de votre article, ajoutez des photos et publiez. C'est gratuit !", category: "annonces", sort_order: 1 },
+  { question: "Comment contacter un vendeur ?", answer: "Sur la page d'une annonce, cliquez sur 'Contacter le vendeur' pour démarrer une conversation. Vous devez être connecté.", category: "annonces", sort_order: 2 },
+  { question: "Les frais de commission sont-ils obligatoires ?", answer: "TG-Market prend une commission de 5% uniquement sur les transactions sécurisées (séquestre). La publication d'annonces est gratuite.", category: "paiements", sort_order: 3 },
+  { question: "Comment fonctionne le paiement séquestre ?", answer: "L'acheteur paie, les fonds sont bloqués. Une fois la livraison confirmée, les fonds sont libérés au vendeur (moins 5% de commission). En cas de litige, notre équipe intervient.", category: "paiements", sort_order: 4 },
+  { question: "Comment devenir vendeur vérifié ?", answer: "Passez la vérification KYC dans votre profil : vérifiez votre téléphone par OTP, puis soumettez une pièce d'identité et un selfie.", category: "compte", sort_order: 5 },
+  { question: "Comment modifier mon profil ?", answer: "Allez dans Paramètres > Profil pour modifier vos informations personnelles, photo, bio et préférences.", category: "compte", sort_order: 6 },
+  { question: "Comment ajouter un favori ?", answer: "Cliquez sur le cœur sur n'importe quelle annonce pour l'ajouter à vos favoris. Retrouvez-les dans l'onglet Favoris.", category: "annonces", sort_order: 7 },
+  { question: "Comment modifier ou supprimer une annonce ?", answer: "Dans votre tableau de bord, allez dans 'Mes annonces', cliquez sur l'annonce concernée et choisissez Modifier ou Supprimer.", category: "annonces", sort_order: 8 },
+  { question: "Comment retirer mes gains ?", answer: "Allez dans Portefeuille > Retrait, choisissez votre moyen de paiement (Flooz, TMoney, Mobile Money) et entrez le montant. Le minimum est de 1 000 FCFA.", category: "paiements", sort_order: 9 },
+  { question: "Comment signaler une annonce suspecte ?", answer: "Sur la page de l'annonce, cliquez sur 'Signaler' et sélectionnez le motif. Notre équipe examinera le signalement dans les 24h.", category: "securite", sort_order: 10 },
+  { question: "Puis-je utiliser TG-Market en dehors du Togo ?", answer: "TG-Market est actuellement disponible uniquement au Togo. Nous prévoyons d'élargir à d'autres pays d'Afrique de l'Ouest prochainement.", category: "generale", sort_order: 11 },
+  { question: "Comment contacter le support ?", answer: "Envoyez-nous un email à support@tgmarket.tg ou utilisez la page Contact. Nous répondons sous 24h.", category: "generale", sort_order: 12 },
+];
+
+const cities = [
+  "Lomé",
+  "Kara",
+  "Sokodé",
+  "Kpalimé",
+  "Atakpamé",
+  "Bassar",
+  "Tsévié",
+  "Dapaong",
+  "Sansanné-Mango",
+  "Kandé",
+  "Vogan",
+  "Notsé",
+  "Koumongou",
+  "Tchamba",
+  "Blitta",
+  "Sotouboua",
+  "Mango",
+  "Bafilo",
+  "Kémégré",
+  "Aneho",
+  "Tabligbo",
+  "Yotobé",
+  "Glejagba",
+  "Kpagouda",
+  "Kpékplémi",
+  "Togblékoévé"
+];
 
 async function main() {
   console.log('🌱 Seeding database...');
-  console.log('📡 Connexion à:', process.env.DATABASE_URL?.replace(/:[^:]*@/, ':****@'));
 
   try {
-    // Tester la connexion d'abord
     await prisma.$connect();
-    console.log('✅ Connexion réussie !');
 
-    // 1. Admin user
     const adminPassword = await bcrypt.hash('Admin@TGMarket2026', 12);
     await prisma.user.upsert({
       where: { email: 'admin@tgmarket.tg' },
       update: {},
-      create: {
-        first_name: 'Admin',
-        last_name: 'TG-Market',
-        email: 'admin@tgmarket.tg',
-        phone: '+22890000000',
-        password: adminPassword,
-        city: 'Lomé',
-        role: 'admin',
-        email_verified_at: new Date(),
-        phone_verified_at: new Date(),
-      },
+      create: { first_name: 'Admin', last_name: 'TG-Market', email: 'admin@tgmarket.tg', phone: '+22890000000', password: adminPassword, city: 'Lomé', role: 'admin', email_verified_at: new Date(), phone_verified_at: new Date() },
     });
     console.log('✅ Admin user created');
 
-    // 2. Mega-categories (parents)
     for (const cat of megaCategories) {
       await prisma.category.upsert({
         where: { slug: cat.slug },
@@ -220,13 +510,9 @@ async function main() {
     }
     console.log(`✅ ${megaCategories.length} mega-categories seeded`);
 
-    // 3. Sub-categories (children)
     for (const sub of subCategories) {
       const parent = await prisma.category.findUnique({ where: { slug: sub.parentSlug } });
-      if (!parent) {
-        console.warn(`⚠️ Parent not found for slug "${sub.parentSlug}", skipping "${sub.name}"`);
-        continue;
-      }
+      if (!parent) { console.warn(`⚠️ Parent not found: ${sub.parentSlug}, skipping ${sub.name}`); continue; }
       const { parentSlug, ...data } = sub;
       await prisma.category.upsert({
         where: { slug: data.slug },
@@ -236,23 +522,36 @@ async function main() {
     }
     console.log(`✅ ${subCategories.length} sub-categories seeded`);
 
-    // 4. FAQs
+    for (const leaf of leafCategories) {
+      const parent = await prisma.category.findUnique({ where: { slug: leaf.parentSlug } });
+      if (!parent) { console.warn(`⚠️ Parent not found: ${leaf.parentSlug}, skipping ${leaf.name}`); continue; }
+      const { parentSlug, ...data } = leaf;
+      await prisma.category.upsert({
+        where: { slug: data.slug },
+        update: { ...data, parent_id: parent.id },
+        create: { ...data, parent_id: parent.id },
+      });
+    }
+    console.log(`✅ ${leafCategories.length} leaf categories seeded`);
+
     await prisma.faq.deleteMany({});
     for (const faq of faqs) {
       await prisma.faq.create({ data: faq });
     }
     console.log(`✅ ${faqs.length} FAQs seeded`);
 
+    await prisma.siteSetting.upsert({
+      where: { key: 'cities' },
+      update: { value: JSON.stringify(cities) },
+      create: { key: 'cities', value: JSON.stringify(cities) },
+    });
+    console.log(`✅ ${cities.length} cities seeded`);
+
     console.log('🌱 Seed completed!');
   } catch (error) {
-    console.error('❌ Erreur pendant le seed:', error.message);
+    console.error('❌ Seed error:', error.message);
     throw error;
   }
 }
 
-main()
-  .catch((e) => {
-    console.error('Seed error:', e);
-    process.exit(1);
-  })
-  .finally(() => prisma.$disconnect());
+main().catch(e => { console.error(e); process.exit(1); }).finally(() => prisma.$disconnect());

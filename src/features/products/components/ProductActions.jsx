@@ -1,12 +1,25 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Share2, Flag, Copy, Check } from "lucide-react";
+import { Heart, Share2, Flag, Copy, Check, Loader2, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { cn } from "@/shared/utils/cn";
 import { useCheckFavorite, useToggleFavorite } from "@/features/favorites/hooks/useFavorites";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import { useNavigate } from "react-router-dom";
+import api from "@/shared/services/api";
+import Modal from "@/shared/ui/Modal";
+import Button from "@/shared/ui/Button";
+
+const REPORT_REASONS = [
+  { value: "inappropriate", label: "Contenu inapproprié" },
+  { value: "scam", label: "Arnaque" },
+  { value: "counterfeit", label: "Contrefaçon" },
+  { value: "spam", label: "Spam" },
+  { value: "wrong_category", label: "Mauvaise catégorie" },
+  { value: "duplicate", label: "Doublon" },
+  { value: "other", label: "Autre" },
+];
 
 export default function ProductActions({ product }) {
   const { isAuthenticated } = useAuth();
@@ -19,6 +32,10 @@ export default function ProductActions({ product }) {
 
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [reportDescription, setReportDescription] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const handleFavorite = async () => {
     if (!isAuthenticated) {
@@ -77,10 +94,39 @@ export default function ProductActions({ product }) {
   };
 
   const handleReport = () => {
-    toast.success("Merci pour votre signalement. Nous examinerons cette annonce.");
+    if (!isAuthenticated) {
+      toast.error("Connectez-vous pour signaler une annonce");
+      navigate("/connexion");
+      return;
+    }
+    setReportReason("");
+    setReportDescription("");
+    setShowReportModal(true);
+  };
+
+  const submitReport = async () => {
+    if (!reportReason) {
+      toast.error("Veuillez sélectionner une raison");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await api.post("/reports", {
+        productId: product.id,
+        reason: reportReason,
+        description: reportDescription,
+      });
+      toast.success("Merci pour votre signalement. Nous examinerons cette annonce.");
+      setShowReportModal(false);
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Erreur lors de l'envoi du signalement");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
+    <>
     <div className="flex items-center gap-2">
       <motion.button
         whileHover={{ scale: 1.05 }}
@@ -171,5 +217,47 @@ export default function ProductActions({ product }) {
         <span className="hidden sm:inline">Signaler</span>
       </motion.button>
     </div>
+
+      <Modal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        title="Signaler cette annonce"
+        size="sm"
+        footer={
+          <div className="flex gap-3 justify-end">
+            <Button variant="ghost" size="sm" onClick={() => setShowReportModal(false)}>Annuler</Button>
+            <Button variant="primary" size="sm" onClick={submitReport} disabled={submitting || !reportReason}>
+              {submitting ? "Envoi..." : "Signaler"}
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Raison du signalement</label>
+            <select
+              value={reportReason}
+              onChange={(e) => setReportReason(e.target.value)}
+              className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+            >
+              <option value="">Sélectionnez une raison...</option>
+              {REPORT_REASONS.map((r) => (
+                <option key={r.value} value={r.value}>{r.label}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Description (optionnelle)</label>
+            <textarea
+              value={reportDescription}
+              onChange={(e) => setReportDescription(e.target.value)}
+              rows={3}
+              placeholder="Décrivez le problème..."
+              className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 dark:border-gray-700 dark:bg-gray-800 dark:text-white resize-none"
+            />
+          </div>
+        </div>
+      </Modal>
+    </>
   );
 }

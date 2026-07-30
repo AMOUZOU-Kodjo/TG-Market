@@ -889,6 +889,7 @@ const DEFAULT_SETTINGS = {
   social_twitter: 'https://twitter.com/tgmarket',
   social_instagram: 'https://instagram.com/tgmarket',
   social_linkedin: 'https://linkedin.com/company/tgmarket',
+  social_github: 'https://github.com/AMOUZOU-Kodjo/TG-Market',
   team_members: JSON.stringify([
     {
       name: 'Amouzou Kodjo',
@@ -900,6 +901,7 @@ const DEFAULT_SETTINGS = {
       facebook: '#',
       twitter: '#',
       instagram: '#',
+      github: '#',
     },
     {
       name: 'Awougno Kofi Yosua',
@@ -911,6 +913,7 @@ const DEFAULT_SETTINGS = {
       facebook: '#',
       twitter: '#',
       instagram: '#',
+      github: '#',
     },
   ]),
 };

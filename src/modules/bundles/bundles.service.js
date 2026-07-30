@@ -135,12 +135,20 @@ export async function getMyBundles(sellerId, { page, perPage }) {
   };
 }
 
-export async function getPublicBundles({ page, perPage }) {
+export async function getPublicBundles({ page, perPage, q }) {
   const skip = (page - 1) * perPage;
+
+  const where = { status: 'active' };
+  if (q) {
+    where.OR = [
+      { title: { contains: q, mode: 'insensitive' } },
+      { description: { contains: q, mode: 'insensitive' } },
+    ];
+  }
 
   const [bundles, total] = await Promise.all([
     prisma.bundle.findMany({
-      where: { status: 'active' },
+      where,
       select: {
         id: true,
         title: true,

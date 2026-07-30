@@ -29,7 +29,8 @@ export async function getMyBundles(req, res, next) {
 export async function getPublicBundles(req, res, next) {
   try {
     const { page, perPage } = req.pagination;
-    const result = await bundlesService.getPublicBundles({ page, perPage });
+    const q = req.query.q || '';
+    const result = await bundlesService.getPublicBundles({ page, perPage, q });
     res.json({
       data: result.bundles,
       meta: buildPaginationMeta(result.total, page, perPage),

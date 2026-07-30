@@ -204,7 +204,7 @@ export async function acceptOffer(offerId, sellerId) {
 
   const product = await prisma.product.findUnique({
     where: { id: offer.product_id },
-    select: { id: true, title: true, user_id: true },
+    select: { id: true, title: true, status: true, user_id: true },
   });
 
   if (!product || product.status !== 'active') {

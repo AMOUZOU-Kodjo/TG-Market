@@ -37,6 +37,12 @@ export function SiteSettingsProvider({ children }) {
     siteDescription: data?.siteDescription ?? "",
     maintenanceMode: data?.maintenanceMode ?? false,
     supportEmail: data?.supportEmail ?? "support@akmarket.tg",
+    maintenanceMessage: data?.maintenanceMessage ?? "est actuellement en maintenance pour améliorer vos services. Nous serons de retour très bientôt !",
+    maintenanceEstimatedReturn: data?.maintenanceEstimatedReturn ?? "24 juillet 2026 à 18h00 (GMT+0)",
+    maintenanceImprovements: data?.maintenanceImprovements ?? [],
+    socialFacebook: data?.socialFacebook ?? "https://facebook.com/tgmarket",
+    socialTwitter: data?.socialTwitter ?? "https://twitter.com/tgmarket",
+    socialInstagram: data?.socialInstagram ?? "https://instagram.com/tgmarket",
     refreshSettings: () => qc.refetchQueries({ queryKey: ["siteSettings"] }),
   };
 
@@ -54,6 +60,12 @@ export function useSiteSettings() {
     siteDescription: "",
     maintenanceMode: false,
     supportEmail: "support@akmarket.tg",
+    maintenanceMessage: "",
+    maintenanceEstimatedReturn: "",
+    maintenanceImprovements: [],
+    socialFacebook: "",
+    socialTwitter: "",
+    socialInstagram: "",
     refreshSettings: () => {},
   };
 }

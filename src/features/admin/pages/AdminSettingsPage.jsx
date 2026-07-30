@@ -18,12 +18,23 @@ export default function AdminSettingsPage() {
 
   useEffect(() => {
     if (settings) {
+      let improvements = settings.maintenance_improvements ?? "";
+      try {
+        const parsed = JSON.parse(improvements);
+        if (Array.isArray(parsed)) improvements = parsed.join("\n");
+      } catch {}
       setForm({
         site_name: settings.site_name ?? "",
         site_version: settings.site_version ?? "",
         site_description: settings.site_description ?? "",
         support_email: settings.support_email ?? "",
         maintenance_mode: settings.maintenance_mode === "true",
+        maintenance_message: settings.maintenance_message ?? "",
+        maintenance_estimated_return: settings.maintenance_estimated_return ?? "",
+        maintenance_improvements: improvements,
+        social_facebook: settings.social_facebook ?? "",
+        social_twitter: settings.social_twitter ?? "",
+        social_instagram: settings.social_instagram ?? "",
       });
     }
   }, [settings]);
@@ -33,12 +44,20 @@ export default function AdminSettingsPage() {
     onSuccess: (updated) => {
       toast.success("Paramètres enregistrés");
       qc.setQueryData(["adminSettings"], updated);
+      let improvements = updated.maintenance_improvements ?? "";
+      try { const p = JSON.parse(improvements); if (Array.isArray(p)) improvements = p.join("\n"); } catch {}
       setForm({
         site_name: updated.site_name ?? "",
         site_version: updated.site_version ?? "",
         site_description: updated.site_description ?? "",
         support_email: updated.support_email ?? "",
         maintenance_mode: updated.maintenance_mode === "true",
+        maintenance_message: updated.maintenance_message ?? "",
+        maintenance_estimated_return: updated.maintenance_estimated_return ?? "",
+        maintenance_improvements: improvements,
+        social_facebook: updated.social_facebook ?? "",
+        social_twitter: updated.social_twitter ?? "",
+        social_instagram: updated.social_instagram ?? "",
       });
       qc.setQueryData(["siteSettings"], {
         siteName: updated.site_name,
@@ -46,15 +65,26 @@ export default function AdminSettingsPage() {
         siteDescription: updated.site_description,
         maintenanceMode: updated.maintenance_mode === "true",
         supportEmail: updated.support_email,
+        maintenanceMessage: updated.maintenance_message,
+        maintenanceEstimatedReturn: updated.maintenance_estimated_return,
+        maintenanceImprovements: updated.maintenance_improvements,
+        socialFacebook: updated.social_facebook,
+        socialTwitter: updated.social_twitter,
+        socialInstagram: updated.social_instagram,
       });
     },
     onError: (e) => toast.error(e.response?.data?.error ?? "Erreur lors de l'enregistrement"),
   });
 
   const handleSave = () => {
+    const improvements = form.maintenance_improvements
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean);
     updateSettings.mutate({
       ...form,
       maintenance_mode: String(form.maintenance_mode),
+      maintenance_improvements: JSON.stringify(improvements),
     });
   };
 
@@ -126,8 +156,8 @@ export default function AdminSettingsPage() {
               <Mail className="w-5 h-5 text-brand-600" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-gray-900">Email</h3>
-              <p className="text-xs text-gray-400">Contact support</p>
+              <h3 className="text-sm font-semibold text-gray-900">Email & Réseaux</h3>
+              <p className="text-xs text-gray-400">Contact et liens sociaux</p>
             </div>
           </div>
           <div>
@@ -136,6 +166,30 @@ export default function AdminSettingsPage() {
               type="email"
               value={form.support_email}
               onChange={(e) => setForm({ ...form, support_email: e.target.value })}
+              className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Facebook</label>
+            <input
+              value={form.social_facebook}
+              onChange={(e) => setForm({ ...form, social_facebook: e.target.value })}
+              className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Twitter / X</label>
+            <input
+              value={form.social_twitter}
+              onChange={(e) => setForm({ ...form, social_twitter: e.target.value })}
+              className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Instagram</label>
+            <input
+              value={form.social_instagram}
+              onChange={(e) => setForm({ ...form, social_instagram: e.target.value })}
               className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
             />
           </div>
@@ -177,6 +231,34 @@ export default function AdminSettingsPage() {
             </div>
             <span className="text-sm text-gray-600">{form.maintenance_mode ? "Activé" : "Désactivé"}</span>
           </label>
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Message de maintenance</label>
+              <textarea
+                value={form.maintenance_message}
+                onChange={(e) => setForm({ ...form, maintenance_message: e.target.value })}
+                rows={2}
+                className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50 resize-none"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Retour estimé</label>
+              <input
+                value={form.maintenance_estimated_return}
+                onChange={(e) => setForm({ ...form, maintenance_estimated_return: e.target.value })}
+                className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Améliorations (un par ligne)</label>
+              <textarea
+                value={form.maintenance_improvements}
+                onChange={(e) => setForm({ ...form, maintenance_improvements: e.target.value })}
+                rows={3}
+                className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50 resize-none"
+              />
+            </div>
+          </div>
           <div className="flex items-start gap-2 text-xs text-gray-400 bg-gray-50 rounded-xl p-3">
             <Info className="w-4 h-4 mt-0.5 shrink-0" />
             <p>En mode maintenance, seuls les administrateurs peuvent accéder au site.</p>

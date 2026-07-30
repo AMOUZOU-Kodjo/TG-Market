@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Wrench, Clock, Mail, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Wrench, Clock, Mail, ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
 import Button from "@/shared/ui/Button";
 import Input from "@/shared/ui/Input";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
+import api from "@/shared/services/api";
 import toast from "react-hot-toast";
 
 export default function MaintenancePage() {
-  const { siteName, maintenanceMode } = useSiteSettings();
+  const { siteName, maintenanceMode, maintenanceMessage, maintenanceEstimatedReturn, maintenanceImprovements, socialFacebook, socialTwitter, socialInstagram } = useSiteSettings();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [subscribing, setSubscribing] = useState(false);
 
   useEffect(() => {
     if (!maintenanceMode) {
@@ -19,63 +21,56 @@ export default function MaintenancePage() {
     }
   }, [maintenanceMode, navigate]);
 
-  const estimatedReturn = "24 juillet 2026 à 18h00 (GMT+0)";
-
-  const handleSubscribe = (e) => {
+  const handleSubscribe = async (e) => {
     e.preventDefault();
     if (!email.trim()) {
       toast.error("Veuillez entrer une adresse email");
       return;
     }
-    setSubscribed(true);
-    toast.success("Vous serez notifié lorsque le site sera de retour !");
+    setSubscribing(true);
+    try {
+      await api.post("/maintenance/subscribe", { email });
+      setSubscribed(true);
+      toast.success("Inscription réussie !");
+    } catch (err) {
+      toast.error(err.response?.data?.error ?? "Erreur lors de l'inscription");
+    } finally {
+      setSubscribing(false);
+    }
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 dark:bg-gray-950">
-      <div className="w-full max-w-lg">
+      <div className="w-full max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 260, damping: 20 }}
           className="rounded-3xl border border-gray-100 bg-white p-8 shadow-xl dark:border-gray-800 dark:bg-gray-800 sm:p-10"
         >
-          {/* Animated Icon */}
-          <div className="relative mx-auto mb-6 h-24 w-24">
-            <motion.div
-              animate={{
-                rotate: [0, 360],
-              }}
-              transition={{
-                duration: 20,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-              className="absolute inset-0 rounded-full border-4 border-dashed border-brand-300 dark:border-brand-800/20"
+          {/* Logo */}
+          <div className="flex justify-center mb-6">
+            <img
+              src="/logo-tg.png"
+              alt={siteName}
+              className="h-16 w-auto object-contain"
             />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <motion.div
-                animate={{
-                  scale: [1, 1.1, 1],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              >
-                <Wrench className="h-10 w-10 text-brand-800" />
-              </motion.div>
-            </div>
           </div>
 
           <div className="text-center">
-            <h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white flex items-center justify-center gap-3">
+              <div className="relative h-10 w-10 flex items-center justify-center">
+                <motion.div
+                  animate={{ rotate: [0, 360] }}
+                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-0 rounded-full border-2 border-dashed border-brand-300"
+                />
+                <Wrench className="text-xl text-brand-800 relative" />
+              </div>
               Maintenance en cours
             </h1>
             <p className="mb-6 text-gray-500 dark:text-gray-400">
-              {siteName} est actuellement en maintenance pour améliorer vos
-              services. Nous serons de retour très bientôt !
+              {siteName} {maintenanceMessage}
             </p>
           </div>
 
@@ -87,7 +82,7 @@ export default function MaintenancePage() {
                 Retour estimé
               </p>
               <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                {estimatedReturn}
+                {maintenanceEstimatedReturn}
               </p>
             </div>
           </div>
@@ -98,11 +93,7 @@ export default function MaintenancePage() {
               En cours d'amélioration
             </p>
             <ul className="space-y-2">
-              {[
-                "Système de paiement sécurisé via Mobile Money",
-                "Performance et vitesse de chargement",
-                "Nouvelles fonctionnalités de messagerie",
-              ].map((item, i) => (
+              {(Array.isArray(maintenanceImprovements) ? maintenanceImprovements : []).map((item, i) => (
                 <li key={i} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                   <div className="h-1.5 w-1.5 rounded-full bg-brand-800" />
                   {item}
@@ -127,8 +118,8 @@ export default function MaintenancePage() {
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
-                <Button type="submit" icon={ArrowRight}>
-                  Notifier
+                <Button type="submit" disabled={subscribing} icon={subscribing ? Loader2 : ArrowRight}>
+                  {subscribing ? "..." : "Notifier"}
                 </Button>
               </div>
             </form>
@@ -151,15 +142,15 @@ export default function MaintenancePage() {
               Suivez-nous sur les réseaux sociaux pour les dernières mises à jour
             </p>
             <div className="mt-3 flex justify-center gap-3">
-              <span className="rounded-full bg-brand-100 px-3 py-1 text-xs font-medium text-brand-800 dark:bg-brand-700/10 dark:text-brand-400">
+              <a href={socialFacebook} target="_blank" rel="noopener noreferrer" className="rounded-full bg-brand-100 px-3 py-1 text-xs font-medium text-brand-800 hover:bg-brand-200 transition-colors dark:bg-brand-700/10 dark:text-brand-400">
                 Facebook
-              </span>
-              <span className="rounded-full bg-sky-100 px-3 py-1 text-xs font-medium text-sky-600 dark:bg-sky-500/10 dark:text-sky-400">
+              </a>
+              <a href={socialTwitter} target="_blank" rel="noopener noreferrer" className="rounded-full bg-sky-100 px-3 py-1 text-xs font-medium text-sky-600 hover:bg-sky-200 transition-colors dark:bg-sky-500/10 dark:text-sky-400">
                 Twitter
-              </span>
-              <span className="rounded-full bg-brand-100 px-3 py-1 text-xs font-medium text-brand-800 dark:bg-brand-700/10 dark:text-brand-400">
+              </a>
+              <a href={socialInstagram} target="_blank" rel="noopener noreferrer" className="rounded-full bg-brand-100 px-3 py-1 text-xs font-medium text-brand-800 hover:bg-brand-200 transition-colors dark:bg-brand-700/10 dark:text-brand-400">
                 Instagram
-              </span>
+              </a>
             </div>
           </div>
         </motion.div>

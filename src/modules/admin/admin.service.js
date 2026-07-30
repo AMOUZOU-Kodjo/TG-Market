@@ -878,6 +878,16 @@ const DEFAULT_SETTINGS = {
   site_description: 'La plateforme togolaise de vente et d\'achat d\'articles d\'occasion',
   support_email: 'support@akmarket.tg',
   maintenance_mode: 'false',
+  maintenance_message: 'est actuellement en maintenance pour améliorer vos services. Nous serons de retour très bientôt !',
+  maintenance_estimated_return: '24 juillet 2026 à 18h00 (GMT+0)',
+  maintenance_improvements: JSON.stringify([
+    'Système de paiement sécurisé via Mobile Money',
+    'Performance et vitesse de chargement',
+    'Nouvelles fonctionnalités de messagerie',
+  ]),
+  social_facebook: 'https://facebook.com/tgmarket',
+  social_twitter: 'https://twitter.com/tgmarket',
+  social_instagram: 'https://instagram.com/tgmarket',
 };
 
 export async function getSettings() {
@@ -907,7 +917,7 @@ export async function updateSettings(data) {
 
 export async function getPublicSettings() {
   const rows = await prisma.siteSetting.findMany({
-    where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode'] } },
+    where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode', 'maintenance_message', 'maintenance_estimated_return', 'maintenance_improvements', 'social_facebook', 'social_twitter', 'social_instagram'] } },
   });
   const map = {};
   for (const row of rows) map[row.key] = row.value;
@@ -916,5 +926,11 @@ export async function getPublicSettings() {
     siteVersion: map.site_version ?? DEFAULT_SETTINGS.site_version,
     siteDescription: map.site_description ?? DEFAULT_SETTINGS.site_description,
     maintenanceMode: map.maintenance_mode === 'true',
+    maintenanceMessage: map.maintenance_message ?? DEFAULT_SETTINGS.maintenance_message,
+    maintenanceEstimatedReturn: map.maintenance_estimated_return ?? DEFAULT_SETTINGS.maintenance_estimated_return,
+    maintenanceImprovements: JSON.parse(map.maintenance_improvements ?? DEFAULT_SETTINGS.maintenance_improvements),
+    socialFacebook: map.social_facebook ?? DEFAULT_SETTINGS.social_facebook,
+    socialTwitter: map.social_twitter ?? DEFAULT_SETTINGS.social_twitter,
+    socialInstagram: map.social_instagram ?? DEFAULT_SETTINGS.social_instagram,
   };
 }

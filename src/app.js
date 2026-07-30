@@ -105,7 +105,7 @@ app.get('/api/public/reviews', async (_req, res) => {
 app.get('/api/settings/public', async (_req, res) => {
   try {
     const rows = await prisma.siteSetting.findMany({
-      where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode', 'support_email'] } },
+      where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode', 'support_email', 'maintenance_message', 'maintenance_estimated_return', 'maintenance_improvements', 'social_facebook', 'social_twitter', 'social_instagram'] } },
     });
     const map = {};
     for (const row of rows) map[row.key] = row.value;
@@ -115,9 +115,37 @@ app.get('/api/settings/public', async (_req, res) => {
       siteDescription: map.site_description ?? 'La plateforme togolaise de vente et d\'achat d\'articles d\'occasion',
       maintenanceMode: map.maintenance_mode === 'true',
       supportEmail: map.support_email ?? 'support@akmarket.tg',
+      maintenanceMessage: map.maintenance_message ?? 'est actuellement en maintenance pour améliorer vos services. Nous serons de retour très bientôt !',
+      maintenanceEstimatedReturn: map.maintenance_estimated_return ?? '24 juillet 2026 à 18h00 (GMT+0)',
+      maintenanceImprovements: JSON.parse(map.maintenance_improvements ?? '["Système de paiement sécurisé via Mobile Money","Performance et vitesse de chargement","Nouvelles fonctionnalités de messagerie"]'),
+      socialFacebook: map.social_facebook ?? 'https://facebook.com/tgmarket',
+      socialTwitter: map.social_twitter ?? 'https://twitter.com/tgmarket',
+      socialInstagram: map.social_instagram ?? 'https://instagram.com/tgmarket',
     });
   } catch {
     res.json({ siteName: 'TG-Market', siteVersion: '1.0.0', siteDescription: '', maintenanceMode: false, supportEmail: 'support@akmarket.tg' });
+  }
+});
+
+app.post('/api/maintenance/subscribe', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ error: 'Email valide requis' });
+    }
+    const existing = await prisma.siteSetting.findUnique({ where: { key: 'maintenance_subscribers' } });
+    const subscribers = existing ? JSON.parse(existing.value) : [];
+    if (!subscribers.includes(email)) {
+      subscribers.push(email);
+      await prisma.siteSetting.upsert({
+        where: { key: 'maintenance_subscribers' },
+        update: { value: JSON.stringify(subscribers) },
+        create: { key: 'maintenance_subscribers', value: JSON.stringify(subscribers) },
+      });
+    }
+    res.json({ success: true, message: 'Inscription réussie' });
+  } catch (err) {
+    res.status(500).json({ error: 'Erreur lors de l\'inscription' });
   }
 });
 

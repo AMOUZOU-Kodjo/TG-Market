@@ -64,6 +64,7 @@ import {
   MakeOfferPage,
   CreateBundlePage,
   BundleDetailPage,
+  OffersPage,
 } from "@/routes/lazyPages";
 
 const queryClient = new QueryClient({
@@ -292,6 +293,7 @@ function App() {
                           />
                           <Route path="/dashboard/settings" element={<SettingsPage />} />
                           <Route path="/dashboard/history" element={<HistoryPage />} />
+                          <Route path="/dashboard/offres" element={<OffersPage />} />
                         </Route>
 
                         <Route

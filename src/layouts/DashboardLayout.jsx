@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
+  Tag,
   Package,
   MessageCircle,
   Megaphone,
@@ -138,6 +139,17 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
         {sidebarOpen && <span>Messages</span>}
       </Link>
 
+      {/* Offres */}
+      <Link
+        to="/dashboard/offres"
+        onClick={onMobileLinkClick}
+        className={`mx-3 mt-2 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+        title={!sidebarOpen ? "Offres" : undefined}
+      >
+        <Tag className="w-4 h-4 shrink-0" />
+        {sidebarOpen && <span>Offres</span>}
+      </Link>
+
       {/* Admin - visible only for admins */}
       {user?.role === "admin" && (
         <Link
@@ -207,6 +219,7 @@ export default function DashboardLayout() {
     "/dashboard/profile": "Mon Profil",
     "/dashboard/history": "Ventes et Achats",
     "/dashboard/messages": "Messages",
+    "/dashboard/offres": "Offres",
     "/dashboard/notifications": "Notifications",
     "/dashboard/settings": "Paramètres",
     "/dashboard/analytics": "Statistiques",

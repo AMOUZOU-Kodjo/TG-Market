@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { FaLinkedinIn, FaFacebookF, FaXTwitter, FaInstagram } from "react-icons/fa6";
+import { FaLinkedinIn, FaFacebookF, FaXTwitter, FaInstagram, FaGithub } from "react-icons/fa6";
 import {
   Heart,
   Globe,
@@ -143,11 +143,19 @@ export default function AboutPage() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-brand-800 px-4 py-24 text-white sm:px-6 lg:px-8">
-        <div className="absolute inset-0">
-          <div className="absolute -left-20 -top-20 h-80 w-80 rounded-full bg-white/5" />
-          <div className="absolute -bottom-20 -right-20 h-80 w-80 rounded-full bg-white/10" />
-          <div className="absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-yellow-500/5" />
+        <div className="absolute inset-0 grid h-full w-full grid-cols-3 gap-0 sm:grid-cols-4 md:grid-cols-6">
+          {Array.from({ length: 18 }).map((_, i) => {
+            const m = members[i % members.length];
+            return m.photo ? (
+              <img key={i} src={m.photo} alt="" className="h-full w-full object-cover opacity-15" />
+            ) : (
+              <div key={i} className="flex items-center justify-center bg-brand-900/40 text-3xl font-bold text-white/[0.07]">
+                {m?.initials ?? ""}
+              </div>
+            );
+          })}
         </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-brand-900/60 via-brand-800/60 to-brand-900/60" />
         <div className="relative mx-auto max-w-4xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -434,6 +442,9 @@ export default function AboutPage() {
                   </a>
                   <a href={member.instagram || "#"} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg bg-[#E4405F] text-white hover:opacity-80 flex items-center justify-center transition-opacity" aria-label="Instagram">
                     <FaInstagram className="w-3.5 h-3.5" />
+                  </a>
+                  <a href={member.github || "#"} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg bg-[#333] text-white hover:opacity-80 flex items-center justify-center transition-opacity" aria-label="GitHub">
+                    <FaGithub className="w-3.5 h-3.5" />
                   </a>
                 </div>
               </motion.div>

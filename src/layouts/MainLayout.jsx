@@ -25,7 +25,7 @@ import {
   ExternalLink,
   Download,
 } from "lucide-react";
-import { FaFacebookF, FaXTwitter, FaInstagram, FaLinkedinIn } from "react-icons/fa6";
+import { FaFacebookF, FaXTwitter, FaInstagram, FaLinkedinIn, FaGithub } from "react-icons/fa6";
 import { SiGmail } from "react-icons/si";
 import Logo from "@/shared/ui/Logo";
 import BottomNav from "@/shared/ui/BottomNav";
@@ -540,6 +540,15 @@ location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWit
                     aria-label="LinkedIn"
                   >
                     <FaLinkedinIn className="w-4 h-4" />
+                  </a>
+                  <a
+                    href={settings.socialGithub}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-9 h-9 rounded-lg bg-[#333] text-white hover:opacity-80 flex items-center justify-center transition-opacity"
+                    aria-label="GitHub"
+                  >
+                    <FaGithub className="w-4 h-4" />
                   </a>
                 </div>
               </div>

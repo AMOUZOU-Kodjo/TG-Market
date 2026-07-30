@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/shared/services/api";
 import toast from "react-hot-toast";
 
-import { FaLinkedinIn, FaFacebookF, FaXTwitter, FaInstagram } from "react-icons/fa6";
+import { FaLinkedinIn, FaFacebookF, FaXTwitter, FaInstagram, FaGithub } from "react-icons/fa6";
 
 const TABS = [
   { id: "platform", label: "Plateforme", icon: Globe, color: "blue" },
@@ -49,6 +49,7 @@ export default function AdminSettingsPage() {
         social_twitter: settings.social_twitter ?? "",
         social_instagram: settings.social_instagram ?? "",
         social_linkedin: settings.social_linkedin ?? "",
+        social_github: settings.social_github ?? "",
         team_members: team,
       });
     }
@@ -76,6 +77,7 @@ export default function AdminSettingsPage() {
         social_twitter: updated.social_twitter ?? "",
         social_instagram: updated.social_instagram ?? "",
         social_linkedin: updated.social_linkedin ?? "",
+        social_github: updated.social_github ?? "",
         team_members: team,
       });
       qc.setQueryData(["siteSettings"], {
@@ -91,6 +93,7 @@ export default function AdminSettingsPage() {
         socialTwitter: updated.social_twitter,
         socialInstagram: updated.social_instagram,
         socialLinkedin: updated.social_linkedin,
+        socialGithub: updated.social_github,
         teamMembers: JSON.parse(updated.team_members ?? "[]"),
       });
     },
@@ -252,6 +255,14 @@ export default function AdminSettingsPage() {
                 className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
               />
             </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">GitHub</label>
+              <input
+                value={form.social_github}
+                onChange={(e) => setForm({ ...form, social_github: e.target.value })}
+                className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+              />
+            </div>
           </div>
         )}
 
@@ -354,6 +365,10 @@ export default function AdminSettingsPage() {
                     <div>
                       <label className="flex items-center gap-2 text-xs font-medium text-gray-500 mb-1"><FaInstagram className="w-3 h-3 text-[#E4405F]" /> Instagram</label>
                       <input value={member.instagram || ""} onChange={(e) => { const m = [...members]; m[idx] = { ...m[idx], instagram: e.target.value }; setForm({ ...form, team_members: JSON.stringify(m) }); }} className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/50" />
+                    </div>
+                    <div>
+                      <label className="flex items-center gap-2 text-xs font-medium text-gray-500 mb-1"><FaGithub className="w-3 h-3 text-[#333]" /> GitHub</label>
+                      <input value={member.github || ""} onChange={(e) => { const m = [...members]; m[idx] = { ...m[idx], github: e.target.value }; setForm({ ...form, team_members: JSON.stringify(m) }); }} className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/50" />
                     </div>
                   </div>
                   {member.photo && (

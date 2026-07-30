@@ -9,7 +9,7 @@ import api from "@/shared/services/api";
 import toast from "react-hot-toast";
 
 export default function MaintenancePage() {
-  const { siteName, maintenanceMode, maintenanceMessage, maintenanceEstimatedReturn, maintenanceImprovements, socialFacebook, socialTwitter, socialInstagram, socialLinkedin } = useSiteSettings();
+  const { siteName, maintenanceMode, maintenanceMessage, maintenanceEstimatedReturn, maintenanceImprovements, socialFacebook, socialTwitter, socialInstagram, socialLinkedin, socialGithub } = useSiteSettings();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
@@ -153,6 +153,9 @@ export default function MaintenancePage() {
               </a>
               <a href={socialLinkedin} target="_blank" rel="noopener noreferrer" className="rounded-full bg-sky-100 px-3 py-1 text-xs font-medium text-sky-600 hover:bg-sky-200 transition-colors dark:bg-sky-500/10 dark:text-sky-400">
                 LinkedIn
+              </a>
+              <a href={socialGithub} target="_blank" rel="noopener noreferrer" className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-200 transition-colors dark:bg-gray-700/10 dark:text-gray-400">
+                GitHub
               </a>
             </div>
           </div>

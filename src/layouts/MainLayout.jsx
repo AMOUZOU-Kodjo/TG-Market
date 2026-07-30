@@ -25,7 +25,7 @@ import {
   ExternalLink,
   Download,
 } from "lucide-react";
-import { FaLinkedinIn, FaFacebookF, FaTiktok } from "react-icons/fa6";
+import { FaFacebookF, FaXTwitter, FaInstagram, FaLinkedinIn } from "react-icons/fa6";
 import { SiGmail } from "react-icons/si";
 import Logo from "@/shared/ui/Logo";
 import BottomNav from "@/shared/ui/BottomNav";
@@ -506,25 +506,40 @@ location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWit
                 <h3 className="text-footer-heading font-extrabold mb-4">Suivez-nous</h3>
                 <div className="flex justify-center gap-4">
                   <a
-                    href="#"
-                    className="w-9 h-9 rounded-lg bg-[#0A66C2] text-white hover:opacity-80 flex items-center justify-center transition-opacity"
-                    aria-label="LinkedIn"
-                  >
-                    <FaLinkedinIn className="w-4 h-4" />
-                  </a>
-                  <a
-                    href="#"
+                    href={settings.socialFacebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="w-9 h-9 rounded-lg bg-[#1877F2] text-white hover:opacity-80 flex items-center justify-center transition-opacity"
                     aria-label="Facebook"
                   >
                     <FaFacebookF className="w-4 h-4" />
                   </a>
                   <a
-                    href="#"
+                    href={settings.socialTwitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="w-9 h-9 rounded-lg bg-[#000000] text-white hover:opacity-80 flex items-center justify-center transition-opacity"
-                    aria-label="TikTok"
+                    aria-label="Twitter / X"
                   >
-                    <FaTiktok className="w-4 h-4" />
+                    <FaXTwitter className="w-4 h-4" />
+                  </a>
+                  <a
+                    href={settings.socialInstagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-9 h-9 rounded-lg bg-[#E4405F] text-white hover:opacity-80 flex items-center justify-center transition-opacity"
+                    aria-label="Instagram"
+                  >
+                    <FaInstagram className="w-4 h-4" />
+                  </a>
+                  <a
+                    href={settings.socialLinkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-9 h-9 rounded-lg bg-[#0A66C2] text-white hover:opacity-80 flex items-center justify-center transition-opacity"
+                    aria-label="LinkedIn"
+                  >
+                    <FaLinkedinIn className="w-4 h-4" />
                   </a>
                 </div>
               </div>
@@ -533,7 +548,7 @@ location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWit
             {/* Copyright */}
             <div className="mt-8 pt-4 border-t text-center border-footer-border  items-center justify-between gap-4 text-md font-extrabold text-footer-text">
               <p>
-                Copyright &copy; 2025 - {settings.siteName} {"   "} v{settings.siteVersion} - Tous droits réservés
+                Copyright &copy; 2026 - {settings.siteName} {"   "} v{settings.siteVersion} - Tous droits réservés
               </p>
             </div>
           </div>

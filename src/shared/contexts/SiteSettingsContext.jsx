@@ -43,6 +43,7 @@ export function SiteSettingsProvider({ children }) {
     socialFacebook: data?.socialFacebook ?? "https://facebook.com/tgmarket",
     socialTwitter: data?.socialTwitter ?? "https://twitter.com/tgmarket",
     socialInstagram: data?.socialInstagram ?? "https://instagram.com/tgmarket",
+    socialLinkedin: data?.socialLinkedin ?? "https://linkedin.com/company/tgmarket",
     refreshSettings: () => qc.refetchQueries({ queryKey: ["siteSettings"] }),
   };
 
@@ -66,6 +67,7 @@ export function useSiteSettings() {
     socialFacebook: "",
     socialTwitter: "",
     socialInstagram: "",
+    socialLinkedin: "",
     refreshSettings: () => {},
   };
 }

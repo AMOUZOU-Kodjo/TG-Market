@@ -4,8 +4,16 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/shared/services/api";
 import toast from "react-hot-toast";
 
+const TABS = [
+  { id: "platform", label: "Plateforme", icon: Globe, color: "blue" },
+  { id: "social", label: "Email & Réseaux", icon: Mail, color: "brand" },
+  { id: "security", label: "Sécurité", icon: Shield, color: "purple" },
+  { id: "maintenance", label: "Maintenance", icon: Bell, color: "orange" },
+];
+
 export default function AdminSettingsPage() {
   const qc = useQueryClient();
+  const [tab, setTab] = useState("platform");
 
   const { data: settings, isLoading } = useQuery({
     queryKey: ["adminSettings"],
@@ -35,6 +43,7 @@ export default function AdminSettingsPage() {
         social_facebook: settings.social_facebook ?? "",
         social_twitter: settings.social_twitter ?? "",
         social_instagram: settings.social_instagram ?? "",
+        social_linkedin: settings.social_linkedin ?? "",
       });
     }
   }, [settings]);
@@ -58,6 +67,7 @@ export default function AdminSettingsPage() {
         social_facebook: updated.social_facebook ?? "",
         social_twitter: updated.social_twitter ?? "",
         social_instagram: updated.social_instagram ?? "",
+        social_linkedin: updated.social_linkedin ?? "",
       });
       qc.setQueryData(["siteSettings"], {
         siteName: updated.site_name,
@@ -71,6 +81,7 @@ export default function AdminSettingsPage() {
         socialFacebook: updated.social_facebook,
         socialTwitter: updated.social_twitter,
         socialInstagram: updated.social_instagram,
+        socialLinkedin: updated.social_linkedin,
       });
     },
     onError: (e) => toast.error(e.response?.data?.error ?? "Erreur lors de l'enregistrement"),
@@ -110,160 +121,199 @@ export default function AdminSettingsPage() {
         </button>
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2">
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-              <Globe className="w-5 h-5 text-blue-600" />
+      <div className="border-b border-gray-200">
+        <nav className="flex gap-1 -mb-px">
+          {TABS.map((t) => {
+            const Icon = t.icon;
+            const active = tab === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setTab(t.id)}
+                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                  active
+                    ? "border-brand-600 text-brand-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {t.label}
+              </button>
+            );
+          })}
+        </nav>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        {tab === "platform" && (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                <Globe className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900">Plateforme</h3>
+                <p className="text-xs text-gray-400">Informations générales</p>
+              </div>
             </div>
-            <div>
-              <h3 className="text-sm font-semibold text-gray-900">Plateforme</h3>
-              <p className="text-xs text-gray-400">Informations générales</p>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Nom du site</label>
+                <input
+                  value={form.site_name}
+                  onChange={(e) => setForm({ ...form, site_name: e.target.value })}
+                  className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Version</label>
+                <input
+                  value={form.site_version}
+                  onChange={(e) => setForm({ ...form, site_version: e.target.value })}
+                  className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Description</label>
+                <textarea
+                  value={form.site_description}
+                  onChange={(e) => setForm({ ...form, site_description: e.target.value })}
+                  rows={2}
+                  className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50 resize-none"
+                />
+              </div>
             </div>
           </div>
-          <div className="space-y-3">
+        )}
+
+        {tab === "social" && (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center">
+                <Mail className="w-5 h-5 text-brand-600" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900">Email & Réseaux</h3>
+                <p className="text-xs text-gray-400">Contact et liens sociaux</p>
+              </div>
+            </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Nom du site</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Email support</label>
               <input
-                value={form.site_name}
-                onChange={(e) => setForm({ ...form, site_name: e.target.value })}
+                type="email"
+                value={form.support_email}
+                onChange={(e) => setForm({ ...form, support_email: e.target.value })}
                 className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Version</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Facebook</label>
               <input
-                value={form.site_version}
-                onChange={(e) => setForm({ ...form, site_version: e.target.value })}
+                value={form.social_facebook}
+                onChange={(e) => setForm({ ...form, social_facebook: e.target.value })}
                 className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Description</label>
-              <textarea
-                value={form.site_description}
-                onChange={(e) => setForm({ ...form, site_description: e.target.value })}
-                rows={2}
-                className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50 resize-none"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-brand-50 flex items-center justify-center">
-              <Mail className="w-5 h-5 text-brand-600" />
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-gray-900">Email & Réseaux</h3>
-              <p className="text-xs text-gray-400">Contact et liens sociaux</p>
-            </div>
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Email support</label>
-            <input
-              type="email"
-              value={form.support_email}
-              onChange={(e) => setForm({ ...form, support_email: e.target.value })}
-              className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Facebook</label>
-            <input
-              value={form.social_facebook}
-              onChange={(e) => setForm({ ...form, social_facebook: e.target.value })}
-              className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Twitter / X</label>
-            <input
-              value={form.social_twitter}
-              onChange={(e) => setForm({ ...form, social_twitter: e.target.value })}
-              className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Instagram</label>
-            <input
-              value={form.social_instagram}
-              onChange={(e) => setForm({ ...form, social_instagram: e.target.value })}
-              className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
-            />
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
-              <Shield className="w-5 h-5 text-purple-600" />
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-gray-900">Sécurité</h3>
-              <p className="text-xs text-gray-400">Paramètres de sécurité</p>
-            </div>
-          </div>
-          <div className="space-y-2 text-sm text-gray-500">
-            <p>Rate limiting : <span className="text-green-600 font-medium">Activé</span></p>
-            <p>JWT expiry : <span className="text-gray-900 font-medium">24h</span></p>
-            <p>Refresh expiry : <span className="text-gray-900 font-medium">7j</span></p>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center">
-              <Bell className="w-5 h-5 text-orange-600" />
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-gray-900">Maintenance</h3>
-              <p className="text-xs text-gray-400">Mode maintenance</p>
-            </div>
-          </div>
-          <label className="flex items-center gap-3 cursor-pointer">
-            <div
-              className={`relative w-11 h-6 rounded-full transition-colors ${form.maintenance_mode ? "bg-orange-500" : "bg-gray-200"}`}
-              onClick={() => setForm({ ...form, maintenance_mode: !form.maintenance_mode })}
-            >
-              <div className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${form.maintenance_mode ? "translate-x-5" : ""}`} />
-            </div>
-            <span className="text-sm text-gray-600">{form.maintenance_mode ? "Activé" : "Désactivé"}</span>
-          </label>
-          <div className="space-y-3">
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Message de maintenance</label>
-              <textarea
-                value={form.maintenance_message}
-                onChange={(e) => setForm({ ...form, maintenance_message: e.target.value })}
-                rows={2}
-                className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50 resize-none"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Retour estimé</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Twitter / X</label>
               <input
-                value={form.maintenance_estimated_return}
-                onChange={(e) => setForm({ ...form, maintenance_estimated_return: e.target.value })}
+                value={form.social_twitter}
+                onChange={(e) => setForm({ ...form, social_twitter: e.target.value })}
                 className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Améliorations (un par ligne)</label>
-              <textarea
-                value={form.maintenance_improvements}
-                onChange={(e) => setForm({ ...form, maintenance_improvements: e.target.value })}
-                rows={3}
-                className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50 resize-none"
+              <label className="block text-xs font-medium text-gray-500 mb-1">Instagram</label>
+              <input
+                value={form.social_instagram}
+                onChange={(e) => setForm({ ...form, social_instagram: e.target.value })}
+                className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">LinkedIn</label>
+              <input
+                value={form.social_linkedin}
+                onChange={(e) => setForm({ ...form, social_linkedin: e.target.value })}
+                className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
               />
             </div>
           </div>
-          <div className="flex items-start gap-2 text-xs text-gray-400 bg-gray-50 rounded-xl p-3">
-            <Info className="w-4 h-4 mt-0.5 shrink-0" />
-            <p>En mode maintenance, seuls les administrateurs peuvent accéder au site.</p>
+        )}
+
+        {tab === "security" && (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
+                <Shield className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900">Sécurité</h3>
+                <p className="text-xs text-gray-400">Paramètres de sécurité</p>
+              </div>
+            </div>
+            <div className="space-y-2 text-sm text-gray-500">
+              <p>Rate limiting : <span className="text-green-600 font-medium">Activé</span></p>
+              <p>JWT expiry : <span className="text-gray-900 font-medium">24h</span></p>
+              <p>Refresh expiry : <span className="text-gray-900 font-medium">7j</span></p>
+            </div>
           </div>
-        </div>
+        )}
+
+        {tab === "maintenance" && (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center">
+                <Bell className="w-5 h-5 text-orange-600" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900">Maintenance</h3>
+                <p className="text-xs text-gray-400">Mode maintenance</p>
+              </div>
+            </div>
+            <label className="flex items-center gap-3 cursor-pointer">
+              <div
+                className={`relative w-11 h-6 rounded-full transition-colors ${form.maintenance_mode ? "bg-orange-500" : "bg-gray-200"}`}
+                onClick={() => setForm({ ...form, maintenance_mode: !form.maintenance_mode })}
+              >
+                <div className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${form.maintenance_mode ? "translate-x-5" : ""}`} />
+              </div>
+              <span className="text-sm text-gray-600">{form.maintenance_mode ? "Activé" : "Désactivé"}</span>
+            </label>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Message de maintenance</label>
+                <textarea
+                  value={form.maintenance_message}
+                  onChange={(e) => setForm({ ...form, maintenance_message: e.target.value })}
+                  rows={2}
+                  className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50 resize-none"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Retour estimé</label>
+                <input
+                  value={form.maintenance_estimated_return}
+                  onChange={(e) => setForm({ ...form, maintenance_estimated_return: e.target.value })}
+                  className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Améliorations (un par ligne)</label>
+                <textarea
+                  value={form.maintenance_improvements}
+                  onChange={(e) => setForm({ ...form, maintenance_improvements: e.target.value })}
+                  rows={3}
+                  className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50 resize-none"
+                />
+              </div>
+            </div>
+            <div className="flex items-start gap-2 text-xs text-gray-400 bg-gray-50 rounded-xl p-3">
+              <Info className="w-4 h-4 mt-0.5 shrink-0" />
+              <p>En mode maintenance, seuls les administrateurs peuvent accéder au site.</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

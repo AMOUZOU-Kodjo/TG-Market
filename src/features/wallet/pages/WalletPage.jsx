@@ -61,8 +61,12 @@ export default function WalletPage() {
   const { data: methodsData } = usePaymentMethods();
 
   const walletBalance = balanceData?.data || balanceData || { available: 0, pending: 0, totalEarned: 0 };
-  const walletTransactions = txData?.data || txData || [];
-  const escrowTransactions = escrowData?.data || escrowData || [];
+  const walletTransactions = (txData?.data || txData || []).filter(
+    (t) => t.status !== "failed"
+  );
+  const escrowTransactions = (escrowData?.data || escrowData || []).filter(
+    (e) => !["cancelled", "refunded"].includes(e.status)
+  );
   const paymentMethods = methodsData?.data || methodsData || [];
 
   const [activeTab, setActiveTab] = useState("transactions");

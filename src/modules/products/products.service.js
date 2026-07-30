@@ -554,3 +554,35 @@ export async function updateProductStatus(productId, userId, status) {
 
   return { message: 'Statut mis à jour avec succès' };
 }
+
+export async function endNegotiation(productId, userId) {
+  const existing = await prisma.product.findUnique({
+    where: { id: productId },
+    select: { id: true, user_id: true, status: true, has_active_negotiation: true },
+  });
+
+  if (!existing || existing.status === 'deleted') {
+    const error = new Error('Produit introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  if (existing.user_id !== userId) {
+    const error = new Error('Seul le vendeur peut arrêter la négociation');
+    error.status = 403;
+    throw error;
+  }
+
+  if (!existing.has_active_negotiation) {
+    const error = new Error('Aucune négociation en cours sur ce produit');
+    error.status = 400;
+    throw error;
+  }
+
+  await prisma.product.update({
+    where: { id: productId },
+    data: { has_active_negotiation: false },
+  });
+
+  return { message: 'Négociation arrêtée avec succès' };
+}

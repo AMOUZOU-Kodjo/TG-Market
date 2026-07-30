@@ -28,6 +28,7 @@ import offersRoutes from './modules/offers/offers.routes.js';
 import bundlesRoutes from './modules/bundles/bundles.routes.js';
 import faqRoutes from './modules/faq/faq.routes.js';
 import reportsRoutes from './modules/reports/reports.routes.js';
+import paymentRoutes from './modules/payment/payment.routes.js';
 import adminRoutes from './modules/admin/admin.routes.js';
 
 const app = express();
@@ -174,6 +175,7 @@ app.use('/api/offers', offersRoutes);
 app.use('/api/bundles', bundlesRoutes);
 app.use('/api/faqs', faqRoutes);
 app.use('/api/reports', reportsRoutes);
+app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
 
 // ─── 404 ─────────────────────────────────────────────

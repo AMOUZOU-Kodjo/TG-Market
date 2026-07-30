@@ -24,5 +24,6 @@ router.post('/', auth, validate(createProductSchema), productsController.createP
 router.put('/:id', auth, validate(updateProductSchema), productsController.updateProduct);
 router.delete('/:id', auth, validate(getProductSchema), productsController.deleteProduct);
 router.put('/:id/status', auth, validate(updateStatusSchema), productsController.updateProductStatus);
+router.put('/:id/end-negotiation', auth, validate(getProductSchema), productsController.endNegotiation);
 
 export default router;

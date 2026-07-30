@@ -713,3 +713,55 @@ export async function cancelEscrow(id, userId) {
 
   return formatEscrow(full);
 }
+
+export async function getEscrowByPaymentRef(txRef) {
+  return prisma.escrowTransaction.findFirst({
+    where: { payment_ref: txRef },
+    select: { id: true, status: true, amount: true },
+  });
+}
+
+export async function updatePaymentRef(id, { paymentRef, paymentMethod }) {
+  return prisma.escrowTransaction.update({
+    where: { id },
+    data: { payment_ref: paymentRef, payment_method: paymentMethod },
+  });
+}
+
+export async function autoVerifyPayment(id) {
+  const escrow = await prisma.escrowTransaction.findUnique({
+    where: { id },
+    select: { id: true, status: true },
+  });
+
+  if (!escrow) {
+    const error = new Error('Transaction introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  if (escrow.status !== 'pending') {
+    return;
+  }
+
+  await prisma.escrowTransaction.update({
+    where: { id },
+    data: { status: 'paid' },
+  });
+
+  const full = await prisma.escrowTransaction.findUnique({
+    where: { id },
+    include: {
+      buyer: { select: { id: true, first_name: true, last_name: true } },
+      seller: { select: { id: true, first_name: true, last_name: true } },
+      product: {
+        select: {
+          title: true,
+          images: { select: { url: true }, orderBy: { sort_order: 'asc' }, take: 1 },
+        },
+      },
+    },
+  });
+
+  return formatEscrow(full);
+}

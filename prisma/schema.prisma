@@ -430,6 +430,7 @@ model EscrowTransaction {
   fee            Int
   status         EscrowStatus @default(pending)
   payment_method String?      @db.VarChar(30)
+  payment_ref    String?      @db.VarChar(100)
   confirmed_at   DateTime?
   released_at    DateTime?
   disputed_at       DateTime?

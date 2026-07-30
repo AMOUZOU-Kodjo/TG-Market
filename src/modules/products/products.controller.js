@@ -113,3 +113,15 @@ export async function updateProductStatus(req, res, next) {
     next(err);
   }
 }
+
+export async function endNegotiation(req, res, next) {
+  try {
+    const result = await productsService.endNegotiation(
+      Number(req.params.id),
+      req.user.id,
+    );
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}

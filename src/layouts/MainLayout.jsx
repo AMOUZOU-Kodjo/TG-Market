@@ -291,16 +291,16 @@ export default function MainLayout() {
               <div className="md:hidden">
                 {/* Row 1: Logo */}
                 {!location.pathname.startsWith("/categories/") && (
-                  <div className="flex items-center justify-center pt-3 pb-2">
+                  <div className="flex items-center justify-center pt-2 pb-1">
                     <Link to="/">
-                      <Logo size="md" />
+                      <Logo size="sm" />
                     </Link>
                   </div>
                 )}
 
                 {/* Row 2: Back button (category pages) + Search + Actions */}
                 <div
-                  className={`flex items-center gap-2 ${location.pathname.startsWith("/categories/") ? "pt-3 pb-2" : "pb-2"}`}
+                  className={`flex items-center gap-2 ${location.pathname.startsWith("/categories/") ? "pt-2 pb-1" : "pb-1"}`}
                 >
                   {location.pathname.startsWith("/categories/") && (
                     <Link
@@ -318,7 +318,7 @@ export default function MainLayout() {
                         placeholder="Rechercher..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2 bg-gray-100 text-gray-900 placeholder-gray-400 focus:ring-gray-300"
+                        className="w-full pl-10 pr-4 py-1.5 rounded-xl text-sm focus:outline-none focus:ring-2 bg-gray-100 text-gray-900 placeholder-gray-400 focus:ring-gray-300"
                       />
                     </div>
                   </form>

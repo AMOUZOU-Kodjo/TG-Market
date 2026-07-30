@@ -823,6 +823,8 @@ export default function HomePage() {
       
       <HeroSection />
       
+      <div className="w-full border-t border-gray-300" />
+
       {/* <CategoriesSection /> */}
       {/* <RecentListingsSection /> */}
       {/* <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8 pt-8">

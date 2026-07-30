@@ -889,6 +889,30 @@ const DEFAULT_SETTINGS = {
   social_twitter: 'https://twitter.com/tgmarket',
   social_instagram: 'https://instagram.com/tgmarket',
   social_linkedin: 'https://linkedin.com/company/tgmarket',
+  team_members: JSON.stringify([
+    {
+      name: 'Amouzou Kodjo',
+      role: 'Co-fondateur & Développeur Frontend',
+      initials: 'AK',
+      photo: '',
+      bio: "Architecte de l'interface TG-Market. Passionné par les interfaces fluides et l'expérience utilisateur mobile.",
+      linkedin: '#',
+      facebook: '#',
+      twitter: '#',
+      instagram: '#',
+    },
+    {
+      name: 'Awougno Kofi Yosua',
+      role: 'Co-fondateur & Développeur Backend',
+      initials: 'AY',
+      photo: '',
+      bio: 'Cerveau technique derrière l\'API, la sécurité et l\'infrastructure. Garant de la fiabilité du système.',
+      linkedin: '#',
+      facebook: '#',
+      twitter: '#',
+      instagram: '#',
+    },
+  ]),
 };
 
 export async function getSettings() {
@@ -918,7 +942,7 @@ export async function updateSettings(data) {
 
 export async function getPublicSettings() {
   const rows = await prisma.siteSetting.findMany({
-    where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode', 'maintenance_message', 'maintenance_estimated_return', 'maintenance_improvements', 'social_facebook', 'social_twitter', 'social_instagram', 'social_linkedin'] } },
+    where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode', 'maintenance_message', 'maintenance_estimated_return', 'maintenance_improvements', 'social_facebook', 'social_twitter', 'social_instagram', 'social_linkedin', 'team_members'] } },
   });
   const map = {};
   for (const row of rows) map[row.key] = row.value;
@@ -934,5 +958,6 @@ export async function getPublicSettings() {
     socialTwitter: map.social_twitter ?? DEFAULT_SETTINGS.social_twitter,
     socialInstagram: map.social_instagram ?? DEFAULT_SETTINGS.social_instagram,
     socialLinkedin: map.social_linkedin ?? DEFAULT_SETTINGS.social_linkedin,
+    teamMembers: JSON.parse(map.team_members ?? DEFAULT_SETTINGS.team_members),
   };
 }

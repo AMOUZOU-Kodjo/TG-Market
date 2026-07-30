@@ -477,7 +477,7 @@ location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWit
                   <li>
                     <Link
                       to="/faq"
-                      className="px-3 py-3 bg-yellow-400 hover:bg-footer-icon-hover rounded-full text-md font-extrabold transition-colors"
+                      className="px-3 py-3 bg-yellow-400 hover:bg-gray-200 rounded-full text-md font-extrabold transition-colors"
                     >
                       Questions fréquentes
                     </Link>

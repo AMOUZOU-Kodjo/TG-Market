@@ -1,20 +1,20 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Package, Search, ArrowLeft, Tag, ChevronRight, Loader2 } from "lucide-react";
+import { Package, Search, ArrowLeft, Loader2 } from "lucide-react";
 import { usePublicBundles } from "@/features/bundles/hooks/useBundles";
 import { formatCFA } from "@/shared/utils/format";
-import Input from "@/shared/ui/Input";
 import EmptyState from "@/shared/ui/EmptyState";
 
 function BundleCard({ bundle }) {
   const items = bundle.items ?? [];
-  const firstProduct = items[0]?.product;
-  const image = firstProduct?.images?.[0];
   const totalPrice = bundle.totalPrice ?? 0;
   const bundlePrice = bundle.bundlePrice ?? 0;
   const savings = totalPrice - bundlePrice;
   const savingsPct = totalPrice > 0 ? Math.round((savings / totalPrice) * 100) : 0;
+
+  const thumbs = items.slice(0, 4).map((item) => item?.product?.images?.[0] ?? null);
+  const hasImages = thumbs.some(Boolean);
+  const count = items.length;
 
   return (
     <Link
@@ -22,8 +22,61 @@ function BundleCard({ bundle }) {
       className="group block overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-800"
     >
       <div className="aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-700">
-        {image ? (
-          <img src={image} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+        {hasImages ? (
+          count === 1 ? (
+            <img src={thumbs[0]} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+          ) : count === 2 ? (
+            <div className="flex h-full">
+              {thumbs.slice(0, 2).map((src, i) => (
+                <div key={i} className="flex-1 overflow-hidden border-r border-white/20 last:border-r-0 dark:border-gray-900/40">
+                  {src ? (
+                    <img src={src} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+                  ) : (
+                    <div className="flex h-full items-center justify-center"><Package className="h-6 w-6 text-gray-300" /></div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : count === 3 ? (
+            <div className="flex h-full">
+              <div className="w-1/2 overflow-hidden border-r border-white/20 dark:border-gray-900/40">
+                {thumbs[0] ? (
+                  <img src={thumbs[0]} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+                ) : (
+                  <div className="flex h-full items-center justify-center"><Package className="h-6 w-6 text-gray-300" /></div>
+                )}
+              </div>
+              <div className="flex w-1/2 flex-col">
+                {thumbs.slice(1, 3).map((src, i) => (
+                  <div key={i} className="flex-1 overflow-hidden border-b border-white/20 last:border-b-0 dark:border-gray-900/40">
+                    {src ? (
+                      <img src={src} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+                    ) : (
+                      <div className="flex h-full items-center justify-center"><Package className="h-6 w-6 text-gray-300" /></div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="grid h-full grid-cols-2 grid-rows-2">
+              {thumbs.map((src, i) => (
+                <div key={i} className="overflow-hidden border-r border-b border-white/20 last:border-r-0 [&:nth-child(2)]:border-r-0 dark:border-gray-900/40">
+                  {i < 3 && src ? (
+                    <img src={src} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+                  ) : (
+                    <div className="flex h-full items-center justify-center bg-gray-200/60 dark:bg-gray-700/60">
+                      {i === 3 && count > 4 ? (
+                        <span className="text-sm font-bold text-gray-500 dark:text-gray-400">+{count - 3}</span>
+                      ) : (
+                        <Package className="h-6 w-6 text-gray-300" />
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )
         ) : (
           <div className="flex h-full items-center justify-center">
             <Package className="h-10 w-10 text-gray-400" />
@@ -43,7 +96,7 @@ function BundleCard({ bundle }) {
         </div>
         <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
           <Package className="h-3 w-3" />
-          {bundle.itemCount} produit{bundle.itemCount > 1 ? "s" : ""}
+          {count} produit{count > 1 ? "s" : ""}
         </p>
       </div>
     </Link>

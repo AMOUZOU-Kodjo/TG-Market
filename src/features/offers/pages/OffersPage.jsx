@@ -102,7 +102,7 @@ function OfferCard({ offer, isReceived, onAccept, onReject }) {
         </div>
       )}
 
-      <Modal open={showReject} onClose={() => setShowReject(false)} title="Refuser l'offre">
+      <Modal isOpen={showReject} onClose={() => setShowReject(false)} title="Refuser l'offre">
         <div className="space-y-4">
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Expliquez pourquoi vous refusez cette offre (optionnel).

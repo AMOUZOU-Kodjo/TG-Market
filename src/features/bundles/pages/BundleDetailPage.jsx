@@ -453,7 +453,7 @@ export default function BundleDetailPage() {
                   )}
                 </div>
 
-                <Modal open={showBuyModal} onClose={() => setShowBuyModal(false)} title="Acheter le lot">
+                <Modal isOpen={showBuyModal} onClose={() => setShowBuyModal(false)} title="Acheter le lot">
                   <div className="space-y-4">
                     <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800">
                       <p className="text-sm text-gray-600 dark:text-gray-400">{bundle.title}</p>

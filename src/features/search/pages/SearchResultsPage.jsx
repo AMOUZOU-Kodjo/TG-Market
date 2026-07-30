@@ -6,11 +6,9 @@ import {
   Grid3X3,
   List,
   SearchX,
-  Package,
 } from "lucide-react";
 import BackButton from "@/shared/ui/BackButton";
 import { cn } from "@/shared/utils/cn";
-import { formatCFA } from "@/shared/utils/format";
 import Button from "@/shared/ui/Button";
 import Pagination from "@/shared/ui/Pagination";
 import EmptyState from "@/shared/ui/EmptyState";
@@ -21,7 +19,6 @@ import FilterSidebar from "@/features/search/components/FilterSidebar";
 import FilterBand from "@/features/search/components/FilterBand";
 import ActiveFilters from "@/features/search/components/ActiveFilters";
 import { useSearch } from "@/features/search/hooks/useSearch";
-import { usePublicBundles } from "@/features/bundles/hooks/useBundles";
 import { useCategories } from "@/features/categories/hooks/useCategories";
 import { useIsMobile } from "@/shared/hooks/useMediaQuery";
 
@@ -231,8 +228,6 @@ export default function SearchResultsPage() {
   }, [query, sort, page, filters]);
 
   const { data: searchData, isLoading } = useSearch(searchParamsObj);
-  const { data: bundlesData } = usePublicBundles({ perPage: 8, q: query || undefined });
-  const bundleResults = bundlesData?.data || [];
   const filteredProducts = searchData?.data || [];
   const totalPages = searchData?.meta?.lastPage || Math.max(1, Math.ceil((searchData?.meta?.total || 0) / itemsPerPage));
   const paginatedProducts = filteredProducts;
@@ -449,60 +444,6 @@ export default function SearchResultsPage() {
             )}
           </main>
 
-          {bundleResults.length > 0 && (
-            <div className="mt-10 border-t border-gray-200 pt-8 dark:border-gray-700">
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Lots</h2>
-                <Link to="/lots" className="text-sm font-medium text-brand-800 hover:underline">
-                  Voir tout
-                </Link>
-              </div>
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-                {bundleResults.map((bundle) => {
-                  const items = bundle.items ?? [];
-                  const firstProduct = items[0]?.product;
-                  const image = firstProduct?.images?.[0];
-                  const totalPrice = bundle.totalPrice ?? 0;
-                  const bundlePrice = bundle.bundlePrice ?? 0;
-                  const savingsPct = totalPrice > 0 ? Math.round(((totalPrice - bundlePrice) / totalPrice) * 100) : 0;
-                  return (
-                    <motion.div key={bundle.id} variants={itemVariants}>
-                      <Link
-                        to={`/lot/${bundle.id}`}
-                        className="group block overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-800"
-                      >
-                        <div className="aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-700">
-                          {image ? (
-                            <img src={image} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-105" />
-                          ) : (
-                            <div className="flex h-full items-center justify-center">
-                              <Package className="h-10 w-10 text-gray-400" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="p-3 sm:p-4">
-                          <h3 className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-1">{bundle.title}</h3>
-                          <div className="mt-1.5 flex items-center gap-2">
-                            <span className="text-base font-bold text-brand-800">{formatCFA(bundlePrice)}</span>
-                            <span className="text-xs text-gray-400 line-through">{formatCFA(totalPrice)}</span>
-                            {savingsPct > 0 && (
-                              <span className="rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-semibold text-green-700 dark:bg-green-900/20 dark:text-green-400">
-                                -{savingsPct}%
-                              </span>
-                            )}
-                          </div>
-                          <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                            <Package className="h-3 w-3" />
-                            {bundle.itemCount} produit{bundle.itemCount > 1 ? "s" : ""}
-                          </p>
-                        </div>
-                      </Link>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
         </div>
       </div>
 

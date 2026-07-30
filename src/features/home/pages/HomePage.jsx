@@ -245,8 +245,8 @@ function HeroSection() {
       <div className="absolute inset-0 bg-gray-900/60" style={{ zIndex: 1 }} />
 
       {/* <div className="absolute inset-0 flex  items-center justify-center px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}> */}
-      <div className="absolute inset-0 flex items-start justify-center pt-24 sm:pt-10 px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}>
-        <div className="relative -left-80 top-20 rounded-3xl bg-white/80 p-3  mx-auto max-w-3xl text-center">
+      <div className="absolute inset-0 flex items-center sm:items-start justify-center   sm:pt-10 px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}>
+        <div className="relative sm:-left-80  sm:top-20 rounded-3xl bg-white/80 p-3  mx-auto max-w-3xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -471,6 +471,7 @@ function PopularProductsSection() {
           title="Disponibles en ce moment"
           subtitle="Les 30 produits les plus récemment publiés"
           action="/recherche?sort=newest"
+          
         />
 
         <motion.div
@@ -504,7 +505,9 @@ function PopularProductsSection() {
               </Link>
             </motion.div>
           ))}
+          
         </motion.div>
+        
       </div>
     </motion.section>
   );

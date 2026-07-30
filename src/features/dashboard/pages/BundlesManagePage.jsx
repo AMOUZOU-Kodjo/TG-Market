@@ -118,7 +118,7 @@ export default function BundlesManagePage() {
       )}
 
       <Modal
-        open={!!deleteTarget}
+        isOpen={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
         title="Supprimer le lot"
       >

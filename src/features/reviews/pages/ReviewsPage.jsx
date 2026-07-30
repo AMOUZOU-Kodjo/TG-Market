@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Star, MessageSquare, Filter, ThumbsUp, ThumbsDown, Search } from "lucide-react";
+import { Star, MessageSquare, Filter, ThumbsUp, ThumbsDown, Search, Loader2 } from "lucide-react";
 import Rating from "@/shared/ui/Rating";
 import Avatar from "@/shared/ui/Avatar";
 import Badge from "@/shared/ui/Badge";
 import Button from "@/shared/ui/Button";
 import Textarea from "@/shared/ui/Textarea";
-import { useMyReviews } from "@/features/reviews/hooks/useReviews";
+import { useMyReviews, useCreateReview } from "@/features/reviews/hooks/useReviews";
+import { useEscrowList } from "@/features/wallet/hooks/useWallet";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import { formatRelativeTime } from "@/shared/utils/format";
@@ -55,12 +56,19 @@ export default function ReviewsPage() {
   const { user } = useAuth();
   const { siteName } = useSiteSettings();
   const { data: reviewsData = [] } = useMyReviews();
+  const { data: escrowData } = useEscrowList();
+  const createReview = useCreateReview();
   const [filter, setFilter] = useState("all");
+  const [selectedEscrow, setSelectedEscrow] = useState("");
   const [newRating, setNewRating] = useState(0);
   const [newComment, setNewComment] = useState("");
   const [hoverRating, setHoverRating] = useState(0);
 
   const reviews = reviewsData?.data || reviewsData || [];
+  const escrows = (escrowData?.data || escrowData || []).filter(
+    (e) => e.status === "completed" && e.buyerId === user?.id
+  );
+
   const avgRating = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
 
   const filteredReviews = reviews.filter((r) => {
@@ -69,8 +77,12 @@ export default function ReviewsPage() {
     return true;
   });
 
-  const handleSubmitReview = (e) => {
+  const handleSubmitReview = async (e) => {
     e.preventDefault();
+    if (!selectedEscrow) {
+      toast.error("Veuillez sélectionner une transaction");
+      return;
+    }
     if (newRating === 0) {
       toast.error("Veuillez sélectionner une note");
       return;
@@ -79,9 +91,19 @@ export default function ReviewsPage() {
       toast.error("Veuillez écrire un commentaire");
       return;
     }
-    toast.success("Merci pour votre avis !");
-    setNewRating(0);
-    setNewComment("");
+    try {
+      await createReview.mutateAsync({
+        escrowId: Number(selectedEscrow),
+        rating: newRating,
+        comment: newComment.trim(),
+      });
+      toast.success("Merci pour votre avis !");
+      setSelectedEscrow("");
+      setNewRating(0);
+      setNewComment("");
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Erreur lors de l'envoi de l'avis");
+    }
   };
 
   return (
@@ -130,10 +152,31 @@ export default function ReviewsPage() {
             Laisser un avis
           </h2>
           <form onSubmit={handleSubmitReview} className="space-y-4">
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Votre note
-              </label>
+            {escrows.length === 0 ? (
+              <p className="text-sm text-gray-500 dark:text-gray-400">Aucune transaction terminée à évaluer pour le moment.</p>
+            ) : (
+              <>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Transaction
+                </label>
+                <select
+                  value={selectedEscrow}
+                  onChange={(e) => setSelectedEscrow(e.target.value)}
+                  className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                >
+                  <option value="">Sélectionnez une transaction...</option>
+                  {escrows.map((e) => (
+                    <option key={e.id} value={e.id}>
+                      {e.productTitle} — {formatRelativeTime(e.createdAt)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Votre note
+                </label>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -165,10 +208,12 @@ export default function ReviewsPage() {
               onChange={(e) => setNewComment(e.target.value)}
             />
             <div className="flex justify-end">
-              <Button type="submit" icon={MessageSquare}>
-                Publier l'avis
+              <Button type="submit" icon={MessageSquare} disabled={createReview.isPending}>
+                {createReview.isPending ? "Envoi..." : "Publier l'avis"}
               </Button>
             </div>
+            </>
+            )}
           </form>
         </motion.div>
 

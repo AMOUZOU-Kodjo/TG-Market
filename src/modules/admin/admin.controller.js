@@ -1,6 +1,7 @@
 import prisma from '../../config/database.js';
 import * as adminService from './admin.service.js';
 import * as escrowService from '../escrow/escrow.service.js';
+import * as reportsService from '../reports/reports.service.js';
 import { buildPaginationMeta } from '../../utils/pagination.js';
 import { sendEmail } from '../../utils/email.js';
 import { execSync } from 'child_process';
@@ -384,6 +385,34 @@ export async function verifyPaymentAdmin(req, res, next) {
     }
 
     res.json(escrow);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getAdminReports(req, res, next) {
+  try {
+    const { page, perPage, skip } = req.pagination;
+    const { data, total } = await reportsService.getAdminReports({ page, perPage, skip });
+    res.json({ data, meta: buildPaginationMeta(total, page, perPage) });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function resolveReport(req, res, next) {
+  try {
+    await reportsService.resolveReport(Number(req.params.id), req.user.id);
+    res.json({ message: 'Signalement résolu' });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function dismissReport(req, res, next) {
+  try {
+    await reportsService.dismissReport(Number(req.params.id), req.user.id);
+    res.json({ message: 'Signalement rejeté' });
   } catch (err) {
     next(err);
   }

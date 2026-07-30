@@ -65,9 +65,10 @@ export default function HistoryPage() {
 
   const { data: escrowData, isLoading } = useEscrowList();
   const escrows = escrowData?.data ?? escrowData?.escrows ?? [];
+  const activeEscrows = escrows.filter((e) => !["cancelled", "refunded"].includes(e.status));
 
-  const sales = escrows.filter((e) => e.sellerId === userId);
-  const purchases = escrows.filter((e) => e.buyerId === userId);
+  const sales = activeEscrows.filter((e) => e.sellerId === userId);
+  const purchases = activeEscrows.filter((e) => e.buyerId === userId);
 
   const handleMarkShipped = async (id) => {
     try {

@@ -106,6 +106,7 @@ function App() {
                           <Route path="/categories/:slug" element={<CategoryPage />} />
                           <Route path="/vehicules" element={<VehicleListingsPage />} />
                           <Route path="/recherche" element={<SearchResultsPage />} />
+                          <Route path="/produit/:id" element={<ProductDetailPage />} />
                           <Route path="/annonce/:id" element={<ProductDetailPage />} />
                           <Route path="/vendeur/:id" element={<SellerProfilePage />} />
                           <Route path="/vendeurs" element={<SellersPage />} />

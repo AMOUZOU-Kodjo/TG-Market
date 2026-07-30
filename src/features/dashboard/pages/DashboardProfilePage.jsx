@@ -173,7 +173,7 @@ export default function DashboardProfilePage() {
   const { data: walletData } = useWalletBalance();
   const { data: conversationsData } = useConversations();
 
-  const myProducts = (myProductsData?.data || myProductsData || []).filter((p) => p.seller?.id === user?.id);
+  const myProducts = myProductsData?.data || myProductsData || [];
   const myReviews = (myReviewsData?.data || myReviewsData || []).filter((r) => r.reviewer?.id === user?.id);
   const favoriteProducts = (favoritesData?.data || favoritesData || []).map((fav) => fav.product || fav);
 

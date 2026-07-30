@@ -16,11 +16,11 @@ import ProductCard from "@/shared/ui/ProductCard";
 import SearchBar from "@/shared/ui/SearchBar";
 import SortDropdown from "@/features/search/components/SortDropdown";
 import FilterSidebar from "@/features/search/components/FilterSidebar";
+import FilterBand from "@/features/search/components/FilterBand";
 import ActiveFilters from "@/features/search/components/ActiveFilters";
 import { useSearch } from "@/features/search/hooks/useSearch";
 import { useCategories } from "@/features/categories/hooks/useCategories";
-
-const ITEMS_PER_PAGE = 12;
+import { useIsMobile } from "@/shared/hooks/useMediaQuery";
 
 function ProductCardSkeleton() {
   return (
@@ -83,6 +83,8 @@ export default function SearchResultsPage() {
   const navigate = useNavigate();
   const [view, setView] = useState("grid");
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const isMobile = useIsMobile();
+  const itemsPerPage = isMobile ? 20 : 40;
 
   const query = searchParams.get("q") || "";
   const sort = searchParams.get("sort") || "newest";
@@ -210,7 +212,7 @@ export default function SearchResultsPage() {
     const params = {
       q: query || undefined,
       sort,
-      perPage: ITEMS_PER_PAGE,
+      perPage: itemsPerPage,
     };
     if (filters.categories.length > 0) params.categories = filters.categories.join(",");
     if (filters.minPrice) params.minPrice = Number(filters.minPrice);
@@ -227,7 +229,7 @@ export default function SearchResultsPage() {
 
   const { data: searchData, isLoading } = useSearch(searchParamsObj);
   const filteredProducts = searchData?.data || [];
-  const totalPages = searchData?.meta?.lastPage || Math.max(1, Math.ceil((searchData?.meta?.total || 0) / ITEMS_PER_PAGE));
+  const totalPages = searchData?.meta?.lastPage || Math.max(1, Math.ceil((searchData?.meta?.total || 0) / itemsPerPage));
   const paginatedProducts = filteredProducts;
 
   const containerVariants = {
@@ -247,105 +249,104 @@ export default function SearchResultsPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="relative flex items-center justify-center mb-6">
-          <div className="absolute left-0">
-            <BackButton />
+        <div className="sticky top-0 z-40 -mx-4 sm:-mx-6 lg:-mx-8 bg-gray-50 dark:bg-gray-950 px-4 sm:px-6 lg:px-8 pb-4">
+          <div className="flex items-center gap-3 pt-4">
+            <div className="flex items-center gap-3 shrink-0">
+              <BackButton />
+              <span className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  {searchData?.total || filteredProducts.length}
+                </span>{" "}
+                annonce{filteredProducts.length !== 1 ? "s" : ""}
+              </span>
+            </div>
+            <div className="flex-1 flex justify-center">
+              <div className="w-full max-w-md">
+                <SearchBar
+                  value={query}
+                  onSearch={handleSearch}
+                  onChange={(val) => {
+                    if (!val) handleSearch("");
+                  }}
+                  placeholder="Rechercher un article..."
+                />
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Button
+                variant="outline"
+                size="sm"
+                icon={SlidersHorizontal}
+                onClick={() => setShowMobileFilters(true)}
+                className="lg:hidden"
+              >
+                Filtres
+                {activeFilterChips.length > 0 && (
+                  <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-800 px-1 text-[10px] font-bold text-white">
+                    {activeFilterChips.length}
+                  </span>
+                )}
+              </Button>
+              <div className="hidden items-center gap-1 rounded-lg border border-gray-200 bg-white p-1 dark:border-gray-700 dark:bg-gray-800 sm:flex">
+                <button
+                  type="button"
+                  onClick={() => setView("grid")}
+                  className={cn(
+                    "rounded-md p-1.5 transition-colors",
+                    view === "grid"
+                      ? "bg-brand-800 text-white"
+                      : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  )}
+                >
+                  <Grid3X3 className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setView("list")}
+                  className={cn(
+                    "rounded-md p-1.5 transition-colors",
+                    view === "list"
+                      ? "bg-brand-800 text-white"
+                      : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  )}
+                >
+                  <List className="h-4 w-4" />
+                </button>
+              </div>
+              <SortDropdown value={sort} onChange={handleSortChange} />
+            </div>
           </div>
-          <div className="w-full max-w-xl mx-auto">
-            <SearchBar
-              value={query}
-              onSearch={handleSearch}
-              onChange={(val) => {
-                if (!val) handleSearch("");
-              }}
-              placeholder="Rechercher un article..."
-            />
-          </div>
+
+          {activeFilterChips.length > 0 && (
+            <div className="mt-3">
+              <ActiveFilters
+                filters={activeFilterChips}
+                onRemove={handleRemoveFilter}
+                onClearAll={handleResetFilters}
+              />
+            </div>
+          )}
+
+          <FilterBand
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onReset={handleResetFilters}
+            className="mt-3"
+          />
         </div>
 
-        {activeFilterChips.length > 0 && (
-          <div className="mb-4">
-            <ActiveFilters
-              filters={activeFilterChips}
-              onRemove={handleRemoveFilter}
-              onClearAll={handleResetFilters}
-            />
-          </div>
-        )}
-
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+        {query && (
+          <div className="mb-3 text-sm text-gray-600 dark:text-gray-400 sm:hidden">
             <span className="font-semibold text-gray-900 dark:text-white">
               {searchData?.total || filteredProducts.length}
             </span>{" "}
             annonce{filteredProducts.length !== 1 ? "s" : ""} trouvée
             {filteredProducts.length !== 1 ? "s" : ""}
-            {query && (
-              <span>
-                {" "}
-                pour « <span className="font-medium text-brand-800">{query}</span> »
-              </span>
-            )}
-          </p>
-
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              icon={SlidersHorizontal}
-              onClick={() => setShowMobileFilters(true)}
-              className="lg:hidden"
-            >
-              Filtres
-              {activeFilterChips.length > 0 && (
-                <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-800 px-1 text-[10px] font-bold text-white">
-                  {activeFilterChips.length}
-                </span>
-              )}
-            </Button>
-
-            <div className="hidden items-center gap-1 rounded-lg border border-gray-200 bg-white p-1 dark:border-gray-700 dark:bg-gray-800 sm:flex">
-              <button
-                type="button"
-                onClick={() => setView("grid")}
-                className={cn(
-                  "rounded-md p-1.5 transition-colors",
-                  view === "grid"
-                    ? "bg-brand-800 text-white"
-                    : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                )}
-              >
-                <Grid3X3 className="h-4 w-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setView("list")}
-                className={cn(
-                  "rounded-md p-1.5 transition-colors",
-                  view === "list"
-                    ? "bg-brand-800 text-white"
-                    : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                )}
-              >
-                <List className="h-4 w-4" />
-              </button>
-            </div>
-
-            <SortDropdown value={sort} onChange={handleSortChange} />
+            {" "}pour « <span className="font-medium text-brand-800">{query}</span> »
           </div>
-        </div>
+        )}
 
         <div className="flex gap-6">
-          <aside className="hidden w-72 shrink-0 lg:block">
-            <div className="sticky top-24">
-              <FilterSidebar
-                filters={filters}
-                onFilterChange={handleFilterChange}
-                onReset={handleResetFilters}
-              />
-            </div>
-          </aside>
-
           <main className="min-w-0 flex-1">
             {isLoading ? (
               <LoadingSkeleton view={view} />
@@ -361,33 +362,41 @@ export default function SearchResultsPage() {
                 }
               />
             ) : view === "list" ? (
-              <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {paginatedProducts.map((product, index) => (
                   <motion.div
                     key={product.id}
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.04 }}
+                    onClick={() => navigate(`/annonce/${product.id}`)}
+                    className="flex h-[190px] cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white transition-shadow hover:shadow-md dark:border-gray-800 dark:bg-gray-800"
                   >
-                    <ProductCard
-                      productId={product.id}
-                      image={product.images[0]}
-                      title={product.title}
-                      price={product.price}
-                      originalPrice={product.originalPrice}
-                      location={product.city}
-                      neighborhood={product.neighborhood}
-                      condition={product.condition}
-                      hasActiveNegotiation={product.hasActiveNegotiation}
-                      hasActiveEscrow={product.hasActiveEscrow}
-                      quantity={product.quantity}
-                      status={product.status}
-                      isUrgent={product.isUrgent}
-                      isPromoted={product.isPromoted}
-                      isFeatured={product.isFeatured}
-                      negotiable={product.negotiable}
-                      onClick={() => navigate(`/annonce/${product.id}`)}
-                    />
+                    <div className="w-2/5 shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-700">
+                      <img
+                        src={product.images?.[0]}
+                        alt={product.title}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div className="flex flex-1 flex-col justify-between px-4 py-3">
+                      <div>
+                        <h3 className="line-clamp-2 text-sm font-semibold text-gray-900 dark:text-white">
+                          {product.title}
+                        </h3>
+                        <p className="mt-1 text-sm font-bold text-brand-800">
+                          {new Intl.NumberFormat("fr-FR").format(product.price)} FCFA
+                        </p>
+                      </div>
+                      <div className="mt-2 space-y-1">
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {product.city && `${product.city}, `}Togo
+                        </p>
+                        {product.negotiable && (
+                          <span className="text-xs font-semibold text-green-600">Négociable</span>
+                        )}
+                      </div>
+                    </div>
                   </motion.div>
                 ))}
               </div>
@@ -396,7 +405,7 @@ export default function SearchResultsPage() {
                 variants={containerVariants}
                 initial="hidden"
                 animate="show"
-                className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4"
+                className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
               >
                 {paginatedProducts.map((product) => (
                   <motion.div key={product.id} variants={itemVariants}>

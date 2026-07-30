@@ -14,15 +14,22 @@ import {
   Clock,
   Send,
   Euro,
+  Smartphone,
+  CheckCircle2,
+  Copy,
+  Check,
+  Loader2,
 } from "lucide-react";
 import Button from "@/shared/ui/Button";
 import Badge from "@/shared/ui/Badge";
 import Breadcrumb from "@/shared/ui/Breadcrumb";
 import ImageGallery from "@/shared/ui/ImageGallery";
-import { useBundle } from "@/features/bundles/hooks/useBundles";
+import Modal from "@/shared/ui/Modal";
+import { useBundle, usePurchaseBundle } from "@/features/bundles/hooks/useBundles";
 import { useBundleProposals, useCreateBundleProposal } from "@/features/bundles/hooks/useBundleProposals";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
+import { paymentApi } from "@/features/payment/services/payment.api";
 import { formatCFA } from "@/shared/utils/format";
 import { toast } from "react-hot-toast";
 
@@ -93,6 +100,14 @@ export default function BundleDetailPage() {
   const [proposedPrice, setProposedPrice] = useState("");
   const [proposalMessage, setProposalMessage] = useState("");
 
+  const [showBuyModal, setShowBuyModal] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState(null);
+  const [phone, setPhone] = useState("");
+  const [purchasing, setPurchasing] = useState(false);
+  const [paymentResult, setPaymentResult] = useState(null);
+  const [copied, setCopied] = useState(false);
+  const purchaseBundle = usePurchaseBundle();
+
   const userProposal = !isOwnBundle && user
     ? proposalsData?.data?.find((p) => p.buyerId === user.id)
     : null;
@@ -118,6 +133,69 @@ export default function BundleDetailPage() {
     }
   };
 
+  const PAYMENT_METHODS = [
+    { id: "flooz", name: "Flooz", color: "#E60000" },
+    { id: "tmoney", name: "TMoney", color: "#00A651" },
+  ];
+
+  const handleBuy = async () => {
+    if (!user) {
+      toast.error("Connectez-vous pour acheter ce lot");
+      navigate("/connexion");
+      return;
+    }
+    setShowBuyModal(true);
+  };
+
+  const handleConfirmPurchase = async () => {
+    if (!paymentMethod) {
+      toast.error("Sélectionnez un moyen de paiement");
+      return;
+    }
+    if (!phone || phone.length < 8) {
+      toast.error("Entrez votre numéro de téléphone");
+      return;
+    }
+    setPurchasing(true);
+    try {
+      const escrow = await purchaseBundle.mutateAsync(bundleId);
+      const formattedPhone = phone.startsWith("+") ? phone : `+228${phone}`;
+      try {
+        const payment = await paymentApi.initiate({
+          escrowId: escrow.id,
+          method: paymentMethod,
+          phone: formattedPhone,
+        });
+        if (payment.mode === "auto") {
+          setPaymentResult("success");
+          setShowBuyModal(false);
+          return;
+        }
+      } catch {
+        // auto-pay failed, fall through to manual
+      }
+      setPaymentResult("manual");
+      setShowBuyModal(false);
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Erreur lors de l'achat");
+    } finally {
+      setPurchasing(false);
+    }
+  };
+
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const PLATFORM_ACCOUNTS = {
+    flooz: { number: "+228 90 00 00 01", name: "TG-Market Flooz" },
+    tmoney: { number: "+228 90 00 00 02", name: "TG-Market T-Money" },
+  };
+
+  const account = PLATFORM_ACCOUNTS[paymentMethod];
+
   const proposalStatusBadge = (status) => {
     const map = {
       pending: { label: "En attente", icon: Clock, class: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
@@ -133,6 +211,70 @@ export default function BundleDetailPage() {
       </span>
     );
   };
+
+  if (paymentResult === "success") {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+        <div className="mx-auto max-w-lg px-4 py-20 text-center">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
+            <CheckCircle2 className="h-8 w-8 text-green-600" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Achat réussi !</h1>
+          <p className="mt-2 text-gray-500 dark:text-gray-400">
+            Votre paiement a été confirmé. Le vendeur sera notifié.
+          </p>
+          <div className="mt-8 flex justify-center gap-3">
+            <Button variant="outline" onClick={() => navigate("/dashboard/history")}>
+              Voir mes commandes
+            </Button>
+            <Button variant="primary" onClick={() => navigate("/")}>
+              Retour à l'accueil
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (paymentResult === "manual") {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+        <div className="mx-auto max-w-lg px-4 py-10">
+          <div className="space-y-5">
+            <button onClick={() => setPaymentResult(null)} className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+              <ArrowLeft className="h-4 w-4" /> Retour
+            </button>
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-800">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                Instructions de paiement
+              </h2>
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                Effectuez le transfert sur le compte ci-dessous, puis confirmez depuis votre tableau de bord.
+              </p>
+              {account && (
+                <div className="mt-4 rounded-xl bg-gray-50 p-4 dark:bg-gray-800">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Compte {account.name}</p>
+                  <div className="mt-1 flex items-center gap-2">
+                    <span className="text-lg font-bold text-gray-900 dark:text-white">{account.number}</span>
+                    <button onClick={() => handleCopy(account.number)} className="shrink-0 rounded-lg p-1.5 text-gray-400 hover:bg-gray-200 hover:text-gray-600 dark:hover:bg-gray-700">
+                      {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  <p className="mt-2 text-sm font-semibold text-brand-800">Montant : {formatCFA(bundlePrice)}</p>
+                  <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">
+                    Envoyez le montant exact, puis allez dans votre tableau de bord pour confirmer le paiement.
+                  </p>
+                </div>
+              )}
+              <Button variant="primary" fullWidth className="mt-4" onClick={() => navigate("/dashboard/history")}>
+                Voir mes commandes
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
@@ -294,7 +436,7 @@ export default function BundleDetailPage() {
                     fullWidth
                     size="lg"
                     icon={ShoppingCart}
-                    onClick={() => toast("Fonctionnalité à venir")}
+                    onClick={handleBuy}
                   >
                     Acheter le lot
                   </Button>
@@ -311,6 +453,49 @@ export default function BundleDetailPage() {
                     </Button>
                   )}
                 </div>
+
+                <Modal open={showBuyModal} onClose={() => setShowBuyModal(false)} title="Acheter le lot">
+                  <div className="space-y-4">
+                    <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{bundle.title}</p>
+                      <p className="mt-1 text-xl font-bold text-brand-800">{formatCFA(bundlePrice)}</p>
+                      {savings > 0 && <p className="text-xs text-green-600">Économisez {formatCFA(savings)} ({savingsPct}%)</p>}
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Moyen de paiement</label>
+                      <div className="grid grid-cols-2 gap-3">
+                        {PAYMENT_METHODS.map((m) => (
+                          <button
+                            key={m.id}
+                            onClick={() => setPaymentMethod(m.id)}
+                            className={`flex items-center justify-center gap-2 rounded-xl border-2 p-3 text-sm font-semibold transition-colors ${
+                              paymentMethod === m.id
+                                ? "border-brand-800 bg-brand-50 text-brand-800 dark:border-brand-600 dark:bg-brand-900/20 dark:text-brand-400"
+                                : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                            }`}
+                          >
+                            <Smartphone className="h-4 w-4" />
+                            {m.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Numéro de téléphone</label>
+                      <input
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="ex: 90 00 00 01"
+                        className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-400/20 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                      />
+                      <p className="mt-1 text-xs text-gray-500">Numéro Flooz/TMoney pour effectuer le paiement</p>
+                    </div>
+                    <Button variant="primary" fullWidth size="lg" loading={purchasing} onClick={handleConfirmPurchase}>
+                      Confirmer l'achat
+                    </Button>
+                  </div>
+                </Modal>
 
                 {!isOwnBundle && user && (
                   <div id="proposal-form" className="mt-4 hidden space-y-3 rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">

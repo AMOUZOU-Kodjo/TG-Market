@@ -70,3 +70,9 @@ export function useRemoveProductFromBundle() {
     },
   });
 }
+
+export function usePurchaseBundle() {
+  return useMutation({
+    mutationFn: (bundleId) => bundlesApi.purchase(bundleId),
+  });
+}

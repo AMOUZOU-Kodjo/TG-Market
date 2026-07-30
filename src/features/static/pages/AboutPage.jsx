@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { FaLinkedinIn, FaFacebookF, FaXTwitter, FaInstagram } from "react-icons/fa6";
 import {
   Heart,
   Globe,
@@ -61,21 +62,9 @@ const values = [
   },
 ];
 
-const teamMembers = [
-  {
-    name: "Amouzou Kodjo",
-    role: "Co-fondateur & Développeur Frontend",
-    initials: "AK",
-    color: "bg-brand-100 text-brand-800 dark:bg-brand-900/30",
-    bio: "Architecte de l\u2019interface TG-Market. Passionné par les interfaces fluides et l\u2019expérience utilisateur mobile.",
-  },
-  {
-    name: "Awougno Kofi Yosua",
-    role: "Co-fondateur & Développeur Backend",
-    initials: "AY",
-    color: "bg-brand-100 text-brand-800 dark:bg-brand-900/30",
-    bio: "Cerveau technique derrière l\u2019API, la sécurité et l\u2019infrastructure. Garant de la fiabilité du système.",
-  },
+const TEAM_FALLBACKS = [
+  { name: "Amouzou Kodjo", role: "Co-fondateur & Développeur Frontend", initials: "AK", photo: "", bio: "Architecte de l'interface TG-Market.", linkedin: "#", facebook: "#", twitter: "#", instagram: "#" },
+  { name: "Awougno Kofi Yosua", role: "Co-fondateur & Développeur Backend", initials: "AY", photo: "", bio: "Cerveau technique derrière l'API.", linkedin: "#", facebook: "#", twitter: "#", instagram: "#" },
 ];
 
 const timeline = [
@@ -121,7 +110,8 @@ const features = [
 
 export default function AboutPage() {
   const [openTimeline, setOpenTimeline] = useState(0);
-  const { siteName } = useSiteSettings();
+  const { siteName, teamMembers } = useSiteSettings();
+  const members = Array.isArray(teamMembers) && teamMembers.length > 0 ? teamMembers : TEAM_FALLBACKS;
   const { data: publicStats } = usePublicStats();
   const testimonials = usePublicReviews().data ?? [];
 
@@ -412,22 +402,40 @@ export default function AboutPage() {
             viewport={{ once: true }}
             className="mx-auto grid max-w-2xl grid-cols-1 gap-6 sm:grid-cols-2"
           >
-            {teamMembers.map((member, i) => (
+            {members.map((member, i) => (
               <motion.div
                 key={i}
                 variants={itemVariants}
                 className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800"
               >
-                <div className={`mx-auto flex h-24 w-24 items-center justify-center rounded-full text-2xl font-bold ring-4 ring-gray-100 dark:ring-gray-800 ${member.color}`}>
-                  {member.initials}
-                </div>
-                <h3 className="mt-4 text-base font-semibold text-gray-900 dark:text-white">
+                {member.photo ? (
+                  <img src={member.photo} alt={member.name} className="mx-auto h-24 w-24 rounded-full object-cover ring-4 ring-gray-100 dark:ring-gray-800" />
+                ) : (
+                  <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full text-2xl font-bold ring-4 ring-gray-100 dark:ring-gray-800 bg-brand-100 text-brand-800 dark:bg-brand-900/30">
+                    {member.initials}
+                  </div>
+                )}
+                <h3 className="mt-4 text-base font-semibold text-gray-900 dark:text-white uppercase tracking-wider">
                   {member.name}
                 </h3>
                 <p className="mt-1 text-sm font-medium text-brand-800 dark:text-brand-400">{member.role}</p>
                 <p className="mt-3 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
-                  {member.bio.replace(/TG-Market/g, siteName)}
+                  {member.bio?.replace(/TG-Market/g, siteName)}
                 </p>
+                <div className="mt-4 flex justify-center gap-3">
+                  <a href={member.linkedin || "#"} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg bg-[#0A66C2] text-white hover:opacity-80 flex items-center justify-center transition-opacity" aria-label="LinkedIn">
+                    <FaLinkedinIn className="w-3.5 h-3.5" />
+                  </a>
+                  <a href={member.facebook || "#"} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg bg-[#1877F2] text-white hover:opacity-80 flex items-center justify-center transition-opacity" aria-label="Facebook">
+                    <FaFacebookF className="w-3.5 h-3.5" />
+                  </a>
+                  <a href={member.twitter || "#"} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg bg-[#000000] text-white hover:opacity-80 flex items-center justify-center transition-opacity" aria-label="Twitter / X">
+                    <FaXTwitter className="w-3.5 h-3.5" />
+                  </a>
+                  <a href={member.instagram || "#"} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg bg-[#E4405F] text-white hover:opacity-80 flex items-center justify-center transition-opacity" aria-label="Instagram">
+                    <FaInstagram className="w-3.5 h-3.5" />
+                  </a>
+                </div>
               </motion.div>
             ))}
           </motion.div>

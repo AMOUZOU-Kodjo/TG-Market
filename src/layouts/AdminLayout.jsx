@@ -26,7 +26,7 @@ import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const settings = useSiteSettings();
 
   const { data: unreadData } = useQuery({
@@ -132,6 +132,7 @@ export default function AdminLayout() {
               {sidebarOpen && <span>Retour au site</span>}
             </Link>
             <button
+              onClick={logout}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
             >
               <LogOut className="w-5 h-5 shrink-0" />

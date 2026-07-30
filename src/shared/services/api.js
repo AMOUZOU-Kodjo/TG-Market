@@ -21,9 +21,13 @@ const processQueue = (error, token = null) => {
   failedQueue = [];
 };
 
+function getToken(key) {
+  return sessionStorage.getItem(key) || localStorage.getItem(key);
+}
+
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("ak_access_token");
+    const token = getToken("ak_access_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -52,15 +56,17 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       isRefreshing = true;
 
-      const refreshToken = localStorage.getItem("ak_refresh_token");
+      const refreshToken = getToken("ak_refresh_token");
 
       if (!refreshToken) {
         isRefreshing = false;
-        localStorage.removeItem("ak_access_token");
-        localStorage.removeItem("ak_refresh_token");
+        clearAuthTokens();
         dispatchLogout();
         return Promise.reject(error);
       }
+
+      const useSession = !!sessionStorage.getItem("ak_refresh_token");
+      const storage = useSession ? sessionStorage : localStorage;
 
       try {
         const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, {
@@ -70,8 +76,8 @@ api.interceptors.response.use(
         const newToken = data.accessToken;
         const newRefreshToken = data.refreshToken || refreshToken;
 
-        localStorage.setItem("ak_access_token", newToken);
-        localStorage.setItem("ak_refresh_token", newRefreshToken);
+        storage.setItem("ak_access_token", newToken);
+        storage.setItem("ak_refresh_token", newRefreshToken);
 
         api.defaults.headers.common.Authorization = `Bearer ${newToken}`;
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
@@ -81,8 +87,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
-        localStorage.removeItem("ak_access_token");
-        localStorage.removeItem("ak_refresh_token");
+        clearAuthTokens();
         dispatchLogout();
         return Promise.reject(refreshError);
       } finally {
@@ -123,17 +128,23 @@ api.interceptors.response.use(
 
 export default api;
 
-export const setAuthTokens = (accessToken, refreshToken) => {
-  localStorage.setItem("ak_access_token", accessToken);
+export const setAuthTokens = (accessToken, refreshToken, rememberMe = true) => {
+  const storage = rememberMe ? localStorage : sessionStorage;
+  storage.setItem("ak_access_token", accessToken);
   if (refreshToken) {
-    localStorage.setItem("ak_refresh_token", refreshToken);
+    storage.setItem("ak_refresh_token", refreshToken);
+  }
+  if (!rememberMe) {
+    localStorage.removeItem("ak_access_token");
+    localStorage.removeItem("ak_refresh_token");
   }
 };
 
 export const clearAuthTokens = () => {
   localStorage.removeItem("ak_access_token");
   localStorage.removeItem("ak_refresh_token");
+  sessionStorage.removeItem("ak_access_token");
+  sessionStorage.removeItem("ak_refresh_token");
 };
 
-export const getAccessToken = () =>
-  localStorage.getItem("ak_access_token");
+export const getAccessToken = () => getToken("ak_access_token");

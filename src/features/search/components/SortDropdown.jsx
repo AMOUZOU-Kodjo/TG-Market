@@ -21,13 +21,13 @@ export default function SortDropdown({ value = "newest", onChange, className }) 
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors",
+          "flex items-center gap-1 sm:gap-2 rounded-xl border border-gray-200 bg-white px-2 sm:px-4 py-2 text-sm sm:py-2.5 font-medium text-gray-700 transition-colors",
           "hover:border-brand-400 hover:text-brand-900",
           "dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-brand-800 dark:hover:text-brand-700",
           isOpen && "border-brand-800 ring-2 ring-brand-800/20"
         )}
       >
-        <SlidersHorizontal className="h-4 w-4" />
+        <SlidersHorizontal className="hidden sm:block h-4 w-4" />
         <span className="hidden sm:inline">Trier par :</span>
         <span className="text-brand-900 dark:text-brand-700">{current.label}</span>
         <ChevronDown

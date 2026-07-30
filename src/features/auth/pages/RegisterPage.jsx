@@ -13,12 +13,10 @@ import {
   EyeOff,
   UserPlus,
   CircleDot,
-  ExternalLink,
   MapPin,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { registerSchema } from "@/shared/utils/validators";
-import BackButton from "@/shared/ui/BackButton";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import Input from "@/shared/ui/Input";
@@ -109,6 +107,7 @@ export default function RegisterPage() {
       phone,
       password: data.password,
       city: data.city,
+      acceptedTerms: data.acceptTerms,
     });
     if (result.success) {
       toast.success(`Inscription réussie ! Bienvenue sur ${siteName} 🎉`);
@@ -120,7 +119,6 @@ export default function RegisterPage() {
 
   return (
     <div>
-      <BackButton />
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -252,13 +250,13 @@ export default function RegisterPage() {
           />
           <span className="text-sm text-gray-600 dark:text-gray-400">
             J'accepte les{" "}
-            <span className="font-medium text-red-800 hover:underline">
+            <Link to="/conditions" className="font-medium text-red-800 hover:underline">
               conditions d'utilisation
-            </span>{" "}
+            </Link>{" "}
             et la{" "}
-            <span className="font-medium text-red-800 hover:underline">
+            <Link to="/confidentialite" className="font-medium text-red-800 hover:underline">
               politique de confidentialité
-            </span>
+            </Link>
           </span>
         </label>
         {errors.acceptTerms?.message && (
@@ -295,26 +293,17 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-3">
+        <div className="mt-6">
           <Button
             type="button"
             variant="outline"
             size="lg"
+            fullWidth
             icon={CircleDot}
             onClick={() => handleSocialRegister("Google")}
             loading={socialLoading === "Google"}
           >
             Google
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="lg"
-            icon={ExternalLink}
-            onClick={() => handleSocialRegister("Facebook")}
-            loading={socialLoading === "Facebook"}
-          >
-            Facebook
           </Button>
         </div>
       </motion.div>

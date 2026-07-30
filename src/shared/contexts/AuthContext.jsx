@@ -13,7 +13,7 @@ export function AuthProvider({ children }) {
   const isAdmin = user?.role === "admin";
 
   const initializeAuth = useCallback(async (retries = 3) => {
-    const token = localStorage.getItem("ak_access_token");
+    const token = sessionStorage.getItem("ak_access_token") || localStorage.getItem("ak_access_token");
     if (!token) {
       setIsLoading(false);
       return;
@@ -44,10 +44,10 @@ export function AuthProvider({ children }) {
     initializeAuth();
   }, [initializeAuth]);
 
-  const login = useCallback(async (email, password) => {
+  const login = useCallback(async (email, password, rememberMe = true) => {
     try {
       const { data } = await api.post("/auth/login", { email, password });
-      setAuthTokens(data.accessToken, data.refreshToken);
+      setAuthTokens(data.accessToken, data.refreshToken, rememberMe);
       setUser(data.user);
       return { success: true };
     } catch (error) {

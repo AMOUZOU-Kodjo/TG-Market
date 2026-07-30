@@ -204,12 +204,13 @@ function HeroSection() {
   const bgImages = [
     // "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1920&q=80",
     "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=1920&q=80",
+    // "https://lp-cms-production.imgix.net/2019-06/ed9e4ee3b9eb96833fcf64dda6408706-grand-marche.jpg",
     // "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1920&q=80",
     // "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=80",
   ];
 
   return (
-    <section className="relative h-70 overflow-hidden sm:h-80 lg:h-90">
+    <section className="relative h-72 overflow-hidden sm:h-80 lg:h-96">
       <style>{`
         .hero-swiper .swiper-pagination-bullet {
           width: 10px;
@@ -242,7 +243,7 @@ function HeroSection() {
         ))}
       </Swiper>
 
-      <div className="absolute inset-0 bg-gray-900/60" style={{ zIndex: 1 }} />
+      <div className="absolute inset-0 bg-gray-900/20" style={{ zIndex: 1 }} />
 
       {/* <div className="absolute inset-0 flex  items-center justify-center px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}> */}
       <div className="absolute inset-0 flex items-center sm:items-start justify-center   sm:pt-10 px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}>
@@ -464,14 +465,14 @@ function PopularProductsSection() {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-60px" }}
-      className="py-16 sm:py-5"
+      className="py-4 sm:py-5"
     >
       <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
           title="Disponibles en ce moment"
           subtitle="Les 30 produits les plus récemment publiés"
           action="/recherche?sort=newest"
-          
+          className="!mb-6 border-b border-gray-200 pb-4"
         />
 
         <motion.div
@@ -823,8 +824,6 @@ export default function HomePage() {
       
       <HeroSection />
       
-      <div className="w-full border-t border-gray-300" />
-
       {/* <CategoriesSection /> */}
       {/* <RecentListingsSection /> */}
       {/* <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8 pt-8">

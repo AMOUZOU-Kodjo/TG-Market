@@ -4,10 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff, LogIn, CircleDot, ExternalLink } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, LogIn, CircleDot } from "lucide-react";
 import toast from "react-hot-toast";
 import { loginSchema } from "@/shared/utils/validators";
-import BackButton from "@/shared/ui/BackButton";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import Input from "@/shared/ui/Input";
 import Button from "@/shared/ui/Button";
@@ -32,7 +31,7 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data) => {
-    const result = await login(data.email, data.password);
+    const result = await login(data.email, data.password, rememberMe);
     if (result.success) {
       toast.success("Connexion réussie ! Bienvenue 🎉");
       navigate("/");
@@ -78,7 +77,6 @@ export default function LoginPage() {
 
   return (
     <div>
-      <BackButton />
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -168,26 +166,17 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-3">
+        <div className="mt-6">
           <Button
             type="button"
             variant="outline"
             size="lg"
+            fullWidth
             icon={CircleDot}
             onClick={() => handleSocialLogin("Google")}
             loading={socialLoading === "Google"}
           >
             Google
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="lg"
-            icon={ExternalLink}
-            onClick={() => handleSocialLogin("Facebook")}
-            loading={socialLoading === "Facebook"}
-          >
-            Facebook
           </Button>
         </div>
       </motion.div>

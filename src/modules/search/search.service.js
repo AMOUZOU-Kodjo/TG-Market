@@ -25,6 +25,7 @@ function formatSearchResult(product) {
       : undefined,
     city: product.city,
     neighborhood: product.neighborhood,
+    negotiable: product.negotiable,
     views: product.views,
     favorites: product.favorites_count,
     createdAt: product.created_at,
@@ -48,7 +49,7 @@ function buildSortOption(sort) {
 }
 
 function buildILIKEWhere(filters) {
-  const { q, categories, conditions, minPrice, maxPrice, city } = filters;
+  const { q, categories, conditions, minPrice, maxPrice, city, verifiedSeller, deliveryAvailable, negotiable, urgent, onPromotion } = filters;
 
   const where = { status: 'active' };
 
@@ -89,6 +90,26 @@ function buildILIKEWhere(filters) {
 
   if (city) {
     where.city = { equals: city, mode: 'insensitive' };
+  }
+
+  if (verifiedSeller === true || verifiedSeller === 'true') {
+    where.user = { identity_verified: true };
+  }
+
+  if (deliveryAvailable === true || deliveryAvailable === 'true') {
+    where.delivery_available = true;
+  }
+
+  if (negotiable === true || negotiable === 'true') {
+    where.negotiable = true;
+  }
+
+  if (urgent === true || urgent === 'true') {
+    where.is_urgent = true;
+  }
+
+  if (onPromotion === true || onPromotion === 'true') {
+    where.is_promoted = true;
   }
 
   return where;

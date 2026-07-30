@@ -7,6 +7,19 @@ export async function createOffer(req, res, next) {
     const { amount, message } = req.body;
     const buyerId = req.user.id;
     const result = await offersService.createOffer(productId, buyerId, amount, message);
+
+    const io = req.app.get('io');
+    if (io) {
+      const { notifyUser } = await import('../notifications/notifications.service.js');
+      await notifyUser(io, result.sellerId, {
+        type: 'new_offer',
+        title: 'Nouvelle offre reçue',
+        description: `${result.buyer?.name || 'Un acheteur'} a proposé ${new Intl.NumberFormat('fr-FR').format(result.amount)} FCFA`,
+        productId,
+        metadata: { offerId: result.id, amount: result.amount },
+      });
+    }
+
     res.json(result);
   } catch (err) {
     next(err);

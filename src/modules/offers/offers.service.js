@@ -62,6 +62,11 @@ export async function createOffer(productId, buyerId, amount, message) {
     throw error;
   }
 
+  await prisma.product.update({
+    where: { id: productId },
+    data: { has_active_negotiation: true },
+  });
+
   const offer = await prisma.offer.create({
     data: {
       product_id: productId,

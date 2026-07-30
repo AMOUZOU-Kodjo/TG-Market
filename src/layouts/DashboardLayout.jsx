@@ -150,6 +150,17 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
         {sidebarOpen && <span>Offres</span>}
       </Link>
 
+      {/* Mes lots */}
+      <Link
+        to="/dashboard/mes-lots"
+        onClick={onMobileLinkClick}
+        className={`mx-3 mt-2 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+        title={!sidebarOpen ? "Mes lots" : undefined}
+      >
+        <Package className="w-4 h-4 shrink-0" />
+        {sidebarOpen && <span>Mes lots</span>}
+      </Link>
+
       {/* Admin - visible only for admins */}
       {user?.role === "admin" && (
         <Link
@@ -225,6 +236,7 @@ export default function DashboardLayout() {
     "/dashboard/analytics": "Statistiques",
     "/dashboard/promotions": "Promotions",
     "/dashboard/propositions": "Propositions de lots",
+    "/dashboard/mes-lots": "Mes lots",
   };
   const pageTitle = pageTitles[location.pathname] ?? "Tableau de bord";
 

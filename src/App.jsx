@@ -65,6 +65,8 @@ import {
   CreateBundlePage,
   BundleDetailPage,
   OffersPage,
+  BundlesListPage,
+  BundlesManagePage,
 } from "@/routes/lazyPages";
 
 const queryClient = new QueryClient({
@@ -222,6 +224,7 @@ function App() {
                           }
                         />
                         <Route path="/lot/:id" element={<BundleDetailPage />} />
+                        <Route path="/lots" element={<BundlesListPage />} />
                         <Route
                           path="/commandes/:id"
                           element={
@@ -294,6 +297,7 @@ function App() {
                           <Route path="/dashboard/settings" element={<SettingsPage />} />
                           <Route path="/dashboard/history" element={<HistoryPage />} />
                           <Route path="/dashboard/offres" element={<OffersPage />} />
+                          <Route path="/dashboard/mes-lots" element={<BundlesManagePage />} />
                         </Route>
 
                         <Route

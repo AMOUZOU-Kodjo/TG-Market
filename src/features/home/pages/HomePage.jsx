@@ -522,6 +522,7 @@ function PopularProductsSection() {
 //         <SectionHeader
 //           title="Vendeurs vérifiés"
 //           subtitle="Nos vendeurs les mieux notés"
+
 //           action="/vendeurs"
 //         />
 
@@ -816,6 +817,15 @@ export default function HomePage() {
       <HeroSection />
       {/* <CategoriesSection /> */}
       {/* <RecentListingsSection /> */}
+      <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8 pt-8">
+        <Link
+          to="/lots"
+          className="inline-flex items-center gap-2 rounded-xl bg-brand-800 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-900"
+        >
+          <Package className="h-4 w-4" />
+          Voir les lots
+        </Link>
+      </div>
       <PopularProductsSection />
       {/* <VerifiedSellersSection /> */}
       {/* <HowItWorksSection /> */}

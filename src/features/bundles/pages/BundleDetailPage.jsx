@@ -45,6 +45,20 @@ export default function BundleDetailPage() {
   const { data: bundle, isLoading } = useBundle(bundleId);
   const { user } = useAuth();
   const { settings } = useSiteSettings();
+  const purchaseBundle = usePurchaseBundle();
+  const createProposal = useCreateBundleProposal();
+  const [proposedPrice, setProposedPrice] = useState("");
+  const [proposalMessage, setProposalMessage] = useState("");
+  const [showBuyModal, setShowBuyModal] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState(null);
+  const [phone, setPhone] = useState("");
+  const [purchasing, setPurchasing] = useState(false);
+  const [paymentResult, setPaymentResult] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  const seller = bundle?.seller;
+  const isOwnBundle = user && seller && user.id === seller.id;
+  const { data: proposalsData } = useBundleProposals(isOwnBundle ? bundleId : undefined);
 
   if (isLoading) {
     return (
@@ -89,24 +103,9 @@ export default function BundleDetailPage() {
 
   const breadcrumbItems = [
     { label: "Accueil", href: "/" },
-    { label: "Lots", href: "/lot" },
+    { label: "Lots", href: "/lots" },
     { label: bundle.title },
   ];
-
-  const seller = bundle.seller;
-  const isOwnBundle = user && seller && user.id === seller.id;
-  const { data: proposalsData } = useBundleProposals(isOwnBundle ? bundleId : undefined);
-  const createProposal = useCreateBundleProposal();
-  const [proposedPrice, setProposedPrice] = useState("");
-  const [proposalMessage, setProposalMessage] = useState("");
-
-  const [showBuyModal, setShowBuyModal] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState(null);
-  const [phone, setPhone] = useState("");
-  const [purchasing, setPurchasing] = useState(false);
-  const [paymentResult, setPaymentResult] = useState(null);
-  const [copied, setCopied] = useState(false);
-  const purchaseBundle = usePurchaseBundle();
 
   const userProposal = !isOwnBundle && user
     ? proposalsData?.data?.find((p) => p.buyerId === user.id)

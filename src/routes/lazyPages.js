@@ -49,6 +49,8 @@ const MakeOfferPage = lazy(() => import("@/features/offers/pages/MakeOfferPage")
 const CreateBundlePage = lazy(() => import("@/features/bundles/pages/CreateBundlePage"));
 const BundleDetailPage = lazy(() => import("@/features/bundles/pages/BundleDetailPage"));
 const OffersPage = lazy(() => import("@/features/offers/pages/OffersPage"));
+const BundlesListPage = lazy(() => import("@/features/bundles/pages/BundlesListPage"));
+const BundlesManagePage = lazy(() => import("@/features/dashboard/pages/BundlesManagePage"));
 
 export {
   HomePage,
@@ -100,4 +102,6 @@ export {
   CreateBundlePage,
   BundleDetailPage,
   OffersPage,
+  BundlesListPage,
+  BundlesManagePage,
 };

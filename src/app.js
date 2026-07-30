@@ -156,7 +156,7 @@ app.post('/api/contact', async (req, res) => {
   res.json({ success: true, message: 'Message envoyé avec succès' });
 });
 
-// ─── API Routes ──────────────────────────────────────
+// ─── API Routes / routes api ──────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/categories', categoriesRoutes);

@@ -1,5 +1,6 @@
 import * as bundlesService from './bundles.service.js';
 import { buildPaginationMeta } from '../../utils/pagination.js';
+import { notifyUser } from '../notifications/notifications.service.js';
 
 export async function createBundle(req, res, next) {
   try {
@@ -42,6 +43,17 @@ export async function getBundleById(req, res, next) {
   try {
     const bundle = await bundlesService.getBundleById(Number(req.params.id));
     res.json(bundle);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function purchaseBundle(req, res, next) {
+  try {
+    const bundleId = Number(req.params.id);
+    const buyerId = req.user.id;
+    const result = await bundlesService.purchaseBundle(bundleId, buyerId);
+    res.status(201).json(result);
   } catch (err) {
     next(err);
   }
@@ -95,7 +107,6 @@ export async function createBundleProposal(req, res, next) {
 
     const io = req.app.get('io');
     if (io) {
-      const { notifyUser } = await import('../notifications/notifications.service.js');
       await notifyUser(io, proposal.sellerId, {
         type: 'bundle_proposal',
         title: 'Nouvelle proposition sur votre lot',
@@ -147,7 +158,6 @@ export async function acceptBundleProposal(req, res, next) {
 
     const io = req.app.get('io');
     if (io) {
-      const { notifyUser } = await import('../notifications/notifications.service.js');
       await notifyUser(io, proposal.buyerId, {
         type: 'bundle_proposal_accepted',
         title: 'Proposition acceptée',
@@ -169,7 +179,6 @@ export async function rejectBundleProposal(req, res, next) {
 
     const io = req.app.get('io');
     if (io) {
-      const { notifyUser } = await import('../notifications/notifications.service.js');
       await notifyUser(io, proposal.buyerId, {
         type: 'bundle_proposal_rejected',
         title: 'Proposition refusée',
@@ -191,7 +200,6 @@ export async function cancelBundleProposal(req, res, next) {
 
     const io = req.app.get('io');
     if (io) {
-      const { notifyUser } = await import('../notifications/notifications.service.js');
       const recipientId = proposal.sellerId === req.user.id ? proposal.buyerId : proposal.sellerId;
       await notifyUser(io, recipientId, {
         type: 'bundle_proposal_cancelled',

@@ -12,6 +12,7 @@ router.get('/proposals/received', auth, pagination, bundlesController.getReceive
 router.put('/proposals/:proposalId/accept', auth, bundlesController.acceptBundleProposal);
 router.put('/proposals/:proposalId/reject', auth, bundlesController.rejectBundleProposal);
 router.put('/proposals/:proposalId/cancel', auth, bundlesController.cancelBundleProposal);
+router.post('/:id/purchase', auth, bundlesController.purchaseBundle);
 router.get('/:id', bundlesController.getBundleById);
 router.post('/', auth, bundlesController.createBundle);
 router.post('/:id/proposals', auth, bundlesController.createBundleProposal);

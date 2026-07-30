@@ -5,12 +5,14 @@ function formatEscrow(escrow) {
   return {
     id: escrow.id,
     productId: escrow.product_id,
+    bundleId: escrow.bundle_id ?? null,
     buyerId: escrow.buyer_id,
     sellerId: escrow.seller_id,
     buyerName: escrow.buyer ? `${escrow.buyer.first_name} ${escrow.buyer.last_name}` : null,
     sellerName: escrow.seller ? `${escrow.seller.first_name} ${escrow.seller.last_name}` : null,
     productTitle: escrow.product?.title ?? null,
     productImage: escrow.product?.images?.[0]?.url ?? null,
+    bundleTitle: escrow.bundle?.title ?? null,
     amount: escrow.amount,
     fee: escrow.fee,
     status: escrow.status,
@@ -363,7 +365,7 @@ export async function markAsShipped(id, sellerId) {
 export async function confirmWithCode(id, sellerId, code) {
   const escrow = await prisma.escrowTransaction.findUnique({
     where: { id },
-    select: { id: true, seller_id: true, confirmation_code: true, amount: true, fee: true, status: true, product_id: true, buyer_id: true },
+    select: { id: true, seller_id: true, confirmation_code: true, amount: true, fee: true, status: true, product_id: true, buyer_id: true, bundle_id: true },
   });
 
   if (!escrow) {
@@ -402,21 +404,32 @@ export async function confirmWithCode(id, sellerId, code) {
       },
     });
 
-    await tx.product.update({
-      where: { id: escrow.product_id },
-      data: { quantity: { decrement: 1 } },
-    });
-
-    const updatedProduct = await tx.product.findUnique({
-      where: { id: escrow.product_id },
-      select: { quantity: true },
-    });
-
-    if (updatedProduct.quantity === 0) {
-      await tx.product.update({
-        where: { id: escrow.product_id },
+    if (escrow.bundle_id) {
+      const bundleItems = await tx.bundleItem.findMany({
+        where: { bundle_id: escrow.bundle_id },
+        select: { product_id: true },
+      });
+      await tx.product.updateMany({
+        where: { id: { in: bundleItems.map((i) => i.product_id) } },
         data: { status: 'sold' },
       });
+    } else {
+      await tx.product.update({
+        where: { id: escrow.product_id },
+        data: { quantity: { decrement: 1 } },
+      });
+
+      const updatedProduct = await tx.product.findUnique({
+        where: { id: escrow.product_id },
+        select: { quantity: true },
+      });
+
+      if (updatedProduct.quantity === 0) {
+        await tx.product.update({
+          where: { id: escrow.product_id },
+          data: { status: 'sold' },
+        });
+      }
     }
 
     const buyerTransaction = await tx.walletTransaction.findFirst({
@@ -432,15 +445,20 @@ export async function confirmWithCode(id, sellerId, code) {
 
     const escrowRecord = await tx.escrowTransaction.findUnique({
       where: { id },
-      include: { product: { select: { title: true } } },
+      include: {
+        product: { select: { title: true } },
+        bundle: { select: { title: true } },
+      },
     });
+
+    const itemLabel = escrowRecord.bundle?.title || escrowRecord.product?.title || 'Produit';
 
     await tx.walletTransaction.create({
       data: {
         user_id: escrow.seller_id,
         type: 'sale',
         amount: sellerPayout,
-        description: `Vente : ${escrowRecord.product.title}`,
+        description: escrowRecord.bundle ? `Vente du lot : ${itemLabel}` : `Vente : ${itemLabel}`,
         status: 'completed',
         reference_type: 'escrow',
         reference_id: id,
@@ -458,7 +476,7 @@ export async function confirmWithCode(id, sellerId, code) {
           user_id: admin.id,
           type: 'commission',
           amount: escrow.fee,
-          description: `Commission 5% - ${escrowRecord.product.title}`,
+          description: escrowRecord.bundle ? `Commission 5% - Lot : ${itemLabel}` : `Commission 5% - ${itemLabel}`,
           status: 'completed',
           reference_type: 'escrow',
           reference_id: id,
@@ -478,6 +496,7 @@ export async function confirmWithCode(id, sellerId, code) {
           images: { select: { url: true }, orderBy: { sort_order: 'asc' }, take: 1 },
         },
       },
+      bundle: { select: { id: true, title: true } },
     },
   });
 
@@ -487,7 +506,7 @@ export async function confirmWithCode(id, sellerId, code) {
 export async function confirmDelivery(id, buyerId) {
   const escrow = await prisma.escrowTransaction.findUnique({
     where: { id },
-    select: { id: true, buyer_id: true, seller_id: true, amount: true, fee: true, status: true, product_id: true },
+    select: { id: true, buyer_id: true, seller_id: true, amount: true, fee: true, status: true, product_id: true, bundle_id: true },
   });
 
   if (!escrow) {
@@ -520,21 +539,32 @@ export async function confirmDelivery(id, buyerId) {
       },
     });
 
-    await tx.product.update({
-      where: { id: escrow.product_id },
-      data: { quantity: { decrement: 1 } },
-    });
-
-    const updatedProduct = await tx.product.findUnique({
-      where: { id: escrow.product_id },
-      select: { quantity: true },
-    });
-
-    if (updatedProduct.quantity === 0) {
-      await tx.product.update({
-        where: { id: escrow.product_id },
+    if (escrow.bundle_id) {
+      const bundleItems = await tx.bundleItem.findMany({
+        where: { bundle_id: escrow.bundle_id },
+        select: { product_id: true },
+      });
+      await tx.product.updateMany({
+        where: { id: { in: bundleItems.map((i) => i.product_id) } },
         data: { status: 'sold' },
       });
+    } else {
+      await tx.product.update({
+        where: { id: escrow.product_id },
+        data: { quantity: { decrement: 1 } },
+      });
+
+      const updatedProduct = await tx.product.findUnique({
+        where: { id: escrow.product_id },
+        select: { quantity: true },
+      });
+
+      if (updatedProduct.quantity === 0) {
+        await tx.product.update({
+          where: { id: escrow.product_id },
+          data: { status: 'sold' },
+        });
+      }
     }
 
     const buyerTransaction = await tx.walletTransaction.findFirst({
@@ -550,15 +580,20 @@ export async function confirmDelivery(id, buyerId) {
 
     const escrowRecord = await tx.escrowTransaction.findUnique({
       where: { id },
-      include: { product: { select: { title: true } } },
+      include: {
+        product: { select: { title: true } },
+        bundle: { select: { title: true } },
+      },
     });
+
+    const itemLabel = escrowRecord.bundle?.title || escrowRecord.product?.title || 'Produit';
 
     await tx.walletTransaction.create({
       data: {
         user_id: escrow.seller_id,
         type: 'sale',
         amount: sellerPayout,
-        description: `Vente : ${escrowRecord.product.title}`,
+        description: escrowRecord.bundle ? `Vente du lot : ${itemLabel}` : `Vente : ${itemLabel}`,
         status: 'completed',
         reference_type: 'escrow',
         reference_id: id,
@@ -576,7 +611,7 @@ export async function confirmDelivery(id, buyerId) {
           user_id: admin.id,
           type: 'commission',
           amount: escrow.fee,
-          description: `Commission 5% - ${escrowRecord.product.title}`,
+          description: escrowRecord.bundle ? `Commission 5% - Lot : ${itemLabel}` : `Commission 5% - ${itemLabel}`,
           status: 'completed',
           reference_type: 'escrow',
           reference_id: id,
@@ -596,6 +631,7 @@ export async function confirmDelivery(id, buyerId) {
           images: { select: { url: true }, orderBy: { sort_order: 'asc' }, take: 1 },
         },
       },
+      bundle: { select: { id: true, title: true } },
     },
   });
 

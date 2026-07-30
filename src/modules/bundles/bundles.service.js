@@ -1,4 +1,5 @@
 import prisma from '../../config/database.js';
+import crypto from 'crypto';
 
 function formatBundle(bundle) {
   return {
@@ -519,6 +520,118 @@ export async function cancelBundleProposal(proposalId, userId) {
   });
 
   return formatProposal(updated);
+}
+
+export async function purchaseBundle(bundleId, buyerId) {
+  const bundle = await prisma.bundle.findUnique({
+    where: { id: bundleId },
+    include: {
+      items: {
+        include: {
+          product: { select: { id: true, title: true, user_id: true, status: true } },
+        },
+      },
+      seller: { select: { id: true, first_name: true, last_name: true } },
+    },
+  });
+
+  if (!bundle || bundle.status === 'deleted') {
+    const error = new Error('Lot introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  if (bundle.seller_id === buyerId) {
+    const error = new Error('Vous ne pouvez pas acheter votre propre lot');
+    error.status = 400;
+    throw error;
+  }
+
+  const activeProducts = bundle.items.filter((item) => item.product && item.product.status === 'active');
+  if (activeProducts.length === 0) {
+    const error = new Error('Tous les produits de ce lot ne sont plus disponibles');
+    error.status = 400;
+    throw error;
+  }
+
+  const existing = await prisma.escrowTransaction.findFirst({
+    where: {
+      bundle_id: bundleId,
+      buyer_id: buyerId,
+      status: { notIn: ['cancelled', 'refunded', 'completed'] },
+    },
+  });
+
+  if (existing) {
+    const error = new Error('Une commande active existe déjà pour ce lot');
+    error.status = 409;
+    throw error;
+  }
+
+  const firstProduct = activeProducts[0].product;
+  const fee = Math.round(bundle.bundle_price * 0.05);
+
+  const escrow = await prisma.$transaction(async (tx) => {
+    const token = crypto.randomUUID();
+    const created = await tx.escrowTransaction.create({
+      data: {
+        product_id: firstProduct.id,
+        bundle_id: bundleId,
+        buyer_id: buyerId,
+        seller_id: bundle.seller_id,
+        amount: bundle.bundle_price,
+        fee,
+        status: 'pending',
+        confirmation_token: token,
+      },
+    });
+
+    await tx.walletTransaction.create({
+      data: {
+        user_id: buyerId,
+        type: 'purchase',
+        amount: bundle.bundle_price,
+        description: `Achat du lot : ${bundle.title}`,
+        counterparty: null,
+        status: 'pending',
+        reference_type: 'escrow',
+        reference_id: created.id,
+      },
+    });
+
+    return created;
+  });
+
+  const full = await prisma.escrowTransaction.findUnique({
+    where: { id: escrow.id },
+    include: {
+      buyer: { select: { first_name: true, last_name: true } },
+      seller: { select: { first_name: true, last_name: true } },
+      product: {
+        select: {
+          title: true,
+          images: { select: { url: true }, orderBy: { sort_order: 'asc' }, take: 1 },
+        },
+      },
+      bundle: { select: { id: true, title: true } },
+    },
+  });
+
+  return {
+    id: full.id,
+    productId: full.product_id,
+    bundleId: full.bundle_id,
+    buyerId: full.buyer_id,
+    sellerId: full.seller_id,
+    amount: full.amount,
+    fee: full.fee,
+    status: full.status,
+    confirmationToken: full.confirmation_token,
+    createdAt: full.created_at,
+    productTitle: full.product?.title ?? null,
+    productImage: full.product?.images?.[0]?.url ?? null,
+    bundleTitle: full.bundle?.title ?? null,
+  };
 }
 
 export async function removeProductFromBundle(bundleId, sellerId, productId) {

@@ -428,6 +428,7 @@ model EscrowTransaction {
   seller_id      Int
   amount         Int
   fee            Int
+  bundle_id      Int?
   status         EscrowStatus @default(pending)
   payment_method String?      @db.VarChar(30)
   payment_ref    String?      @db.VarChar(100)
@@ -443,12 +444,14 @@ model EscrowTransaction {
   product        Product      @relation(fields: [product_id], references: [id])
   buyer          User         @relation("EscrowBuyer", fields: [buyer_id], references: [id])
   seller         User         @relation("EscrowSeller", fields: [seller_id], references: [id])
+  bundle         Bundle?      @relation(fields: [bundle_id], references: [id])
   reviews        Review[]
 
   @@index([buyer_id])
   @@index([seller_id])
   @@index([status])
   @@index([created_at])
+  @@index([bundle_id])
 }
 
 model PaymentMethod {
@@ -628,6 +631,7 @@ model Bundle {
   seller      User         @relation(fields: [seller_id], references: [id])
   items       BundleItem[]
   proposals   BundleProposal[]
+  escrows     EscrowTransaction[]
 
   @@index([seller_id])
   @@index([status])

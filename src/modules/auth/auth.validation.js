@@ -17,6 +17,9 @@ export const registerSchema = z.object({
     phone: z.string().regex(phoneRegex, 'Numéro de téléphone invalide'),
     password: passwordSchema,
     city: z.string().min(1, 'Ville requise').max(100),
+    acceptedTerms: z.literal(true, {
+      message: 'Vous devez accepter les conditions d\'utilisation',
+    }),
   }),
 });
 

@@ -131,6 +131,7 @@ model User {
   role                 UserRole            @default(user)
   email_verified_at    DateTime?
   phone_verified_at    DateTime?
+  accepted_terms_at    DateTime?
   identity_verified    Boolean             @default(false)
   two_factor_enabled   Boolean             @default(false)
   two_factor_secret    String?             @db.VarChar(500)

@@ -82,7 +82,7 @@ export async function storeRefreshToken(userId, token, req) {
 }
 
 export async function register(data, req) {
-  const { firstName, lastName, email, phone, password, city } = data;
+  const { firstName, lastName, email, phone, password, city, acceptedTerms } = data;
 
   const existing = await prisma.user.findFirst({
     where: { OR: [{ email }, { phone }] },
@@ -107,6 +107,7 @@ export async function register(data, req) {
       phone,
       password: hashedPassword,
       city,
+      accepted_terms_at: acceptedTerms ? new Date() : null,
     },
   });
 

@@ -12,6 +12,7 @@ export async function getStatus(req, res, next) {
 export async function submitKyc(req, res, next) {
   try {
     const result = await kycService.submitKyc(req.user.id, req.validated.body);
+    try { req.app.get('io')?.emit('kyc_submitted', { userId: req.user.id, kyc: result }); } catch {}
     res.status(201).json(result);
   } catch (err) {
     next(err);

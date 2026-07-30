@@ -48,6 +48,7 @@ export async function createReview(req, res, next) {
       });
     }
 
+    try { req.app.get('io')?.emit('review_created', { review: review ?? { id: review?.id } }); } catch {}
     res.status(201).json(review);
   } catch (err) {
     next(err);

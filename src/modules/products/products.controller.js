@@ -34,6 +34,7 @@ export async function getProductById(req, res, next) {
 export async function createProduct(req, res, next) {
   try {
     const product = await productsService.createProduct(req.user.id, req.validated.body);
+    try { req.app.get('io')?.emit('product_created', { product }); } catch {}
     res.status(201).json(product);
   } catch (err) {
     next(err);
@@ -47,6 +48,7 @@ export async function updateProduct(req, res, next) {
       req.user.id,
       req.validated.body,
     );
+    try { req.app.get('io')?.emit('product_updated', { product }); } catch {}
     res.json(product);
   } catch (err) {
     next(err);
@@ -56,6 +58,7 @@ export async function updateProduct(req, res, next) {
 export async function deleteProduct(req, res, next) {
   try {
     const result = await productsService.deleteProduct(Number(req.params.id), req.user.id);
+    try { req.app.get('io')?.emit('product_deleted', { productId: Number(req.params.id) }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);

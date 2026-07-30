@@ -4,6 +4,7 @@ import { buildPaginationMeta } from '../../utils/pagination.js';
 export async function createEscrow(req, res, next) {
   try {
     const escrow = await escrowService.createEscrow(req.user.id, req.validated.body);
+    try { req.app.get('io')?.emit('escrow_created', { escrow }); } catch {}
     res.status(201).json(escrow);
   } catch (err) {
     next(err);
@@ -70,6 +71,7 @@ export async function markAsShipped(req, res, next) {
   try {
     const id = Number(req.params.id);
     const escrow = await escrowService.markAsShipped(id, req.user.id);
+    try { req.app.get('io')?.emit('escrow_updated', { escrow }); } catch {}
     res.json(escrow);
   } catch (err) {
     next(err);

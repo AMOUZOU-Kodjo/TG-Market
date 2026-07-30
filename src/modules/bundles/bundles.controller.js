@@ -7,6 +7,7 @@ export async function createBundle(req, res, next) {
     const { title, description, productIds, bundlePrice } = req.body;
     const sellerId = req.user.id;
     const bundle = await bundlesService.createBundle(sellerId, { title, description, productIds, bundlePrice });
+    try { req.app.get('io')?.emit('bundle_created', { bundle: bundle ?? { id: bundle?.id } }); } catch {}
     res.status(201).json(bundle);
   } catch (err) {
     next(err);
@@ -54,6 +55,7 @@ export async function purchaseBundle(req, res, next) {
     const bundleId = Number(req.params.id);
     const buyerId = req.user.id;
     const result = await bundlesService.purchaseBundle(bundleId, buyerId);
+    try { req.app.get('io')?.emit('bundle_purchased', { bundleId, buyerId }); } catch {}
     res.status(201).json(result);
   } catch (err) {
     next(err);
@@ -68,6 +70,7 @@ export async function updateBundle(req, res, next) {
       req.user.id,
       { title, description, bundlePrice },
     );
+    try { req.app.get('io')?.emit('bundle_updated', { bundle: bundle ?? { id: Number(req.params.id) } }); } catch {}
     res.json(bundle);
   } catch (err) {
     next(err);
@@ -77,6 +80,7 @@ export async function updateBundle(req, res, next) {
 export async function deleteBundle(req, res, next) {
   try {
     const result = await bundlesService.deleteBundle(Number(req.params.id), req.user.id);
+    try { req.app.get('io')?.emit('bundle_deleted', { bundleId: Number(req.params.id) }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);
@@ -91,6 +95,7 @@ export async function addProductToBundle(req, res, next) {
       req.user.id,
       Number(productId),
     );
+    try { req.app.get('io')?.emit('bundle_updated', { bundle: bundle ?? { id: Number(req.params.id) } }); } catch {}
     res.json(bundle);
   } catch (err) {
     next(err);
@@ -224,6 +229,7 @@ export async function removeProductFromBundle(req, res, next) {
       req.user.id,
       Number(productId),
     );
+    try { req.app.get('io')?.emit('bundle_updated', { bundle: bundle ?? { id: Number(req.params.id) } }); } catch {}
     res.json(bundle);
   } catch (err) {
     next(err);

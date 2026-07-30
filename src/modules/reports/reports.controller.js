@@ -9,6 +9,7 @@ export async function createReport(req, res, next) {
       reason: req.body.reason,
       description: req.body.description,
     });
+    try { req.app.get('io')?.emit('report_created', { report }); } catch {}
     res.status(201).json(report);
   } catch (err) {
     next(err);

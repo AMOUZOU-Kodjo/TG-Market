@@ -34,6 +34,7 @@ export async function getVehicleById(req, res, next) {
 export async function createVehicle(req, res, next) {
   try {
     const vehicle = await vehiclesService.createVehicle(req.user.id, req.validated.body);
+    try { req.app.get('io')?.emit('product_created', { product: vehicle }); } catch {}
     res.status(201).json(vehicle);
   } catch (err) {
     next(err);
@@ -47,6 +48,7 @@ export async function updateVehicle(req, res, next) {
       req.validated.body,
       req.user.id,
     );
+    try { req.app.get('io')?.emit('product_updated', { product: vehicle }); } catch {}
     res.json(vehicle);
   } catch (err) {
     next(err);

@@ -13,6 +13,7 @@ export async function getPublicProfile(req, res, next) {
 export async function updateProfile(req, res, next) {
   try {
     const result = await usersService.updateProfile(req.user.id, req.validated.body);
+    try { req.app.get('io')?.emit('user_updated', { userId: req.user.id }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);
@@ -27,6 +28,7 @@ export async function uploadAvatar(req, res, next) {
       throw error;
     }
     const result = await usersService.uploadAvatar(req.user.id, req.file);
+    try { req.app.get('io')?.emit('user_updated', { userId: req.user.id }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);
@@ -63,6 +65,7 @@ export async function updatePrivacy(req, res, next) {
 export async function followUser(req, res, next) {
   try {
     const result = await usersService.followUser(req.user.id, Number(req.params.id));
+    try { req.app.get('io')?.emit('user_followed', { followerId: req.user.id, followingId: Number(req.params.id) }); } catch {}
     res.status(201).json(result);
   } catch (err) {
     next(err);
@@ -72,6 +75,7 @@ export async function followUser(req, res, next) {
 export async function unfollowUser(req, res, next) {
   try {
     const result = await usersService.unfollowUser(req.user.id, Number(req.params.id));
+    try { req.app.get('io')?.emit('user_unfollowed', { followerId: req.user.id, followingId: Number(req.params.id) }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);

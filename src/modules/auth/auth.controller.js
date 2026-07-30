@@ -125,6 +125,7 @@ export async function getLoginHistory(req, res, next) {
 export async function deleteAccount(req, res, next) {
   try {
     const result = await authService.deleteAccount(req.user.id);
+    try { req.app.get('io')?.emit('user_deleted', { userId: req.user.id }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);

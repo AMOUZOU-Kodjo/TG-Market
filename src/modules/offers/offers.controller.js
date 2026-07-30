@@ -20,6 +20,7 @@ export async function createOffer(req, res, next) {
       });
     }
 
+    try { req.app.get('io')?.emit('offer_created', { offer: result ?? { id: result?.id } }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);
@@ -66,6 +67,7 @@ export async function acceptOffer(req, res, next) {
       });
     }
 
+    try { req.app.get('io')?.emit('offer_updated', { offerId, status: 'accepted' }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);
@@ -92,6 +94,7 @@ export async function rejectOffer(req, res, next) {
       });
     }
 
+    try { req.app.get('io')?.emit('offer_updated', { offerId, status: 'rejected' }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);
@@ -115,6 +118,7 @@ export async function cancelOffer(req, res, next) {
       });
     }
 
+    try { req.app.get('io')?.emit('offer_updated', { offerId, status: 'cancelled' }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);

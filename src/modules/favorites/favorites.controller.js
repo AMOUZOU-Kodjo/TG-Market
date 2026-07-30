@@ -5,6 +5,7 @@ export async function toggleFavorite(req, res, next) {
   try {
     const productId = Number(req.params.productId);
     const result = await favoritesService.toggleFavorite(req.user.id, productId);
+    try { req.app.get('io')?.emit('favorite_toggled', { productId, isFavorite: result.isFavorite }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);
@@ -15,6 +16,7 @@ export async function removeFavorite(req, res, next) {
   try {
     const productId = Number(req.params.productId);
     const result = await favoritesService.removeFavorite(req.user.id, productId);
+    try { req.app.get('io')?.emit('favorite_removed', { productId }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);

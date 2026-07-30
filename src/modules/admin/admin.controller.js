@@ -37,6 +37,7 @@ export async function updateUserStatus(req, res, next) {
       Number(req.params.id),
       req.body.isActive,
     );
+    try { req.app.get('io')?.emit('user_updated', { userId: Number(req.params.id) }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);
@@ -49,6 +50,7 @@ export async function updateUserRole(req, res, next) {
       Number(req.params.id),
       req.body.role,
     );
+    try { req.app.get('io')?.emit('user_updated', { userId: Number(req.params.id) }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);
@@ -58,6 +60,7 @@ export async function updateUserRole(req, res, next) {
 export async function deleteUser(req, res, next) {
   try {
     const result = await adminService.deleteUser(Number(req.params.id));
+    try { req.app.get('io')?.emit('user_deleted', { userId: Number(req.params.id) }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);
@@ -67,6 +70,7 @@ export async function deleteUser(req, res, next) {
 export async function deleteProduct(req, res, next) {
   try {
     const result = await adminService.deleteProduct(Number(req.params.id));
+    try { req.app.get('io')?.emit('product_deleted', { productId: Number(req.params.id) }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);
@@ -98,6 +102,7 @@ export async function getProductDetail(req, res, next) {
 export async function updateProductAdmin(req, res, next) {
   try {
     const product = await adminService.updateProductAdmin(Number(req.params.id), req.body);
+    try { req.app.get('io')?.emit('product_updated', { product }); } catch {}
     res.json(product);
   } catch (err) {
     next(err);
@@ -116,6 +121,7 @@ export async function getCategories(req, res, next) {
 export async function createCategory(req, res, next) {
   try {
     const category = await adminService.createCategory(req.validated.body);
+    try { req.app.get('io')?.emit('categories_updated', {}); } catch {}
     res.status(201).json({ data: category });
   } catch (err) {
     next(err);
@@ -125,6 +131,7 @@ export async function createCategory(req, res, next) {
 export async function updateCategory(req, res, next) {
   try {
     const category = await adminService.updateCategory(Number(req.params.id), req.validated.body);
+    try { req.app.get('io')?.emit('categories_updated', {}); } catch {}
     res.json({ data: category });
   } catch (err) {
     next(err);
@@ -134,6 +141,7 @@ export async function updateCategory(req, res, next) {
 export async function reorderCategories(req, res, next) {
   try {
     const result = await adminService.reorderCategories(req.validated.body.updates);
+    try { req.app.get('io')?.emit('categories_updated', {}); } catch {}
     res.json(result);
   } catch (err) {
     next(err);
@@ -143,6 +151,7 @@ export async function reorderCategories(req, res, next) {
 export async function deleteCategory(req, res, next) {
   try {
     const result = await adminService.deleteCategory(Number(req.params.id));
+    try { req.app.get('io')?.emit('categories_updated', {}); } catch {}
     res.json(result);
   } catch (err) {
     next(err);
@@ -155,6 +164,7 @@ export async function updateProductStatus(req, res, next) {
       Number(req.params.id),
       req.body.status,
     );
+    try { req.app.get('io')?.emit('product_updated', { product: { id: Number(req.params.id), status: req.body.status } }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);
@@ -177,6 +187,7 @@ export async function getKycPending(req, res, next) {
 export async function approveKyc(req, res, next) {
   try {
     const result = await adminService.approveKyc(Number(req.params.id), req.user.id);
+    try { req.app.get('io')?.emit('kyc_updated', { kycId: Number(req.params.id), status: 'approved' }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);
@@ -190,6 +201,7 @@ export async function rejectKyc(req, res, next) {
       req.user.id,
       req.body.reason,
     );
+    try { req.app.get('io')?.emit('kyc_updated', { kycId: Number(req.params.id), status: 'rejected' }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);
@@ -354,6 +366,7 @@ export async function creditWallet(req, res, next) {
       },
     });
 
+    try { req.app.get('io')?.emit('wallet_updated', { userId }); } catch {}
     res.json({ message: 'Wallet crédité', transaction: tx });
   } catch (err) {
     next(err);
@@ -403,6 +416,7 @@ export async function getAdminReports(req, res, next) {
 export async function resolveReport(req, res, next) {
   try {
     await reportsService.resolveReport(Number(req.params.id), req.user.id);
+    try { req.app.get('io')?.emit('report_updated', { reportId: Number(req.params.id), status: 'resolved' }); } catch {}
     res.json({ message: 'Signalement résolu' });
   } catch (err) {
     next(err);
@@ -412,6 +426,7 @@ export async function resolveReport(req, res, next) {
 export async function dismissReport(req, res, next) {
   try {
     await reportsService.dismissReport(Number(req.params.id), req.user.id);
+    try { req.app.get('io')?.emit('report_updated', { reportId: Number(req.params.id), status: 'dismissed' }); } catch {}
     res.json({ message: 'Signalement rejeté' });
   } catch (err) {
     next(err);

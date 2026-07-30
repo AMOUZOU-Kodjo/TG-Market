@@ -63,3 +63,14 @@ export function useDeleteProduct() {
     },
   });
 }
+
+export function useEndNegotiation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: productsApi.endNegotiation,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["myProducts"] });
+      qc.invalidateQueries({ queryKey: ["products"] });
+    },
+  });
+}

@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useProduct } from "@/features/products/hooks/useProducts";
 import { escrowApi } from "@/features/wallet/services/wallet.api";
+import { paymentApi } from "@/features/payment/services/payment.api";
 import { formatCFA } from "@/shared/utils/format";
 import PaymentMethodSelector from "@/features/payment/components/PaymentMethodSelector";
 import { useAuth } from "@/shared/contexts/AuthContext";
@@ -77,6 +78,7 @@ export default function CheckoutPage() {
   const methodName = PAYMENT_METHODS.find((m) => m.id === selectedMethod)?.name || selectedMethod;
   const account = PLATFORM_ACCOUNTS[selectedMethod];
   const refCode = createdEscrow ? `TGM-${createdEscrow.id}` : "";
+  const autoMode = paymentStep === "success";
 
   const handleSubmit = async () => {
     if (!selectedMethod) {
@@ -96,6 +98,21 @@ export default function CheckoutPage() {
         paymentMethod: selectedMethod,
       });
       setCreatedEscrow(escrow);
+
+      const formattedPhone = phone.startsWith("+") ? phone : `+228${phone}`;
+      try {
+        const payment = await paymentApi.initiate({
+          escrowId: escrow.id,
+          method: selectedMethod,
+          phone: formattedPhone,
+        });
+        if (payment.mode === "auto") {
+          setPaymentStep("success");
+          return;
+        }
+      } catch {
+        // Flutterwave failed — fall through to manual
+      }
       setPaymentStep("instructions");
     } catch (err) {
       toast.error(err?.response?.data?.error || "Erreur lors de l'achat");
@@ -136,17 +153,17 @@ export default function CheckoutPage() {
               animate={{ opacity: 1, scale: 1 }}
               className="rounded-2xl border border-amber-100 bg-amber-50 p-8 text-center dark:border-amber-800 dark:bg-amber-900/10"
             >
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-800/30">
-                <Smartphone className="h-8 w-8 text-amber-600" />
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-800/30">
+                <CheckCircle2 className="h-8 w-8 text-emerald-600" />
               </div>
-              <h1 className="text-xl font-bold text-amber-800 dark:text-amber-400">
-                Paiement envoyé !
+              <h1 className="text-xl font-bold text-emerald-800 dark:text-emerald-400">
+                Paiement réussi !
               </h1>
-              <p className="mt-2 text-sm text-amber-700 dark:text-amber-500">
-                {formatCFA(total)} via {methodName} — Réf: {refCode}
+              <p className="mt-2 text-sm text-emerald-700 dark:text-emerald-500">
+                {formatCFA(total)} via {methodName}
               </p>
-              <p className="mt-4 text-xs text-amber-600 dark:text-amber-400">
-                Votre paiement sera vérifié par notre équipe sous 24h. Le vendeur sera notifié dès confirmation.
+              <p className="mt-4 text-xs text-emerald-600 dark:text-emerald-400">
+                Votre paiement a été traité automatiquement. Le vendeur sera notifié.
               </p>
             </motion.div>
 

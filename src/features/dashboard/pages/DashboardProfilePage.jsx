@@ -20,7 +20,7 @@ import { useIsMobile } from "@/shared/hooks/useMediaQuery";
 
 import toast from "react-hot-toast";
 import { useAuth } from "@/shared/contexts/AuthContext";
-import { useMyProducts, useDeleteProduct } from "@/features/products/hooks/useProducts";
+import { useMyProducts, useDeleteProduct, useEndNegotiation } from "@/features/products/hooks/useProducts";
 import { useMyReviews } from "@/features/reviews/hooks/useReviews";
 import { useFavorites } from "@/features/favorites/hooks/useFavorites";
 import { useWalletBalance } from "@/features/wallet/hooks/useWallet";
@@ -31,6 +31,7 @@ import { formatDate, formatCFA, formatRelativeTime } from "@/shared/utils/format
 function ProductsTab({ products }) {
   const navigate = useNavigate();
   const deleteProduct = useDeleteProduct();
+  const endNegotiation = useEndNegotiation();
 
   const handleDelete = async (product) => {
     if (!window.confirm(`Supprimer « ${product.title} » ?`)) return;
@@ -39,6 +40,16 @@ function ProductsTab({ products }) {
       toast.success("Annonce supprimée");
     } catch {
       toast.error("Erreur lors de la suppression");
+    }
+  };
+
+  const handleEndNegotiation = async (product) => {
+    if (!window.confirm(`Arrêter la négociation pour « ${product.title} » ?`)) return;
+    try {
+      await endNegotiation.mutateAsync(product.id);
+      toast.success("Négociation arrêtée");
+    } catch {
+      toast.error("Erreur lors de l'arrêt de la négociation");
     }
   };
 
@@ -122,6 +133,18 @@ function ProductsTab({ products }) {
                 >
                   <Edit3 className="h-3.5 w-3.5" />
                 </button>
+                {product.hasActiveNegotiation && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEndNegotiation(product);
+                    }}
+                    className="rounded-lg bg-yellow-50 p-1.5 text-yellow-700 transition-colors hover:bg-yellow-100 dark:bg-yellow-900/20 dark:text-yellow-400 dark:hover:bg-yellow-900/30"
+                    title="Arrêter la négociation"
+                  >
+                    <MessageCircle className="h-3.5 w-3.5" />
+                  </button>
+                )}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();

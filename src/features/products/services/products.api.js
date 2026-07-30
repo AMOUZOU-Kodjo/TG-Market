@@ -10,4 +10,5 @@ export const productsApi = {
   incrementViews: (id) => api.post(`/products/${id}/view`).then((r) => r.data),
   getSimilar: (id) => api.get(`/products/${id}/similar`).then((r) => r.data),
   getMy: (params) => api.get("/products/my", { params }).then((r) => r.data),
+  endNegotiation: (id) => api.put(`/products/${id}/end-negotiation`).then((r) => r.data),
 };

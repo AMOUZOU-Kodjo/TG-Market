@@ -1,4 +1,4 @@
-import { prisma } from '../../lib/prisma.js';
+import prisma from '../../config/database.js';
 
 export async function createReport(data) {
   return prisma.report.create({

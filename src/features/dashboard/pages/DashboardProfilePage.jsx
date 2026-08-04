@@ -209,7 +209,7 @@ export default function DashboardProfilePage() {
     { id: "products", label: "Mes annonces", icon: Package, count: myProducts.length, content: <ProductsTab products={myProducts} /> },
     { id: "favorites", label: "Favoris", icon: Heart, count: favoriteProducts.length, content: (
       favoriteProducts.length > 0 ? (
-        <div className="grid grid-cols-2  sm:grid-cols-2 lg:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {favoriteProducts.map((product) => (
             <ProductCard key={product.id} productId={product.id} image={product.images?.[0]} title={product.title}
               price={product.price} originalPrice={product.originalPrice} location={product.city || product.location}

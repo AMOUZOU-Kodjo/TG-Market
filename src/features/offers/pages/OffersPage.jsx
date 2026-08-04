@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   MessageSquare, Check, X, Loader2, Tag, User, Package,
-  Calendar, Clock,
+  Clock, MessageCircle, ExternalLink, XCircle,
 } from "lucide-react";
-import { useOffers, useAcceptOffer, useRejectOffer } from "@/features/offers/hooks/useOffers";
+import { useOffers, useAcceptOffer, useRejectOffer, useCancelOffer } from "@/features/offers/hooks/useOffers";
 import { useAuth } from "@/shared/contexts/AuthContext";
+import { useCreateConversation } from "@/features/chat/hooks/useConversations";
 import { formatCFA, formatRelativeTime } from "@/shared/utils/format";
 import Avatar from "@/shared/ui/Avatar";
 import Button from "@/shared/ui/Button";
@@ -16,11 +17,15 @@ import EmptyState from "@/shared/ui/EmptyState";
 import BackButton from "@/shared/ui/BackButton";
 import toast from "react-hot-toast";
 
-function OfferCard({ offer, isReceived, onAccept, onReject }) {
+function OfferCard({ offer, isReceived, onAccept, onReject, onCancel, onContact, onViewProduct }) {
   const [showReject, setShowReject] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
+  const navigate = useNavigate();
 
   const isPending = offer.status === "pending";
+  const isAccepted = offer.status === "accepted";
+  const isRejected = offer.status === "rejected";
+  const isSent = !isReceived;
 
   const statusStyles = {
     pending: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400",
@@ -36,66 +41,132 @@ function OfferCard({ offer, isReceived, onAccept, onReject }) {
     cancelled: "Annulée",
   };
 
+  const otherUser = isReceived ? offer.buyer : offer.seller;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800"
+      className="flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800"
     >
-      <div className="relative aspect-[4/5] overflow-hidden bg-gray-100 dark:bg-gray-700">
-        {offer.product?.thumbnail ? (
-          <img src={offer.product.thumbnail} alt="" className="h-full w-full object-cover" />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center">
-            <Package className="h-10 w-10 text-gray-400" />
-          </div>
-        )}
-        <span className={`absolute right-2 top-2 shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${statusStyles[offer.status]}`}>
-          {statusLabels[offer.status]}
-        </span>
-      </div>
-
-      <div className="p-3">
-        <h3 className="truncate text-sm font-semibold text-gray-900 dark:text-white">
-          {offer.product?.title || "Produit"}
-        </h3>
-        <p className="mt-0.5 flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-          <User className="h-3 w-3" />
-          {isReceived ? (offer.buyer?.name || "Acheteur") : "Vous"}
-        </p>
-        <div className="mt-2 flex items-baseline justify-between gap-2">
-          <span className="text-base font-bold text-brand-800">{formatCFA(offer.amount)}</span>
-          <span className="text-xs text-gray-400">
-            <Clock className="mr-0.5 inline h-3 w-3" />
-            {formatRelativeTime(offer.createdAt)}
+      <div className="flex gap-4 p-4">
+        <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700">
+          {offer.product?.thumbnail ? (
+            <img src={offer.product.thumbnail} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              <Package className="h-6 w-6 text-gray-400" />
+            </div>
+          )}
+          <span className={`absolute right-1 top-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${statusStyles[offer.status]}`}>
+            {statusLabels[offer.status]}
           </span>
         </div>
-        {offer.message && (
-          <p className="mt-1.5 line-clamp-2 text-xs text-gray-600 dark:text-gray-400">
-            "{offer.message}"
-          </p>
-        )}
 
-        {isPending && isReceived && (
-          <div className="mt-3 flex gap-2 border-t border-gray-100 pt-3 dark:border-gray-700">
-            <Button
-              size="sm"
-              variant="primary"
-              icon={Check}
-              onClick={() => onAccept(offer.id)}
-            >
-              Accepter
-            </Button>
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate text-sm font-semibold text-gray-900 dark:text-white">
+            {offer.product?.title || "Produit"}
+          </h3>
+          <p className="mt-0.5 flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+            {otherUser?.avatar ? (
+              <Avatar src={otherUser.avatar} name={otherUser.name} size="xs" />
+            ) : (
+              <User className="h-3 w-3" />
+            )}
+            {isReceived ? (offer.buyer?.name || "Acheteur") : (offer.seller?.name || "Vendeur")}
+          </p>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-base font-bold text-brand-800">{formatCFA(offer.amount)}</span>
+            <span className="text-xs text-gray-400">
+              <Clock className="mr-0.5 inline h-3 w-3" />
+              {formatRelativeTime(offer.createdAt)}
+            </span>
+          </div>
+          {offer.message && (
+            <p className="mt-1.5 line-clamp-2 text-xs text-gray-600 dark:text-gray-400">
+              "{offer.message}"
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div className="mt-auto border-t border-gray-100 px-4 py-3 dark:border-gray-700">
+        <div className="flex flex-wrap gap-2">
+          {isPending && isReceived && (
+            <>
+              <Button
+                size="sm"
+                variant="primary"
+                icon={Check}
+                onClick={() => onAccept(offer.id)}
+              >
+                Accepter
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                icon={X}
+                onClick={() => setShowReject(true)}
+              >
+                Refuser
+              </Button>
+            </>
+          )}
+
+          {isPending && isSent && (
             <Button
               size="sm"
               variant="outline"
-              icon={X}
-              onClick={() => setShowReject(true)}
+              icon={XCircle}
+              onClick={() => onCancel(offer.id)}
             >
-              Refuser
+              Annuler l'offre
             </Button>
-          </div>
-        )}
+          )}
+
+          {isAccepted && (
+            <Button
+              size="sm"
+              variant="primary"
+              icon={ExternalLink}
+              onClick={() =>
+                offer.escrowId
+                  ? navigate(`/commandes/${offer.escrowId}`)
+                  : toast.error("Transaction introuvable")
+              }
+            >
+              Voir la transaction
+            </Button>
+          )}
+
+          {isRejected && isSent && (
+            <Button
+              size="sm"
+              variant="primary"
+              icon={Tag}
+              onClick={() => onViewProduct(offer)}
+            >
+              Faire une nouvelle offre
+            </Button>
+          )}
+
+          <Button
+            size="sm"
+            variant="outline"
+            icon={MessageCircle}
+            onClick={() => onContact(offer)}
+          >
+            Discuter
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            icon={ExternalLink}
+            onClick={() => onViewProduct(offer)}
+          >
+            Voir le produit
+          </Button>
+        </div>
       </div>
 
       <Modal isOpen={showReject} onClose={() => setShowReject(false)} title="Refuser l'offre">
@@ -136,6 +207,8 @@ export default function OffersPage() {
   const { data, isLoading } = useOffers();
   const acceptOffer = useAcceptOffer();
   const rejectOffer = useRejectOffer();
+  const cancelOffer = useCancelOffer();
+  const createConversation = useCreateConversation();
   const navigate = useNavigate();
 
   const offers = data?.data || data || [];
@@ -156,6 +229,36 @@ export default function OffersPage() {
     } catch {
       toast.error("Erreur lors du refus");
     }
+  };
+
+  const handleCancel = async (id) => {
+    try {
+      await cancelOffer.mutateAsync(id);
+      toast.success("Offre annulée");
+    } catch {
+      toast.error("Erreur lors de l'annulation");
+    }
+  };
+
+  const handleContact = async (offer) => {
+    const otherUser = offer.sellerId === user?.id ? offer.buyer : offer.seller;
+    if (!otherUser?.id) {
+      toast.error("Utilisateur introuvable");
+      return;
+    }
+    try {
+      const conv = await createConversation.mutateAsync({
+        participantId: otherUser.id,
+        productId: offer.productId,
+      });
+      navigate(`/messages/${conv.id}`);
+    } catch {
+      toast.error("Impossible d'ouvrir la discussion");
+    }
+  };
+
+  const handleViewProduct = (offer) => {
+    navigate(`/produit/${offer.productId}`);
   };
 
   if (isLoading) {
@@ -187,7 +290,7 @@ export default function OffersPage() {
           description="Les offres que vous recevez ou envoyez apparaîtront ici."
         />
       ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:grid-cols-5 ">
+        <div className="space-y-3">
           {offers.map((offer) => (
             <OfferCard
               key={offer.id}
@@ -195,6 +298,9 @@ export default function OffersPage() {
               isReceived={offer.sellerId === user?.id}
               onAccept={handleAccept}
               onReject={handleReject}
+              onCancel={handleCancel}
+              onContact={handleContact}
+              onViewProduct={handleViewProduct}
             />
           ))}
         </div>

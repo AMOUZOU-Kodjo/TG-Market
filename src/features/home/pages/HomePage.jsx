@@ -172,7 +172,7 @@ function SectionHeader({ title, subtitle, action, actionLabel = "Voir tout", cla
   return (
     <div className={cn("mb-8 flex items-end justify-between", className)}>
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
+        <h2 className="text-sm lg:text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
           {title}
         </h2>
         {subtitle && (
@@ -246,8 +246,8 @@ function HeroSection() {
       <div className="absolute inset-0 bg-gray-900/20" style={{ zIndex: 1 }} />
 
       {/* <div className="absolute inset-0 flex  items-center justify-center px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}> */}
-      <div className="absolute inset-0 flex items-center sm:items-start justify-center   sm:pt-10 px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}>
-        <div className="relative sm:-left-80  sm:top-20 rounded-3xl bg-white/80 p-3  mx-auto max-w-3xl text-center">
+      <div className="absolute inset-0 flex  items-center sm:items-start justify-center   sm:pt-10 px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}>
+        <div className="relative lg:-left-70 w-full sm:top-40 top-20  rounded-tr-xl rounded-xl  bg-white/90 p-3   max-w-lg text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -263,7 +263,7 @@ function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-sm font-extrabold leading-tight text-black sm:text-xl md:text-2xl lg:text-3xl"
+            className="text-sm font-semibold leading-tight text-black sm:text-xl md:text-2xl lg:text-3xl"
           >
             Achetez et vendez au Togo,{" "} <br />
             <span className="relative">
@@ -299,19 +299,19 @@ function HeroSection() {
                 Vendre un article
               </Button>
             </Link>
-            <Link to="/lots">
+            <Link to="/comment-ca-marche">
               <Button
                 size="xl"
                 // icon={BookOpen}
                 variant="outline"
-                className="border-black/60 text-black hover:bg-yellow/10 text-sm sm:text-base px-4 py-2 sm:px-2 sm:py-2"
+                className="border-black/60 hidden sm:block text-black hover:bg-yellow/10 text-sm sm:text-base px-4 py-2 sm:px-2 sm:py-2"
               >
-                Voir les lots
+                Comment ça marche
               </Button>
             </Link>
           </motion.div>
 
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.7, delay: 0.6 }}
@@ -330,7 +330,7 @@ function HeroSection() {
               <span>Livraison disponible</span>
             </div>
             
-          </motion.div>
+          </motion.div> */}
         </div>
       </div>
      
@@ -469,10 +469,10 @@ function PopularProductsSection() {
     >
       <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
-          title="Disponibles en ce moment"
+          title="En ce moment"
           subtitle="Les 30 produits les plus récemment publiés"
           action="/recherche?sort=newest"
-          className="!mb-6 border-b border-gray-200 pb-4"
+          className="!mb-6 border-b border-gray-200  pb-4"
         />
 
         <motion.div

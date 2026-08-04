@@ -328,7 +328,7 @@ export default function MainLayout() {
                   >
                     {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                   </button> */}
-                  {user ? (
+                  {/* {user ? (
                     <div className="relative" ref={mobileMenuRef}>
                       <button
                         onClick={() => navigate("/dashboard")}
@@ -405,7 +405,7 @@ export default function MainLayout() {
                     >
                       <User className="w-5 h-5" />
                     </Link>
-                  )}
+                  )} */}
                 </div>
               </div>
             </div>

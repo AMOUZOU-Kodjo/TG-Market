@@ -40,7 +40,7 @@ export default function MaintenancePage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 dark:bg-gray-950">
+    <div className="flex min-h-screen items-center justify-center bg-white px-4 dark:bg-gray-950">
       <div className="w-full max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

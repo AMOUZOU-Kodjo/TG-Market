@@ -107,7 +107,7 @@ const itemVariants = {
 export default function PrivacyPage() {
   const { siteName, supportEmail } = useSiteSettings();
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-white dark:bg-gray-950">
       {/* Hero */}
       <section className="bg-brand-800 px-4 py-16 text-white sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl text-center">

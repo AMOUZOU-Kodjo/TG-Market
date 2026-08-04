@@ -108,7 +108,7 @@ export default function MainLayout() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors">
+      <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors">
         {/* Sticky Header + Category Bar */}
         <div className={`sticky top-0 z-50 relative ${location.pathname.startsWith("/vendeur/") || location.pathname.startsWith("/recherche") || location.pathname.startsWith("/a-propos") ? "hidden" : ""}`}>
           {/* Logo centered in combined header+category height */}
@@ -180,7 +180,7 @@ export default function MainLayout() {
 
                   {/* Notifications */}
                   <Link
-                    to="/notifications"
+                    to={user ? "/dashboard/profile?tab=notifications" : "/connexion"}
                     className="relative p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
                   >
                     <Bell className="w-5 h-5" />
@@ -428,7 +428,7 @@ export default function MainLayout() {
         </main>
 
         <footer
-          className={`bg-footer dark:bg-footer-dark text-footer-text 
+          className={`bg-footer dark:bg-footer-dark text-footer-text pb-20 md:pb-0 
 ${location.pathname.startsWith("/categories/") || location.pathname.startsWith("/vendre") || 
 location.pathname.startsWith("/annonce/") || location.pathname.startsWith("/vendeur/") || 
 location.pathname.startsWith("/recherche") ||
@@ -477,7 +477,7 @@ location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWit
                   <li>
                     <Link
                       to="/faq"
-                      className="px-3 py-3 bg-yellow-400 hover:bg-gray-200 rounded-full text-md font-extrabold transition-colors"
+                      className="px-3 py-3 bg-brand-500 text-black hover:bg-brand-300 rounded-full text-md font-extrabold transition-colors"
                     >
                       Questions fréquentes
                     </Link>

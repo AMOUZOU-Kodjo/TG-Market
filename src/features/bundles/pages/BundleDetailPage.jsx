@@ -213,7 +213,7 @@ export default function BundleDetailPage() {
 
   if (paymentResult === "success") {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <div className="min-h-screen bg-white dark:bg-gray-950">
         <div className="mx-auto max-w-lg px-4 py-20 text-center">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
             <CheckCircle2 className="h-8 w-8 text-green-600" />
@@ -237,7 +237,7 @@ export default function BundleDetailPage() {
 
   if (paymentResult === "manual") {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <div className="min-h-screen bg-white dark:bg-gray-950">
         <div className="mx-auto max-w-lg px-4 py-10">
           <div className="space-y-5">
             <button onClick={() => setPaymentResult(null)} className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
@@ -276,7 +276,7 @@ export default function BundleDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-white dark:bg-gray-950">
       <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
         <div className="mb-4 flex items-center gap-3">
           <button

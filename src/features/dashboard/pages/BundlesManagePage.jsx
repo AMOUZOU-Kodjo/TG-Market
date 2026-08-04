@@ -12,6 +12,7 @@ import { formatCFA } from "@/shared/utils/format";
 import Button from "@/shared/ui/Button";
 import Modal from "@/shared/ui/Modal";
 import EmptyState from "@/shared/ui/EmptyState";
+import BackButton from "@/shared/ui/BackButton";
 import { toast } from "react-hot-toast";
 
 export default function BundlesManagePage() {
@@ -36,11 +37,14 @@ export default function BundlesManagePage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Mes lots</h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Gérez vos packs de produits
-          </p>
+        <div className="flex items-center gap-3">
+          <BackButton />
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Mes lots</h1>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              Gérez vos packs de produits
+            </p>
+          </div>
         </div>
         <Button variant="primary" icon={Plus} onClick={() => navigate("/lot/creer")}>
           Créer un lot

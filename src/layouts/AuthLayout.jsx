@@ -6,7 +6,7 @@ import AuthHeroCarousel, { AuthHeroBg } from "@/features/auth/components/AuthHer
 
 export default function AuthLayout() {
   return (
-    <div className="min-h-screen flex bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen flex bg-white dark:bg-gray-900">
       {/* Left Hero Carousel Panel */}
       <div className="hidden lg:flex lg:w-1/2 xl:w-[55%] relative overflow-hidden">
         <AuthHeroCarousel />

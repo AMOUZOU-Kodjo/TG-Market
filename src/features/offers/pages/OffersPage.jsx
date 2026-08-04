@@ -13,6 +13,7 @@ import Button from "@/shared/ui/Button";
 import Modal from "@/shared/ui/Modal";
 import Textarea from "@/shared/ui/Textarea";
 import EmptyState from "@/shared/ui/EmptyState";
+import BackButton from "@/shared/ui/BackButton";
 import toast from "react-hot-toast";
 
 function OfferCard({ offer, isReceived, onAccept, onReject }) {
@@ -41,66 +42,61 @@ function OfferCard({ offer, isReceived, onAccept, onReject }) {
       animate={{ opacity: 1, y: 0 }}
       className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800"
     >
-      <div className="flex gap-4 p-4">
-        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700">
-          {offer.product?.thumbnail ? (
-            <img src={offer.product.thumbnail} alt="" className="h-full w-full object-cover" />
-          ) : (
-            <div className="flex h-full items-center justify-center">
-              <Package className="h-6 w-6 text-gray-400" />
-            </div>
-          )}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <div>
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                {offer.product?.title || "Produit"}
-              </h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-0.5">
-                <User className="h-3 w-3" />
-                {isReceived ? (offer.buyer?.name || "Acheteur") : "Vous"}
-              </p>
-            </div>
-            <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${statusStyles[offer.status]}`}>
-              {statusLabels[offer.status]}
-            </span>
+      <div className="relative aspect-[4/5] overflow-hidden bg-gray-100 dark:bg-gray-700">
+        {offer.product?.thumbnail ? (
+          <img src={offer.product.thumbnail} alt="" className="h-full w-full object-cover" />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center">
+            <Package className="h-10 w-10 text-gray-400" />
           </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-lg font-bold text-brand-800">{formatCFA(offer.amount)}</span>
-            <span className="text-xs text-gray-400">
-              <Clock className="inline h-3 w-3 mr-0.5" />
-              {formatRelativeTime(offer.createdAt)}
-            </span>
-          </div>
-          {offer.message && (
-            <p className="mt-1.5 text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
-              "{offer.message}"
-            </p>
-          )}
-        </div>
+        )}
+        <span className={`absolute right-2 top-2 shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${statusStyles[offer.status]}`}>
+          {statusLabels[offer.status]}
+        </span>
       </div>
 
-      {isPending && isReceived && (
-        <div className="flex gap-2 border-t border-gray-100 px-4 py-3 dark:border-gray-700">
-          <Button
-            size="sm"
-            variant="primary"
-            icon={Check}
-            onClick={() => onAccept(offer.id)}
-          >
-            Accepter
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            icon={X}
-            onClick={() => setShowReject(true)}
-          >
-            Refuser
-          </Button>
+      <div className="p-3">
+        <h3 className="truncate text-sm font-semibold text-gray-900 dark:text-white">
+          {offer.product?.title || "Produit"}
+        </h3>
+        <p className="mt-0.5 flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+          <User className="h-3 w-3" />
+          {isReceived ? (offer.buyer?.name || "Acheteur") : "Vous"}
+        </p>
+        <div className="mt-2 flex items-baseline justify-between gap-2">
+          <span className="text-base font-bold text-brand-800">{formatCFA(offer.amount)}</span>
+          <span className="text-xs text-gray-400">
+            <Clock className="mr-0.5 inline h-3 w-3" />
+            {formatRelativeTime(offer.createdAt)}
+          </span>
         </div>
-      )}
+        {offer.message && (
+          <p className="mt-1.5 line-clamp-2 text-xs text-gray-600 dark:text-gray-400">
+            "{offer.message}"
+          </p>
+        )}
+
+        {isPending && isReceived && (
+          <div className="mt-3 flex gap-2 border-t border-gray-100 pt-3 dark:border-gray-700">
+            <Button
+              size="sm"
+              variant="primary"
+              icon={Check}
+              onClick={() => onAccept(offer.id)}
+            >
+              Accepter
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              icon={X}
+              onClick={() => setShowReject(true)}
+            >
+              Refuser
+            </Button>
+          </div>
+        )}
+      </div>
 
       <Modal isOpen={showReject} onClose={() => setShowReject(false)} title="Refuser l'offre">
         <div className="space-y-4">
@@ -173,11 +169,14 @@ export default function OffersPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white">Offres</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Gérez les offres reçues et envoyées
-          </p>
+        <div className="flex items-center gap-3">
+          <BackButton />
+          <div>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Offres</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Gérez les offres reçues et envoyées
+            </p>
+          </div>
         </div>
       </div>
 
@@ -188,7 +187,7 @@ export default function OffersPage() {
           description="Les offres que vous recevez ou envoyez apparaîtront ici."
         />
       ) : (
-        <div className="grid gap-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:grid-cols-5 ">
           {offers.map((offer) => (
             <OfferCard
               key={offer.id}

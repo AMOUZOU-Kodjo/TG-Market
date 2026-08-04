@@ -128,7 +128,7 @@ function App() {
                             path="/notifications"
                             element={
                               <AuthGuard>
-                                <Navigate to="/dashboard/notifications" replace />
+                                <Navigate to="/dashboard/profile?tab=notifications" replace />
                               </AuthGuard>
                             }
                           />
@@ -276,10 +276,6 @@ function App() {
                             element={<SellerDashboardPage defaultTab="orders" />}
                           />
                           <Route path="/dashboard/messages" element={<MessagesPage />} />
-                          <Route
-                            path="/dashboard/notifications"
-                            element={<Navigate to="/dashboard/profile" replace />}
-                          />
                           <Route
                             path="/dashboard/analytics"
                             element={<SellerDashboardPage defaultTab="analytics" />}

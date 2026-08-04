@@ -150,6 +150,17 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
         {sidebarOpen && <span>Offres</span>}
       </Link>
 
+      {/* Notifications */}
+      <Link
+        to="/dashboard/profile?tab=notifications"
+        onClick={onMobileLinkClick}
+        className={`mx-3 mt-2 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+        title={!sidebarOpen ? "Notifications" : undefined}
+      >
+        <Bell className="w-4 h-4 shrink-0" />
+        {sidebarOpen && <span>Notifications</span>}
+      </Link>
+
       {/* Mes lots */}
       <Link
         to="/dashboard/mes-lots"
@@ -231,7 +242,6 @@ export default function DashboardLayout() {
     "/dashboard/history": "Ventes et Achats",
     "/dashboard/messages": "Messages",
     "/dashboard/offres": "Offres",
-    "/dashboard/notifications": "Notifications",
     "/dashboard/settings": "Paramètres",
     "/dashboard/analytics": "Statistiques",
     "/dashboard/promotions": "Promotions",
@@ -241,7 +251,7 @@ export default function DashboardLayout() {
   const pageTitle = pageTitles[location.pathname] ?? "Tableau de bord";
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       <div className="flex">
         {/* ===== DESKTOP SIDEBAR (lg+) ===== */}
         <aside
@@ -304,14 +314,14 @@ export default function DashboardLayout() {
                 <ArrowLeft className="w-5 h-5" />
               </button>
               {/* Desktop: hamburger */}
-              <button
+              {/* <button
                 onClick={() => setMobileView("sidebar")}
                 className="hidden lg:flex p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500"
               >
                 <Menu className="w-5 h-5" />
-              </button>
+              </button> */}
               {/* Mobile: page title */}
-              <span className="lg:hidden text-sm font-semibold text-gray-900 dark:text-white">{pageTitle}</span>
+              <span className="lg:hidden text-sm font-semibold  text-gray-900 dark:text-white">{pageTitle}</span>
               {/* Desktop: search */}
               <div className="relative hidden lg:block">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -335,7 +345,7 @@ export default function DashboardLayout() {
                 )}
               </Link>
               <Link
-                to="/notifications"
+                to="/dashboard/profile?tab=notifications"
                 className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition-colors"
               >
                 <Bell className="w-5 h-5" />

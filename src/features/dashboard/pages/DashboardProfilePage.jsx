@@ -5,7 +5,7 @@ import {
   TrendingUp, MapPin, MessageCircle, Settings,
 } from "lucide-react";
 import BackButton from "@/shared/ui/BackButton";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Avatar from "@/shared/ui/Avatar";
 import Button from "@/shared/ui/Button";
 import Input from "@/shared/ui/Input";
@@ -202,12 +202,14 @@ export default function DashboardProfilePage() {
 
   const roleLabel = user?.role === "admin" ? "Admin" : myProducts.length > 0 ? "Vendeur" : "Acheteur";
   const isMobile = useIsMobile();
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get("tab") || undefined;
 
   const tabs = [
     { id: "products", label: "Mes annonces", icon: Package, count: myProducts.length, content: <ProductsTab products={myProducts} /> },
     { id: "favorites", label: "Favoris", icon: Heart, count: favoriteProducts.length, content: (
       favoriteProducts.length > 0 ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2  sm:grid-cols-2 lg:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
           {favoriteProducts.map((product) => (
             <ProductCard key={product.id} productId={product.id} image={product.images?.[0]} title={product.title}
               price={product.price} originalPrice={product.originalPrice} location={product.city || product.location}
@@ -238,7 +240,7 @@ export default function DashboardProfilePage() {
       <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
           <div className="flex items-center gap-3 sm:gap-5 w-full sm:w-auto">
-            <Avatar src={user?.avatar} name={user?.name} size={isMobile ? "md" : "2xl"} verified={user?.identity_verified} className="ring-2 ring-gray-100 dark:ring-gray-700 shrink-0" />
+            <Avatar src={user?.avatar} name={user?.name} size={isMobile ? "sm" : "xl"} verified={user?.identity_verified} className="ring-2 ring-gray-100 dark:ring-gray-700 shrink-0" />
             <h1 className="text-base font-bold text-gray-900 dark:text-white sm:hidden flex-1 min-w-0 truncate">{user?.name}</h1>
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:hidden">
@@ -260,36 +262,36 @@ export default function DashboardProfilePage() {
           <Button variant="outline" size="sm" icon={Edit3} onClick={() => setEditModalOpen(true)} className="hidden sm:inline-flex shrink-0">Modifier</Button>
         </div>
         <div className="hidden sm:block mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
-          <div className="grid grid-cols-5 gap-1.5">
-            <div className="rounded-md bg-gray-50 dark:bg-gray-900/50 p-1 sm:p-2 aspect-square flex flex-col items-center justify-center">
+          <div className="flex flex-1 h-20 w-20  gap-5">
+            <div className="rounded-full  dark:bg-gray-900/50 p-1 sm:p-2 aspect-square flex flex-col items-center justify-center">
               <div className="w-5 h-5 rounded bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm mb-0.5 sm:mb-1">
                 <Package className="h-2.5 w-2.5 text-brand-600" />
               </div>
               <p className="text-sm font-bold text-gray-900 dark:text-white">{myProducts.length}</p>
               <span className="hidden sm:block text-[9px] font-medium text-gray-500 uppercase tracking-wider">Annonces</span>
             </div>
-            <div className="rounded-md bg-gray-50 dark:bg-gray-900/50 p-1 sm:p-2 aspect-square flex flex-col items-center justify-center">
+            <div className="rounded-full  dark:bg-gray-900/50 p-1 sm:p-2 aspect-square flex flex-col items-center justify-center">
               <div className="w-5 h-5 rounded bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm mb-0.5 sm:mb-1">
                 <TrendingUp className="h-2.5 w-2.5 text-green-600" />
               </div>
               <p className="text-sm font-bold text-gray-900 dark:text-white">{formatCFA(walletData?.totalEarned ?? 0)}</p>
               <span className="hidden sm:block text-[9px] font-medium text-gray-500 uppercase tracking-wider">Revenus</span>
             </div>
-            <div className="rounded-md bg-gray-50 dark:bg-gray-900/50 p-1 sm:p-2 aspect-square flex flex-col items-center justify-center">
+            <div className="rounded-full  dark:bg-gray-900/50 p-1 sm:p-2 aspect-square flex flex-col items-center justify-center">
               <div className="w-5 h-5 rounded bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm mb-0.5 sm:mb-1">
                 <Heart className="h-2.5 w-2.5 text-red-500" />
               </div>
               <p className="text-sm font-bold text-gray-900 dark:text-white">{favoriteProducts.length}</p>
               <span className="hidden sm:block text-[9px] font-medium text-gray-500 uppercase tracking-wider">Favoris</span>
             </div>
-            <div className="rounded-md bg-gray-50 dark:bg-gray-900/50 p-1 sm:p-2 aspect-square flex flex-col items-center justify-center">
+            <div className="rounded-full  dark:bg-gray-900/50 p-1 sm:p-2 aspect-square flex flex-col items-center justify-center">
               <div className="w-5 h-5 rounded bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm mb-0.5 sm:mb-1">
                 <Star className="h-2.5 w-2.5 text-amber-500" />
               </div>
               <p className="text-sm font-bold text-gray-900 dark:text-white">{myReviews.length}</p>
               <span className="hidden sm:block text-[9px] font-medium text-gray-500 uppercase tracking-wider">Avis</span>
             </div>
-            <div className="rounded-md bg-gray-50 dark:bg-gray-900/50 p-1 sm:p-2 aspect-square flex flex-col items-center justify-center">
+            <div className="rounded-full  dark:bg-gray-900/50 p-1 sm:p-2 aspect-square flex flex-col items-center justify-center">
               <div className="w-5 h-5 rounded bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm mb-0.5 sm:mb-1">
                 <MessageCircle className="h-2.5 w-2.5 text-sky-600" />
               </div>
@@ -302,7 +304,7 @@ export default function DashboardProfilePage() {
       </div>
 
       {/* Dashboard Tabs */}
-      <Tabs tabs={tabs} />
+      <Tabs tabs={tabs} defaultTab={initialTab} />
 
       {/* Edit Profile Modal */}
       <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} title="Modifier le profil" size="md"

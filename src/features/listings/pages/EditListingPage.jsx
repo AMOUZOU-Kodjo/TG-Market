@@ -207,7 +207,7 @@ export default function EditListingPage() {
 
   if (!existingProduct) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950">
+      <div className="flex min-h-screen items-center justify-center bg-white dark:bg-gray-950">
         <div className="text-center">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
             Annonce introuvable
@@ -557,7 +557,7 @@ export default function EditListingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-white dark:bg-gray-950">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
         <BackButton />
         <div className="mb-6">

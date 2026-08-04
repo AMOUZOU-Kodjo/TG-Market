@@ -133,54 +133,59 @@ export default function MessageBubble({
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
       className={cn("group relative flex", isOwn ? "justify-end" : "justify-start")}
     >
-      <div
-        className={cn(
-          "max-w-[75%] rounded-2xl px-4 py-2.5",
-          isOwn
-            ? "bg-brand-800 text-white rounded-br-md"
-            : "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white rounded-bl-md"
-        )}
-      >
-        <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
-        {showTimestamp && (
+      <div className="relative">
+        <div
+          className={cn(
+            "max-w-[75%] rounded-2xl px-4 py-2.5",
+            isOwn
+              ? "bg-brand-800 text-white rounded-br-md"
+              : "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white rounded-bl-md"
+          )}
+        >
+          <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
+          {showTimestamp && (
+            <div
+              className={cn(
+                "mt-1 flex items-center justify-end gap-1",
+                isOwn ? "text-brand-200" : "text-gray-400 dark:text-gray-500"
+              )}
+            >
+              <span className="text-[10px]">{formatTime(message.createdAt)}</span>
+              {isOwn && (
+                <span className={message.read ? "text-red-500" : "text-brand-300"}>
+                  {message.read ? (
+                    <CheckCheck className="h-3.5 w-3.5" />
+                  ) : (
+                    <Check className="h-3.5 w-3.5" />
+                  )}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div
+          className={cn(
+            "absolute top-1/2 -translate-y-1/2 hidden group-hover:flex",
+            isOwn ? "-left-9" : "-right-9"
+          )}
+        >
+          <button
+            onClick={(e) => { e.stopPropagation(); setMenuOpen((p) => !p); }}
+            className="flex h-6 w-6 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </div>
+
+        {menuOpen && (
           <div
+            ref={menuRef}
             className={cn(
-              "mt-1 flex items-center justify-end gap-1",
-              isOwn ? "text-brand-200" : "text-gray-400 dark:text-gray-500"
+              "absolute top-full z-50 mt-1 w-48 rounded-xl bg-white py-1 shadow-lg ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700",
+              isOwn ? "right-0" : "left-0"
             )}
           >
-            <span className="text-[10px]">{formatTime(message.createdAt)}</span>
-            {isOwn && (
-              <span className={message.read ? "text-red-500" : "text-brand-300"}>
-                {message.read ? (
-                  <CheckCheck className="h-3.5 w-3.5" />
-                ) : (
-                  <Check className="h-3.5 w-3.5" />
-                )}
-              </span>
-            )}
-          </div>
-        )}
-      </div>
-
-      <div className="absolute top-0 hidden group-hover:flex" style={{ [isOwn ? "left" : "right"]: "-28px" }}>
-        <button
-          onClick={(e) => { e.stopPropagation(); setMenuOpen((p) => !p); }}
-          className="flex h-6 w-6 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </button>
-      </div>
-
-      {menuOpen && (
-        <div
-          ref={menuRef}
-          className={cn(
-            "absolute top-0 z-50 w-48 rounded-xl bg-white py-1 shadow-lg ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700",
-            isOwn ? "right-0" : "left-0"
-          )}
-          style={{ [isOwn ? "right" : "left"]: "0", top: "100%", marginTop: "4px" }}
-        >
           <button
             onClick={() => { setMenuOpen(false); onDelete?.("me"); }}
             className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
@@ -199,6 +204,7 @@ export default function MessageBubble({
           )}
         </div>
       )}
+      </div>
     </motion.div>
   );
 }

@@ -145,7 +145,7 @@ export default function CheckoutPage() {
 
   if (paymentStep === "success") {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <div className="min-h-screen bg-white dark:bg-gray-950">
         <div className="mx-auto max-w-2xl px-4 py-6 sm:px-6">
           <div className="space-y-5">
             <motion.div
@@ -191,7 +191,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-white dark:bg-gray-950">
       <div className="mx-auto max-w-2xl px-4 py-6 sm:px-6">
         <button
           onClick={() => navigate(-1)}

@@ -166,13 +166,13 @@ export default function ProductCard({
           {title}
         </div>
         <div className="mb-2 flex items-baseline gap-2 flex-wrap">
-          <span className="text-sm font-bold text-brand-800">{formatPrice(price)}</span>
+          <span className="text-sm font-extrabold text-brand-800">{formatPrice(price)}</span>
           {originalPrice && (
             <span className="text-xs text-gray-400 line-through">{formatPrice(originalPrice)}</span>
           )}
-          {negotiable && (
+          {/* {negotiable && (
             <span className="text-sm text-brand-600 font-semibold ml-2">Négociable</span>
-          )}
+          )} */}
         </div>
         <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
           <MapPin className="h-3 w-3" />

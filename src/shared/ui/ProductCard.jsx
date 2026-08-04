@@ -61,15 +61,16 @@ export default function ProductCard({
     <div
       onClick={onClick}
       className={cn(
-        "cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800",
+        "cursor-pointer overflow-hidden  dark:border-gray-800 ",
         isPromoted && "ring-2 ring-brand-500",
         className
       )}
       {...rest}
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800">
+      {/* <div className="relative aspect-[4/5]  overflow-hidden border border-gray-200 bg-white rounded-2xl dark:border-gray-600 dark:bg-gray-800"> */}
+      <div className="relative aspect-[4/5] overflow-hidden border border-gray-200 bg-white rounded-2xl shadow-[inset_0_0_25px_rgba(0,0,0,0.35)] dark:border-gray-600 dark:bg-gray-800">
         {!imageLoaded && (
-          <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700" />
+          <div className="absolute inset-0 bg-gray-500 dark:bg-gray-700" />
         )}
         <img
           src={image}
@@ -81,6 +82,7 @@ export default function ProductCard({
             imageLoaded ? "opacity-100" : "opacity-0"
           )}
         />
+        <div className="pointer-events-none absolute inset-0 rounded-2xl shadow-[inset_0_0_30px_rgba(0,0,0,0.1)]" />
 
         {/* Chap-Chap badge (urgent) - top left */}
         {isUrgent && (
@@ -150,7 +152,7 @@ export default function ProductCard({
 
         {/* Negotiation in progress overlay */}
         {hasActiveNegotiation && status !== "sold" && (
-          <div className="absolute bottom-0 left-0 right-0 z-10 bg-yellow-500/95 backdrop-blur-sm px-3 py-2">
+          <div className="absolute bottom-0 left-0 right-0 z-10 bg-brand-500/95 backdrop-blur-sm px-3 py-2">
             <span className="text-xs font-bold text-white flex items-center justify-center gap-1.5">
               <MessageCircle className="w-4 h-4" />
               Négociation en cours
@@ -160,7 +162,7 @@ export default function ProductCard({
       </div>
 
       <div className="p-3">
-        <div className="mb-1.5 line-clamp-2 text-sm font-semibold text-gray-900 dark:text-white">
+        <div className="mb-1.5 line-clamp-1 text-sm  font-semibold text-gray-900 dark:text-white">
           {title}
         </div>
         <div className="mb-2 flex items-baseline gap-2 flex-wrap">
@@ -169,7 +171,7 @@ export default function ProductCard({
             <span className="text-xs text-gray-400 line-through">{formatPrice(originalPrice)}</span>
           )}
           {negotiable && (
-            <span className="text-sm text-green-600 font-semibold ml-2">Négociable</span>
+            <span className="text-sm text-brand-600 font-semibold ml-2">Négociable</span>
           )}
         </div>
         <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">

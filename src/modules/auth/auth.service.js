@@ -403,6 +403,10 @@ export async function forgotPassword(email) {
 
   if (!emailResult.success) {
     console.error('[ForgotPassword] Failed to send email:', emailResult.error);
+    await redis.del(`otp:${user.id}`);
+    const error = new Error("L'email n'a pas pu être envoyé, réessayez dans un instant");
+    error.status = 502;
+    throw error;
   }
 
   return { message: 'Code de réinitialisation envoyé' };

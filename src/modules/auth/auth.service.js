@@ -1,10 +1,11 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import prisma from '../../config/database.js';
 import jwtConfig from '../../config/jwt.js';
 import redis from '../../config/redis.js';
 import { generateOtp } from '../../utils/helpers.js';
-import { sendEmail, passwordResetEmail } from '../../utils/email.js';
+import { sendEmail, passwordResetEmail, verificationEmail } from '../../utils/email.js';
 
 export function formatUser(user, unreadMessages = 0, unreadNotifications = 0) {
   const name = `${user.first_name || ''} ${user.last_name || ''}`.trim();
@@ -20,6 +21,7 @@ export function formatUser(user, unreadMessages = 0, unreadNotifications = 0) {
     role: user.role,
     avatar: user.avatar,
     verified: user.identity_verified,
+    emailVerified: user.email_verified_at !== null,
     rating: user.rating_avg,
     reviewCount: user.review_count,
     productCount: user.product_count,
@@ -81,6 +83,103 @@ export async function storeRefreshToken(userId, token, req) {
   });
 }
 
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://ak-market.pages.dev';
+
+export async function sendVerificationEmail(user) {
+  const token = crypto.randomBytes(32).toString('hex');
+  await redis.set(`verify:email:${user.id}`, token, 'EX', 86400);
+
+  const link = `${FRONTEND_URL}/verification-email?token=${token}`;
+
+  const result = await sendEmail({
+    to: user.email,
+    subject: 'Confirmez votre email',
+    html: await verificationEmail(user.first_name || 'utilisateur', link),
+  });
+
+  return result;
+}
+
+export async function verifyEmailToken(token) {
+  if (!token) {
+    const error = new Error('Token de vérification manquant');
+    error.status = 400;
+    throw error;
+  }
+
+  const keys = await redis.keys(`verify:email:*`);
+  let userId = null;
+
+  for (const key of keys) {
+    const stored = await redis.get(key);
+    if (stored === token) {
+      userId = key.replace('verify:email:', '');
+      break;
+    }
+  }
+
+  if (!userId) {
+    const error = new Error('Lien de vérification invalide ou expiré');
+    error.status = 400;
+    throw error;
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: Number(userId) },
+    select: { id: true, email: true, first_name: true },
+  });
+
+  if (!user) {
+    const error = new Error('Utilisateur introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  if (user.email_verified_at) {
+    await redis.del(`verify:email:${user.id}`);
+    const error = new Error('Email déjà vérifié');
+    error.status = 400;
+    throw error;
+  }
+
+  await redis.del(`verify:email:${user.id}`);
+
+  const updated = await prisma.user.update({
+    where: { id: user.id },
+    data: { email_verified_at: new Date() },
+  });
+
+  return { message: 'Email vérifié avec succès', user: formatUser(updated) };
+}
+
+export async function resendVerificationEmail(userId) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, email: true, first_name: true, email_verified_at: true },
+  });
+
+  if (!user) {
+    const error = new Error('Utilisateur introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  if (user.email_verified_at) {
+    const error = new Error('Email déjà vérifié');
+    error.status = 400;
+    throw error;
+  }
+
+  const result = await sendVerificationEmail(user);
+  if (!result.success) {
+    const error = new Error("L'email n'a pas pu être envoyé, réessayez dans un instant");
+    error.status = 502;
+    throw error;
+  }
+
+  return { message: 'Email de vérification renvoyé' };
+}
+
 export async function register(data, req) {
   const { firstName, lastName, email, phone, password, city, acceptedTerms } = data;
 
@@ -114,10 +213,16 @@ export async function register(data, req) {
   const { accessToken, refreshToken } = generateTokens(user);
   await storeRefreshToken(user.id, refreshToken, req);
 
+  const emailResult = await sendVerificationEmail(user);
+  if (!emailResult.success) {
+    console.error('[Register] Failed to send verification email:', emailResult.error);
+  }
+
   return {
     accessToken,
     refreshToken,
     user: formatUser(user),
+    verificationEmailSent: emailResult.success,
   };
 }
 
@@ -397,8 +502,8 @@ export async function forgotPassword(email) {
 
   const emailResult = await sendEmail({
     to: email,
-    subject: 'Réinitialisation de votre mot de passe - TG-Market',
-    html: passwordResetEmail(otp),
+    subject: 'Réinitialisation de votre mot de passe',
+    html: await passwordResetEmail(otp),
   });
 
   if (!emailResult.success) {

@@ -32,6 +32,25 @@ export async function googleLogin(req, res, next) {
   }
 }
 
+export async function verifyEmail(req, res, next) {
+  try {
+    const { token } = req.body;
+    const result = await authService.verifyEmailToken(token);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function resendVerification(req, res, next) {
+  try {
+    const result = await authService.resendVerificationEmail(req.user.id);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function logout(req, res, next) {
   try {
     const result = await authService.logout(req.user.id);

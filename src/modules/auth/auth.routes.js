@@ -22,6 +22,8 @@ const router = Router();
 router.post('/register', authLimiter, validate(registerSchema), authController.register);
 router.post('/login', authLimiter, validate(loginSchema), authController.login);
 router.post('/google', authLimiter, authController.googleLogin);
+router.post('/verify-email', authLimiter, authController.verifyEmail);
+router.post('/resend-verification', auth, authLimiter, authController.resendVerification);
 router.post('/logout', auth, authLimiter, authController.logout);
 router.post('/refresh', validate(refreshTokenSchema), authController.refresh);
 router.get('/me', auth, authController.getMe);

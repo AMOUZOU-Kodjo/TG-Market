@@ -47,126 +47,134 @@ function OfferCard({ offer, isReceived, onAccept, onReject, onCancel, onContact,
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800"
+      className="cursor-pointer overflow-hidden"
+      onClick={() => onViewProduct(offer)}
     >
-      <div className="flex gap-4 p-4">
-        <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-700">
+      <div className="flex gap-3">
+        <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[inset_0_0_25px_rgba(0,0,0,0.35)] dark:border-gray-600 dark:bg-gray-800">
           {offer.product?.thumbnail ? (
             <img src={offer.product.thumbnail} alt="" className="h-full w-full object-cover" />
           ) : (
             <div className="flex h-full w-full items-center justify-center">
-              <Package className="h-6 w-6 text-gray-400" />
+              <Package className="h-8 w-8 text-gray-400" />
             </div>
           )}
-          <span className={`absolute right-1 top-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${statusStyles[offer.status]}`}>
+          <div className="pointer-events-none absolute inset-0 rounded-2xl shadow-[inset_0_0_30px_rgba(0,0,0,0.1)]" />
+          <span className={`absolute right-1 top-1 z-10 rounded-full px-2 py-0.5 text-[10px] font-semibold ${statusStyles[offer.status]}`}>
             {statusLabels[offer.status]}
           </span>
         </div>
 
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-sm font-semibold text-gray-900 dark:text-white">
+          <h3 className="mb-1 line-clamp-1 text-sm font-semibold text-gray-900 dark:text-white">
             {offer.product?.title || "Produit"}
           </h3>
-          <p className="mt-0.5 flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-            {otherUser?.avatar ? (
-              <Avatar src={otherUser.avatar} name={otherUser.name} size="xs" />
-            ) : (
-              <User className="h-3 w-3" />
-            )}
-            {isReceived ? (offer.buyer?.name || "Acheteur") : (offer.seller?.name || "Vendeur")}
-          </p>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-base font-bold text-brand-800">{formatCFA(offer.amount)}</span>
+          <div className="mb-1 flex items-baseline gap-2">
+            <span className="text-sm font-extrabold text-brand-800">{formatCFA(offer.amount)}</span>
             <span className="text-xs text-gray-400">
               <Clock className="mr-0.5 inline h-3 w-3" />
               {formatRelativeTime(offer.createdAt)}
             </span>
           </div>
+          <div className="mb-1.5 flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+            {otherUser?.avatar ? (
+              <Avatar src={otherUser.avatar} name={otherUser.name} size="xs" />
+            ) : (
+              <User className="h-3 w-3" />
+            )}
+            <span className="truncate">
+              {isReceived ? (offer.buyer?.name || "Acheteur") : (offer.seller?.name || "Vendeur")}
+            </span>
+          </div>
           {offer.message && (
-            <p className="mt-1.5 line-clamp-2 text-xs text-gray-600 dark:text-gray-400">
-              "{offer.message}"
-            </p>
+            <p className="mb-1.5 line-clamp-2 text-xs text-gray-600 dark:text-gray-400">"{offer.message}"</p>
           )}
         </div>
       </div>
 
-      <div className="mt-auto border-t border-gray-100 px-4 py-3 dark:border-gray-700">
-        <div className="flex flex-wrap gap-2">
-          {isPending && isReceived && (
-            <>
-              <Button
-                size="sm"
-                variant="primary"
-                icon={Check}
-                onClick={() => onAccept(offer.id)}
-              >
-                Accepter
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                icon={X}
-                onClick={() => setShowReject(true)}
-              >
-                Refuser
-              </Button>
-            </>
-          )}
-
-          {isPending && isSent && (
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {isPending && isReceived && (
+          <>
+            <Button
+              size="sm"
+              variant="primary"
+              icon={Check}
+              onClick={(e) => {
+                e.stopPropagation();
+                onAccept(offer.id);
+              }}
+            >
+              Accepter
+            </Button>
             <Button
               size="sm"
               variant="outline"
-              icon={XCircle}
-              onClick={() => onCancel(offer.id)}
+              icon={X}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowReject(true);
+              }}
             >
-              Annuler l'offre
+              Refuser
             </Button>
-          )}
+          </>
+        )}
 
-          {isAccepted && (
-            <Button
-              size="sm"
-              variant="primary"
-              icon={ExternalLink}
-              onClick={() =>
-                offer.escrowId
-                  ? navigate(`/commandes/${offer.escrowId}`)
-                  : toast.error("Transaction introuvable")
-              }
-            >
-              Voir la transaction
-            </Button>
-          )}
-
-          {isRejected && isSent && (
-            <Button
-              size="sm"
-              variant="primary"
-              icon={Tag}
-              onClick={() => onViewProduct(offer)}
-            >
-              Faire une nouvelle offre
-            </Button>
-          )}
-
+        {isPending && isSent && (
           <Button
             size="sm"
             variant="outline"
-            icon={MessageCircle}
-            onClick={() => onContact(offer)}
+            icon={XCircle}
+            onClick={(e) => {
+              e.stopPropagation();
+              onCancel(offer.id);
+            }}
           >
-            Discuter
+            Annuler l'offre
           </Button>
+        )}
+
+        {isAccepted && (
           <Button
             size="sm"
-            variant="ghost"
+            variant="primary"
             icon={ExternalLink}
-            onClick={() => onViewProduct(offer)}
+            onClick={(e) => {
+              e.stopPropagation();
+              offer.escrowId
+                ? navigate(`/commandes/${offer.escrowId}`)
+                : toast.error("Transaction introuvable");
+            }}
           >
-            Voir le produit
+            Voir la transaction
           </Button>
-        </div>
+        )}
+
+        {isRejected && isSent && (
+          <Button
+            size="sm"
+            variant="primary"
+            icon={Tag}
+            onClick={(e) => {
+              e.stopPropagation();
+              onViewProduct(offer);
+            }}
+          >
+            Faire une nouvelle offre
+          </Button>
+        )}
+
+        <Button
+          size="sm"
+          variant="outline"
+          icon={MessageCircle}
+          onClick={(e) => {
+            e.stopPropagation();
+            onContact(offer);
+          }}
+        >
+          Discuter
+        </Button>
       </div>
 
       <Modal isOpen={showReject} onClose={() => setShowReject(false)} title="Refuser l'offre">
@@ -290,7 +298,7 @@ export default function OffersPage() {
           description="Les offres que vous recevez ou envoyez apparaîtront ici."
         />
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {offers.map((offer) => (
             <OfferCard
               key={offer.id}

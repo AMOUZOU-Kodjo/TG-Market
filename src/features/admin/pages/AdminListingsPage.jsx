@@ -325,7 +325,7 @@ export default function AdminListingsPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className=" overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-600 border-t-transparent" />
@@ -338,14 +338,15 @@ export default function AdminListingsPage() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4">
             {filtered.map((product) => (
-              <div key={product.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col aspect-square">
-                <div className="flex-1 overflow-hidden bg-gray-100 min-h-0 relative">
+              <div key={product.id} className="   overflow-hidden hover:shadow-xs transition-shadow flex flex-col">
+                <div className="relative aspect-[3/3] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[inset_0_0_25px_rgba(0,0,0,0.35)] dark:border-gray-600 dark:bg-gray-800">
                   {product.images?.[0] ? (
                     <img src={product.images[0]} alt={product.title} className="w-full h-full object-cover" />
                   ) : (
                     <div className="flex items-center justify-center h-full text-gray-300"><Package className="w-10 h-10" /></div>
                   )}
-                  <div className="absolute top-2 left-2">
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl shadow-[inset_0_0_30px_rgba(0,0,0,0.1)]" />
+                  <div className="absolute top-2 left-2 z-10">
                     <Badge variant={statusColors[product.status] ?? "secondary"} size="sm">
                       {statusLabels[product.status] ?? product.status}
                     </Badge>

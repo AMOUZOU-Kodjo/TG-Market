@@ -51,7 +51,7 @@ export default function AdminLayout() {
       <div className="flex">
         {/* Admin Sidebar */}
         <aside
-          className={`fixed lg:sticky top-0 z-40 h-screen bg-white border-r border-gray-200 transition-all duration-300 flex flex-col overflow-x-hidden ${
+          className={`fixed top-0 z-40 h-screen bg-white border-r border-gray-200 transition-all duration-300 flex flex-col overflow-x-hidden ${
             sidebarOpen ? "w-64" : "w-20"
           } -translate-x-full lg:translate-x-0`}
         >
@@ -142,7 +142,7 @@ export default function AdminLayout() {
         </aside>
 
         {/* Main Content */}
-        <div className="flex-1 min-w-0 overflow-x-hidden">
+        <div className={`flex-1 min-w-0 overflow-x-hidden transition-all duration-300 ${sidebarOpen ? "lg:ml-64" : "lg:ml-20"}`}>
           {/* Admin Header */}
           <header className="sticky top-0 z-30 h-16 bg-white/80 backdrop-blur-xl border-b border-gray-200 flex items-center justify-between px-4 sm:px-6">
             <div className="flex items-center gap-3">

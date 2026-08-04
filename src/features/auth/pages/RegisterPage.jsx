@@ -111,7 +111,7 @@ export default function RegisterPage() {
     });
     if (result.success) {
       toast.success(`Inscription réussie ! Bienvenue sur ${siteName} 🎉`);
-      navigate("/");
+      navigate("/verification-email");
     } else {
       toast.error(result.error || "Erreur lors de l'inscription");
     }

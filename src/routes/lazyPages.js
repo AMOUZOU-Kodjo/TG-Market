@@ -5,6 +5,7 @@ const LoginPage = lazy(() => import("@/features/auth/pages/LoginPage"));
 const RegisterPage = lazy(() => import("@/features/auth/pages/RegisterPage"));
 const ForgotPasswordPage = lazy(() => import("@/features/auth/pages/ForgotPasswordPage"));
 const ResetPasswordPage = lazy(() => import("@/features/auth/pages/ResetPasswordPage"));
+const EmailVerificationPage = lazy(() => import("@/features/auth/pages/EmailVerificationPage"));
 const CategoriesPage = lazy(() => import("@/features/categories/pages/CategoriesPage"));
 const CategoryPage = lazy(() => import("@/features/categories/pages/CategoryPage"));
 const SearchResultsPage = lazy(() => import("@/features/search/pages/SearchResultsPage"));
@@ -58,6 +59,7 @@ export {
   RegisterPage,
   ForgotPasswordPage,
   ResetPasswordPage,
+  EmailVerificationPage,
   CategoriesPage,
   CategoryPage,
   SearchResultsPage,

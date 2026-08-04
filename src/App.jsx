@@ -23,6 +23,7 @@ import {
   RegisterPage,
   ForgotPasswordPage,
   ResetPasswordPage,
+  EmailVerificationPage,
   CategoryPage,
   SearchResultsPage,
   ProductDetailPage,
@@ -256,6 +257,7 @@ function App() {
                           />
                           <Route path="/mot-de-passe-oublie" element={<ForgotPasswordPage />} />
                           <Route path="/reinitialisation" element={<ResetPasswordPage />} />
+                          <Route path="/verification-email" element={<EmailVerificationPage />} />
                         </Route>
 
                         <Route

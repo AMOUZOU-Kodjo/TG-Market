@@ -87,7 +87,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL || 'https://ak-market.pages.dev';
 
 export async function sendVerificationEmail(user) {
   const token = crypto.randomBytes(32).toString('hex');
-  await redis.set(`verify:email:${user.id}`, token, 'EX', 86400);
+  await redis.set(`verify:token:${token}`, String(user.id), 'EX', 86400);
 
   const link = `${FRONTEND_URL}/verification-email?token=${token}`;
 
@@ -107,16 +107,7 @@ export async function verifyEmailToken(token) {
     throw error;
   }
 
-  const keys = await redis.keys(`verify:email:*`);
-  let userId = null;
-
-  for (const key of keys) {
-    const stored = await redis.get(key);
-    if (stored === token) {
-      userId = key.replace('verify:email:', '');
-      break;
-    }
-  }
+  const userId = await redis.get(`verify:token:${token}`);
 
   if (!userId) {
     const error = new Error('Lien de vérification invalide ou expiré');
@@ -136,13 +127,13 @@ export async function verifyEmailToken(token) {
   }
 
   if (user.email_verified_at) {
-    await redis.del(`verify:email:${user.id}`);
+    await redis.del(`verify:token:${token}`);
     const error = new Error('Email déjà vérifié');
     error.status = 400;
     throw error;
   }
 
-  await redis.del(`verify:email:${user.id}`);
+  await redis.del(`verify:token:${token}`);
 
   const updated = await prisma.user.update({
     where: { id: user.id },

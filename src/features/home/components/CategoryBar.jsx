@@ -233,11 +233,11 @@ export default function CategoryBar() {
                     className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-bold whitespace-nowrap transition-all duration-200 ${
                       isCategoryPage
                         ? isActive
-                          ? "bg-brand-100 text-brand-800 shadow-sm"
-                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                          ? "text-brand-800"
+                          : "text-gray-600 hover:text-gray-900"
                         : isActive
-                          ? "bg-white text-brand-800 shadow-sm"
-                          : "bg-gray-100 text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+                          ? "text-brand-800"
+                          : "text-gray-600 hover:text-gray-900"
                     }`}
                  >
                    <Icon className="w-4 h-4" />
@@ -264,11 +264,11 @@ export default function CategoryBar() {
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors shrink-0 ${
                   isCategoryPage
                     ? isActive
-                      ? "bg-brand-100 text-brand-800 shadow-sm"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      ? "text-brand-800"
+                      : "text-gray-600"
                     : isActive
-                      ? "bg-white text-brand-800 shadow-sm"
-                      : "bg-gray-100 text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+                      ? "text-brand-800"
+                      : "text-gray-600 hover:text-gray-900"
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />

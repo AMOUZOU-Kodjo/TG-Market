@@ -247,7 +247,7 @@ function HeroSection() {
 
       {/* <div className="absolute inset-0 flex  items-center justify-center px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}> */}
       <div className="absolute inset-0 flex  items-center sm:items-start justify-center   sm:pt-10 px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}>
-        <div className="relative lg:-left-70 w-full sm:top-40 top-20  rounded-tr-xl rounded-xl  bg-white/90 p-3   max-w-lg text-center">
+        <div className="relative md:-left-70 w-full md:top-40 top-20  rounded-tr-xl rounded-xl  bg-white/90 p-3   max-w-lg text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -480,7 +480,7 @@ function PopularProductsSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
-          className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5"
+          className="grid grid-cols-2  gap-4 md:grid-cols-3  lg:grid-cols-5"
         >
           {popularProducts.slice(0, 30).map((product) => (
             <motion.div key={product.id} variants={staggerItem}>

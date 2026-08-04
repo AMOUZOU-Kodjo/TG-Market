@@ -1,8 +1,23 @@
-import prisma from '../../config/database.js';
+﻿import prisma from '../../config/database.js';
 
-function formatOffer(offer) {
+async function formatOffer(offer) {
+  let escrowId = null;
+  if (offer.status === 'accepted') {
+    const escrow = await prisma.escrowTransaction.findFirst({
+      where: {
+        product_id: offer.product_id,
+        buyer_id: offer.buyer_id,
+        seller_id: offer.seller_id,
+      },
+      select: { id: true },
+      orderBy: { created_at: 'desc' },
+    });
+    escrowId = escrow?.id ?? null;
+  }
+
   return {
     id: offer.id,
+    escrowId,
     productId: offer.product_id,
     buyerId: offer.buyer_id,
     sellerId: offer.seller_id,
@@ -98,7 +113,7 @@ export async function createOffer(productId, buyerId, amount, message) {
     },
   });
 
-  return formatOffer(offer);
+  return await formatOffer(offer);
 }
 
 export async function getMyOffers(userId, { page, perPage }) {
@@ -136,7 +151,7 @@ export async function getMyOffers(userId, { page, perPage }) {
   ]);
 
   return {
-    offers: offers.map(formatOffer),
+    offers: await Promise.all(offers.map((o) => formatOffer(o))),
     total,
   };
 }
@@ -170,12 +185,12 @@ export async function getOfferById(offerId, userId) {
   }
 
   if (offer.buyer_id !== userId && offer.seller_id !== userId) {
-    const error = new Error('Non autorisé');
+    const error = new Error('Non autorisÃ©');
     error.status = 403;
     throw error;
   }
 
-  return formatOffer(offer);
+  return await formatOffer(offer);
 }
 
 export async function acceptOffer(offerId, sellerId) {
@@ -197,7 +212,7 @@ export async function acceptOffer(offerId, sellerId) {
   }
 
   if (offer.status !== 'pending') {
-    const error = new Error('Cette offre a déjà été traitée');
+    const error = new Error('Cette offre a dÃ©jÃ  Ã©tÃ© traitÃ©e');
     error.status = 400;
     throw error;
   }
@@ -259,7 +274,7 @@ export async function acceptOffer(offerId, sellerId) {
     },
   });
 
-  return formatOffer(updated);
+  return await formatOffer(updated);
 }
 
 export async function rejectOffer(offerId, sellerId) {
@@ -281,7 +296,7 @@ export async function rejectOffer(offerId, sellerId) {
   }
 
   if (offer.status !== 'pending') {
-    const error = new Error('Cette offre a déjà été traitée');
+    const error = new Error('Cette offre a dÃ©jÃ  Ã©tÃ© traitÃ©e');
     error.status = 400;
     throw error;
   }
@@ -312,7 +327,7 @@ export async function rejectOffer(offerId, sellerId) {
     },
   });
 
-  return formatOffer(updated);
+  return await formatOffer(updated);
 }
 
 export async function cancelOffer(offerId, userId) {
@@ -334,7 +349,7 @@ export async function cancelOffer(offerId, userId) {
   }
 
   if (offer.status !== 'pending') {
-    const error = new Error('Seules les offres en attente peuvent être annulées');
+    const error = new Error('Seules les offres en attente peuvent Ãªtre annulÃ©es');
     error.status = 400;
     throw error;
   }
@@ -365,5 +380,5 @@ export async function cancelOffer(offerId, userId) {
     },
   });
 
-  return formatOffer(updated);
+  return await formatOffer(updated);
 }

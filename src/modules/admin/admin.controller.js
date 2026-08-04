@@ -325,7 +325,7 @@ export async function replyContactMessage(req, res, next) {
       where: { id: Number(req.params.id) },
     });
     if (!message) return res.status(404).json({ error: 'Message introuvable' });
-    await sendEmail({
+    const result = await sendEmail({
       to: message.email,
       subject: `Re: ${message.subject || 'Votre message'}`,
       html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
@@ -337,6 +337,9 @@ export async function replyContactMessage(req, res, next) {
         <p style="color:#999;font-size:12px;">Cordialement,<br/>L'équipe TG-Market</p>
       </div>`,
     });
+    if (!result.success) {
+      return res.status(502).json({ error: "L'email n'a pas pu être envoyé", detail: result.error });
+    }
     await prisma.contactMessage.update({
       where: { id: Number(req.params.id) },
       data: { read: true },

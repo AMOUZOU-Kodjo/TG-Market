@@ -1,20 +1,8 @@
-import nodemailer from 'nodemailer';
 import prisma from '../config/database.js';
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT) || 587,
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 15000,
-});
-
 const FRONTEND_URL = process.env.FRONTEND_URL || 'https://ak-market.pages.dev';
+const RESEND_API_URL = 'https://api.resend.com/emails';
+const RESEND_FROM = process.env.RESEND_FROM || 'TG-Market <onboarding@resend.dev>';
 
 async function getBranding() {
   const setting = await prisma.siteSetting.findUnique({
@@ -45,20 +33,34 @@ function brandFooter({ siteName }) {
 }
 
 export async function sendEmail({ to, subject, html }) {
+  if (!process.env.RESEND_API_KEY) {
+    console.error('[Email] Error: RESEND_API_KEY manquante');
+    return { success: false, error: 'RESEND_API_KEY manquante' };
+  }
+
   try {
-    const info = await Promise.race([
-      transporter.sendMail({
-        from: process.env.SMTP_FROM || 'TG-Market <noreply@tgmarket.tg>',
-        to,
-        subject,
-        html,
+    const res = await Promise.race([
+      fetch(RESEND_API_URL, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ from: RESEND_FROM, to, subject, html }),
       }),
       new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('SMTP timeout après 12s')), 12000)
+        setTimeout(() => reject(new Error('Resend timeout après 12s')), 12000)
       ),
     ]);
-    console.log('[Email] Sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+
+    const data = await res.json();
+    if (!res.ok) {
+      console.error('[Email] Error:', res.status, data?.message || data?.error || '');
+      return { success: false, error: data?.message || data?.error || `HTTP ${res.status}` };
+    }
+
+    console.log('[Email] Sent:', data.id);
+    return { success: true, messageId: data.id };
   } catch (err) {
     console.error('[Email] Error:', err.message);
     return { success: false, error: err.message };

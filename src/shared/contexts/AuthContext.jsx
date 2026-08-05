@@ -52,7 +52,7 @@ export function AuthProvider({ children }) {
       return { success: true };
     } catch (error) {
       const message =
-        error.response?.data?.message || "Erreur lors de la connexion";
+        error.response?.data?.error || "Erreur lors de la connexion";
       return { success: false, error: message };
     }
   }, []);
@@ -78,7 +78,7 @@ export function AuthProvider({ children }) {
       return { success: true };
     } catch (error) {
       const message =
-        error.response?.data?.message || "Erreur lors de l'inscription";
+        error.response?.data?.error || "Erreur lors de l'inscription";
       return { success: false, error: message };
     }
   }, []);
@@ -101,7 +101,7 @@ export function AuthProvider({ children }) {
       return { success: true };
     } catch (error) {
       const message =
-        error.response?.data?.message || "Erreur lors de la mise à jour";
+        error.response?.data?.error || "Erreur lors de la mise à jour";
       return { success: false, error: message };
     }
   }, []);

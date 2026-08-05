@@ -9,6 +9,9 @@ const transporter = nodemailer.createTransport({
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 15000,
 });
 
 const FRONTEND_URL = process.env.FRONTEND_URL || 'https://ak-market.pages.dev';
@@ -43,12 +46,17 @@ function brandFooter({ siteName }) {
 
 export async function sendEmail({ to, subject, html }) {
   try {
-    const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM || 'TG-Market <noreply@tgmarket.tg>',
-      to,
-      subject,
-      html,
-    });
+    const info = await Promise.race([
+      transporter.sendMail({
+        from: process.env.SMTP_FROM || 'TG-Market <noreply@tgmarket.tg>',
+        to,
+        subject,
+        html,
+      }),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('SMTP timeout après 12s')), 12000)
+      ),
+    ]);
     console.log('[Email] Sent:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (err) {

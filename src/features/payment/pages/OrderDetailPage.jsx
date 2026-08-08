@@ -180,7 +180,7 @@ export default function OrderDetailPage() {
 
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Commande #{escrow.id}</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Commande de {escrow.productTitle ?? "mon produit"}</h1>
             <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{formatDate(escrow.createdAt)}</p>
           </div>
           <Badge variant={statusInfo.variant} dot>{statusInfo.label}</Badge>
@@ -329,7 +329,7 @@ export default function OrderDetailPage() {
                 <div className="flex flex-col items-center rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-800">
                   <QRCodeSVG value={escrow.confirmationToken} size={200} />
                   <p className="mt-3 text-xs text-gray-400">
-                    ID: #{escrow.id}
+                    Produit : {escrow.productTitle ?? "mon produit"}
                   </p>
                   <button
                     onClick={() => setShowQrCode(false)}

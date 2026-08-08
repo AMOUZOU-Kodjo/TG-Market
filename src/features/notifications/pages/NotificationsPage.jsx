@@ -35,6 +35,10 @@ const notificationTypes = {
   favorite: { icon: Heart, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
   order: { icon: ShoppingCart, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
   view: { icon: TrendingDown, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
+  payment_confirmed: { icon: ShoppingCart, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10", link: true },
+  delivery_confirmed: { icon: Package, color: "text-green-600", bg: "bg-green-50 dark:bg-green-500/10", link: true },
+  escrow_disputed: { icon: TrendingDown, color: "text-red-600", bg: "bg-red-50 dark:bg-red-500/10", link: true },
+  escrow_cancelled: { icon: Package, color: "text-gray-500", bg: "bg-gray-100 dark:bg-gray-800", link: true },
 };
 
 const listVariants = {
@@ -181,6 +185,8 @@ export default function NotificationsPage() {
 
             const convId = notification.metadata?.conversationId;
             const isMessage = notification.type === "message" && convId;
+            const escrowId = notification.metadata?.escrowId;
+            const isEscrow = typeConfig.link && escrowId != null;
 
             const mainContent = (
               <>
@@ -215,6 +221,12 @@ export default function NotificationsPage() {
               </>
             );
 
+            const linkTarget = isMessage
+              ? `/messages/${convId}`
+              : isEscrow
+                ? `/commandes/${escrowId}`
+                : null;
+
             return (
               <motion.div
                 key={notification.id}
@@ -227,9 +239,9 @@ export default function NotificationsPage() {
                     : ""
                 }`}
               >
-                {isMessage ? (
+                {linkTarget ? (
                   <Link
-                    to={`/messages/${convId}`}
+                    to={linkTarget}
                     className="flex flex-1 items-center gap-4 min-w-0"
                     onClick={() => !notification.read && handleMarkAsRead(notification.id)}
                   >

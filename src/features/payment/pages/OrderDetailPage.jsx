@@ -436,7 +436,7 @@ export default function OrderDetailPage() {
                 Les fonds ont été libérés au vendeur
               </p>
               <button
-                onClick={() => navigate("/dashboard/avis")}
+                onClick={() => navigate("/avis")}
                 className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-green-600 px-4 py-2 text-xs font-medium text-white hover:bg-green-700 transition-colors"
               >
                 <Star className="h-3.5 w-3.5" />

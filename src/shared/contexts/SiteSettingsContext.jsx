@@ -47,6 +47,7 @@ export function SiteSettingsProvider({ children }) {
     socialGithub: data?.socialGithub ?? "https://github.com/AMOUZOU-Kodjo/TG-Market",
     teamMembers: data?.teamMembers ?? [],
     platformFeePercent: data?.platformFeePercent ?? 5,
+    platformBuyerFeePercent: data?.platformBuyerFeePercent ?? 0,
     refreshSettings: () => qc.refetchQueries({ queryKey: ["siteSettings"] }),
   };
 
@@ -74,6 +75,7 @@ export function useSiteSettings() {
     socialGithub: "",
     teamMembers: [],
     platformFeePercent: 5,
+    platformBuyerFeePercent: 0,
     refreshSettings: () => {},
   };
 }

@@ -18,6 +18,7 @@ import { paymentApi } from "@/features/payment/services/payment.api";
 import { formatCFA } from "@/shared/utils/format";
 import PaymentMethodSelector from "@/features/payment/components/PaymentMethodSelector";
 import { useAuth } from "@/shared/contexts/AuthContext";
+import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import toast from "react-hot-toast";
 
 const PAYMENT_METHODS = [
@@ -34,6 +35,7 @@ export default function CheckoutPage() {
   const { productId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { platformBuyerFeePercent } = useSiteSettings();
   const { data: product, isLoading } = useProduct(productId);
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [phone, setPhone] = useState("");
@@ -70,7 +72,8 @@ export default function CheckoutPage() {
   }
 
   const amount = Number(product.price);
-  const total = amount;
+  const buyerFee = Math.round(amount * (platformBuyerFeePercent / 100));
+  const total = amount + buyerFee;
   const methodName = PAYMENT_METHODS.find((m) => m.id === selectedMethod)?.name || selectedMethod;
   const account = PLATFORM_ACCOUNTS[selectedMethod];
   const refCode = createdEscrow ? `TGM-${createdEscrow.id}` : "";
@@ -238,6 +241,12 @@ export default function CheckoutPage() {
                     <span>Prix</span>
                     <span className="font-medium text-gray-900 dark:text-white">{formatCFA(amount)}</span>
                   </div>
+                  {buyerFee > 0 && (
+                    <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                      <span>Frais d'achat ({platformBuyerFeePercent}%)</span>
+                      <span className="font-medium text-gray-900 dark:text-white">{formatCFA(buyerFee)}</span>
+                    </div>
+                  )}
                   <hr className="border-gray-200 dark:border-gray-700" />
                   <div className="flex justify-between text-base font-bold text-gray-900 dark:text-white">
                     <span>Total</span>

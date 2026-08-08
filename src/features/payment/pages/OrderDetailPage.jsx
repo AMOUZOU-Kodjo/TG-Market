@@ -226,10 +226,16 @@ export default function OrderDetailPage() {
                 <span>Prix</span>
                 <span className="font-medium text-gray-900 dark:text-white">{formatCFA(escrow.amount)}</span>
               </div>
+              {escrow.buyerFee > 0 && (
+                <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                  <span>Frais d'achat</span>
+                  <span className="font-medium text-gray-900 dark:text-white">{formatCFA(escrow.buyerFee)}</span>
+                </div>
+              )}
               <hr className="border-gray-200 dark:border-gray-700" />
               <div className="flex justify-between text-base font-bold text-gray-900 dark:text-white">
                 <span>Total payé</span>
-                <span>{formatCFA(escrow.amount)}</span>
+                <span>{formatCFA(escrow.amount + escrow.buyerFee)}</span>
               </div>
             </div>
           </motion.div>
@@ -260,7 +266,7 @@ export default function OrderDetailPage() {
             <div className="space-y-2">
               <div className="rounded-xl bg-amber-50 p-3 dark:bg-amber-900/10">
                 <p className="text-xs text-amber-700 dark:text-amber-500">
-                  L'acheteur a payé <strong>{formatCFA(escrow.amount)}</strong>. Préparez la commande et marquez-la comme envoyée.
+                  L'acheteur a payé <strong>{formatCFA(escrow.amount + (escrow.buyerFee ?? 0))}</strong>. Préparez la commande et marquez-la comme envoyée.
                 </p>
               </div>
               <button

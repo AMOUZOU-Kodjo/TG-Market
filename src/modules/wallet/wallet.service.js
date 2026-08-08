@@ -19,10 +19,11 @@ export async function getBalance(userId) {
     if (tx.status === 'completed') {
       switch (tx.type) {
         case 'sale':
+          totalEarned += tx.amount;
+          break;
         case 'deposit':
         case 'refund':
           available += tx.amount;
-          if (tx.type === 'sale') totalEarned += tx.amount;
           break;
         case 'purchase':
         case 'withdrawal':
@@ -159,4 +160,29 @@ export async function deletePaymentMethod(id, userId) {
   });
 
   return { message: 'Moyen de paiement supprimé avec succès' };
+}
+
+export async function setDefaultPaymentMethod(id, userId) {
+  const method = await prisma.paymentMethod.findFirst({
+    where: { id, user_id: userId, is_active: true },
+  });
+
+  if (!method) {
+    const error = new Error('Moyen de paiement introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  await prisma.$transaction([
+    prisma.paymentMethod.updateMany({
+      where: { user_id: userId, is_active: true },
+      data: { is_default: false },
+    }),
+    prisma.paymentMethod.update({
+      where: { id },
+      data: { is_default: true },
+    }),
+  ]);
+
+  return { message: 'Moyen de paiement défini par défaut' };
 }

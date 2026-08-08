@@ -18,5 +18,6 @@ router.post('/withdraw', auth, validate(withdrawSchema), walletController.withdr
 router.get('/payment-methods', auth, walletController.getPaymentMethods);
 router.post('/payment-methods', auth, validate(addPaymentMethodSchema), walletController.addPaymentMethod);
 router.delete('/payment-methods/:id', auth, validate(deletePaymentMethodSchema), walletController.deletePaymentMethod);
+router.put('/payment-methods/:id/default', auth, validate(deletePaymentMethodSchema), walletController.setDefaultPaymentMethod);
 
 export default router;

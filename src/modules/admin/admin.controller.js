@@ -435,3 +435,31 @@ export async function dismissReport(req, res, next) {
     next(err);
   }
 }
+
+export async function getPayouts(req, res, next) {
+  try {
+    const { page, perPage, skip } = req.pagination;
+    const { data, total } = await adminService.getPayouts({ page, perPage, skip });
+    res.json({ data, meta: buildPaginationMeta(total, page, perPage) });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function markPayoutPaid(req, res, next) {
+  try {
+    const result = await adminService.markPayoutPaid(Number(req.params.id));
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function retryPayout(req, res, next) {
+  try {
+    const result = await adminService.retryPayout(Number(req.params.id));
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}

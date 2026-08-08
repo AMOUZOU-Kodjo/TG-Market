@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import prisma from '../../config/database.js';
 import redis from '../../config/redis.js';
 import { getPlatformFeePercent, getBuyerFeePercent } from '../../utils/platformFee.js';
+import { getSellerPayoutMethod, createAndSendPayout, getPayoutForEscrow, formatPayout } from '../payment/payout.service.js';
 
 function formatEscrow(escrow) {
   return {
@@ -21,6 +22,7 @@ function formatEscrow(escrow) {
     status: escrow.status,
     paymentMethod: escrow.payment_method ?? null,
     confirmationToken: escrow.confirmation_token ?? null,
+    payout: escrow.payouts?.[0] ? formatPayout(escrow.payouts[0]) : null,
     createdAt: escrow.created_at,
     confirmedAt: escrow.confirmed_at ?? null,
     releasedAt: escrow.released_at ?? null,
@@ -520,6 +522,8 @@ export async function confirmWithCode(id, sellerId, code) {
     }
   });
 
+  await finalizeSellerPayout(id, escrow.seller_id, sellerPayout);
+
   const full = await prisma.escrowTransaction.findUnique({
     where: { id },
     include: {
@@ -532,6 +536,7 @@ export async function confirmWithCode(id, sellerId, code) {
         },
       },
       bundle: { select: { id: true, title: true } },
+      payouts: true,
     },
   });
 
@@ -655,6 +660,8 @@ export async function confirmDelivery(id, buyerId) {
     }
   });
 
+  await finalizeSellerPayout(id, escrow.seller_id, sellerPayout);
+
   const full = await prisma.escrowTransaction.findUnique({
     where: { id },
     include: {
@@ -666,7 +673,8 @@ export async function confirmDelivery(id, buyerId) {
           images: { select: { url: true }, orderBy: { sort_order: 'asc' }, take: 1 },
         },
       },
-      bundle: { select: { id: true, title: true } },
+bundle: { select: { id: true, title: true } },
+      payouts: true,
     },
   });
 
@@ -782,7 +790,36 @@ export async function cancelEscrow(id, userId) {
     },
   });
 
-  return formatEscrow(full);
+return formatEscrow(full);
+}
+
+async function finalizeSellerPayout(escrowId, sellerId, netAmount) {
+  try {
+    const existing = await prisma.payout.findFirst({
+      where: { escrow_id: escrowId },
+    });
+
+    if (existing) return getPayoutForEscrow(escrowId);
+
+    const method = await getSellerPayoutMethod(sellerId);
+    const escrow = await prisma.escrowTransaction.findUnique({
+      where: { id: escrowId },
+      select: { fee: true },
+    });
+
+    const payout = await createAndSendPayout({
+      escrowId,
+      sellerId,
+      amount: netAmount,
+      fee: escrow?.fee ?? 0,
+      provider: method?.provider ?? null,
+      account: method?.provider_user_id ?? null,
+    });
+
+    return payout;
+  } catch {
+    return null;
+  }
 }
 
 export async function getEscrowByPaymentRef(txRef) {

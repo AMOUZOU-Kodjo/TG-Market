@@ -62,3 +62,14 @@ export async function deletePaymentMethod(req, res, next) {
     next(err);
   }
 }
+
+export async function setDefaultPaymentMethod(req, res, next) {
+  try {
+    const id = Number(req.params.id);
+    const result = await walletService.setDefaultPaymentMethod(id, req.user.id);
+    try { req.app.get('io')?.emit('payment_methods_updated', { userId: req.user.id }); } catch {}
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}

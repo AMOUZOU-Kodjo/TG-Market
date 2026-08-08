@@ -968,3 +968,88 @@ export async function getPublicSettings() {
     platformBuyerFeePercent: Number(map.platform_buyer_fee_percent ?? DEFAULT_SETTINGS.platform_buyer_fee_percent),
   };
 }
+
+export async function getPayouts({ page, perPage, skip }) {
+  const [rows, total] = await Promise.all([
+    prisma.payout.findMany({
+      include: {
+        seller: { select: { id: true, first_name: true, last_name: true, avatar: true } },
+        escrow: {
+          select: {
+            id: true,
+            amount: true,
+            status: true,
+            product: { select: { id: true, title: true } },
+          },
+        },
+      },
+      orderBy: { created_at: 'desc' },
+      skip,
+      take: perPage,
+    }),
+    prisma.payout.count(),
+  ]);
+
+  return {
+    data: rows.map((p) => ({
+      id: p.id,
+      escrowId: p.escrow_id,
+      sellerId: p.seller_id,
+      amount: p.amount,
+      fee: p.fee,
+      provider: p.provider,
+      account: p.account,
+      status: p.status,
+      reference: p.reference,
+      errorMessage: p.error_message,
+      confirmedAt: p.confirmed_at,
+      createdAt: p.created_at,
+      productTitle: p.escrow?.product?.title ?? null,
+      escrowAmount: p.escrow?.amount ?? null,
+      escrowStatus: p.escrow?.status ?? null,
+      seller: p.seller
+        ? { id: p.seller.id, firstName: p.seller.first_name, lastName: p.seller.last_name, avatar: p.seller.avatar }
+        : null,
+    })),
+    total,
+  };
+}
+
+export async function markPayoutPaid(id) {
+  const payout = await prisma.payout.findUnique({ where: { id } });
+  if (!payout) {
+    const error = new Error('Paiement introuvable');
+    error.status = 404;
+    throw error;
+  }
+  const updated = await prisma.payout.update({
+    where: { id },
+    data: { status: 'paid', confirmed_at: new Date(), error_message: null },
+  });
+  return updated;
+}
+
+export async function retryPayout(id) {
+  const { createAndSendPayout } = await import('../payment/payout.service.js');
+  const payout = await prisma.payout.findUnique({ where: { id } });
+  if (!payout) {
+    const error = new Error('Paiement introuvable');
+    error.status = 404;
+    throw error;
+  }
+  const escrow = await prisma.escrowTransaction.findUnique({
+    where: { id: payout.escrow_id },
+    select: { seller_id: true },
+  });
+
+  const updated = await createAndSendPayout({
+    escrowId: payout.escrow_id,
+    sellerId: payout.seller_id,
+    amount: payout.amount,
+    fee: payout.fee,
+    provider: payout.provider,
+    account: payout.account,
+  });
+
+  return updated;
+}

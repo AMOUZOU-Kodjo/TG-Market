@@ -81,6 +81,13 @@ enum PaymentProvider {
   card
 }
 
+enum PayoutStatus {
+  pending
+  sent
+  paid
+  failed
+}
+
 enum KycDocumentType {
   cni
   peris
@@ -174,6 +181,7 @@ model User {
   payment_methods      PaymentMethod[]
   product_views        ProductView[]
   refresh_tokens       RefreshToken[]
+  payouts              Payout[]
   offers_received      Offer[]               @relation("OfferSeller")
   offers_made          Offer[]               @relation("OfferBuyer")
   bundles              Bundle[]
@@ -448,6 +456,7 @@ model EscrowTransaction {
   seller         User         @relation("EscrowSeller", fields: [seller_id], references: [id])
   bundle         Bundle?      @relation(fields: [bundle_id], references: [id])
   reviews        Review[]
+  payouts        Payout[]
 
   @@index([buyer_id])
   @@index([seller_id])
@@ -469,6 +478,30 @@ model PaymentMethod {
   user             User            @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id])
+}
+
+model Payout {
+  id                 Int          @id @default(autoincrement())
+  escrow_id          Int
+  seller_id          Int
+  amount             Int
+  fee                Int
+  provider           PaymentProvider?
+  account            String?      @db.VarChar(100)
+  status             PayoutStatus @default(pending)
+  reference          String?      @db.VarChar(100)
+  error_message      String?      @db.Text
+  confirmed_at       DateTime?
+  created_at         DateTime     @default(now())
+  updated_at         DateTime     @updatedAt
+
+  escrow             EscrowTransaction @relation(fields: [escrow_id], references: [id], onDelete: Cascade)
+  seller             User               @relation(fields: [seller_id], references: [id], onDelete: Cascade)
+
+  @@index([seller_id])
+  @@index([status])
+  @@index([created_at])
+  @@index([escrow_id])
 }
 
 model Review {

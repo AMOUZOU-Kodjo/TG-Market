@@ -84,5 +84,8 @@ router.put('/escrow/:id/verify', adminController.verifyPaymentAdmin);
 router.get('/reports', pagination, adminController.getAdminReports);
 router.put('/reports/:id/resolve', adminController.resolveReport);
 router.put('/reports/:id/dismiss', adminController.dismissReport);
+router.get('/payouts', pagination, adminController.getPayouts);
+router.put('/payouts/:id/mark-paid', adminController.markPayoutPaid);
+router.put('/payouts/:id/retry', adminController.retryPayout);
 
 export default router;

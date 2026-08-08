@@ -48,6 +48,7 @@ export async function confirmPayment(req, res, next) {
   try {
     const id = Number(req.params.id);
     const escrow = await escrowService.confirmPayment(id, req.user.id);
+    try { req.app.get('io')?.emit('escrow_updated', { escrow }); } catch {}
 
     const io = req.app.get('io');
     if (io) {
@@ -82,6 +83,7 @@ export async function confirmDelivery(req, res, next) {
   try {
     const id = Number(req.params.id);
     const escrow = await escrowService.confirmDelivery(id, req.user.id);
+    try { req.app.get('io')?.emit('escrow_updated', { escrow }); } catch {}
 
     const io = req.app.get('io');
     if (io) {
@@ -106,6 +108,7 @@ export async function disputeEscrow(req, res, next) {
     const id = Number(req.params.id);
     const { reason } = req.validated.body;
     const escrow = await escrowService.disputeEscrow(id, req.user.id, reason);
+    try { req.app.get('io')?.emit('escrow_updated', { escrow }); } catch {}
 
     const io = req.app.get('io');
     if (io) {
@@ -130,6 +133,7 @@ export async function cancelEscrow(req, res, next) {
   try {
     const id = Number(req.params.id);
     const escrow = await escrowService.cancelEscrow(id, req.user.id);
+    try { req.app.get('io')?.emit('escrow_updated', { escrow }); } catch {}
 
     const io = req.app.get('io');
     if (io) {
@@ -155,6 +159,7 @@ export async function confirmWithCode(req, res, next) {
     const id = Number(req.params.id);
     const { code } = req.validated.body;
     const escrow = await escrowService.confirmWithCode(id, req.user.id, code);
+    try { req.app.get('io')?.emit('escrow_updated', { escrow }); } catch {}
 
     const io = req.app.get('io');
     if (io) {

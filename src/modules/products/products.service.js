@@ -98,8 +98,12 @@ const productInclude = {
 };
 
 export async function listProducts(filters, userId = null) {
-  const { q, categories, conditions, minPrice, maxPrice, city, sort, page, perPage } = filters;
+  const { q, categories, conditions, minPrice, maxPrice, city, sort, page, perPage, sellerId } = filters;
   const where = { status: 'active' };
+
+  if (sellerId) {
+    where.user_id = sellerId;
+  }
 
   if (q) {
     where.OR = [

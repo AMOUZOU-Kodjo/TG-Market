@@ -4,11 +4,11 @@ import { buildPaginationMeta } from '../../utils/pagination.js';
 export async function listProducts(req, res, next) {
   try {
     const { page, perPage } = req.pagination;
-    const { q, categories, conditions, minPrice, maxPrice, city, sort } = req.validated.query;
+    const { q, categories, conditions, minPrice, maxPrice, city, sort, sellerId } = req.validated.query;
     const userId = req.user?.id ?? null;
 
     const { products, total } = await productsService.listProducts(
-      { q, categories, conditions, minPrice, maxPrice, city, sort, page, perPage },
+      { q, categories, conditions, minPrice, maxPrice, city, sort, sellerId, page, perPage },
       userId,
     );
 

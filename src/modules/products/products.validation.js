@@ -15,6 +15,7 @@ export const listProductsSchema = z.object({
     sort: sortEnum.optional(),
     page: z.coerce.number().int().positive().optional(),
     perPage: z.coerce.number().int().min(1).max(50).optional(),
+    sellerId: z.coerce.number().int().positive().optional(),
   }),
 });
 

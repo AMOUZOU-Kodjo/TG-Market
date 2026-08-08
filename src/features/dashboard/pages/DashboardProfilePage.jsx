@@ -85,7 +85,7 @@ function ProductsTab({ products }) {
           Nouvelle annonce
         </button>
       </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
         {products.map((product) => (
           <div key={product.id}>
             <ProductCard

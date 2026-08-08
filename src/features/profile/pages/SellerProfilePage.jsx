@@ -10,6 +10,7 @@ import Logo from "@/shared/ui/Logo";
 import Button from "@/shared/ui/Button";
 import ReviewList from "@/features/profile/components/ReviewList";
 import EmptyState from "@/shared/ui/EmptyState";
+import ProductReviews from "@/features/products/components/ProductReviews";
 import { useSellerProfile, useFollowUser, useUnfollowUser } from "@/features/profile/hooks/useUsers";
 import { useProducts } from "@/features/products/hooks/useProducts";
 import { useSellerReviews } from "@/features/reviews/hooks/useReviews";
@@ -108,7 +109,7 @@ export default function SellerProfilePage() {
               isFeatured={product.isFeatured}
               negotiable={product.negotiable}
               onClick={() => navigate(`/annonce/${product.id}`)}
-              className="[&>div:first-child]:aspect-[3/2] md:[&>div:first-child]:aspect-[4/3] [&>div:last-child]:p-2 md:[&>div:last-child]:p-3"
+              className="[&>div:first-child]:aspect-[4/5] md:[&>div:first-child]:aspect-[4/3] [&>div:last-child]:p-2 md:[&>div:last-child]:p-3"
             />
           ))}
         </div>
@@ -123,7 +124,7 @@ export default function SellerProfilePage() {
       id: "avis",
       label: "Avis",
       count: sellerReviews.length,
-      content: <ReviewList reviews={sellerReviews} />,
+      content: <ProductReviews sellerId={seller.id} />,
     },
   ];
 
@@ -233,9 +234,9 @@ export default function SellerProfilePage() {
       </div>
 
       {/* Main content */}
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-6 pb-24 sm:px-6 lg:px-8 md:pb-6">
         {/* Mobile header bar */}
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="sticky -mx-4 top-0 z-40 flex items-center gap-2 bg-white px-4 py-2 shadow-sm md:hidden dark:bg-gray-800">
           <button onClick={() => navigate("/")} className="p-1 text-gray-600 dark:text-gray-400">
             <ChevronLeft className="h-5 w-5" />
           </button>
@@ -246,37 +247,30 @@ export default function SellerProfilePage() {
               {roleLabel}
             </span>
           </div>
-          <div className="flex shrink-0 flex-wrap items-center justify-end gap-1 max-[360px]:gap-0.5">
-            {!isOwnProfile ? (
-              <>
-                <Button variant="primary" size="sm" onClick={handleContact}>
-                  Contacter
-                </Button>
-                <Button
-                  variant={isFollowing ? "secondary" : "outline"}
-                  size="sm"
-                  onClick={handleFollow}
-                  loading={followUser.isPending || unfollowUser.isPending}
-                >
-                  {isFollowing ? "Suivi" : "Suivre"}
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button variant="primary" size="sm" onClick={() => navigate("/parametres")}>
-                  Modifier
-                </Button>
-                <Link to="/lot/creer">
-                  <Button variant="outline" size="sm" icon={Plus}>
-                    Lot
-                  </Button>
-                </Link>
-              </>
-            )}
-          </div>
         </div>
 
         <Tabs tabs={tabs} />
+
+        {/* Mobile bottom action bar */}
+        {!isOwnProfile && (
+          <div className="fixed inset-x-0 bottom-0 z-[210] border-t border-gray-200 bg-white px-4 py-2 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden dark:border-gray-700 dark:bg-gray-800">
+            <div className="flex items-center gap-2">
+              <Button variant="primary" fullWidth size="sm" icon={MessageCircle} onClick={handleContact}>
+                <span className="flex items-center gap-1.5">Contacter</span>
+              </Button>
+              <Button
+                variant={isFollowing ? "secondary" : "outline"}
+                fullWidth
+                size="sm"
+                icon={UserPlus}
+                onClick={handleFollow}
+                loading={followUser.isPending || unfollowUser.isPending}
+              >
+                <span className="flex items-center gap-1.5">{isFollowing ? "Suivi" : "Suivre"}</span>
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

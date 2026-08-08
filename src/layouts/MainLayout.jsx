@@ -564,7 +564,7 @@ location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWit
         </footer>
 
         {/* Mobile Bottom Nav */}
-        <BottomNav />
+        {!location.pathname.startsWith("/vendeur/") && <BottomNav />}
       </div>
     </div>
   );

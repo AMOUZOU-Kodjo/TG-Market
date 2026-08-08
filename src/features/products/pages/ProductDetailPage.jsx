@@ -5,33 +5,25 @@ import { motion } from "framer-motion";
 import {
   MapPin,
   Truck,
-  Eye,
-  Heart,
   Tag,
   Clock,
   Home,
   Package,
-  ShieldCheck,
-  ArrowLeft,
   AlertTriangle,
   MessageSquare,
   ShoppingCart,
-  ChevronLeft,
 } from "lucide-react";
 import { useProduct, useSimilarProducts } from "@/features/products/hooks/useProducts";
 import { productsApi } from "@/features/products/services/products.api";
-import { useCategories } from "@/features/categories/hooks/useCategories";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { formatCFA, formatRelativeTime, formatNumber } from "@/shared/utils/format";
 import BackButton from "@/shared/ui/BackButton";
-import Breadcrumb from "@/shared/ui/Breadcrumb";
 import Badge from "@/shared/ui/Badge";
 import Button from "@/shared/ui/Button";
 import ImageGallery from "@/shared/ui/ImageGallery";
 import ProductActions from "@/features/products/components/ProductActions";
 import SellerCard from "@/features/products/components/SellerCard";
 import SimilarProducts from "@/features/products/components/SimilarProducts";
-import ProductReviews from "@/features/products/components/ProductReviews";
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -44,7 +36,6 @@ export default function ProductDetailPage() {
 
   const { data: product, isLoading } = useProduct(id);
   const { data: similarProducts = [] } = useSimilarProducts(id);
-  const { data: categories = [] } = useCategories();
   const { user } = useAuth();
 
   useEffect(() => {
@@ -82,19 +73,99 @@ export default function ProductDetailPage() {
     );
   }
 
-  const categorySlug = product.category?.slug;
-
-  const breadcrumbItems = [
-    { label: "Accueil", href: "/", icon: Home },
-    ...(categorySlug
-      ? [{ label: product.category.name, href: `/categories/${categorySlug}` }]
-      : []),
-    { label: product.title },
-  ];
-
   const discountPct = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : null;
+
+  const renderInfoCard = () => (
+    <motion.div
+      {...fadeUp}
+      transition={{ delay: 0.12 }}
+      className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-800"
+    >
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between gap-2 text-sm">
+          <span className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
+            <MapPin className="h-4 w-4 text-brand-800" />
+            {product.neighborhood ? `${product.neighborhood}, ` : ""}
+            {product.city}, Togo
+          </span>
+        </div>
+        <div className="flex items-center justify-between gap-2 text-sm">
+          <span className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
+            <Clock className="h-4 w-4" />
+            il y a de cela
+          </span>
+          <span className="font-medium text-gray-700 dark:text-gray-300">
+            {formatRelativeTime(product.createdAt)}
+          </span>
+        </div>
+      </div>
+
+      <div className="my-4 h-px bg-gray-100 dark:bg-gray-700" />
+
+      <div className="mb-4">
+        <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+          {product.description}
+        </p>
+      </div>
+
+      <div className="mb-5 overflow-hidden rounded-xl border border-gray-100 dark:border-gray-700">
+        <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-4 py-2.5 dark:border-gray-700">
+          <span className="text-sm text-gray-500 dark:text-gray-400">Catégorie</span>
+          <span className="text-right text-sm font-medium text-gray-900 dark:text-white">
+            {product.category?.parent?.name || product.category?.name || "—"}
+          </span>
+        </div>
+        <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-4 py-2.5 dark:border-gray-700">
+          <span className="text-sm text-gray-500 dark:text-gray-400">Sous-catégorie</span>
+          <span className="text-right text-sm font-medium text-gray-900 dark:text-white">
+            {product.category?.name || "—"}
+          </span>
+        </div>
+        <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-4 py-2.5 dark:border-gray-700">
+          <span className="text-sm text-gray-500 dark:text-gray-400">Vues</span>
+          <span className="text-sm font-medium text-gray-900 dark:text-white">
+            {formatNumber(product.views)}
+          </span>
+        </div>
+        <div className="flex items-center justify-between gap-3 px-4 py-2.5">
+          <span className="text-sm text-gray-500 dark:text-gray-400">Favoris</span>
+          <span className="text-sm font-medium text-gray-900 dark:text-white">
+            {formatNumber(product.favorites)}
+          </span>
+        </div>
+      </div>
+
+      <div className="mb-5">
+        <ProductActions product={product} />
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge
+          variant={
+            product.condition === "Neuf"
+              ? "success"
+              : product.condition === "Comme neuf"
+                ? "primary"
+                : "warning"
+          }
+        >
+          {product.condition}
+        </Badge>
+        {product.negotiable && <Badge variant="neutral">Négociable</Badge>}
+        {product.hasActiveEscrow && <Badge variant="danger">Déjà commandé</Badge>}
+        {product.deliveryAvailable && (
+          <Badge variant="secondary">
+            <span className="flex items-center gap-1">
+              <Truck className="h-3 w-3" />
+              Livraison disponible
+            </span>
+          </Badge>
+        )}
+      </div>
+    </motion.div>
+  );
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
@@ -114,6 +185,20 @@ export default function ProductDetailPage() {
                   <span className="sm:hidden">Offre</span>
                 </Button>
               </Link>
+              <Link to={`/acheter/${product.id}`}>
+                <Button
+                  variant={product.hasActiveEscrow || product.status === "sold" ? "secondary" : "primary"}
+                  size="sm"
+                  icon={ShoppingCart}
+                >
+                  <span className="hidden sm:inline">
+                    {product.hasActiveEscrow || product.status === "sold" ? "Déjà commandé" : "Acheter"}
+                  </span>
+                  <span className="sm:hidden">
+                    {product.hasActiveEscrow || product.status === "sold" ? "Commandé" : "Acheter"}
+                  </span>
+                </Button>
+              </Link>
               <Link to="/lot/creer">
                 <Button variant="outline" size="sm" icon={Package}>
                   <span className="hidden sm:inline">Créer un lot</span>
@@ -124,11 +209,9 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* <Breadcrumb items={breadcrumbItems} className="mb-5 mt-3" /> */}
-
         {/* <div className="grid gap-8 mt-8 lg:grid-cols-[1fr_380px]"> */}
         <div className="grid gap-8 mt-8 lg:grid-cols-[1fr_720px]">
-          <div className="space-y-6 min-w-0">
+          <div className="space-y-4 min-w-0">
             <motion.div {...fadeUp} transition={{ delay: 0.05 }}>
               {/* <div className="overflow-hidden rounded-2xl aspect-[16/] max-h-[780px]"> */}
               <div className="overflow-hidden rounded-2xl aspect-[10/9]   max-h-120">
@@ -140,33 +223,13 @@ export default function ProductDetailPage() {
             <motion.div
               {...fadeUp}
               transition={{ delay: 0.1 }}
-              className="rounded-2xl  p-5 shadow-sm dark:border-gray-800 dark:bg-gray-800"
+              className="flex flex-col items-center gap-2 text-center"
             >
-              <div className="mb-4 flex flex-wrap items-center gap-2">
-                <Badge
-                  variant={
-                    product.condition === "Neuf"
-                      ? "success"
-                      : product.condition === "Comme neuf"
-                        ? "primary"
-                        : "warning"
-                  }
-                >
-                  {product.condition}
-                </Badge>
-                {product.negotiable && <Badge variant="neutral">Négociable</Badge>}
-                {product.hasActiveEscrow && <Badge variant="danger">Déjà commandé</Badge>}
-                {product.deliveryAvailable && (
-                  <Badge variant="secondary">
-                    <span className="flex items-center gap-1">
-                      <Truck className="h-3 w-3" />
-                      Livraison disponible
-                    </span>
-                  </Badge>
-                )}
-              </div>
+              <h1 className="lg:hidden text-xl font-bold leading-snug text-gray-900 dark:text-white">
+                {product.title}
+              </h1>
 
-              <div className="mb-5 flex items-baseline gap-3">
+              <div className="flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1 rounded-xl bg-gray-50 px-4 py-3 dark:bg-gray-800">
                 <span className="text-3xl font-bold text-brand-800">
                   {formatCFA(product.price)}
                 </span>
@@ -181,41 +244,9 @@ export default function ProductDetailPage() {
                   </>
                 )}
               </div>
-
-              <div className="mb-5 flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                <span className="flex items-center gap-1.5">
-                  <Eye className="h-4 w-4" />
-                  {formatNumber(product.views)} vues
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Heart className="h-4 w-4" />
-                  {formatNumber(product.favorites)} favoris
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Clock className="h-4 w-4" />
-                  {formatRelativeTime(product.createdAt)}
-                </span>
-              </div>
-
-              <div className="mb-5 flex items-start gap-2 rounded-xl bg-gray-50 p-3 dark:bg-gray-800">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-800" />
-                <span className="text-sm text-gray-700 dark:text-gray-300">
-                  {product.neighborhood ? `${product.neighborhood}, ` : ""}
-                  {product.city}, Togo
-                </span>
-              </div>
-
-              <div className="mb-4">
-                <h3 className="mb-2 text-sm font-semibold text-gray-900 dark:text-white">
-                  Description
-                </h3>
-                <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-                  {product.description}
-                </p>
-              </div>
-
-              <ProductActions product={product} />
             </motion.div>
+
+            <div className="lg:hidden">{renderInfoCard()}</div>
 
             {product.specifications && Object.keys(product.specifications).length > 0 && (
               <motion.div
@@ -259,53 +290,9 @@ export default function ProductDetailPage() {
           </div>
 
           <div className="space-y-5 ">
+            <div className="hidden lg:block">{renderInfoCard()}</div>
             <div className="lg:sticky lg:top-24 rounded-2xl border border-gray-100 bg-white  shadow-sm ">
               <SellerCard seller={product.seller} productId={product.id} hasActiveEscrow={product.hasActiveEscrow} productStatus={product.status} />
-
-              <motion.div
-                {...fadeUp}
-                transition={{ delay: 0.25 }}
-                className="mt-5   p-4  dark:border-gray-800 dark:bg-gray-800"
-              >
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-center justify-between text-gray-600 dark:text-gray-400">
-                    <span className="flex items-center gap-2">
-                      <Clock className="h-4 w-4" />
-                      Publié
-                    </span>
-                    <span className="font-medium text-gray-900 dark:text-white">
-                      {formatRelativeTime(product.createdAt)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-gray-600 dark:text-gray-400">
-                    <span className="flex items-center gap-2">
-                      <Eye className="h-4 w-4" />
-                      Vues
-                    </span>
-                    <span className="font-medium text-gray-900 dark:text-white">
-                      {formatNumber(product.views)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-gray-600 dark:text-gray-400">
-                    <span className="flex items-center gap-2">
-                      <Heart className="h-4 w-4" />
-                      Favoris
-                    </span>
-                    <span className="font-medium text-gray-900 dark:text-white">
-                      {formatNumber(product.favorites)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-gray-600 dark:text-gray-400">
-                    <span className="flex items-center gap-2">
-                      <ShieldCheck className="h-4 w-4" />
-                      Catégorie
-                    </span>
-                    <span className="font-medium text-gray-900 dark:text-white">
-                      {product.category?.name || product.category}
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
             </div>
           </div>
         </div>
@@ -315,10 +302,6 @@ export default function ProductDetailPage() {
             <SimilarProducts products={similarProducts} />
           </div>
         )}
-
-        <div className="mt-5">
-          <ProductReviews productId={product.id} sellerId={product.seller?.id} />
-        </div>
       </div>
     </div>
   );

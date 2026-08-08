@@ -1,14 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  MapPin,
   Calendar,
   Package,
   MessageCircle,
   Star,
   ShieldCheck,
   ExternalLink,
-  ShoppingCart,
+  ChevronRight,
 } from "lucide-react";
 import Avatar from "@/shared/ui/Avatar";
 import Button from "@/shared/ui/Button";
@@ -38,6 +37,13 @@ export default function SellerCard({ seller, productId, hasActiveEscrow, product
             <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">
               {seller.name}
             </h3>
+            <button
+              onClick={() => navigate(`/vendeur/${seller.id}`)}
+              className="lg:hidden rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700"
+              title="Voir le profil"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
             {seller.verified && (
               <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-medium text-red-900 dark:bg-red-700/15 dark:text-red-400">
                 <ShieldCheck className="h-3 w-3" />
@@ -63,24 +69,12 @@ export default function SellerCard({ seller, productId, hasActiveEscrow, product
               <span className="text-sm font-medium text-gray-900 dark:text-white">
                 {seller.rating}
               </span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                ({seller.reviewCount} avis)
-              </span>
             </div>
           )}
         </div>
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-3">
-        {seller.city && (
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-            <MapPin className="h-4 w-4 shrink-0 text-gray-400" />
-            <span className="truncate">
-              {seller.city}
-              {seller.district ? `, ${seller.district}` : ""}
-            </span>
-          </div>
-        )}
         {seller.joinedAt && (
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
             <Calendar className="h-4 w-4 shrink-0 text-gray-400" />
@@ -88,20 +82,19 @@ export default function SellerCard({ seller, productId, hasActiveEscrow, product
           </div>
         )}
         {seller.productCount != null && (
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+          <button
+            onClick={() => navigate(`/vendeur/${seller.id}`)}
+            className="flex items-center gap-2 text-left text-sm text-gray-600 transition-colors hover:text-brand-700 dark:text-gray-400 dark:hover:text-brand-400 cursor-pointer"
+          >
             <Package className="h-4 w-4 shrink-0 text-gray-400" />
-            <span>{seller.productCount} annonces</span>
-          </div>
-        )}
-        {seller.reviewCount != null && (
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-            <Star className="h-4 w-4 shrink-0 text-gray-400" />
-            <span>{seller.reviewCount} avis</span>
-          </div>
+            <span className="underline underline-offset-4 decoration-2 decoration-brand-500">
+              {seller.productCount} article{seller.productCount > 1 ? "s" : ""}
+            </span>
+          </button>
         )}
       </div>
       <div className="mt-5 flex flex-wrap gap-2">
-        <Link to={`/vendeur/${seller.id}`} className="flex-1 min-w-[130px]">
+        <Link to={`/vendeur/${seller.id}`} className="hidden sm:block flex-1 min-w-[130px]">
           <Button variant="outline" fullWidth size="md" icon={ExternalLink}>
             Voir profil
           </Button>
@@ -116,13 +109,7 @@ export default function SellerCard({ seller, productId, hasActiveEscrow, product
               <div className="w-full rounded-xl bg-orange-50 px-4 py-3 text-center text-sm font-semibold text-orange-700 dark:bg-orange-900/20 dark:text-orange-400">
                 Déjà commandé
               </div>
-            ) : (
-              <Link to={`/acheter/${productId}`} className="flex-1 min-w-[130px]">
-                <Button variant="primary" fullWidth size="md" icon={ShoppingCart} className="border border-brand-600">
-                  Acheter
-                </Button>
-              </Link>
-            )}
+            ) : null}
             <div className="flex-1 min-w-[130px]">
               <Button
                 variant="outline"

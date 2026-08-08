@@ -109,7 +109,7 @@ export default function SellerProfilePage() {
               isFeatured={product.isFeatured}
               negotiable={product.negotiable}
               onClick={() => navigate(`/annonce/${product.id}`)}
-              className="[&>div:first-child]:aspect-[4/5] md:[&>div:first-child]:aspect-[4/3] [&>div:last-child]:p-2 md:[&>div:last-child]:p-3"
+              className="[&>div:last-child]:p-2 md:[&>div:last-child]:p-3"
             />
           ))}
         </div>
@@ -118,6 +118,19 @@ export default function SellerProfilePage() {
           title="Aucune annonce"
           description="Ce vendeur n'a pas encore d'annonces."
         />
+      ),
+    },
+    {
+      id: "a-propos",
+      label: "À propos",
+      content: (
+        <div className="border-b border-gray-100 py-4 dark:border-gray-800">
+          {seller.bio ? (
+            <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">{seller.bio}</p>
+          ) : (
+            <p className="text-sm text-gray-500 dark:text-gray-400">Aucune présentation pour le moment.</p>
+          )}
+        </div>
       ),
     },
     {

@@ -31,12 +31,12 @@ export function RealtimeSync() {
 
     // Escrow
     unsubs.push(on("escrow_created", () => {
-      queryClient.invalidateQueries({ queryKey: ["escrows"] });
+      queryClient.invalidateQueries({ queryKey: ["escrow"] });
     }));
 
     unsubs.push(on("escrow_updated", ({ escrow }) => {
-      queryClient.invalidateQueries({ queryKey: ["escrows"] });
-      queryClient.invalidateQueries({ queryKey: ["escrow", escrow?.id] });
+      queryClient.invalidateQueries({ queryKey: ["escrow"] });
+      if (escrow?.id) queryClient.invalidateQueries({ queryKey: ["escrow", escrow.id] });
     }));
 
     // Favorites

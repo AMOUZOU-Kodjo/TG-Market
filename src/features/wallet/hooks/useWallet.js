@@ -52,7 +52,7 @@ export function useEscrowList(params) {
 
 export function useEscrow(id) {
   return useQuery({
-    queryKey: ["escrowItem", id],
+    queryKey: ["escrow", id],
     queryFn: () => escrowApi.getById(id),
     enabled: !!id,
   });

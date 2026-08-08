@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import prisma from '../../config/database.js';
+import redis from '../../config/redis.js';
 
 function formatEscrow(escrow) {
   return {
@@ -18,7 +19,6 @@ function formatEscrow(escrow) {
     status: escrow.status,
     paymentMethod: escrow.payment_method ?? null,
     confirmationToken: escrow.confirmation_token ?? null,
-    confirmationCode: escrow.confirmation_code ?? null,
     createdAt: escrow.created_at,
     confirmedAt: escrow.confirmed_at ?? null,
     releasedAt: escrow.released_at ?? null,
@@ -274,7 +274,7 @@ export async function verifyPayment(id) {
 }
 
 export async function scanConfirm(token, userId) {
-  const escrow = await prisma.escrowTransaction.findUnique({
+  const escrow = await prisma.escrowTransaction.findFirst({
     where: { confirmation_token: token },
     select: { id: true, buyer_id: true, status: true, amount: true, fee: true, product_id: true, confirmation_code: true },
   });
@@ -297,7 +297,7 @@ export async function scanConfirm(token, userId) {
     throw error;
   }
 
-  const full = await prisma.escrowTransaction.findUnique({
+const full = await prisma.escrowTransaction.findUnique({
     where: { id: escrow.id },
     include: {
       buyer: { select: { first_name: true, last_name: true } },
@@ -311,7 +311,7 @@ export async function scanConfirm(token, userId) {
     },
   });
 
-  return formatEscrow(full);
+  return { ...formatEscrow(full), confirmationCode: escrow.confirmation_code };
 }
 
 export async function markAsShipped(id, sellerId) {
@@ -338,12 +338,15 @@ export async function markAsShipped(id, sellerId) {
     throw error;
   }
 
-  const code = String(Math.floor(1000 + Math.random() * 9000));
+const code = String(Math.floor(1000 + Math.random() * 9000));
 
   await prisma.escrowTransaction.update({
     where: { id },
     data: { status: 'pending_delivery', confirmation_code: code },
   });
+
+  await redis.del(`escrow:code-fails:${id}`);
+  await redis.set(`escrow:code-expiry:${id}`, '1', 'EX', 86400 * 7);
 
   const full = await prisma.escrowTransaction.findUnique({
     where: { id },
@@ -386,11 +389,37 @@ export async function confirmWithCode(id, sellerId, code) {
     throw error;
   }
 
+  const codeExpired = await redis.get(`escrow:code-expiry:${id}`);
+  if (!codeExpired) {
+    if (!escrow.confirmation_code) {
+      const error = new Error('Le code de confirmation a expiré');
+      error.status = 400;
+      throw error;
+    }
+    await redis.set(`escrow:code-expiry:${id}`, '1', 'EX', 86400 * 7);
+  }
+
   if (escrow.confirmation_code !== code) {
+    const fails = await redis.incr(`escrow:code-fails:${id}`);
+    await redis.expire(`escrow:code-fails:${id}`, 3600);
+
+    if (fails >= 5) {
+      await prisma.escrowTransaction.update({
+        where: { id },
+        data: { confirmation_code: null },
+      });
+      await redis.del(`escrow:code-expiry:${id}`, `escrow:code-fails:${id}`);
+      const error = new Error('Code invalidé après plusieurs tentatives, contactez l\'acheteur');
+      error.status = 400;
+      throw error;
+    }
+
     const error = new Error('Code de confirmation invalide');
     error.status = 400;
     throw error;
   }
+
+  await redis.del(`escrow:code-expiry:${id}`, `escrow:code-fails:${id}`);
 
   const sellerPayout = escrow.amount - escrow.fee;
 

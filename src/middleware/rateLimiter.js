@@ -19,3 +19,11 @@ export const otpLimiter = rateLimit({
   max: 3,
   message: { error: 'Trop de codes OTP envoyés, veuillez attendre' },
 });
+
+export const confirmCodeLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { error: 'Trop de tentatives de code, veuillez réessayer dans 15 minutes' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});

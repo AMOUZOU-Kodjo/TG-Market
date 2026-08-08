@@ -493,7 +493,7 @@ async function main() {
   try {
     await prisma.$connect();
 
-    const adminPassword = await bcrypt.hash('Admin@TGMarket2026', 12);
+    const adminPassword = await bcrypt.hash('Admin@tgmarket2026', 12);
     await prisma.user.upsert({
       where: { email: 'admin@tgmarket.tg' },
       update: {},

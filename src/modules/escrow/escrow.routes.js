@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { auth } from '../../middleware/auth.js';
 import { validate } from '../../middleware/validate.js';
+import { confirmCodeLimiter } from '../../middleware/rateLimiter.js';
 import { pagination } from '../../utils/pagination.js';
 import * as escrowController from './escrow.controller.js';
 import {
@@ -22,6 +23,6 @@ router.put('/:id/confirm-delivery', auth, validate(getEscrowSchema), escrowContr
 router.put('/:id/dispute', auth, validate(disputeEscrowSchema), escrowController.disputeEscrow);
 router.post('/scan-confirm', auth, validate(scanConfirmSchema), escrowController.scanConfirm);
 router.put('/:id/cancel', auth, validate(getEscrowSchema), escrowController.cancelEscrow);
-router.put('/:id/confirm-code', auth, validate(confirmCodeSchema), escrowController.confirmWithCode);
+router.put('/:id/confirm-code', auth, confirmCodeLimiter, validate(confirmCodeSchema), escrowController.confirmWithCode);
 
 export default router;

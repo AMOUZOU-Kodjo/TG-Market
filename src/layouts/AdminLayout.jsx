@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/shared/services/api";
@@ -19,6 +19,7 @@ import {
   Shield,
   HelpCircle,
   Activity,
+  ChevronRight,
 } from "lucide-react";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
@@ -26,6 +27,7 @@ import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
   const settings = useSiteSettings();
 
@@ -146,6 +148,13 @@ export default function AdminLayout() {
           {/* Admin Header */}
           <header className="sticky top-0 z-30 h-16 bg-white/80 backdrop-blur-xl border-b border-gray-200 flex items-center justify-between px-4 sm:px-6">
             <div className="flex items-center gap-3">
+              <button
+                onClick={() => navigate("/dashboard/profile")}
+                className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"
+                title="Aller à mon profil"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
               <div className="relative hidden sm:block">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input

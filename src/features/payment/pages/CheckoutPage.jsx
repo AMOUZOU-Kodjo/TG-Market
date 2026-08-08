@@ -5,7 +5,6 @@ import {
   ArrowLeft,
   ShoppingCart,
   ShieldCheck,
-  Info,
   Loader2,
   CheckCircle2,
   ExternalLink,
@@ -19,7 +18,6 @@ import { paymentApi } from "@/features/payment/services/payment.api";
 import { formatCFA } from "@/shared/utils/format";
 import PaymentMethodSelector from "@/features/payment/components/PaymentMethodSelector";
 import { useAuth } from "@/shared/contexts/AuthContext";
-import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import toast from "react-hot-toast";
 
 const PAYMENT_METHODS = [
@@ -36,7 +34,6 @@ export default function CheckoutPage() {
   const { productId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { platformFeePercent } = useSiteSettings();
   const { data: product, isLoading } = useProduct(productId);
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [phone, setPhone] = useState("");
@@ -73,8 +70,7 @@ export default function CheckoutPage() {
   }
 
   const amount = Number(product.price);
-  const fee = Math.round(amount * (platformFeePercent / 100));
-  const total = amount + fee;
+  const total = amount;
   const methodName = PAYMENT_METHODS.find((m) => m.id === selectedMethod)?.name || selectedMethod;
   const account = PLATFORM_ACCOUNTS[selectedMethod];
   const refCode = createdEscrow ? `TGM-${createdEscrow.id}` : "";
@@ -241,13 +237,6 @@ export default function CheckoutPage() {
                   <div className="flex justify-between text-gray-600 dark:text-gray-400">
                     <span>Prix</span>
                     <span className="font-medium text-gray-900 dark:text-white">{formatCFA(amount)}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                    <span className="flex items-center gap-1">
-                      Frais de service ({platformFeePercent}%)
-                      <Info className="h-3 w-3" />
-                    </span>
-                    <span className="font-medium text-gray-900 dark:text-white">{formatCFA(fee)}</span>
                   </div>
                   <hr className="border-gray-200 dark:border-gray-700" />
                   <div className="flex justify-between text-base font-bold text-gray-900 dark:text-white">

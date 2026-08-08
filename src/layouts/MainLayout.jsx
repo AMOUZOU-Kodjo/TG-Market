@@ -499,7 +499,12 @@ location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWit
                   </li> */}
                   <li className="flex items-center justify-center gap-2">
                     <SiGmail className="w-4 h-4 text-black shrink-0" />
-                    <span>contact@akmarket.tg</span>
+                    <a
+                      href="mailto:contact@akmarket.tg"
+                      className="underline-offset-4 hover:underline"
+                    >
+                      contact@akmarket.tg
+                    </a>
                   </li>
                 </ul>
 

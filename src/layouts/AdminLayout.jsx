@@ -20,6 +20,7 @@ import {
   HelpCircle,
   Activity,
   ChevronRight,
+  Send,
 } from "lucide-react";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
@@ -43,6 +44,7 @@ export default function AdminLayout() {
     { to: "/admin/listings", label: "Annonces", icon: List },
     { to: "/admin/categories", label: "Categories", icon: FolderTree },
     { to: "/admin/payments", label: "Paiements", icon: CreditCard },
+    { to: "/admin/payouts", label: "Paiements vendeurs", icon: Send },
     { to: "/admin/reports", label: "Signalements", icon: AlertTriangle },
     { to: "/admin/contact-messages", label: "Messages", icon: Mail },
     { to: "/admin/settings", label: "Parametres", icon: Settings },

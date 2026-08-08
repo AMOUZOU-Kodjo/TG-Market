@@ -764,6 +764,7 @@ import ListingPreview from "@/features/listings/components/ListingPreview";
 import { useCategories } from "@/features/categories/hooks/useCategories";
 import CategoryPicker from "@/features/categories/components/CategoryPicker";
 import { useCreateProduct } from "@/features/products/hooks/useProducts";
+import { usePaymentMethods } from "@/features/wallet/hooks/useWallet";
 import api from "@/shared/services/api";
 import { CITIES, PRODUCT_CONDITIONS, MAX_IMAGES_PER_LISTING } from "@/shared/constants";
 import { createListingSchema } from "@/shared/utils/validators";
@@ -799,6 +800,7 @@ export default function CreateListingPage() {
   const navigate = useNavigate();
   const { data: categories = [] } = useCategories();
   const createProduct = useCreateProduct();
+  const { data: methodsData } = usePaymentMethods();
   const [currentStep, setCurrentStep] = useState(0);
   const [photos, setPhotos] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -876,6 +878,13 @@ export default function CreateListingPage() {
     }
     if (photos.length === 0) {
       toast.error("Ajoutez au moins une photo");
+      return;
+    }
+
+    const methods = methodsData?.data || methodsData || [];
+    if (methods.length === 0) {
+      toast.error("Ajoutez un moyen de réception (numéro Flooz/T-Money) pour recevoir vos paiements");
+      navigate("/portefeuille");
       return;
     }
 

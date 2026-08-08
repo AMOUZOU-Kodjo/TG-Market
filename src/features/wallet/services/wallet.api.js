@@ -7,6 +7,7 @@ export const walletApi = {
   getPaymentMethods: () => api.get("/wallet/payment-methods").then((r) => r.data),
   addPaymentMethod: (data) => api.post("/wallet/payment-methods", data).then((r) => r.data),
   deletePaymentMethod: (id) => api.delete(`/wallet/payment-methods/${id}`).then((r) => r.data),
+  setDefaultPaymentMethod: (id) => api.put(`/wallet/payment-methods/${id}/default`).then((r) => r.data),
 };
 
 export const escrowApi = {

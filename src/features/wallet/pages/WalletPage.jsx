@@ -21,7 +21,7 @@ import {
 import Badge from "@/shared/ui/Badge";
 import Tabs from "@/shared/ui/Tabs";
 import { formatCFA, formatRelativeTime } from "@/shared/utils/format";
-import { useWalletBalance, useWalletTransactions, useEscrowList, usePaymentMethods, useAddPaymentMethod } from "@/features/wallet/hooks/useWallet";
+import { useWalletBalance, useWalletTransactions, useEscrowList, usePaymentMethods, useAddPaymentMethod, useSetDefaultPaymentMethod } from "@/features/wallet/hooks/useWallet";
 import WalletBalance from "@/features/payment/components/WalletBalance";
 import EscrowCard from "@/features/payment/components/EscrowCard";
 import EscrowTimeline from "@/features/payment/components/EscrowTimeline";
@@ -76,11 +76,12 @@ export default function WalletPage() {
   const [showAddPayment, setShowAddPayment] = useState(false);
   const [newMethod, setNewMethod] = useState({ provider: "flooz", providerUserId: "" });
   const addPayment = useAddPaymentMethod();
+  const setDefault = useSetDefaultPaymentMethod();
 
   const tabs = [
     { id: "transactions", label: "Transactions" },
     { id: "escrow", label: "Séquestre", badge: escrowTransactions.filter(t => t.status !== "completed").length },
-    { id: "methods", label: "Moyens de paiement" },
+    { id: "methods", label: "Réception" },
   ];
 
   return (
@@ -265,30 +266,55 @@ export default function WalletPage() {
           >
             <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Moyens de paiement
+                Moyens de réception
               </h2>
+            </div>
+            <div className="border-b border-gray-100 px-6 py-3 dark:border-gray-800">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Quand votre livraison est confirmée, le montant de votre vente est envoyé
+                sur le numéro sélectionné par défaut.
+              </p>
             </div>
             <div className="space-y-3 p-4">
               {paymentMethods.length === 0 ? (
-                <div className="py-6 text-center text-sm text-gray-400">Aucun moyen de paiement enregistré</div>
+                <div className="py-6 text-center text-sm text-gray-400">
+                  Ajoutez un numéro Flooz ou T-Money pour recevoir le paiement de vos ventes
+                </div>
               ) : (
                 paymentMethods.map((method) => {
                   const cfg = providerConfig[method.provider] || { name: method.provider, color: "bg-gray-600" };
                   return (
                     <div
                       key={method.id}
-                      className="flex items-center gap-3 rounded-xl border border-gray-100 p-3 transition-colors hover:border-gray-200 dark:border-gray-800 dark:hover:border-gray-700"
+                      className={`rounded-xl border p-3 transition-colors ${
+                        method.isDefault
+                          ? "border-brand-600 bg-brand-50/50 dark:border-brand-500/50 dark:bg-brand-700/10"
+                          : "border-gray-100 hover:border-gray-200 dark:border-gray-800 dark:hover:border-gray-700"
+                      }`}
                     >
-                      <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${cfg.color} text-white text-lg`}>
-                        📱
+                      <div className="flex items-center gap-3">
+                        <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${cfg.color} text-white text-lg`}>
+                          📱
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">{cfg.name}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{method.providerUserId ?? method.label ?? "—"}</p>
+                        </div>
+                        {method.isDefault && (
+                          <Badge variant="success" size="sm">
+                            Réception par défaut
+                          </Badge>
+                        )}
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">{cfg.name}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{method.providerUserId ?? method.label ?? "—"}</p>
-                      </div>
-                      <Badge variant={method.isDefault ? "success" : "secondary"} size="sm">
-                        {method.isDefault ? "Principal" : "Connecté"}
-                      </Badge>
+                      {!method.isDefault && (
+                        <button
+                          onClick={() => setDefault.mutate(method.id)}
+                          disabled={setDefault.isPending}
+                          className="mt-3 w-full rounded-lg border border-brand-600/30 bg-white px-3 py-2 text-xs font-medium text-brand-800 transition-colors hover:bg-brand-50 disabled:opacity-50 dark:border-brand-500/40 dark:bg-transparent dark:text-brand-400 dark:hover:bg-brand-700/10"
+                        >
+                          {setDefault.isPending ? "Définition..." : "Définir comme moyen de réception"}
+                        </button>
+                      )}
                     </div>
                   );
                 })

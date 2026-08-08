@@ -43,6 +43,26 @@ export function useAddPaymentMethod() {
   });
 }
 
+export function useSetDefaultPaymentMethod() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: walletApi.setDefaultPaymentMethod,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["paymentMethods"] });
+    },
+  });
+}
+
+export function useDeletePaymentMethod() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: walletApi.deletePaymentMethod,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["paymentMethods"] });
+    },
+  });
+}
+
 export function useEscrowList(params) {
   return useQuery({
     queryKey: ["escrow", params],

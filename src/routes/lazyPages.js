@@ -28,6 +28,7 @@ const AdminUsersPage = lazy(() => import("@/features/admin/pages/AdminUsersPage"
 const AdminListingsPage = lazy(() => import("@/features/admin/pages/AdminListingsPage"));
 const AdminCategoriesPage = lazy(() => import("@/features/admin/pages/AdminCategoriesPage"));
 const AdminPaymentsPage = lazy(() => import("@/features/admin/pages/AdminPaymentsPage"));
+const AdminPayoutsPage = lazy(() => import("@/features/admin/pages/AdminPayoutsPage"));
 const AdminReportsPage = lazy(() => import("@/features/admin/pages/AdminReportsPage"));
 const AdminContactMessagesPage = lazy(() => import("@/features/admin/pages/AdminContactMessagesPage"));
 const AdminSettingsPage = lazy(() => import("@/features/admin/pages/AdminSettingsPage"));
@@ -82,6 +83,7 @@ export {
   AdminListingsPage,
   AdminCategoriesPage,
   AdminPaymentsPage,
+  AdminPayoutsPage,
   AdminReportsPage,
   AdminContactMessagesPage,
   AdminSettingsPage,

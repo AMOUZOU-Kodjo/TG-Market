@@ -45,6 +45,7 @@ import {
   AdminListingsPage,
   AdminCategoriesPage,
   AdminPaymentsPage,
+  AdminPayoutsPage,
   AdminReportsPage,
   AdminContactMessagesPage,
   AdminSettingsPage,
@@ -312,6 +313,7 @@ function App() {
                           <Route path="/admin/listings" element={<AdminListingsPage />} />
                           <Route path="/admin/categories" element={<AdminCategoriesPage />} />
                           <Route path="/admin/payments" element={<AdminPaymentsPage />} />
+                          <Route path="/admin/payouts" element={<AdminPayoutsPage />} />
                           <Route path="/admin/reports" element={<AdminReportsPage />} />
                           <Route path="/admin/contact-messages" element={<AdminContactMessagesPage />} />
                           <Route path="/admin/settings" element={<AdminSettingsPage />} />

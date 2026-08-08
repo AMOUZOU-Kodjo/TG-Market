@@ -167,7 +167,7 @@ export default function AdminSettingsPage() {
         </nav>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-white  border-l-2 border-gray-200  p-6">
         {tab === "platform" && (
           <div className="space-y-4">
             <div className="flex items-center gap-3 mb-4">
@@ -178,6 +178,7 @@ export default function AdminSettingsPage() {
                 <h3 className="text-sm font-semibold text-gray-900">Plateforme</h3>
                 <p className="text-xs text-gray-400">Informations générales</p>
               </div>
+
             </div>
             <div className="space-y-3">
               <div>

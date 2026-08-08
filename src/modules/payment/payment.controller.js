@@ -17,8 +17,10 @@ export async function initiatePayment(req, res, next) {
       return res.status(400).json({ error: 'Cette transaction ne peut pas être payée' });
     }
 
+    const chargeAmount = escrowData.amount + (escrowData.buyerFee ?? 0);
+
     const result = await paymentService.initiateMobileMoney({
-      amount: escrowData.amount,
+      amount: chargeAmount,
       phone,
       network: method,
       redirectUrl: `${req.protocol}://${req.get('host')}/api/payments/callback`,
@@ -28,10 +30,10 @@ export async function initiatePayment(req, res, next) {
       const account = platformAccounts[method];
       return res.json({
         mode: 'manual',
-        message: `Flutterwave non configuré. Envoyez ${escrowData.amount} FCFA au ${account.name} (${account.number}), puis saisissez le numéro de transaction.`,
+        message: `Flutterwave non configuré. Envoyez ${chargeAmount} FCFA au ${account.name} (${account.number}), puis saisissez le numéro de transaction.`,
         platformAccount: account,
         escrowId: escrowData.id,
-        amount: escrowData.amount,
+        amount: chargeAmount,
       });
     }
 

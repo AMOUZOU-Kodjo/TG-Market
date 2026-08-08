@@ -1,5 +1,5 @@
 ﻿import prisma from '../../config/database.js';
-import { getPlatformFeePercent } from '../../utils/platformFee.js';
+import { getPlatformFeePercent, getBuyerFeePercent } from '../../utils/platformFee.js';
 
 async function formatOffer(offer) {
   let escrowId = null;
@@ -231,6 +231,8 @@ export async function acceptOffer(offerId, sellerId) {
 
   const feePercent = await getPlatformFeePercent();
   const fee = Math.round(offer.amount * (feePercent / 100));
+  const buyerFeePercent = await getBuyerFeePercent();
+  const buyerFee = Math.round(offer.amount * (buyerFeePercent / 100));
 
   await prisma.$transaction(async (tx) => {
     await tx.offer.update({
@@ -245,6 +247,7 @@ export async function acceptOffer(offerId, sellerId) {
         seller_id: offer.seller_id,
         amount: offer.amount,
         fee,
+        buyer_fee: buyerFee,
         status: 'pending',
       },
     });

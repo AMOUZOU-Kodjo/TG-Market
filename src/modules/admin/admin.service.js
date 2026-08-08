@@ -878,6 +878,7 @@ const DEFAULT_SETTINGS = {
   site_description: 'La plateforme togolaise de vente et d\'achat d\'articles d\'occasion',
   support_email: 'support@akmarket.tg',
   platform_fee_percent: '5',
+  platform_buyer_fee_percent: '0',
   maintenance_mode: 'false',
   maintenance_message: 'est actuellement en maintenance pour améliorer vos services. Nous serons de retour très bientôt !',
   maintenance_estimated_return: '24 juillet 2026 à 18h00 (GMT+0)',
@@ -946,7 +947,7 @@ export async function updateSettings(data) {
 
 export async function getPublicSettings() {
   const rows = await prisma.siteSetting.findMany({
-    where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode', 'maintenance_message', 'maintenance_estimated_return', 'maintenance_improvements', 'social_facebook', 'social_twitter', 'social_instagram', 'social_linkedin', 'team_members', 'platform_fee_percent'] } },
+    where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode', 'maintenance_message', 'maintenance_estimated_return', 'maintenance_improvements', 'social_facebook', 'social_twitter', 'social_instagram', 'social_linkedin', 'team_members', 'platform_fee_percent', 'platform_buyer_fee_percent'] } },
   });
   const map = {};
   for (const row of rows) map[row.key] = row.value;
@@ -964,5 +965,6 @@ export async function getPublicSettings() {
     socialLinkedin: map.social_linkedin ?? DEFAULT_SETTINGS.social_linkedin,
     teamMembers: JSON.parse(map.team_members ?? DEFAULT_SETTINGS.team_members),
     platformFeePercent: Number(map.platform_fee_percent ?? DEFAULT_SETTINGS.platform_fee_percent),
+    platformBuyerFeePercent: Number(map.platform_buyer_fee_percent ?? DEFAULT_SETTINGS.platform_buyer_fee_percent),
   };
 }

@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import prisma from '../../config/database.js';
 import redis from '../../config/redis.js';
-import { getPlatformFeePercent } from '../../utils/platformFee.js';
+import { getPlatformFeePercent, getBuyerFeePercent } from '../../utils/platformFee.js';
 
 function formatEscrow(escrow) {
   return {
@@ -17,6 +17,7 @@ function formatEscrow(escrow) {
     bundleTitle: escrow.bundle?.title ?? null,
     amount: escrow.amount,
     fee: escrow.fee,
+    buyerFee: escrow.buyer_fee ?? 0,
     status: escrow.status,
     paymentMethod: escrow.payment_method ?? null,
     confirmationToken: escrow.confirmation_token ?? null,
@@ -77,8 +78,10 @@ export async function createEscrow(buyerId, data) {
     throw error;
   }
 
-  const feePercent = await getPlatformFeePercent();
+const feePercent = await getPlatformFeePercent();
   const fee = Math.round(product.price * (feePercent / 100));
+  const buyerFeePercent = await getBuyerFeePercent();
+  const buyerFee = Math.round(product.price * (buyerFeePercent / 100));
 
   const escrow = await prisma.$transaction(async (tx) => {
     const token = crypto.randomUUID();
@@ -89,6 +92,7 @@ export async function createEscrow(buyerId, data) {
         seller_id: data.sellerId,
         amount: product.price,
         fee,
+        buyer_fee: buyerFee,
         status: 'pending',
         payment_method: data.paymentMethod ?? null,
         confirmation_token: token,
@@ -506,8 +510,8 @@ export async function confirmWithCode(id, sellerId, code) {
         data: {
           user_id: admin.id,
           type: 'commission',
-          amount: escrow.fee,
-          description: escrowRecord.bundle ? `Commission 5% - Lot : ${itemLabel}` : `Commission 5% - ${itemLabel}`,
+          amount: escrow.fee + (escrow.buyer_fee ?? 0),
+          description: escrowRecord.bundle ? `Commission - Lot : ${itemLabel}` : `Commission - ${itemLabel}`,
           status: 'completed',
           reference_type: 'escrow',
           reference_id: id,
@@ -641,8 +645,8 @@ export async function confirmDelivery(id, buyerId) {
         data: {
           user_id: admin.id,
           type: 'commission',
-          amount: escrow.fee,
-          description: escrowRecord.bundle ? `Commission 5% - Lot : ${itemLabel}` : `Commission 5% - ${itemLabel}`,
+          amount: escrow.fee + (escrow.buyer_fee ?? 0),
+          description: escrowRecord.bundle ? `Commission - Lot : ${itemLabel}` : `Commission - ${itemLabel}`,
           status: 'completed',
           reference_type: 'escrow',
           reference_id: id,

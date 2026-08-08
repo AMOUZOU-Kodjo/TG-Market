@@ -429,6 +429,7 @@ model EscrowTransaction {
   seller_id      Int
   amount         Int
   fee            Int
+  buyer_fee      Int        @default(0)
   bundle_id      Int?
   status         EscrowStatus @default(pending)
   payment_method String?      @db.VarChar(30)

@@ -5,8 +5,15 @@ import { X, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
 export default function QrScanner({ onScan, onClose }) {
   const previewRef = useRef(null);
   const scannerRef = useRef(null);
+  const stoppedRef = useRef(false);
   const [status, setStatus] = useState("scanning");
   const [error, setError] = useState(null);
+
+  const handleStop = () => {
+    if (stoppedRef.current || !scannerRef.current) return;
+    stoppedRef.current = true;
+    scannerRef.current.stop().catch(() => {});
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -27,7 +34,7 @@ export default function QrScanner({ onScan, onClose }) {
           },
           (decodedText) => {
             if (mounted) {
-              scanner.stop().catch(() => {});
+              handleStop();
               setStatus("success");
               setTimeout(() => onScan(decodedText), 500);
             }
@@ -46,9 +53,7 @@ export default function QrScanner({ onScan, onClose }) {
 
     return () => {
       mounted = false;
-      if (scannerRef.current) {
-        scannerRef.current.stop().catch(() => {});
-      }
+      handleStop();
     };
   }, [onScan]);
 

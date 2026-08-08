@@ -50,8 +50,10 @@ export default function OrderDetailPage() {
   const [showScanner, setShowScanner] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
   const [actionLoading, setActionLoading] = useState(null);
-  const [scannedCode, setScannedCode] = useState(null);
   const [sellerCode, setSellerCode] = useState("");
+  const [scannedCode, setScannedCode] = useState(
+    () => sessionStorage.getItem(`escrow-code-${id}`) || null
+  );
 
   const handleScan = useCallback(async (token) => {
     setShowScanner(false);
@@ -59,6 +61,7 @@ export default function OrderDetailPage() {
     try {
       const data = await escrowApi.scanConfirm(token);
       setScannedCode(data.confirmationCode);
+      sessionStorage.setItem(`escrow-code-${id}`, data.confirmationCode || "");
       toast.success("QR code scanné ! Communiquez le code à 4 chiffres au vendeur.");
       refetch();
     } catch (err) {
@@ -289,17 +292,17 @@ export default function OrderDetailPage() {
                     Communiquez ce code à 4 chiffres au vendeur pour finaliser la transaction.
                   </p>
                   <button
-                    onClick={() => setScannedCode(null)}
+                    onClick={() => { setScannedCode(null); sessionStorage.removeItem(`escrow-code-${id}`); }}
                     className="mt-4 text-xs text-green-600 underline hover:text-green-800 dark:text-green-500"
                   >
-                    Scanner à nouveau
+                    Masquer le code
                   </button>
                 </div>
               ) : (
                 <>
                   <div className="rounded-xl bg-blue-50 p-3 dark:bg-blue-900/10">
                     <p className="text-xs text-blue-700 dark:text-blue-400">
-                      Scannez le QR code du vendeur pour obtenir le code de confirmation.
+                      Scannez le QR code du vendeur pour afficher votre code de confirmation.
                     </p>
                   </div>
                   <button

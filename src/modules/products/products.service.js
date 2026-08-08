@@ -10,7 +10,14 @@ function formatProduct(product, userId = null) {
     condition: product.condition,
     status: product.status,
     category: product.category
-      ? { id: product.category.id, name: product.category.name, slug: product.category.slug }
+      ? {
+          id: product.category.id,
+          name: product.category.name,
+          slug: product.category.slug,
+          parent: product.category.parent
+            ? { id: product.category.parent.id, name: product.category.parent.name, slug: product.category.parent.slug }
+            : undefined,
+        }
       : undefined,
     brand: product.brand,
     images: product.images
@@ -70,7 +77,7 @@ function buildSortOption(sort) {
 }
 
 const productInclude = {
-  category: { select: { id: true, name: true, slug: true } },
+  category: { select: { id: true, name: true, slug: true, parent: { select: { id: true, name: true, slug: true } } } },
   images: { select: { url: true, sort_order: true } },
   tags: { select: { tag: true } },
   specifications: { select: { label: true, value: true } },

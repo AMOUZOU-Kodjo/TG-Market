@@ -10,6 +10,10 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
+      devOptions: {
+        enabled: true,
+        navigateFallback: "/index.html",
+      },
       includeAssets: ["favicon.svg", "logo-tg.png"],
       manifest: {
         name: "TG-Market - Achat & Vente d'occasion au Togo",

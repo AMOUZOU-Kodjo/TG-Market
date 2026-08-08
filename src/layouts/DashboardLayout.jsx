@@ -8,6 +8,7 @@ import {
   Megaphone,
   Settings,
   ChevronLeft,
+  ChevronRight,
   Menu,
   Bell,
   Search,
@@ -39,6 +40,12 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
           </Link>
         )}
         <div className={sidebarOpen ? "ml-auto" : "mx-auto"}>
+          <button
+            onClick={onMobileLinkClick}
+            className="lg:hidden p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 transition-colors"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="hidden lg:flex p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 transition-colors"
@@ -306,12 +313,12 @@ export default function DashboardLayout() {
           {/* Dashboard Header */}
           <header className={`${mobileView === "sidebar" ? "hidden lg:flex" : "flex"} sticky top-0 z-30 h-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-700 items-center justify-between px-4 sm:px-6`}>
             <div className="flex items-center gap-3">
-              {/* Mobile: back arrow */}
+              {/* Mobile: hamburger menu */}
               <button
                 onClick={() => setMobileView("sidebar")}
                 className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
               >
-                <ArrowLeft className="w-5 h-5" />
+                <Menu className="w-5 h-5" />
               </button>
               {/* Desktop: hamburger */}
               {/* <button

@@ -331,7 +331,7 @@ export default function AdminSettingsPage() {
               try { members = typeof form.team_members === "string" ? JSON.parse(form.team_members) : form.team_members; } catch { members = []; }
               if (!Array.isArray(members)) members = [];
               return members.map((member, idx) => (
-                <div key={idx} className="border border-gray-200 rounded-xl p-4 space-y-3">
+                <div key={idx} className="p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-semibold text-gray-700">Membre {idx + 1}</p>
                   </div>
@@ -350,8 +350,8 @@ export default function AdminSettingsPage() {
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-500 mb-1">Photo (URL)</label>
-                      <div className="flex gap-2">
-                        <input value={member.photo || ""} onChange={(e) => { const m = [...members]; m[idx] = { ...m[idx], photo: e.target.value }; setForm({ ...form, team_members: JSON.stringify(m) }); }} className="flex-1 px-3 py-2 bg-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/50" placeholder="https://..." />
+                      <div className="flex flex-wrap gap-2">
+                        <input value={member.photo || ""} onChange={(e) => { const m = [...members]; m[idx] = { ...m[idx], photo: e.target.value }; setForm({ ...form, team_members: JSON.stringify(m) }); }} className="min-w-0 flex-1 basis-32 px-3 py-2 bg-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/50" placeholder="https://..." />
                         <label className="shrink-0 flex items-center justify-center w-9 h-9 bg-gray-100 rounded-xl cursor-pointer hover:bg-gray-200 transition-colors">
                           <Upload className="w-4 h-4 text-gray-500" />
                           <input type="file" accept="image/*" className="hidden" onChange={async (e) => {

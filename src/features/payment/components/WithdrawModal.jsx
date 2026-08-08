@@ -11,8 +11,7 @@ export default function WithdrawModal({ isOpen, onClose, balance = 0, method = "
   const [success, setSuccess] = useState(false);
 
   const numAmount = parseInt(amount) || 0;
-  const fee = Math.round(numAmount * 0.02);
-  const net = numAmount - fee;
+  const net = numAmount;
   const isValid = numAmount > 0 && numAmount <= balance && phone.length >= 8;
 
   const handleWithdraw = () => {
@@ -73,12 +72,8 @@ export default function WithdrawModal({ isOpen, onClose, balance = 0, method = "
 
                   {numAmount > 0 && (
                     <div className="rounded-xl bg-gray-50 p-3 dark:bg-gray-800">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">Commission (2%)</span>
-                        <span className="text-gray-700 dark:text-gray-300">-{formatCFA(fee)}</span>
-                      </div>
-                      <div className="mt-1 flex justify-between text-sm font-semibold">
-                        <span className="text-gray-700 dark:text-gray-300">Montant net</span>
+                      <div className="flex justify-between text-sm font-semibold">
+                        <span className="text-gray-700 dark:text-gray-300">Montant</span>
                         <span className="text-brand-600">{formatCFA(net)}</span>
                       </div>
                     </div>

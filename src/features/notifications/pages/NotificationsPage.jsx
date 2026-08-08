@@ -27,7 +27,8 @@ import toast from "react-hot-toast";
 const notificationTypes = {
   message: { icon: MessageCircle, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10", link: true },
   price_drop: { icon: TrendingDown, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
-  review: { icon: Star, color: "text-yellow-500", bg: "bg-yellow-50 dark:bg-yellow-500/10" },
+  review: { icon: Star, color: "text-yellow-500", bg: "bg-yellow-50 dark:bg-yellow-500/10", link: true },
+  new_review: { icon: Star, color: "text-yellow-500", bg: "bg-yellow-50 dark:bg-yellow-500/10", link: true },
   sold: { icon: Package, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
   system: { icon: Megaphone, color: "text-brand-800", bg: "bg-brand-50 dark:bg-brand-800/10" },
   follower: { icon: UserPlus, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10" },
@@ -187,6 +188,8 @@ export default function NotificationsPage() {
             const isMessage = notification.type === "message" && convId;
             const escrowId = notification.metadata?.escrowId;
             const isEscrow = typeConfig.link && escrowId != null;
+            const sellerId = notification.metadata?.sellerId;
+            const isReview = typeConfig.link && sellerId != null;
 
             const mainContent = (
               <>
@@ -225,7 +228,9 @@ export default function NotificationsPage() {
               ? `/messages/${convId}`
               : isEscrow
                 ? `/commandes/${escrowId}`
-                : null;
+                : isReview
+                  ? `/vendeur/${sellerId}`
+                  : null;
 
             return (
               <motion.div

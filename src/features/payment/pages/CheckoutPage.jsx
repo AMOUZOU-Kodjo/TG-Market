@@ -19,6 +19,7 @@ import { paymentApi } from "@/features/payment/services/payment.api";
 import { formatCFA } from "@/shared/utils/format";
 import PaymentMethodSelector from "@/features/payment/components/PaymentMethodSelector";
 import { useAuth } from "@/shared/contexts/AuthContext";
+import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import toast from "react-hot-toast";
 
 const PAYMENT_METHODS = [
@@ -31,12 +32,11 @@ const PLATFORM_ACCOUNTS = {
   tmoney: { number: "+228 90 00 00 02", name: "TG-Market T-Money" },
 };
 
-const PLATFORM_FEE = 0.05;
-
 export default function CheckoutPage() {
   const { productId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { platformFeePercent } = useSiteSettings();
   const { data: product, isLoading } = useProduct(productId);
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [phone, setPhone] = useState("");
@@ -73,7 +73,7 @@ export default function CheckoutPage() {
   }
 
   const amount = Number(product.price);
-  const fee = Math.round(amount * PLATFORM_FEE);
+  const fee = Math.round(amount * (platformFeePercent / 100));
   const total = amount + fee;
   const methodName = PAYMENT_METHODS.find((m) => m.id === selectedMethod)?.name || selectedMethod;
   const account = PLATFORM_ACCOUNTS[selectedMethod];
@@ -244,7 +244,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex justify-between text-gray-600 dark:text-gray-400">
                     <span className="flex items-center gap-1">
-                      Frais de service (5%)
+                      Frais de service ({platformFeePercent}%)
                       <Info className="h-3 w-3" />
                     </span>
                     <span className="font-medium text-gray-900 dark:text-white">{formatCFA(fee)}</span>

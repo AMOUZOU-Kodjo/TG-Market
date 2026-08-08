@@ -21,6 +21,7 @@ import QrScanner from "@/features/payment/components/QrScanner";
 import { useEscrow, useConfirmDelivery, useMarkAsShipped } from "@/features/wallet/hooks/useWallet";
 import { escrowApi } from "@/features/wallet/services/wallet.api";
 import { useAuth } from "@/shared/contexts/AuthContext";
+import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import { formatCFA, formatDate } from "@/shared/utils/format";
 import EscrowTimeline from "@/features/payment/components/EscrowTimeline";
 import Badge from "@/shared/ui/Badge";
@@ -42,6 +43,7 @@ export default function OrderDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { platformFeePercent } = useSiteSettings();
   const { data: escrow, isLoading, refetch } = useEscrow(id);
   const { mutateAsync: confirmDelivery } = useConfirmDelivery();
   const { mutateAsync: markAsShipped } = useMarkAsShipped();
@@ -227,7 +229,7 @@ export default function OrderDetailPage() {
                 <span className="font-medium text-gray-900 dark:text-white">{formatCFA(escrow.amount)}</span>
               </div>
               <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                <span>Frais de service (5%)</span>
+                <span>Frais de service ({platformFeePercent}%)</span>
                 <span className="font-medium text-gray-900 dark:text-white">{formatCFA(escrow.fee)}</span>
               </div>
               <hr className="border-gray-200 dark:border-gray-700" />

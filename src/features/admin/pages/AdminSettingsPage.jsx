@@ -41,6 +41,7 @@ export default function AdminSettingsPage() {
         site_version: settings.site_version ?? "",
         site_description: settings.site_description ?? "",
         support_email: settings.support_email ?? "",
+        platform_fee_percent: settings.platform_fee_percent ?? "5",
         maintenance_mode: settings.maintenance_mode === "true",
         maintenance_message: settings.maintenance_message ?? "",
         maintenance_estimated_return: settings.maintenance_estimated_return ?? "",
@@ -69,6 +70,7 @@ export default function AdminSettingsPage() {
         site_version: updated.site_version ?? "",
         site_description: updated.site_description ?? "",
         support_email: updated.support_email ?? "",
+        platform_fee_percent: updated.platform_fee_percent ?? "5",
         maintenance_mode: updated.maintenance_mode === "true",
         maintenance_message: updated.maintenance_message ?? "",
         maintenance_estimated_return: updated.maintenance_estimated_return ?? "",
@@ -95,6 +97,7 @@ export default function AdminSettingsPage() {
         socialLinkedin: updated.social_linkedin,
         socialGithub: updated.social_github,
         teamMembers: JSON.parse(updated.team_members ?? "[]"),
+        platformFeePercent: Number(updated.platform_fee_percent ?? "5"),
       });
     },
     onError: (e) => toast.error(e.response?.data?.error ?? "Erreur lors de l'enregistrement"),
@@ -198,6 +201,18 @@ export default function AdminSettingsPage() {
                   rows={2}
                   className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50 resize-none"
                 />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Commission plateforme (%)</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={form.platform_fee_percent}
+                  onChange={(e) => setForm({ ...form, platform_fee_percent: e.target.value })}
+                  className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+                />
+                <p className="mt-1 text-xs text-gray-400">Taux appliqué sur chaque vente (escrow, offres, lots).</p>
               </div>
             </div>
           </div>

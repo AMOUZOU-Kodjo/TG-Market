@@ -1,4 +1,5 @@
 ﻿import prisma from '../../config/database.js';
+import { getPlatformFeePercent } from '../../utils/platformFee.js';
 
 async function formatOffer(offer) {
   let escrowId = null;
@@ -228,7 +229,8 @@ export async function acceptOffer(offerId, sellerId) {
     throw error;
   }
 
-  const fee = Math.round(offer.amount * 0.05);
+  const feePercent = await getPlatformFeePercent();
+  const fee = Math.round(offer.amount * (feePercent / 100));
 
   await prisma.$transaction(async (tx) => {
     await tx.offer.update({

@@ -44,7 +44,7 @@ export async function createReview(req, res, next) {
         title: `Nouvel avis de ${review.reviewer.name}`,
         description: `${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)} — ${review.comment?.substring(0, 100) || ''}`,
         productId: null,
-        metadata: { reviewId: review.id, rating: review.rating },
+        metadata: { reviewId: review.id, rating: review.rating, sellerId: review.sellerId },
       });
     }
 

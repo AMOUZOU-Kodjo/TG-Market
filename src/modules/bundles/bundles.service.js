@@ -1,5 +1,6 @@
 import prisma from '../../config/database.js';
 import crypto from 'crypto';
+import { getPlatformFeePercent } from '../../utils/platformFee.js';
 
 function formatBundle(bundle) {
   return {
@@ -577,7 +578,8 @@ export async function purchaseBundle(bundleId, buyerId) {
   }
 
   const firstProduct = activeProducts[0].product;
-  const fee = Math.round(bundle.bundle_price * 0.05);
+  const feePercent = await getPlatformFeePercent();
+  const fee = Math.round(bundle.bundle_price * (feePercent / 100));
 
   const escrow = await prisma.$transaction(async (tx) => {
     const token = crypto.randomUUID();

@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import prisma from '../../config/database.js';
 import redis from '../../config/redis.js';
+import { getPlatformFeePercent } from '../../utils/platformFee.js';
 
 function formatEscrow(escrow) {
   return {
@@ -76,7 +77,8 @@ export async function createEscrow(buyerId, data) {
     throw error;
   }
 
-  const fee = Math.round(product.price * 0.05);
+  const feePercent = await getPlatformFeePercent();
+  const fee = Math.round(product.price * (feePercent / 100));
 
   const escrow = await prisma.$transaction(async (tx) => {
     const token = crypto.randomUUID();

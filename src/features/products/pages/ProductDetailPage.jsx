@@ -267,7 +267,7 @@ export default function ProductDetailPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
       <div className="relative mx-auto max-w-7xl px-4 pt-4 pb-28 sm:px-6 lg:px-8 md:pb-4">
-        <div className="sticky top-0 z-40 -mx-4 bg-white px-4 py-3 backdrop-blur-sm dark:bg-gray-950/80 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div className="sticky top-0 z-40 -mx-4 bg-white px-4 py-3 dark:bg-gray-950 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 border-b border-gray-100 dark:border-gray-800">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0 sm:gap-10">
               <BackButton />

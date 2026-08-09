@@ -8,6 +8,7 @@ import {
   ChevronDown,
   ChevronUp,
   ChevronRight,
+  ChevronLeft,
   Save,
   X,
   ArrowUpDown,
@@ -63,6 +64,7 @@ export default function AdminCategoriesPage() {
   const [specModal, setSpecModal] = useState(null);
   const [specForm, setSpecForm] = useState({ label: "", inputType: "text", options: "", required: false });
   const [specEditingId, setSpecEditingId] = useState(null);
+  const [mobilePath, setMobilePath] = useState([]);
 
   const { data, isLoading } = useQuery({
     queryKey: ["adminCategories"],
@@ -120,6 +122,13 @@ export default function AdminCategoriesPage() {
 
   const categories = data?.data ?? [];
   const roots = categories.filter((c) => c.parentId === null);
+
+  const currentNode = mobilePath.length
+    ? categories.find((c) => c.id === mobilePath[mobilePath.length - 1])
+    : null;
+  const showRoot = mobilePath.length === 0 || !currentNode;
+  const push = (id) => setMobilePath((prev) => [...prev, id]);
+  const pop = () => setMobilePath((prev) => prev.slice(0, -1));
 
   const openCreate = (parentId = null) => {
     setForm({ name: "", slug: "", icon: "Package", color: getRandomColor(), parentId, sortOrder: 0, isActive: true });
@@ -211,6 +220,32 @@ export default function AdminCategoriesPage() {
 
   const childrenOf = (parentId) => categories.filter((c) => c.parentId === parentId).sort((a, b) => a.sortOrder - b.sortOrder);
 
+  const MobileCategoryCard = ({ cat, onClick }) => {
+    const kids = childrenOf(cat.id);
+    return (
+      <button
+        onClick={onClick}
+        className="w-full flex items-center gap-3 rounded-2xl border border-gray-200 bg-white p-3.5 text-left shadow-sm active:scale-[0.99] transition-transform"
+      >
+        <div
+          className="w-10 h-10 rounded-xl flex items-center justify-center text-base shrink-0"
+          style={{ backgroundColor: `${cat.color}20` }}
+        >
+          <span style={{ color: cat.color }}>{cat.icon === "Package" ? "📦" : "★"}</span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-gray-900 truncate">{cat.name}</p>
+          <p className="text-xs text-gray-400 truncate">
+            {kids.length > 0
+              ? `${kids.length} sous-catégorie${kids.length > 1 ? "s" : ""}`
+              : `${cat.productCount ?? 0} annonce${cat.productCount > 1 ? "s" : ""}`}
+          </p>
+        </div>
+        <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
+      </button>
+    );
+  };
+
   const CategoryNode = ({ cat, level = 0 }) => {
     const kids = childrenOf(cat.id);
     const hasChildren = kids.length > 0;
@@ -222,7 +257,7 @@ export default function AdminCategoriesPage() {
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           style={{ paddingLeft: `${16 + level * 24}px` }}
-          className="flex items-center gap-2 py-2 hover:bg-gray-50 rounded-lg"
+          className="flex flex-wrap items-center gap-2 py-2.5 hover:bg-gray-50 rounded-lg"
         >
           <div className="flex-1 flex items-center gap-2 min-w-0">
             <span
@@ -244,14 +279,21 @@ export default function AdminCategoriesPage() {
             <Badge variant="secondary" className="text-xs">
               {cat.productCount} annonces
             </Badge>
+            {cat.specTemplateCount > 0 && (
+              <Badge variant="primary" className="text-xs shrink-0">
+                <span className="flex items-center gap-1">
+                  <Settings2 className="w-3 h-3" /> {cat.specTemplateCount} champ{cat.specTemplateCount > 1 ? "s" : ""}
+                </span>
+              </Badge>
+            )}
           </div>
-          <div className="flex items-center gap-1">
-            <button onClick={() => moveCategory(cat.id, "up")} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Monter" disabled={cat.sortOrder === 0}><ChevronUp className="w-4 h-4" /></button>
-            <button onClick={() => moveCategory(cat.id, "down")} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Descendre"><ChevronDown className="w-4 h-4" /></button>
-            <button onClick={() => openEdit(cat)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Modifier"><Edit2 className="w-4 h-4" /></button>
-            <button onClick={() => openCreate(cat.id)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Sous-catégorie"><Plus className="w-4 h-4" /></button>
-            <button onClick={() => openSpecModal(cat)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Champs personnalisés"><Settings2 className="w-4 h-4" /></button>
-            <button onClick={() => deleteMutation.mutate(cat.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500" title="Supprimer"><Trash2 className="w-4 h-4" /></button>
+          <div className="flex items-center gap-1 shrink-0 flex-wrap justify-end">
+            <button onClick={() => moveCategory(cat.id, "up")} className="p-2 sm:p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Monter" disabled={cat.sortOrder === 0}><ChevronUp className="w-4 h-4" /></button>
+            <button onClick={() => moveCategory(cat.id, "down")} className="p-2 sm:p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Descendre"><ChevronDown className="w-4 h-4" /></button>
+            <button onClick={() => openEdit(cat)} className="p-2 sm:p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Modifier"><Edit2 className="w-4 h-4" /></button>
+            <button onClick={() => openCreate(cat.id)} className="p-2 sm:p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Sous-catégorie"><Plus className="w-4 h-4" /></button>
+            <button onClick={() => openSpecModal(cat)} className="p-2 sm:p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Champs personnalisés"><Settings2 className="w-4 h-4" /></button>
+            <button onClick={() => deleteMutation.mutate(cat.id)} className="p-2 sm:p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500" title="Supprimer"><Trash2 className="w-4 h-4" /></button>
           </div>
         </motion.div>
 
@@ -274,12 +316,91 @@ export default function AdminCategoriesPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h1 className="text-xl font-bold text-gray-900">Catégories</h1>
-        <button onClick={() => openCreate()} className="flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-700 rounded-xl text-white text-sm font-medium">
+        <button onClick={() => openCreate()} className="hidden lg:flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-700 rounded-xl text-white text-sm font-medium">
           <Plus className="w-4 h-4" /> Nouvelle catégorie
         </button>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      {/* Mobile : navigation descendante par cartes */}
+      <div className="lg:hidden space-y-3">
+        {showRoot ? (
+          <>
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-gray-500">Mega-catégories</p>
+              <button onClick={() => openCreate()} className="flex items-center gap-1 px-3 py-1.5 bg-brand-600 hover:bg-brand-700 rounded-lg text-white text-xs font-medium">
+                <Plus className="w-3.5 h-3.5" /> Nouvelle
+              </button>
+            </div>
+            {isLoading ? (
+              <div className="flex items-center justify-center py-10">
+                <Loader2 className="h-6 w-6 animate-spin text-brand-600" />
+              </div>
+            ) : roots.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-10 text-gray-400">
+                <FolderTree className="w-10 h-10 mb-2 opacity-50" />
+                <p className="text-sm">Aucune catégorie</p>
+              </div>
+            ) : (
+              roots.map((root) => (
+                <MobileCategoryCard key={root.id} cat={root} onClick={() => push(root.id)} />
+              ))
+            )}
+          </>
+        ) : currentNode ? (
+          <>
+            <div className="flex items-center gap-2">
+              <button onClick={pop} className="p-2 -ml-2 rounded-lg hover:bg-gray-100 text-gray-500" title="Retour">
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <h2 className="flex-1 min-w-0 truncate text-base font-bold text-gray-900">{currentNode.name}</h2>
+            </div>
+
+            <div className="flex items-center gap-1 text-xs text-gray-400 flex-wrap">
+              <button onClick={() => setMobilePath([])} className="hover:text-brand-600">Catégories</button>
+              {mobilePath.slice(0, -1).map((id, i) => {
+                const c = categories.find((x) => x.id === id);
+                if (!c) return null;
+                return (
+                  <span key={id} className="flex items-center gap-1">
+                    <span>/</span>
+                    <button onClick={() => setMobilePath(mobilePath.slice(0, i + 1))} className="hover:text-brand-600">{c.name}</button>
+                  </span>
+                );
+              })}
+            </div>
+
+            <div className="rounded-2xl border border-gray-200 bg-white p-4 space-y-3">
+              <div>
+                <p className="text-sm font-semibold text-gray-900">{currentNode.name}</p>
+                <p className="text-xs text-gray-400">/{currentNode.slug}</p>
+                <p className="text-xs text-gray-400 mt-1">{currentNode.productCount ?? 0} annonces · {currentNode.specTemplateCount ?? 0} champ{currentNode.specTemplateCount > 1 ? "s" : ""} perso</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={() => openSpecModal(currentNode)} className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-brand-50 text-brand-700 text-xs font-medium" title="Champs personnalisés">
+                  <Settings2 className="w-4 h-4" /> Champs perso
+                </button>
+                <button onClick={() => openEdit(currentNode)} className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-gray-100 text-gray-600 text-xs font-medium" title="Modifier">
+                  <Edit2 className="w-4 h-4" /> Modifier
+                </button>
+                <button onClick={() => deleteMutation.mutate(currentNode.id)} className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-red-50 text-red-600 text-xs font-medium" title="Supprimer">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            <button onClick={() => openCreate(currentNode.id)} className="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border-2 border-dashed border-gray-300 text-gray-500 text-sm font-medium hover:border-brand-400 hover:text-brand-600">
+              <Plus className="w-4 h-4" /> Ajouter une sous-catégorie
+            </button>
+
+            {childrenOf(currentNode.id).map((kid) => (
+              <MobileCategoryCard key={kid.id} cat={kid} onClick={() => push(kid.id)} />
+            ))}
+          </>
+        ) : null}
+      </div>
+
+      {/* Desktop : arbre déroulant */}
+      <div className="hidden lg:block bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-8 w-8 animate-spin text-brand-600" />
@@ -449,7 +570,7 @@ export default function AdminCategoriesPage() {
                             {t.inputType === "select" ? `Liste — ${(t.options || []).length} choix` : t.inputType === "number" ? "Nombre" : "Texte"}
                           </p>
                         </div>
-                        <button onClick={() => startEditSpec(t)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Modifier"><Edit2 className="w-4 h-4" /></button>
+                        <button onClick={() => startEditSpec(t)} className="p-2 sm:p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Modifier"><Edit2 className="w-4 h-4" /></button>
                         <button onClick={() => deleteSpecMutation.mutate(t.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500" title="Supprimer"><Trash2 className="w-4 h-4" /></button>
                       </div>
                     ))}

@@ -711,7 +711,7 @@
 // }
 
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -765,6 +765,7 @@ import { useCategories } from "@/features/categories/hooks/useCategories";
 import CategoryPicker from "@/features/categories/components/CategoryPicker";
 import { useCreateProduct } from "@/features/products/hooks/useProducts";
 import { usePaymentMethods } from "@/features/wallet/hooks/useWallet";
+import { useCategorySpecTemplates } from "@/features/categories/hooks/useCategories";
 import api from "@/shared/services/api";
 import { CITIES, PRODUCT_CONDITIONS, MAX_IMAGES_PER_LISTING } from "@/shared/constants";
 import { createListingSchema } from "@/shared/utils/validators";
@@ -807,6 +808,22 @@ export default function CreateListingPage() {
   const [isPublished, setIsPublished] = useState(false);
   const [publishedProductId, setPublishedProductId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [specValues, setSpecValues] = useState({});
+
+  const { data: specTemplatesData } = useCategorySpecTemplates(selectedCategory?.id);
+  const specTemplates = specTemplatesData?.data ?? specTemplatesData ?? [];
+
+  useEffect(() => {
+    setSpecValues({});
+  }, [selectedCategory?.id]);
+
+  const buildSpecifications = useCallback(
+    () =>
+      specTemplates
+        .map((t) => ({ label: t.label, value: (specValues[t.id] ?? "").trim() }))
+        .filter((s) => s.value),
+    [specTemplates, specValues]
+  );
 
   const {
     register,
@@ -917,6 +934,7 @@ export default function CreateListingPage() {
         quantity: formValues.quantity || 1,
         city: formValues.city,
         neighborhood: formValues.neighborhood || undefined,
+        specifications: buildSpecifications(),
       };
 
       const result = await createProduct.mutateAsync(payload);
@@ -929,7 +947,7 @@ export default function CreateListingPage() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [selectedCategory, photos, formValues, createProduct]);
+  }, [selectedCategory, photos, formValues, createProduct, buildSpecifications]);
 
   const handleSaveDraft = useCallback(() => {
     toast.success("Brouillon sauvegardé !");
@@ -938,6 +956,63 @@ export default function CreateListingPage() {
   const handleShare = useCallback((platform) => {
     toast.success(`Partage via ${platform} !`);
   }, []);
+
+  const handleSpecChange = useCallback((templateId, v) => {
+    const val = v && typeof v === "object" && v.target ? v.target.value : v;
+    setSpecValues((prev) => ({ ...prev, [templateId]: val ?? "" }));
+  }, []);
+
+  const renderSpecFields = () => {
+    if (!specTemplates.length) return null;
+
+    return (
+      <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
+        <h3 className="mb-1 text-sm font-semibold text-gray-900 dark:text-white">
+          Caractéristiques
+        </h3>
+        <p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
+          Champs suggérés pour cette catégorie
+        </p>
+        <div className="space-y-4">
+          {specTemplates.map((t) => {
+            const value = specValues[t.id] ?? "";
+            const common = {
+              label: t.label,
+              value,
+              onChange: (v) => handleSpecChange(t.id, v),
+            };
+            if (t.inputType === "select") {
+              return (
+                <Select
+                  key={t.id}
+                  {...common}
+                  placeholder={`Sélectionnez ${t.label.toLowerCase()}`}
+                  options={(t.options || []).map((o) => ({ value: o, label: o }))}
+                />
+              );
+            }
+            if (t.inputType === "number") {
+              return (
+                <Input
+                  key={t.id}
+                  {...common}
+                  type="number"
+                  placeholder="Ex: valeur en nombre"
+                />
+              );
+            }
+            return (
+              <Input
+                key={t.id}
+                {...common}
+                placeholder={`Ex: valeur de ${t.label.toLowerCase()}`}
+              />
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
 
   const renderStep = () => {
     switch (currentStep) {
@@ -1028,6 +1103,7 @@ export default function CreateListingPage() {
                 })}
               />
             </div>
+            {renderSpecFields()}
           </ListingFormStep>
         );
 
@@ -1230,6 +1306,7 @@ export default function CreateListingPage() {
                 category: selectedCategory?.name || "",
                 images: photos,
                 tags: formValues.tags || [],
+                specifications: buildSpecifications(),
               }}
             />
           </ListingFormStep>

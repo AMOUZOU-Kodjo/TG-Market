@@ -18,6 +18,8 @@ import {
   EyeOff,
   Loader2,
   AlertCircle,
+  ListPlus,
+  Settings2,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/shared/services/api";
@@ -58,10 +60,38 @@ export default function AdminCategoriesPage() {
   const [expanded, setExpanded] = useState(new Set());
   const [modal, setModal] = useState(null);
   const [form, setForm] = useState({ name: "", slug: "", icon: "Package", color: getRandomColor(), parentId: null, sortOrder: 0, isActive: true });
+  const [specModal, setSpecModal] = useState(null);
+  const [specForm, setSpecForm] = useState({ label: "", inputType: "text", options: "", required: false });
+  const [specEditingId, setSpecEditingId] = useState(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["adminCategories"],
     queryFn: () => api.get("/admin/categories").then((r) => r.data),
+  });
+
+  const { data: specTemplatesData, isLoading: specLoading } = useQuery({
+    queryKey: ["adminCategorySpecTemplates", specModal?.categoryId],
+    queryFn: () => api.get(`/admin/categories/${specModal.categoryId}/spec-templates`).then((r) => r.data),
+    enabled: !!specModal?.categoryId,
+  });
+  const specTemplates = specTemplatesData?.data ?? [];
+
+  const createSpecMutation = useMutation({
+    mutationFn: (data) => api.post(`/admin/categories/${specModal.categoryId}/spec-templates`, data).then((r) => r.data.data),
+    onSuccess: () => { toast.success("Champ ajouté"); resetSpecForm(); qc.invalidateQueries({ queryKey: ["adminCategorySpecTemplates", specModal.categoryId] }); qc.invalidateQueries({ queryKey: ["categorySpecTemplates"] }); },
+    onError: (e) => toast.error(e.response?.data?.error ?? "Erreur"),
+  });
+
+  const updateSpecMutation = useMutation({
+    mutationFn: ({ templateId, data }) => api.put(`/admin/categories/spec-templates/${templateId}`, data).then((r) => r.data.data),
+    onSuccess: () => { toast.success("Champ modifié"); resetSpecForm(); qc.invalidateQueries({ queryKey: ["adminCategorySpecTemplates", specModal.categoryId] }); qc.invalidateQueries({ queryKey: ["categorySpecTemplates"] }); },
+    onError: (e) => toast.error(e.response?.data?.error ?? "Erreur"),
+  });
+
+  const deleteSpecMutation = useMutation({
+    mutationFn: (templateId) => api.delete(`/admin/categories/spec-templates/${templateId}`).then((r) => r.data),
+    onSuccess: () => { toast.success("Champ supprimé"); qc.invalidateQueries({ queryKey: ["adminCategorySpecTemplates", specModal.categoryId] }); qc.invalidateQueries({ queryKey: ["categorySpecTemplates"] }); },
+    onError: (e) => toast.error(e.response?.data?.error ?? "Erreur"),
   });
 
   const createMutation = useMutation({
@@ -112,6 +142,40 @@ export default function AdminCategoriesPage() {
   const closeModal = () => {
     setModal(null);
     setForm({ name: "", slug: "", icon: "Package", color: getRandomColor(), parentId: null, sortOrder: 0, isActive: true });
+  };
+
+  const openSpecModal = (cat) => {
+    setSpecEditingId(null);
+    setSpecForm({ label: "", inputType: "text", options: "", required: false });
+    setSpecModal({ categoryId: cat.id, categoryName: cat.name });
+  };
+
+  const closeSpecModal = () => {
+    setSpecModal(null);
+    resetSpecForm();
+  };
+
+  const resetSpecForm = () => {
+    setSpecEditingId(null);
+    setSpecForm({ label: "", inputType: "text", options: "", required: false });
+  };
+
+  const startEditSpec = (t) => {
+    setSpecEditingId(t.id);
+    setSpecForm({ label: t.label, inputType: t.inputType, options: (t.options || []).join(", "), required: t.required });
+  };
+
+  const handleSpecSubmit = (e) => {
+    e.preventDefault();
+    if (!specForm.label.trim()) return toast.error("Le libellé est requis");
+    const payload = {
+      label: specForm.label.trim(),
+      inputType: specForm.inputType,
+      options: specForm.inputType === "select" ? specForm.options.split(",").map((o) => o.trim()).filter(Boolean) : [],
+      required: specForm.required,
+    };
+    if (specEditingId) updateSpecMutation.mutate({ templateId: specEditingId, data: payload });
+    else createSpecMutation.mutate(payload);
   };
 
   const handleSubmit = (e) => {
@@ -186,6 +250,7 @@ export default function AdminCategoriesPage() {
             <button onClick={() => moveCategory(cat.id, "down")} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Descendre"><ChevronDown className="w-4 h-4" /></button>
             <button onClick={() => openEdit(cat)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Modifier"><Edit2 className="w-4 h-4" /></button>
             <button onClick={() => openCreate(cat.id)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Sous-catégorie"><Plus className="w-4 h-4" /></button>
+            <button onClick={() => openSpecModal(cat)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Champs personnalisés"><Settings2 className="w-4 h-4" /></button>
             <button onClick={() => deleteMutation.mutate(cat.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500" title="Supprimer"><Trash2 className="w-4 h-4" /></button>
           </div>
         </motion.div>
@@ -332,6 +397,133 @@ export default function AdminCategoriesPage() {
                   </button>
                 </div>
               </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {specModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+            onClick={closeSpecModal}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white rounded-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">Champs personnalisés</h2>
+                  <p className="text-xs text-gray-400">{specModal.categoryName}</p>
+                </div>
+                <button onClick={closeSpecModal} className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700"><X className="w-5 h-5" /></button>
+              </div>
+
+              <div className="p-6 space-y-5">
+                {specLoading ? (
+                  <div className="flex items-center justify-center py-10">
+                    <Loader2 className="h-6 w-6 animate-spin text-brand-600" />
+                  </div>
+                ) : specTemplates.length === 0 ? (
+                  <div className="text-center py-8 text-gray-400">
+                    <ListPlus className="w-10 h-10 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">Aucun champ personnalisé pour cette catégorie</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {specTemplates.map((t) => (
+                      <div key={t.id} className="flex items-center gap-3 rounded-xl border border-gray-100 px-4 py-3">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900">
+                            {t.label}
+                            {t.required && <span className="ml-1 text-red-500">*</span>}
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            {t.inputType === "select" ? `Liste — ${(t.options || []).length} choix` : t.inputType === "number" ? "Nombre" : "Texte"}
+                          </p>
+                        </div>
+                        <button onClick={() => startEditSpec(t)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Modifier"><Edit2 className="w-4 h-4" /></button>
+                        <button onClick={() => deleteSpecMutation.mutate(t.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500" title="Supprimer"><Trash2 className="w-4 h-4" /></button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="border-t border-gray-100 pt-5">
+                  <h3 className="mb-4 text-sm font-semibold text-gray-900">
+                    {specEditingId ? "Modifier le champ" : "Ajouter un champ"}
+                  </h3>
+                  <form onSubmit={handleSpecSubmit} className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-1">Libellé</label>
+                      <input
+                        type="text"
+                        value={specForm.label}
+                        onChange={(e) => setSpecForm({ ...specForm, label: e.target.value })}
+                        className="w-full px-4 py-2 bg-gray-100 border-0 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+                        placeholder="Ex: Marque, Modèle, Année, Couleur, Stock..."
+                        required
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">Type</label>
+                        <select
+                          value={specForm.inputType}
+                          onChange={(e) => setSpecForm({ ...specForm, inputType: e.target.value })}
+                          className="w-full px-4 py-2 bg-gray-100 border-0 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+                        >
+                          <option value="text">Texte</option>
+                          <option value="number">Nombre</option>
+                          <option value="select">Liste de choix</option>
+                        </select>
+                      </div>
+                      <div className="flex items-end pb-2">
+                        <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={specForm.required}
+                            onChange={(e) => setSpecForm({ ...specForm, required: e.target.checked })}
+                            className="h-4 w-4 rounded border-gray-300 text-brand-600"
+                          />
+                          Requis
+                        </label>
+                      </div>
+                    </div>
+                    {specForm.inputType === "select" && (
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">
+                          Choix (séparés par des virgules)
+                        </label>
+                        <input
+                          type="text"
+                          value={specForm.options}
+                          onChange={(e) => setSpecForm({ ...specForm, options: e.target.value })}
+                          className="w-full px-4 py-2 bg-gray-100 border-0 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+                          placeholder="Ex: Noir, Blanc, Rouge"
+                        />
+                      </div>
+                    )}
+                    <div className="flex gap-3 pt-1">
+                      {specEditingId && (
+                        <button type="button" onClick={resetSpecForm} className="flex-1 px-4 py-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200">
+                          Annuler
+                        </button>
+                      )}
+                      <button type="submit" disabled={createSpecMutation.isPending || updateSpecMutation.isPending} className="flex-1 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white disabled:opacity-50">
+                        {(createSpecMutation.isPending || updateSpecMutation.isPending) ? "Enregistrement..." : (specEditingId ? "Enregistrer" : "Ajouter")}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         )}

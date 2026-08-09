@@ -18,6 +18,7 @@ export default function ListingPreview({ data = {} }) {
     deliveryAvailable,
     deliveryPrice,
     tags = [],
+    specifications = [],
   } = data;
 
   const conditionInfo = CONDITION_MAP[condition];
@@ -134,6 +135,22 @@ export default function ListingPreview({ data = {} }) {
             <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
               {description}
             </p>
+          </div>
+        )}
+
+        {specifications.length > 0 && (
+          <div className="mt-4 border-t border-gray-100 pt-4 dark:border-gray-800">
+            <p className="mb-2 text-sm font-semibold text-gray-900 dark:text-white">
+              Caractéristiques
+            </p>
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-2">
+              {specifications.map((spec, i) => (
+                <div key={i} className="text-sm">
+                  <dt className="text-gray-400">{spec.label}</dt>
+                  <dd className="font-medium text-gray-900 dark:text-white">{spec.value}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
         )}
 

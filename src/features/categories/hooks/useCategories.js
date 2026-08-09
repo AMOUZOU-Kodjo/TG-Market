@@ -24,3 +24,11 @@ export function useCategoryProducts(slug, params) {
     enabled: !!slug,
   });
 }
+
+export function useCategorySpecTemplates(categoryId) {
+  return useQuery({
+    queryKey: ["categorySpecTemplates", categoryId],
+    queryFn: () => categoriesApi.getSpecTemplates(categoryId),
+    enabled: !!categoryId,
+  });
+}

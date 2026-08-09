@@ -24,7 +24,7 @@ import ListingFormStep from "@/features/listings/components/ListingFormStep";
 import PhotoUploader from "@/features/listings/components/PhotoUploader";
 import ListingPreview from "@/features/listings/components/ListingPreview";
 import { useProduct, useUpdateProduct, useDeleteProduct } from "@/features/products/hooks/useProducts";
-import { useCategories } from "@/features/categories/hooks/useCategories";
+import { useCategories, useCategorySpecTemplates } from "@/features/categories/hooks/useCategories";
 import CategoryPicker from "@/features/categories/components/CategoryPicker";
 import { CITIES, PRODUCT_CONDITIONS, MAX_IMAGES_PER_LISTING } from "@/shared/constants";
 import { createListingSchema } from "@/shared/utils/validators";
@@ -51,6 +51,10 @@ export default function EditListingPage() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [specValues, setSpecValues] = useState({});
+
+  const { data: specTemplatesData } = useCategorySpecTemplates(selectedCategory?.id);
+  const specTemplates = specTemplatesData?.data ?? specTemplatesData ?? [];
 
   const existingProduct = product;
 
@@ -107,6 +111,88 @@ export default function EditListingPage() {
       setValue("tags", existingProduct.tags?.join(", ") || "");
     }
   }, [existingProduct, categories, setValue]);
+
+  useEffect(() => {
+    setSpecValues({});
+  }, [selectedCategory?.id]);
+
+  useEffect(() => {
+    const specs = existingProduct?.specifications || [];
+    if (!specs.length || !specTemplates.length) return;
+    setSpecValues((prev) => {
+      const next = { ...prev };
+      specTemplates.forEach((t) => {
+        const match = specs.find((s) => s.label === t.label);
+        if (match && !(prev[t.id] ?? "")) next[t.id] = match.value;
+      });
+      return next;
+    });
+  }, [specTemplates, existingProduct]);
+
+  const handleSpecChange = useCallback((templateId, v) => {
+    const val = v && typeof v === "object" && v.target ? v.target.value : v;
+    setSpecValues((prev) => ({ ...prev, [templateId]: val ?? "" }));
+  }, []);
+
+  const buildSpecifications = useCallback(
+    () =>
+      specTemplates
+        .map((t) => ({ label: t.label, value: (specValues[t.id] ?? "").trim() }))
+        .filter((s) => s.value),
+    [specTemplates, specValues]
+  );
+
+  const renderSpecFields = () => {
+    if (!specTemplates.length) return null;
+
+    return (
+      <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
+        <h3 className="mb-1 text-sm font-semibold text-gray-900 dark:text-white">
+          Caractéristiques
+        </h3>
+        <p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
+          Champs suggérés pour cette catégorie
+        </p>
+        <div className="space-y-4">
+          {specTemplates.map((t) => {
+            const value = specValues[t.id] ?? "";
+            const common = {
+              label: t.label,
+              value,
+              onChange: (v) => handleSpecChange(t.id, v),
+            };
+            if (t.inputType === "select") {
+              return (
+                <Select
+                  key={t.id}
+                  {...common}
+                  placeholder={`Sélectionnez ${t.label.toLowerCase()}`}
+                  options={(t.options || []).map((o) => ({ value: o, label: o }))}
+                />
+              );
+            }
+            if (t.inputType === "number") {
+              return (
+                <Input
+                  key={t.id}
+                  {...common}
+                  type="number"
+                  placeholder="Ex: valeur en nombre"
+                />
+              );
+            }
+            return (
+              <Input
+                key={t.id}
+                {...common}
+                placeholder={`Ex: valeur de ${t.label.toLowerCase()}`}
+              />
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
 
   const validateStep = useCallback(
     async (step) => {
@@ -186,6 +272,7 @@ export default function EditListingPage() {
           quantity: Number(formValues.quantity) || 1,
           tags: Array.isArray(formValues.tags) ? formValues.tags : (formValues.tags ? formValues.tags.split(",").map((t) => t.trim()).filter(Boolean) : []),
           images: allImages,
+          specifications: buildSpecifications(),
         },
       });
       setIsSaved(true);
@@ -193,7 +280,7 @@ export default function EditListingPage() {
     } catch (err) {
       toast.error(err?.response?.data?.message || "Erreur lors de la mise à jour");
     }
-  }, [selectedCategory, photos, formValues, id, updateProduct]);
+  }, [selectedCategory, photos, formValues, id, updateProduct, buildSpecifications]);
 
   const handleDelete = useCallback(async () => {
     try {
@@ -296,6 +383,7 @@ export default function EditListingPage() {
                 })}
               />
             </div>
+            {renderSpecFields()}
           </ListingFormStep>
         );
 
@@ -473,6 +561,7 @@ export default function EditListingPage() {
                 category: selectedCategory?.name || "",
                 images: photos,
                 tags: formValues.tags || [],
+                specifications: buildSpecifications(),
               }}
             />
           </ListingFormStep>

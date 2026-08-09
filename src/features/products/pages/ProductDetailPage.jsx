@@ -298,31 +298,39 @@ export default function ProductDetailPage() {
 
             <div className="lg:hidden">{renderInfoCard()}</div>
 
-            {product.specifications && Object.keys(product.specifications).length > 0 && (
-              <motion.div
-                {...fadeUp}
-                transition={{ delay: 0.15 }}
-                className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-800"
-              >
-                <h3 className="mb-4 flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white">
-                  <Package className="h-5 w-5 text-brand-800" />
-                  Caractéristiques
-                </h3>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {Object.entries(product.specifications).map(([key, value]) => (
-                    <div
-                      key={key}
-                      className="flex justify-between rounded-xl bg-gray-50 px-4 py-2.5 dark:bg-gray-800"
-                    >
-                      <span className="text-sm text-gray-500 dark:text-gray-400">{key}</span>
-                      <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        {value}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
+            {(() => {
+              const specs = Array.isArray(product.specifications)
+                ? product.specifications
+                : product.specifications && typeof product.specifications === "object"
+                  ? Object.entries(product.specifications).map(([label, value]) => ({ label, value }))
+                  : [];
+              if (!specs.length) return null;
+              return (
+                <motion.div
+                  {...fadeUp}
+                  transition={{ delay: 0.15 }}
+                  className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-800"
+                >
+                  <h3 className="mb-4 flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white">
+                    <Package className="h-5 w-5 text-brand-800" />
+                    Caractéristiques
+                  </h3>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {specs.map((spec, i) => (
+                      <div
+                        key={i}
+                        className="flex justify-between rounded-xl bg-gray-50 px-4 py-2.5 dark:bg-gray-800"
+                      >
+                        <span className="text-sm text-gray-500 dark:text-gray-400">{spec.label}</span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {spec.value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              );
+            })()}
 
             {product.tags && product.tags.length > 0 && (
               <motion.div {...fadeUp} transition={{ delay: 0.2 }} className="flex flex-wrap gap-2">

@@ -151,6 +151,7 @@ export async function listEscrow(userId, { page, perPage, skip }) {
             images: { select: { url: true }, orderBy: { sort_order: 'asc' }, take: 1 },
           },
         },
+        payouts: true,
       },
       orderBy: { created_at: 'desc' },
       skip,

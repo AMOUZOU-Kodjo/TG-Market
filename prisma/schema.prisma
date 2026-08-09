@@ -228,10 +228,27 @@ model Category {
   parent    Category?  @relation("CategoryTree", fields: [parent_id], references: [id])
   children  Category[] @relation("CategoryTree")
   products  Product[]
+  specTemplates CategorySpecTemplate[]
 
   @@index([slug])
   @@index([parent_id])
   @@index([is_active, sort_order])
+}
+
+model CategorySpecTemplate {
+  id          Int      @id @default(autoincrement())
+  category_id Int
+  label       String   @db.VarChar(100)
+  input_type  String   @default("text") @db.VarChar(20)
+  options     String[]
+  required    Boolean  @default(false)
+  sort_order  Int      @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  category    Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+
+  @@index([category_id])
 }
 
 model Product {

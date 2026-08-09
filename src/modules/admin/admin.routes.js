@@ -48,6 +48,38 @@ const deleteCategorySchema = z.object({
   }),
 });
 
+const createSpecTemplateSchema = z.object({
+  params: z.object({
+    id: z.string().regex(/^\d+$/),
+  }),
+  body: z.object({
+    label: z.string().min(1).max(100),
+    inputType: z.enum(['text', 'number', 'select']).default('text'),
+    options: z.array(z.string()).max(50).optional(),
+    required: z.boolean().optional(),
+    sortOrder: z.number().int().min(0).optional(),
+  }),
+});
+
+const updateSpecTemplateSchema = z.object({
+  params: z.object({
+    templateId: z.string().regex(/^\d+$/),
+  }),
+  body: z.object({
+    label: z.string().min(1).max(100).optional(),
+    inputType: z.enum(['text', 'number', 'select']).optional(),
+    options: z.array(z.string()).max(50).optional(),
+    required: z.boolean().optional(),
+    sortOrder: z.number().int().min(0).optional(),
+  }),
+});
+
+const deleteSpecTemplateSchema = z.object({
+  params: z.object({
+    templateId: z.string().regex(/^\d+$/),
+  }),
+});
+
 const router = Router();
 
 router.use(auth, adminMiddleware);
@@ -69,6 +101,10 @@ router.post('/categories', validate(createCategorySchema), adminController.creat
 router.put('/categories/:id', validate(updateCategorySchema), adminController.updateCategory);
 router.put('/categories/reorder', validate(reorderCategoriesSchema), adminController.reorderCategories);
 router.delete('/categories/:id', validate(deleteCategorySchema), adminController.deleteCategory);
+router.get('/categories/:id/spec-templates', adminController.getCategorySpecTemplates);
+router.post('/categories/:id/spec-templates', validate(createSpecTemplateSchema), adminController.createSpecTemplate);
+router.put('/categories/spec-templates/:templateId', validate(updateSpecTemplateSchema), adminController.updateSpecTemplate);
+router.delete('/categories/spec-templates/:templateId', validate(deleteSpecTemplateSchema), adminController.deleteSpecTemplate);
 router.get('/kyc/pending', pagination, adminController.getKycPending);
 router.put('/kyc/:id/approve', adminController.approveKyc);
 router.put('/kyc/:id/reject', adminController.rejectKyc);

@@ -220,3 +220,20 @@ export async function getCategoryProducts(slug, { page, perPage, condition, minP
 
   return { products: formatted, total };
 }
+
+export async function getCategorySpecTemplates(categoryId) {
+  const templates = await prisma.categorySpecTemplate.findMany({
+    where: { category_id: categoryId },
+    orderBy: { sort_order: 'asc' },
+  });
+
+  return templates.map((t) => ({
+    id: t.id,
+    categoryId: t.category_id,
+    label: t.label,
+    inputType: t.input_type,
+    options: t.options,
+    required: t.required,
+    sortOrder: t.sort_order,
+  }));
+}

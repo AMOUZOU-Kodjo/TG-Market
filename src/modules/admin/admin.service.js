@@ -506,6 +506,114 @@ export async function deleteCategory(id) {
   return { message: 'Catégorie supprimée' };
 }
 
+export async function getCategorySpecTemplates(categoryId) {
+  const category = await prisma.category.findUnique({ where: { id: categoryId }, select: { id: true } });
+  if (!category) {
+    const error = new Error('Catégorie introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  const templates = await prisma.categorySpecTemplate.findMany({
+    where: { category_id: categoryId },
+    orderBy: { sort_order: 'asc' },
+  });
+
+  return templates.map((t) => ({
+    id: t.id,
+    categoryId: t.category_id,
+    label: t.label,
+    inputType: t.input_type,
+    options: t.options,
+    required: t.required,
+    sortOrder: t.sort_order,
+  }));
+}
+
+export async function createSpecTemplate(categoryId, data) {
+  const category = await prisma.category.findUnique({ where: { id: categoryId }, select: { id: true } });
+  if (!category) {
+    const error = new Error('Catégorie introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  const last = await prisma.categorySpecTemplate.findFirst({
+    where: { category_id: categoryId },
+    orderBy: { sort_order: 'desc' },
+    select: { sort_order: true },
+  });
+
+  const template = await prisma.categorySpecTemplate.create({
+    data: {
+      category_id: categoryId,
+      label: data.label,
+      input_type: data.inputType ?? 'text',
+      options: data.inputType === 'select' ? (data.options ?? []) : [],
+      required: data.required ?? false,
+      sort_order: data.sortOrder ?? (last ? last.sort_order + 1 : 0),
+    },
+  });
+
+  return {
+    id: template.id,
+    categoryId: template.category_id,
+    label: template.label,
+    inputType: template.input_type,
+    options: template.options,
+    required: template.required,
+    sortOrder: template.sort_order,
+  };
+}
+
+export async function updateSpecTemplate(templateId, data) {
+  const template = await prisma.categorySpecTemplate.findUnique({ where: { id: templateId } });
+  if (!template) {
+    const error = new Error('Champ personnalisé introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  const updated = await prisma.categorySpecTemplate.update({
+    where: { id: templateId },
+    data: {
+      ...(data.label !== undefined ? { label: data.label } : {}),
+      ...(data.inputType !== undefined ? { input_type: data.inputType } : {}),
+      ...(data.inputType === 'select' && data.options !== undefined
+        ? { options: data.options }
+        : data.inputType === 'select'
+          ? {}
+          : data.inputType !== undefined
+            ? { options: [] }
+            : {}),
+      ...(data.required !== undefined ? { required: data.required } : {}),
+      ...(data.sortOrder !== undefined ? { sort_order: data.sortOrder } : {}),
+    },
+  });
+
+  return {
+    id: updated.id,
+    categoryId: updated.category_id,
+    label: updated.label,
+    inputType: updated.input_type,
+    options: updated.options,
+    required: updated.required,
+    sortOrder: updated.sort_order,
+  };
+}
+
+export async function deleteSpecTemplate(templateId) {
+  const template = await prisma.categorySpecTemplate.findUnique({ where: { id: templateId } });
+  if (!template) {
+    const error = new Error('Champ personnalisé introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  await prisma.categorySpecTemplate.delete({ where: { id: templateId } });
+  return { message: 'Champ personnalisé supprimé' };
+}
+
 export async function updateProductStatus(productId, status) {
   const product = await prisma.product.findUnique({
     where: { id: productId },

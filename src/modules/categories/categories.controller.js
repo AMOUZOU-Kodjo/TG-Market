@@ -43,3 +43,13 @@ export async function getCategoryProducts(req, res, next) {
     next(err);
   }
 }
+
+export async function getCategorySpecTemplates(req, res, next) {
+  try {
+    const categoryId = Number(req.params.id);
+    const templates = await categoriesService.getCategorySpecTemplates(categoryId);
+    res.json({ data: templates });
+  } catch (err) {
+    next(err);
+  }
+}

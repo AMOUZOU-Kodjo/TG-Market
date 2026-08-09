@@ -18,6 +18,7 @@ const categoryProductsQuerySchema = z.object({
 
 router.get('/', categoriesController.getAllCategories);
 router.get('/:slug', categoriesController.getCategoryBySlug);
+router.get('/:id/spec-templates', categoriesController.getCategorySpecTemplates);
 router.get('/:slug/products', pagination, validate(categoryProductsQuerySchema), categoriesController.getCategoryProducts);
 
 export default router;

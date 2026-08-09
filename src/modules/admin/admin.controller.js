@@ -158,6 +158,45 @@ export async function deleteCategory(req, res, next) {
   }
 }
 
+export async function getCategorySpecTemplates(req, res, next) {
+  try {
+    const templates = await adminService.getCategorySpecTemplates(Number(req.params.id));
+    res.json({ data: templates });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function createSpecTemplate(req, res, next) {
+  try {
+    const template = await adminService.createSpecTemplate(Number(req.params.id), req.validated.body);
+    try { req.app.get('io')?.emit('categories_updated', {}); } catch {}
+    res.status(201).json({ data: template });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function updateSpecTemplate(req, res, next) {
+  try {
+    const template = await adminService.updateSpecTemplate(Number(req.params.templateId), req.validated.body);
+    try { req.app.get('io')?.emit('categories_updated', {}); } catch {}
+    res.json({ data: template });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function deleteSpecTemplate(req, res, next) {
+  try {
+    const result = await adminService.deleteSpecTemplate(Number(req.params.templateId));
+    try { req.app.get('io')?.emit('categories_updated', {}); } catch {}
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function updateProductStatus(req, res, next) {
   try {
     const result = await adminService.updateProductStatus(

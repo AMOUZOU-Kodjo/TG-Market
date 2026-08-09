@@ -257,12 +257,18 @@ export default function AdminCategoriesPage() {
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           style={{ paddingLeft: `${16 + level * 24}px` }}
-          className="flex flex-wrap items-center gap-2 py-2.5 hover:bg-gray-50 rounded-lg"
+          className={`flex flex-wrap items-center gap-2 rounded-xl transition-colors ${
+            level === 0
+              ? "bg-white border border-gray-200  px-3 py-3"
+              : "py-2.5 hover:bg-gray-50"
+          }`}
         >
-          <div className="flex-1 flex items-center gap-2 min-w-0">
+          <div
+            onClick={() => hasChildren && toggleExpand(cat.id)}
+            className={`flex flex-1 items-center gap-2 min-w-0 ${hasChildren ? "cursor-pointer" : ""}`}
+          >
             <span
-              onClick={() => toggleExpand(cat.id)}
-              className={`w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-700 cursor-pointer ${isExpanded ? "rotate-90" : ""}`}
+              className={`w-6 h-6 flex items-center justify-center text-gray-400 transition-transform ${isExpanded ? "rotate-90" : ""}`}
             >
               {hasChildren ? <ChevronRight className="w-4 h-4" /> : <div className="w-4 h-4" />}
             </span>
@@ -400,7 +406,7 @@ export default function AdminCategoriesPage() {
       </div>
 
       {/* Desktop : arbre déroulant */}
-      <div className="hidden lg:block bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="hidden lg:block bg-white  border-gray-200  overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-8 w-8 animate-spin text-brand-600" />
@@ -412,7 +418,7 @@ export default function AdminCategoriesPage() {
             <button onClick={() => openCreate()} className="mt-4 text-sm text-brand-600 hover:underline">Créer la première</button>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100 p-3">
+          <div className="space-y-1.5">
             {roots.map((root) => <CategoryNode key={root.id} cat={root} />)}
           </div>
         )}

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { auth } from '../../middleware/auth.js';
+import { auth, optionalAuth } from '../../middleware/auth.js';
 import { validate } from '../../middleware/validate.js';
 import { pagination } from '../../utils/pagination.js';
 import * as usersController from './users.controller.js';
@@ -31,7 +31,7 @@ router.put('/password', auth, validate(changePasswordSchema), usersController.ch
 router.put('/preferences', auth, validate(updatePreferencesSchema), usersController.updatePreferences);
 router.put('/privacy', auth, validate(updatePrivacySchema), usersController.updatePrivacy);
 
-router.get('/:id', usersController.getPublicProfile);
+router.get('/:id', optionalAuth, usersController.getPublicProfile);
 router.post('/:id/follow', auth, usersController.followUser);
 router.delete('/:id/follow', auth, usersController.unfollowUser);
 router.get('/:id/followers', pagination, usersController.getFollowers);

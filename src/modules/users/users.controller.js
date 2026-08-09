@@ -3,7 +3,7 @@ import { buildPaginationMeta } from '../../utils/pagination.js';
 
 export async function getPublicProfile(req, res, next) {
   try {
-    const result = await usersService.getPublicProfile(Number(req.params.id));
+    const result = await usersService.getPublicProfile(Number(req.params.id), req.user?.id ?? null);
     res.json(result);
   } catch (err) {
     next(err);

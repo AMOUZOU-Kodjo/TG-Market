@@ -28,7 +28,7 @@ function formatPublicProfile(user) {
   };
 }
 
-export async function getPublicProfile(userId) {
+export async function getPublicProfile(userId, viewerId = null) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
@@ -54,7 +54,24 @@ export async function getPublicProfile(userId) {
     throw error;
   }
 
-  return formatPublicProfile(user);
+  const profile = formatPublicProfile(user);
+
+  if (viewerId && viewerId !== userId) {
+    const follow = await prisma.follow.findUnique({
+      where: {
+        follower_id_following_id: {
+          follower_id: viewerId,
+          following_id: userId,
+        },
+      },
+      select: { id: true },
+    });
+    profile.isFollowing = !!follow;
+  } else {
+    profile.isFollowing = false;
+  }
+
+  return profile;
 }
 
 const profileFieldMap = {

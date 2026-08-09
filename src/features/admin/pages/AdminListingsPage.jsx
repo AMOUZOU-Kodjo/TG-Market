@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 
 const statusLabels = {
   active: "Actif",
+  reserved: "Réservé",
   pending: "En attente",
   rejected: "Rejeté",
   sold: "Vendu",
@@ -19,6 +20,7 @@ const statusLabels = {
 
 const statusColors = {
   active: "success",
+  reserved: "warning",
   pending: "warning",
   rejected: "danger",
   sold: "primary",
@@ -319,6 +321,7 @@ export default function AdminListingsPage() {
           >
             <option value="all">Tous les statuts</option>
             <option value="active">Actif</option>
+            <option value="reserved">Réservé</option>
             <option value="pending">En attente</option>
             <option value="rejected">Rejeté</option>
             <option value="sold">Vendu</option>

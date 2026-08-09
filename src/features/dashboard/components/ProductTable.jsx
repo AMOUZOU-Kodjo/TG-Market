@@ -18,6 +18,7 @@ import toast from "react-hot-toast";
 
 const statusConfig = {
   active: { label: "En ligne", variant: "success" },
+  reserved: { label: "Réservé", variant: "warning" },
   paused: { label: "En pause", variant: "warning" },
   sold: { label: "Vendu", variant: "secondary" },
   draft: { label: "Brouillon", variant: "neutral" },

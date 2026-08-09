@@ -179,7 +179,7 @@ export default function ProductActions({ product }) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 8, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 top-full z-50 mt-2 w-48 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800"
+                className="fixed left-1/2 top-1/2 z-50 w-56 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-48 sm:translate-x-0 sm:translate-y-0 dark:border-gray-700 dark:bg-gray-800"
               >
                 <button
                   onClick={handleNativeShare}

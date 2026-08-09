@@ -126,8 +126,15 @@ export default function ProductCard({
           </div>
         )}
 
-        {/* Déjà commandé badge - only if single item */}
-        {hasActiveEscrow && quantity <= 1 && status !== "sold" && (
+        {/* Réservé badge - bottom band (transaction en cours) */}
+        {status === "reserved" && (
+          <div className="absolute bottom-0 left-0 right-0 z-20 bg-indigo-600/90 px-3 py-2 backdrop-blur-sm">
+            <span className="flex items-center justify-center gap-1.5 text-xs font-bold text-white">Réservé</span>
+          </div>
+        )}
+
+        {/* Déjà commandé badge - only for multi-stock items */}
+        {hasActiveEscrow && quantity > 1 && status !== "sold" && (
           <div className="absolute bottom-0 left-0 right-0 z-10 bg-orange-500/95 backdrop-blur-sm px-3 py-2">
             <span className="text-xs font-bold text-white flex items-center justify-center gap-1.5">
               Déjà commandé
@@ -136,14 +143,14 @@ export default function ProductCard({
         )}
 
         {/* Stock badge */}
-        {quantity >= 1 && status !== "sold" && (
+        {quantity >= 1 && status !== "sold" && status !== "reserved" && (
           <div className="absolute bottom-2 left-2 z-10 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-gray-700 shadow-sm backdrop-blur-sm dark:bg-gray-900/90 dark:text-gray-300">
             {quantity} en stock
           </div>
         )}
 
         {/* Promoted badge */}
-        {isPromoted && status !== "sold" && (
+        {isPromoted && status !== "sold" && status !== "reserved" && (
           <div className="absolute bottom-12 left-3 z-10 flex items-center gap-1 rounded-full bg-brand-600 px-2.5 py-1 shadow-md">
             <Star className="h-3 w-3 fill-white text-white" />
             <span className="text-[10px] font-bold text-white">Promu</span>
@@ -151,7 +158,7 @@ export default function ProductCard({
         )}
 
         {/* Negotiation in progress overlay */}
-        {hasActiveNegotiation && status !== "sold" && (
+        {hasActiveNegotiation && status !== "sold" && status !== "reserved" && (
           <div className="absolute bottom-0 left-0 right-0 z-10 bg-brand-500/95 backdrop-blur-sm px-3 py-2">
             <span className="text-xs font-bold text-white flex items-center justify-center gap-1.5">
               <MessageCircle className="w-4 h-4" />

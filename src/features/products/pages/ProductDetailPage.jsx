@@ -87,14 +87,38 @@ export default function ProductDetailPage() {
       className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-800"
     >
       <div className="flex flex-col gap-3">
-        <div className="flex items-center justify-between gap-2 text-sm">
+        <div className="mb-1 hidden flex-wrap items-center gap-x-4 gap-y-1 rounded-xl bg-gray-50 px-4 py-3 lg:flex dark:bg-gray-800">
+          <span className="text-2xl font-bold text-brand-800">
+            {formatCFA(product.price)}
+          </span>
+          {product.originalPrice && (
+            <>
+              <span className="text-base text-gray-400 line-through dark:text-gray-600">
+                {formatCFA(product.originalPrice)}
+              </span>
+              <span className="rounded-full bg-brand-100 px-2.5 py-0.5 text-xs font-semibold text-brand-700 dark:bg-brand-700/15 dark:text-brand-600">
+                -{discountPct}%
+              </span>
+            </>
+          )}
+          <span className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+            <MapPin className="h-4 w-4 text-brand-800" />
+            {product.neighborhood ? `${product.neighborhood}, ` : ""}
+            {product.city}, Togo
+          </span>
+          <span className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+            <Clock className="h-4 w-4" />
+            {formatRelativeTime(product.createdAt)}
+          </span>
+        </div>
+        <div className="flex items-center justify-between gap-2 text-sm lg:hidden">
           <span className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
             <MapPin className="h-4 w-4 text-brand-800" />
             {product.neighborhood ? `${product.neighborhood}, ` : ""}
             {product.city}, Togo
           </span>
         </div>
-        <div className="flex items-center justify-between gap-2 text-sm">
+        <div className="flex items-center justify-between gap-2 text-sm lg:hidden">
           <span className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
             <Clock className="h-4 w-4" />
             il y a de cela
@@ -135,7 +159,7 @@ export default function ProductDetailPage() {
         <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-4 py-2.5 dark:border-gray-700">
           <span className="text-sm text-gray-500 dark:text-gray-400">Stock disponible</span>
           <span className="text-sm font-medium text-gray-900 dark:text-white">
-            {product.status === "sold" ? "Vendu" : (formatNumber(product.quantity) + " en stock")}
+            {product.status === "sold" ? "Vendu" : product.status === "reserved" ? "Réservé" : (formatNumber(product.quantity) + " en stock")}
           </span>
         </div>
         <div className="flex items-center justify-between gap-3 px-4 py-2.5">
@@ -163,7 +187,8 @@ export default function ProductDetailPage() {
           {product.condition}
         </Badge>
         {product.negotiable && <Badge variant="neutral">Négociable</Badge>}
-        {product.hasActiveEscrow && <Badge variant="danger">Déjà commandé</Badge>}
+        {product.status === "reserved" && <Badge variant="warning">Réservé</Badge>}
+        {product.hasActiveEscrow && product.status !== "reserved" && <Badge variant="danger">Déjà commandé</Badge>}
         {product.deliveryAvailable && (
           <Badge variant="secondary">
             <span className="flex items-center gap-1">
@@ -188,26 +213,42 @@ export default function ProductDetailPage() {
               </h1>
             </div>
             <div className="flex shrink-0 gap-1.5 justify-center sm:justify-start">
-              <Link to={`/offre/${product.id}`}>
-                <Button variant="primary" size="sm" icon={MessageSquare}>
+              {product.status === "reserved" || product.status === "sold" ? (
+                <Button variant="secondary" size="sm" icon={MessageSquare} disabled>
                   <span className="hidden sm:inline">Faire une offre</span>
                   <span className="sm:hidden">Offre</span>
                 </Button>
-              </Link>
-              <Link to={`/acheter/${product.id}`}>
-                <Button
-                  variant={product.hasActiveEscrow || product.status === "sold" ? "secondary" : "primary"}
-                  size="sm"
-                  icon={ShoppingCart}
-                >
-                  <span className="hidden sm:inline">
-                    {product.hasActiveEscrow || product.status === "sold" ? "Déjà commandé" : "Acheter"}
-                  </span>
-                  <span className="sm:hidden">
-                    {product.hasActiveEscrow || product.status === "sold" ? "Commandé" : "Acheter"}
-                  </span>
+              ) : (
+                <Link to={`/offre/${product.id}`}>
+                  <Button variant="primary" size="sm" icon={MessageSquare}>
+                    <span className="hidden sm:inline">Faire une offre</span>
+                    <span className="sm:hidden">Offre</span>
+                  </Button>
+                </Link>
+              )}
+              {product.status === "reserved" ? (
+                <Button variant="secondary" size="sm" icon={ShoppingCart} disabled>
+                  <span className="hidden sm:inline">Réservé</span>
+                  <span className="sm:hidden">Réservé</span>
                 </Button>
-              </Link>
+              ) : product.status === "sold" ? (
+                <Button variant="secondary" size="sm" icon={ShoppingCart} disabled>
+                  <span className="hidden sm:inline">Vendu</span>
+                  <span className="sm:hidden">Vendu</span>
+                </Button>
+              ) : product.hasActiveEscrow ? (
+                <Button variant="secondary" size="sm" icon={ShoppingCart} disabled>
+                  <span className="hidden sm:inline">Déjà commandé</span>
+                  <span className="sm:hidden">Commandé</span>
+                </Button>
+              ) : (
+                <Link to={`/acheter/${product.id}`}>
+                  <Button variant="primary" size="sm" icon={ShoppingCart}>
+                    <span className="hidden sm:inline">Acheter</span>
+                    <span className="sm:hidden">Acheter</span>
+                  </Button>
+                </Link>
+              )}
               <Link to="/lot/creer">
                 <Button variant="outline" size="sm" icon={Package}>
                   <span className="hidden sm:inline">Créer un lot</span>
@@ -238,7 +279,7 @@ export default function ProductDetailPage() {
                 {product.title}
               </h1>
 
-              <div className="flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1 rounded-xl bg-gray-50 px-4 py-3 dark:bg-gray-800">
+              <div className="flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1 rounded-xl bg-gray-50 px-4 py-3 lg:hidden dark:bg-gray-800">
                 <span className="text-3xl font-bold text-brand-800">
                   {formatCFA(product.price)}
                 </span>

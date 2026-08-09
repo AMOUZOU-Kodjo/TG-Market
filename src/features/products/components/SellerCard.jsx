@@ -105,6 +105,10 @@ export default function SellerCard({ seller, productId, hasActiveEscrow, product
               <div className="w-full rounded-xl bg-gray-100 px-4 py-3 text-center text-sm font-semibold text-gray-500 dark:bg-gray-800 dark:text-gray-400">
                 Vendu
               </div>
+            ) : productStatus === "reserved" ? (
+              <div className="w-full rounded-xl bg-indigo-50 px-4 py-3 text-center text-sm font-semibold text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400">
+                Réservé
+              </div>
             ) : hasActiveEscrow ? (
               <div className="w-full rounded-xl bg-orange-50 px-4 py-3 text-center text-sm font-semibold text-orange-700 dark:bg-orange-900/20 dark:text-orange-400">
                 Déjà commandé

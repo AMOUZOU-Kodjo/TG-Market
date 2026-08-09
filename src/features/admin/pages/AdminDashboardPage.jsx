@@ -39,6 +39,7 @@ const activityConfig = {
 
 const statusLabels = {
   active: "Actif",
+  reserved: "Réservé",
   pending: "En attente",
   completed: "Complété",
   paid: "Payé",
@@ -53,6 +54,7 @@ const statusLabels = {
 
 const statusColors = {
   active: "success",
+  reserved: "warning",
   pending: "warning",
   completed: "success",
   paid: "primary",

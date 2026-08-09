@@ -99,11 +99,11 @@ const productInclude = {
 
 export async function listProducts(filters, userId = null) {
   const { q, categories, conditions, minPrice, maxPrice, city, sort, page, perPage, sellerId } = filters;
-  const where = { status: 'active' };
+  const where = { status: { in: ['active', 'reserved'] } };
 
   if (sellerId) {
     where.user_id = sellerId;
-    where.status = { in: ['active', 'sold'] };
+    where.status = { in: ['active', 'sold', 'reserved'] };
   }
 
   if (q) {
@@ -477,7 +477,7 @@ export async function getSimilarProducts(productId, limit = 10) {
     where: {
       category_id: product.category_id,
       id: { not: productId },
-      status: 'active',
+      status: { in: ['active', 'reserved'] },
     },
     include: productInclude,
     orderBy: [{ views: 'desc' }, { favorites_count: 'desc' }],

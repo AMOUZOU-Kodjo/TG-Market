@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const sortEnum = z.enum(['newest', 'oldest', 'price_asc', 'price_desc', 'popular']);
 const conditionEnum = z.enum(['new', 'like_new', 'good', 'fair', 'poor']);
-const statusEnum = z.enum(['active', 'sold', 'expired', 'deleted']);
+const statusEnum = z.enum(['active', 'reserved', 'sold', 'expired', 'deleted']);
 
 export const listProductsSchema = z.object({
   query: z.object({

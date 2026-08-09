@@ -51,7 +51,7 @@ function buildSortOption(sort) {
 function buildILIKEWhere(filters) {
   const { q, categories, conditions, minPrice, maxPrice, city, verifiedSeller, deliveryAvailable, negotiable, urgent, onPromotion } = filters;
 
-  const where = { status: 'active' };
+  const where = { status: { in: ['active', 'reserved'] } };
 
   if (q && q.trim().length > 0) {
     where.OR = [

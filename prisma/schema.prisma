@@ -24,6 +24,7 @@ enum ProductCondition {
 
 enum ProductStatus {
   active
+  reserved
   sold
   expired
   deleted

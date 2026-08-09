@@ -254,7 +254,7 @@ export async function acceptOffer(offerId, sellerId) {
 
     await tx.product.update({
       where: { id: offer.product_id },
-      data: { status: 'sold', has_active_negotiation: false },
+      data: { status: 'reserved', has_active_negotiation: false },
     });
   });
 

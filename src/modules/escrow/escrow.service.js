@@ -114,6 +114,13 @@ const feePercent = await getPlatformFeePercent();
       },
     });
 
+    if (product.quantity <= 1) {
+      await tx.product.update({
+        where: { id: data.productId },
+        data: { status: 'reserved' },
+      });
+    }
+
     return created;
   });
 
@@ -735,7 +742,7 @@ export async function disputeEscrow(id, userId, reason) {
 export async function cancelEscrow(id, userId) {
   const escrow = await prisma.escrowTransaction.findUnique({
     where: { id },
-    select: { id: true, buyer_id: true, seller_id: true, status: true },
+    select: { id: true, buyer_id: true, seller_id: true, status: true, product_id: true },
   });
 
   if (!escrow) {
@@ -764,6 +771,20 @@ export async function cancelEscrow(id, userId) {
       where: { id },
       data: { status: 'cancelled' },
     });
+
+    if (escrow.product_id) {
+      const product = await tx.product.findUnique({
+        where: { id: escrow.product_id },
+        select: { status: true },
+      });
+
+      if (product?.status === 'reserved') {
+        await tx.product.update({
+          where: { id: escrow.product_id },
+          data: { status: 'active' },
+        });
+      }
+    }
 
     const pendingTx = await tx.walletTransaction.findFirst({
       where: { reference_type: 'escrow', reference_id: id, status: 'pending' },

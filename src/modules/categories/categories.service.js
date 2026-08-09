@@ -136,7 +136,7 @@ export async function getCategoryProducts(slug, { page, perPage, condition, minP
 
   const where = {
     category_id: { in: categoryIds },
-    status: 'active',
+    status: { in: ['active', 'reserved'] },
   };
 
   if (condition) {

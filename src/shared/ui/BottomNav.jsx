@@ -32,7 +32,17 @@ export default function BottomNav() {
               }`}
             >
               <div className="relative">
-                <tab.icon className="w-6 h-6" strokeWidth={isActive ? 2.2 : 1.5} />
+                {tab.to === "/vendre" ? (
+                  <span
+                    className={`w-10 h-10 -mt-4 mb-0.5 rounded-full flex items-center justify-center shadow-md bg-fuchsia-600 ${
+                      isActive ? "ring-4 ring-fuchsia-600/25 scale-105" : ""
+                    }`}
+                  >
+                    <tab.icon className="w-5 h-5 text-white" strokeWidth={isActive ? 2.2 : 1.8} />
+                  </span>
+                ) : (
+                  <tab.icon className="w-6 h-6" strokeWidth={isActive ? 2.2 : 1.5} />
+                )}
                 {tab.to === "/messages" && user?.unreadMessages > 0 && (
                   <span className="absolute -top-1.5 -right-2 w-4 h-4 bg-brand-700 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
                     {user.unreadMessages}

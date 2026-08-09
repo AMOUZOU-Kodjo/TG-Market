@@ -39,6 +39,7 @@ export const createProductSchema = z.object({
     negotiable: z.boolean().default(false),
     deliveryAvailable: z.boolean().default(false),
     deliveryPrice: z.number().int().positive().optional(),
+    quantity: z.number().int().min(1).max(999).optional(),
     city: z.string().min(1),
     neighborhood: z.string().max(100).optional(),
     specifications: z
@@ -65,6 +66,7 @@ export const updateProductSchema = z.object({
       negotiable: z.boolean().optional(),
       deliveryAvailable: z.boolean().optional(),
       deliveryPrice: z.number().int().positive().optional().nullable(),
+      quantity: z.number().int().min(1).max(999).optional(),
       city: z.string().min(1).optional(),
       neighborhood: z.string().max(100).optional().nullable(),
       specifications: z

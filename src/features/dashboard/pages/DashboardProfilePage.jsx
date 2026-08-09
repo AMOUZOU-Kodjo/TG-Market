@@ -19,6 +19,7 @@ import EmptyState from "@/shared/ui/EmptyState";
 import { useIsMobile } from "@/shared/hooks/useMediaQuery";
 
 import toast from "react-hot-toast";
+import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useMyProducts, useDeleteProduct, useEndNegotiation } from "@/features/products/hooks/useProducts";
 import { useMyReviews } from "@/features/reviews/hooks/useReviews";
@@ -200,6 +201,23 @@ export default function DashboardProfilePage() {
     }
   };
 
+    const saveProfileMutation = useMutation({
+    mutationFn: (data) => usersApi.updateProfile(data),
+    onSuccess: (result) => {
+      setUser((prev) => ({ ...prev, ...result }));
+      setFormData((prev) => ({ ...prev, ...result }));
+      setEditModalOpen(false);
+      toast.success("Profil mis à jour !");
+    },
+    onError: (err) => {
+      toast.error(err?.response?.data?.error || err?.response?.data?.message || "Erreur lors de la mise à jour");
+    },
+  });
+
+  const handleSaveProfile = () => {
+    saveProfileMutation.mutate({ phone: formData.phone, bio: formData.bio });
+  };
+
   const roleLabel = user?.role === "admin" ? "Admin" : myProducts.length > 0 ? "Vendeur" : "Acheteur";
   const isMobile = useIsMobile();
   const [searchParams] = useSearchParams();
@@ -308,7 +326,7 @@ export default function DashboardProfilePage() {
 
       {/* Edit Profile Modal */}
       <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} title="Modifier le profil" size="md"
-        footer={<div className="flex justify-end gap-2"><Button variant="ghost" onClick={() => setEditModalOpen(false)}>Annuler</Button><Button variant="primary" onClick={() => setEditModalOpen(false)}>Enregistrer</Button></div>}>
+        footer={<div className="flex justify-end gap-2"><Button variant="ghost" onClick={() => setEditModalOpen(false)}>Annuler</Button><Button variant="primary" onClick={handleSaveProfile} loading={saveProfileMutation.isPending}>Enregistrer</Button></div>}>
         <div className="space-y-4">
           <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
           <div className="flex justify-center">

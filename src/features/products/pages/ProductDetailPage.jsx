@@ -80,6 +80,69 @@ export default function ProductDetailPage() {
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : null;
 
+  const renderActions = (mobile) => {
+    const size = mobile ? "md" : "sm";
+    const btnCls = mobile ? "w-full" : "";
+
+    const offerBtn =
+      product.status === "reserved" || product.status === "sold" ? (
+        <Button variant="secondary" size={size} icon={MessageSquare} disabled className={`${btnCls} ${mobile ? "flex-1" : ""}`}>
+          {mobile ? "Offre" : "Faire une offre"}
+        </Button>
+      ) : (
+        <Link to={`/offre/${product.id}`} className={mobile ? "flex-1" : ""}>
+          <Button variant="primary" size={size} icon={MessageSquare} className={btnCls}>
+            {mobile ? "Offre" : "Faire une offre"}
+          </Button>
+        </Link>
+      );
+
+    let buyBtn;
+    if (product.status === "reserved") {
+      buyBtn = (
+        <Button variant="secondary" size={size} icon={ShoppingCart} disabled className={`${btnCls} ${mobile ? "flex-1" : ""}`}>
+          {mobile ? "Réservé" : "Réservé"}
+        </Button>
+      );
+    } else if (product.status === "sold") {
+      buyBtn = (
+        <Button variant="secondary" size={size} icon={ShoppingCart} disabled className={`${btnCls} ${mobile ? "flex-1" : ""}`}>
+          {mobile ? "Vendu" : "Vendu"}
+        </Button>
+      );
+    } else if (product.hasActiveEscrow) {
+      buyBtn = (
+        <Button variant="secondary" size={size} icon={ShoppingCart} disabled className={`${btnCls} ${mobile ? "flex-1" : ""}`}>
+          {mobile ? "Commandé" : "Déjà commandé"}
+        </Button>
+      );
+    } else {
+      buyBtn = (
+        <Link to={`/acheter/${product.id}`} className={mobile ? "flex-1" : ""}>
+          <Button variant="primary" size={size} icon={ShoppingCart} className={btnCls}>
+            {mobile ? "Acheter" : "Acheter"}
+          </Button>
+        </Link>
+      );
+    }
+
+    const lotBtn = (
+      <Link to="/lot/creer" className={mobile ? "flex-1" : ""}>
+        <Button variant="outline" size={size} icon={Package} className={btnCls}>
+          {mobile ? "Lot" : "Créer un lot"}
+        </Button>
+      </Link>
+    );
+
+    return (
+      <>
+        {offerBtn}
+        {buyBtn}
+        {lotBtn}
+      </>
+    );
+  };
+
   const renderInfoCard = () => (
     <motion.div
       {...fadeUp}
@@ -203,58 +266,17 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
-      <div className="relative mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-        <div className="sticky top-28 z-40 -mx-4 mt-[-1rem] bg-white px-4 py-3 backdrop-blur-sm dark:bg-gray-950/80 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="relative mx-auto max-w-7xl px-4 pt-4 pb-28 sm:px-6 lg:px-8 md:pb-4">
+        <div className="sticky top-0 z-40 -mx-4 bg-white px-4 py-3 backdrop-blur-sm dark:bg-gray-950/80 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+          <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0 sm:gap-10">
               <BackButton />
               <h1 className="flex-1 min-w-0 truncate text-sm font-bold text-gray-900 dark:text-white sm:text-base sm:truncate-none">
                 {product.title}
               </h1>
             </div>
-            <div className="flex shrink-0 gap-1.5 justify-center sm:justify-start">
-              {product.status === "reserved" || product.status === "sold" ? (
-                <Button variant="secondary" size="sm" icon={MessageSquare} disabled>
-                  <span className="hidden sm:inline">Faire une offre</span>
-                  <span className="sm:hidden">Offre</span>
-                </Button>
-              ) : (
-                <Link to={`/offre/${product.id}`}>
-                  <Button variant="primary" size="sm" icon={MessageSquare}>
-                    <span className="hidden sm:inline">Faire une offre</span>
-                    <span className="sm:hidden">Offre</span>
-                  </Button>
-                </Link>
-              )}
-              {product.status === "reserved" ? (
-                <Button variant="secondary" size="sm" icon={ShoppingCart} disabled>
-                  <span className="hidden sm:inline">Réservé</span>
-                  <span className="sm:hidden">Réservé</span>
-                </Button>
-              ) : product.status === "sold" ? (
-                <Button variant="secondary" size="sm" icon={ShoppingCart} disabled>
-                  <span className="hidden sm:inline">Vendu</span>
-                  <span className="sm:hidden">Vendu</span>
-                </Button>
-              ) : product.hasActiveEscrow ? (
-                <Button variant="secondary" size="sm" icon={ShoppingCart} disabled>
-                  <span className="hidden sm:inline">Déjà commandé</span>
-                  <span className="sm:hidden">Commandé</span>
-                </Button>
-              ) : (
-                <Link to={`/acheter/${product.id}`}>
-                  <Button variant="primary" size="sm" icon={ShoppingCart}>
-                    <span className="hidden sm:inline">Acheter</span>
-                    <span className="sm:hidden">Acheter</span>
-                  </Button>
-                </Link>
-              )}
-              <Link to="/lot/creer">
-                <Button variant="outline" size="sm" icon={Package}>
-                  <span className="hidden sm:inline">Créer un lot</span>
-                  <span className="sm:hidden">Lot</span>
-                </Button>
-              </Link>
+            <div className="hidden md:flex shrink-0 gap-1.5 justify-center sm:justify-start">
+              {renderActions(false)}
             </div>
           </div>
         </div>
@@ -360,6 +382,12 @@ export default function ProductDetailPage() {
             <SimilarProducts products={similarProducts} />
           </div>
         )}
+      </div>
+
+      <div className="md:hidden fixed bottom-0 inset-x-0 z-[200] bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 safe-area-pb">
+        <div className="flex items-stretch gap-2 p-3">
+          {renderActions(true)}
+        </div>
       </div>
     </div>
   );

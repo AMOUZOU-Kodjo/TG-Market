@@ -81,8 +81,15 @@ export default function HistoryPage() {
 
   const handleConfirmDelivery = async (id) => {
     try {
-      await confirmDelivery.mutateAsync(id);
-      toast.success("Livraison confirmée !");
+      const data = await confirmDelivery.mutateAsync(id);
+      const payout = data?.payout;
+      if (payout && payout.status === "failed") {
+        toast.error("Livraison confirmée, mais l'envoi du paiement a échoué. Le support va vous contacter.");
+      } else if (payout && payout.status === "pending") {
+        toast.success("Livraison confirmée ! Votre paiement est en cours de traitement.");
+      } else {
+        toast.success("Livraison confirmée !");
+      }
     } catch (err) {
       toast.error(err?.response?.data?.error || "Erreur");
     }

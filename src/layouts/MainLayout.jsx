@@ -546,15 +546,7 @@ location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWit
                   >
                     <FaLinkedinIn className="w-4 h-4" />
                   </a>
-                  <a
-                    href={settings.socialGithub}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-9 h-9 rounded-lg bg-[#333] text-white hover:opacity-80 flex items-center justify-center transition-opacity"
-                    aria-label="GitHub"
-                  >
-                    <FaGithub className="w-4 h-4" />
-                  </a>
+                  
                 </div>
               </div>
             </div>

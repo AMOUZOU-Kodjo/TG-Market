@@ -23,6 +23,7 @@ import { escrowApi } from "@/features/wallet/services/wallet.api";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { formatCFA, formatDate } from "@/shared/utils/format";
 import EscrowTimeline from "@/features/payment/components/EscrowTimeline";
+import PayoutNotice from "@/features/payment/components/PayoutNotice";
 import Badge from "@/shared/ui/Badge";
 import toast from "react-hot-toast";
 
@@ -431,19 +432,19 @@ export default function OrderDetailPage() {
           )}
 
           {escrow.status === "completed" && (
-            <div className="rounded-2xl border border-green-100 bg-green-50 p-4 text-center dark:border-green-800 dark:bg-green-900/10">
-              <CheckCircle2 className="mx-auto mb-2 h-8 w-8 text-green-600" />
-              <p className="text-sm font-medium text-green-800 dark:text-green-400">Transaction terminée</p>
-              <p className="mt-1 text-xs text-green-600 dark:text-green-500">
-                Les fonds ont été libérés au vendeur
-              </p>
-              <button
-                onClick={() => navigate("/avis")}
-                className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-green-600 px-4 py-2 text-xs font-medium text-white hover:bg-green-700 transition-colors"
-              >
-                <Star className="h-3.5 w-3.5" />
-                Laisser un avis
-              </button>
+            <div className="space-y-3">
+              <PayoutNotice payout={escrow.payout} isSeller={!isBuyer} />
+              <div className="rounded-2xl border border-green-100 bg-green-50 p-4 text-center dark:border-green-800 dark:bg-green-900/10">
+                <CheckCircle2 className="mx-auto mb-2 h-8 w-8 text-green-600" />
+                <p className="text-sm font-medium text-green-800 dark:text-green-400">Transaction terminée</p>
+                <button
+                  onClick={() => navigate("/avis")}
+                  className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-green-600 px-4 py-2 text-xs font-medium text-white hover:bg-green-700 transition-colors"
+                >
+                  <Star className="h-3.5 w-3.5" />
+                  Laisser un avis
+                </button>
+              </div>
             </div>
           )}
         </div>

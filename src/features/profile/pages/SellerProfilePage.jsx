@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronLeft, Home, MapPin, Package, Star, TrendingUp, Users, MessageCircle, UserPlus, UserCheck, ShieldCheck, Plus } from "lucide-react";
+import { ChevronLeft, Home, MapPin, MessageCircle, UserPlus, UserCheck, ShieldCheck, Plus } from "lucide-react";
 import ProductCard from "@/shared/ui/ProductCard";
 import Tabs from "@/shared/ui/Tabs";
 import Avatar from "@/shared/ui/Avatar";
@@ -24,9 +24,13 @@ export default function SellerProfilePage() {
   const { user: currentUser } = useAuth();
 
   const { data: seller, isLoading } = useSellerProfile(id);
-  const [isFollowing, setIsFollowing] = useState(seller?.isFollowing ?? false);
+  const [isFollowing, setIsFollowing] = useState(false);
   const followUser = useFollowUser();
   const unfollowUser = useUnfollowUser();
+
+  useEffect(() => {
+    setIsFollowing(seller?.isFollowing ?? false);
+  }, [seller?.isFollowing]);
 
   const { data: sellerProductsRaw = [] } = useProducts({ sellerId: id });
   const sellerProducts = sellerProductsRaw?.data || sellerProductsRaw || [];
@@ -74,13 +78,6 @@ export default function SellerProfilePage() {
   const isOwnProfile = currentUser?.id === Number(id);
 
   const roleLabel = seller.role === "admin" ? "Admin" : (seller.productCount || sellerProducts.length) > 0 ? "Vendeur" : "Acheteur";
-
-  const stats = [
-    { label: "Annonces", value: seller.productCount || sellerProducts.length, icon: Package },
-    { label: "Avis", value: seller.reviewCount || sellerReviews.length, icon: Star },
-    { label: "Note", value: seller.rating?.toFixed(1) || "0.0", icon: TrendingUp },
-    { label: "Abonnés", value: seller.followerCount || 0, icon: Users },
-  ];
 
   const tabs = [
     {
@@ -223,24 +220,6 @@ export default function SellerProfilePage() {
                   </Button>
                 </Link>
               )}
-              <div className="grid grid-cols-2 gap-2 md:flex md:gap-2">
-                {stats.map((stat, i) => (
-                  <div
-                    key={stat.label}
-                    className="flex items-center gap-1 rounded-lg border border-gray-100 bg-white px-2 py-1 shadow-sm dark:border-gray-800 dark:bg-gray-800 md:gap-1.5 md:px-3 md:py-2"
-                  >
-                    <stat.icon className="h-3 w-3 text-brand-700 dark:text-brand-400 md:h-3.5 md:w-3.5" />
-                    <div>
-                      <span className="text-xs font-bold text-gray-900 dark:text-white md:text-sm">
-                        {stat.value}
-                      </span>
-                      <span className="ml-0.5 text-[9px] text-gray-500 dark:text-gray-400 md:ml-1 md:text-[10px]">
-                        {stat.label}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>

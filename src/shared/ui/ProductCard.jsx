@@ -119,12 +119,10 @@ export default function ProductCard({
           </button>
         )}
 
-        {/* Vendu badge - full overlay */}
+        {/* Vendu badge - bottom band */}
         {status === "sold" && (
-          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50">
-            <span className="rounded-lg bg-white/90 px-4 py-2 text-sm font-bold text-gray-900 shadow-lg">
-              Vendu
-            </span>
+          <div className="absolute bottom-0 left-0 right-0 z-20 bg-fuchsia-600/90 px-3 py-2 backdrop-blur-sm">
+            <span className="flex items-center justify-center gap-1.5 text-xs font-bold text-white">Vendu</span>
           </div>
         )}
 

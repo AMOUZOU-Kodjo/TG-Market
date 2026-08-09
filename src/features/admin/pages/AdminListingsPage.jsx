@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Search, Package, CheckCircle, XCircle, Trash2, Eye, X, Loader2, Save } from "lucide-react";
+import { Search, Package, CheckCircle, XCircle, Trash2, Eye, X, Loader2, Save, MapPin, Zap, Star } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/shared/services/api";
 import { formatCFA } from "@/shared/utils/format";
+import { cn } from "@/shared/utils/cn";
 import Badge from "@/shared/ui/Badge";
 import Avatar from "@/shared/ui/Avatar";
 import toast from "react-hot-toast";
@@ -338,46 +339,100 @@ export default function AdminListingsPage() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4">
             {filtered.map((product) => (
-              <div key={product.id} className="   overflow-hidden hover:shadow-xs transition-shadow flex flex-col">
-                <div className="relative aspect-[3/3] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[inset_0_0_25px_rgba(0,0,0,0.35)] dark:border-gray-600 dark:bg-gray-800">
+              <div
+                key={product.id}
+                className={cn(
+                  "overflow-hidden",
+                  product.isPromoted && "ring-2 ring-brand-500 rounded-2xl"
+                )}
+              >
+                <div className="relative aspect-[4/5] overflow-hidden border border-gray-200 bg-white rounded-2xl shadow-[inset_0_0_25px_rgba(0,0,0,0.35)] dark:border-gray-600 dark:bg-gray-800">
                   {product.images?.[0] ? (
-                    <img src={product.images[0]} alt={product.title} className="w-full h-full object-cover" />
+                    <img src={product.images[0]} alt={product.title} loading="lazy" className="h-full w-full object-cover" />
                   ) : (
-                    <div className="flex items-center justify-center h-full text-gray-300"><Package className="w-10 h-10" /></div>
+                    <div className="flex h-full items-center justify-center text-gray-300"><Package className="h-10 w-10" /></div>
                   )}
                   <div className="pointer-events-none absolute inset-0 rounded-2xl shadow-[inset_0_0_30px_rgba(0,0,0,0.1)]" />
-                  <div className="absolute top-2 left-2 z-10">
+
+                  {product.condition && (
+                    <div className="absolute left-3 top-3 z-10">
+                      <Badge variant={product.condition === "new" ? "success" : "warning"}>
+                        {conditionLabels[product.condition] ?? product.condition}
+                      </Badge>
+                    </div>
+                  )}
+
+                  <div className="absolute right-3 top-3 z-10">
                     <Badge variant={statusColors[product.status] ?? "secondary"} size="sm">
                       {statusLabels[product.status] ?? product.status}
                     </Badge>
                   </div>
+
+                  {product.isUrgent && (
+                    <div className="absolute left-3 top-11 z-10 flex items-center gap-1 rounded-full bg-orange-500 px-2.5 py-1 shadow-md">
+                      <Zap className="h-3 w-3 fill-white text-white" />
+                      <span className="text-[10px] font-bold text-white">Chap-Chap</span>
+                    </div>
+                  )}
+
+                  {product.isPromoted && product.status !== "sold" && (
+                    <div className="absolute bottom-12 left-3 z-10 flex items-center gap-1 rounded-full bg-brand-600 px-2.5 py-1 shadow-md">
+                      <Star className="h-3 w-3 fill-white text-white" />
+                      <span className="text-[10px] font-bold text-white">Promu</span>
+                    </div>
+                  )}
+
+                  {product.status === "sold" && (
+                    <div className="absolute bottom-0 left-0 right-0 z-20 bg-fuchsia-600/90 backdrop-blur-sm px-3 py-2">
+                      <span className="flex items-center justify-center gap-1.5 text-xs font-bold text-white">Vendu</span>
+                    </div>
+                  )}
                 </div>
-                <div className="p-2 min-w-0">
-                  <p className="text-xs font-medium text-gray-900 truncate">{product.title}</p>
-                  <p className="text-[10px] text-gray-400 truncate">{product.user?.firstName} {product.user?.lastName}</p>
-                  <p className="text-xs font-bold text-brand-700 mt-0.5">{formatCFA(product.price)}</p>
-                  <div className="flex items-center justify-center gap-2 mt-1 pt-1 border-t border-gray-100">
-                    {product.status !== "active" && (
-                      <button onClick={() => updateStatus.mutate({ id: product.id, status: "active" })}
-                        className="p-1.5 rounded-lg text-green-600 hover:bg-green-50 transition-colors" title="Approuver">
-                        <CheckCircle className="w-4 h-4" />
-                      </button>
+
+                <div className="p-3">
+                  <div className="mb-1.5 line-clamp-1 text-sm font-semibold text-gray-900 dark:text-white">
+                    {product.title}
+                  </div>
+                  <div className="mb-2 flex items-baseline gap-2 flex-wrap">
+                    <span className="text-sm font-extrabold text-brand-800">{formatCFA(product.price)}</span>
+                    {product.originalPrice && (
+                      <span className="text-xs text-gray-400 line-through">{formatCFA(product.originalPrice)}</span>
                     )}
-                    {product.status !== "rejected" && (
-                      <button onClick={() => updateStatus.mutate({ id: product.id, status: "rejected" })}
-                        className="p-1.5 rounded-lg text-orange-500 hover:bg-orange-50 transition-colors" title="Rejeter">
-                        <XCircle className="w-4 h-4" />
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                    <MapPin className="h-3 w-3 shrink-0" />
+                    <span className="truncate">
+                      {product.neighborhood ? `${product.neighborhood}, ${product.city}, Togo` : `${product.city}, Togo`}
+                    </span>
+                  </div>
+
+                  <div className="mt-2 flex items-center justify-between gap-2 border-t border-gray-100 pt-2 dark:border-gray-800">
+                    <p className="min-w-0 truncate text-[10px] text-gray-400">
+                      {product.user?.firstName} {product.user?.lastName}
+                    </p>
+                    <div className="flex shrink-0 items-center gap-0.5">
+                      {product.status !== "active" && (
+                        <button onClick={() => updateStatus.mutate({ id: product.id, status: "active" })}
+                          className="p-1.5 rounded-lg text-green-600 hover:bg-green-50 transition-colors" title="Approuver">
+                          <CheckCircle className="h-4 w-4" />
+                        </button>
+                      )}
+                      {product.status !== "rejected" && (
+                        <button onClick={() => updateStatus.mutate({ id: product.id, status: "rejected" })}
+                          className="p-1.5 rounded-lg text-orange-500 hover:bg-orange-50 transition-colors" title="Rejeter">
+                          <XCircle className="h-4 w-4" />
+                        </button>
+                      )}
+                      <button onClick={() => setViewProduct(product.id)}
+                        className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 transition-colors" title="Voir / Modifier">
+                        <Eye className="h-4 w-4" />
                       </button>
-                    )}
-                    <button onClick={() => setViewProduct(product.id)}
-                      className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 transition-colors" title="Voir / Modifier">
-                      <Eye className="w-4 h-4" />
-                    </button>
-                    <button onClick={() => { if (confirm("Supprimer cette annonce ?")) deleteProduct.mutate(product.id); }}
-                      disabled={deleteProduct.isPending}
-                      className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-colors disabled:opacity-30" title="Supprimer">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                      <button onClick={() => { if (confirm("Supprimer cette annonce ?")) deleteProduct.mutate(product.id); }}
+                        disabled={deleteProduct.isPending}
+                        className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-colors disabled:opacity-30" title="Supprimer">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

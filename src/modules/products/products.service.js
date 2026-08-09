@@ -103,6 +103,7 @@ export async function listProducts(filters, userId = null) {
 
   if (sellerId) {
     where.user_id = sellerId;
+    where.status = { in: ['active', 'sold'] };
   }
 
   if (q) {

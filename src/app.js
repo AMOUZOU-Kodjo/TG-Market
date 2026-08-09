@@ -9,6 +9,7 @@ import path from 'path';
 import corsConfig from './config/cors.js';
 import { apiLimiter } from './middleware/rateLimiter.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import { getOrSetCache } from './utils/cache.js';
 
 import authRoutes from './modules/auth/auth.routes.js';
 import usersRoutes from './modules/users/users.routes.js';
@@ -67,18 +68,21 @@ import prisma from './config/database.js';
 
 app.get('/api/stats/public', async (_req, res) => {
   try {
-    const [totalUsers, totalListings, totalSales, verifiedUsers, cities] = await Promise.all([
-      prisma.user.count({ where: { is_active: true } }),
-      prisma.product.count({ where: { status: 'active' } }),
-      prisma.escrowTransaction.count({ where: { status: 'completed' } }),
-      prisma.user.count({ where: { email_verified_at: { not: null } } }),
-      prisma.product.findMany({
-        where: { city: { not: '' } },
-        select: { city: true },
-        distinct: ['city'],
-      }).then(rows => rows.length),
-    ]);
-    res.json({ totalUsers, totalListings, totalSales, verifiedUsers, cities, moderationTime: 24 });
+    const stats = await getOrSetCache('cache:stats:public', 300, async () => {
+      const [totalUsers, totalListings, totalSales, verifiedUsers, cities] = await Promise.all([
+        prisma.user.count({ where: { is_active: true } }),
+        prisma.product.count({ where: { status: 'active' } }),
+        prisma.escrowTransaction.count({ where: { status: 'completed' } }),
+        prisma.user.count({ where: { email_verified_at: { not: null } } }),
+        prisma.product.findMany({
+          where: { city: { not: '' } },
+          select: { city: true },
+          distinct: ['city'],
+        }).then(rows => rows.length),
+      ]);
+      return { totalUsers, totalListings, totalSales, verifiedUsers, cities, moderationTime: 24 };
+    });
+    res.json(stats);
   } catch {
     res.json({ totalUsers: 5000, totalListings: 1000, totalSales: 500, verifiedUsers: 2000, cities: 30, moderationTime: 24 });
   }
@@ -86,24 +90,27 @@ app.get('/api/stats/public', async (_req, res) => {
 
 app.get('/api/public/reviews', async (_req, res) => {
   try {
-    const reviews = await prisma.review.findMany({
-      where: { rating: { gte: 4 } },
-      orderBy: { created_at: 'desc' },
-      take: 6,
-      select: {
-        id: true,
-        rating: true,
-        comment: true,
-        reviewer: { select: { first_name: true, last_name: true, city: true } },
-      },
+    const data = await getOrSetCache('cache:reviews:public', 300, async () => {
+      const reviews = await prisma.review.findMany({
+        where: { rating: { gte: 4 } },
+        orderBy: { created_at: 'desc' },
+        take: 6,
+        select: {
+          id: true,
+          rating: true,
+          comment: true,
+          reviewer: { select: { first_name: true, last_name: true, city: true } },
+        },
+      });
+      return reviews.map(r => ({
+        id: r.id,
+        name: `${r.reviewer.first_name} ${r.reviewer.last_name.charAt(0)}.`,
+        city: r.reviewer.city,
+        text: r.comment,
+        rating: r.rating,
+      }));
     });
-    res.json(reviews.map(r => ({
-      id: r.id,
-      name: `${r.reviewer.first_name} ${r.reviewer.last_name.charAt(0)}.`,
-      city: r.reviewer.city,
-      text: r.comment,
-      rating: r.rating,
-    })));
+    res.json(data);
   } catch {
     res.json([]);
   }
@@ -111,26 +118,29 @@ app.get('/api/public/reviews', async (_req, res) => {
 
 app.get('/api/settings/public', async (_req, res) => {
   try {
-    const rows = await prisma.siteSetting.findMany({
-      where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode', 'support_email', 'maintenance_message', 'maintenance_estimated_return', 'maintenance_improvements', 'social_facebook', 'social_twitter', 'social_instagram', 'social_linkedin', 'team_members'] } },
+    const data = await getOrSetCache('cache:settings:public', 600, async () => {
+      const rows = await prisma.siteSetting.findMany({
+        where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode', 'support_email', 'maintenance_message', 'maintenance_estimated_return', 'maintenance_improvements', 'social_facebook', 'social_twitter', 'social_instagram', 'social_linkedin', 'team_members'] } },
+      });
+      const map = {};
+      for (const row of rows) map[row.key] = row.value;
+      return {
+        siteName: map.site_name ?? 'TG-Market',
+        siteVersion: map.site_version ?? '1.0.0',
+        siteDescription: map.site_description ?? 'La plateforme togolaise de vente et d\'achat d\'articles d\'occasion',
+        maintenanceMode: map.maintenance_mode === 'true',
+        supportEmail: map.support_email ?? 'support@akmarket.tg',
+        maintenanceMessage: map.maintenance_message ?? 'est actuellement en maintenance pour améliorer vos services. Nous serons de retour très bientôt !',
+        maintenanceEstimatedReturn: map.maintenance_estimated_return ?? '24 juillet 2026 à 18h00 (GMT+0)',
+        maintenanceImprovements: JSON.parse(map.maintenance_improvements ?? '["Système de paiement sécurisé via Mobile Money","Performance et vitesse de chargement","Nouvelles fonctionnalités de messagerie"]'),
+        socialFacebook: map.social_facebook ?? 'https://facebook.com/tgmarket',
+        socialTwitter: map.social_twitter ?? 'https://twitter.com/tgmarket',
+        socialInstagram: map.social_instagram ?? 'https://instagram.com/tgmarket',
+        socialLinkedin: map.social_linkedin ?? 'https://linkedin.com/company/tgmarket',
+        teamMembers: JSON.parse(map.team_members ?? '[{"name":"Amouzou Kodjo","role":"Co-fondateur & Développeur Frontend","initials":"AK","photo":"","bio":"Architecte de l\'interface TG-Market.","linkedin":"#","facebook":"#","twitter":"#","instagram":"#"}]'),
+      };
     });
-    const map = {};
-    for (const row of rows) map[row.key] = row.value;
-    res.json({
-      siteName: map.site_name ?? 'TG-Market',
-      siteVersion: map.site_version ?? '1.0.0',
-      siteDescription: map.site_description ?? 'La plateforme togolaise de vente et d\'achat d\'articles d\'occasion',
-      maintenanceMode: map.maintenance_mode === 'true',
-      supportEmail: map.support_email ?? 'support@akmarket.tg',
-      maintenanceMessage: map.maintenance_message ?? 'est actuellement en maintenance pour améliorer vos services. Nous serons de retour très bientôt !',
-      maintenanceEstimatedReturn: map.maintenance_estimated_return ?? '24 juillet 2026 à 18h00 (GMT+0)',
-      maintenanceImprovements: JSON.parse(map.maintenance_improvements ?? '["Système de paiement sécurisé via Mobile Money","Performance et vitesse de chargement","Nouvelles fonctionnalités de messagerie"]'),
-      socialFacebook: map.social_facebook ?? 'https://facebook.com/tgmarket',
-      socialTwitter: map.social_twitter ?? 'https://twitter.com/tgmarket',
-      socialInstagram: map.social_instagram ?? 'https://instagram.com/tgmarket',
-      socialLinkedin: map.social_linkedin ?? 'https://linkedin.com/company/tgmarket',
-      teamMembers: JSON.parse(map.team_members ?? '[{"name":"Amouzou Kodjo","role":"Co-fondateur & Développeur Frontend","initials":"AK","photo":"","bio":"Architecte de l\'interface TG-Market.","linkedin":"#","facebook":"#","twitter":"#","instagram":"#"}]'),
-    });
+    res.json(data);
   } catch {
     res.json({ siteName: 'TG-Market', siteVersion: '1.0.0', siteDescription: '', maintenanceMode: false, supportEmail: 'support@akmarket.tg' });
   }

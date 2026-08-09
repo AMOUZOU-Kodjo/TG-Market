@@ -1,4 +1,10 @@
 import prisma from '../../config/database.js';
+import { invalidateCache, invalidateCacheByPattern } from '../../utils/cache.js';
+
+function invalidateCategoriesCache() {
+  invalidateCache('cache:categories:tree');
+  invalidateCacheByPattern('cache:category:*');
+}
 
 export async function getStats() {
   const now = new Date();
@@ -368,6 +374,8 @@ export async function createCategory(data) {
     include: { _count: { select: { products: true } } },
   });
 
+  invalidateCategoriesCache();
+
   return {
     id: category.id,
     name: category.name,
@@ -435,6 +443,8 @@ export async function updateCategory(id, data) {
     include: { _count: { select: { products: true } } },
   });
 
+  invalidateCategoriesCache();
+
   return {
     id: updated.id,
     name: updated.name,
@@ -456,6 +466,8 @@ export async function reorderCategories(updates) {
       })
     )
   );
+
+  invalidateCategoriesCache();
 
   return { message: 'Ordre mis à jour' };
 }
@@ -485,6 +497,7 @@ export async function deleteCategory(id) {
   }
 
   await prisma.category.delete({ where: { id } });
+  invalidateCategoriesCache();
   return { message: 'Catégorie supprimée' };
 }
 
@@ -942,6 +955,7 @@ export async function updateSettings(data) {
       })
     )
   );
+  invalidateCache('cache:settings:public');
   return getSettings();
 }
 

@@ -1,9 +1,10 @@
 import * as categoriesService from './categories.service.js';
 import { buildPaginationMeta } from '../../utils/pagination.js';
+import { getOrSetCache } from '../../utils/cache.js';
 
 export async function getAllCategories(req, res, next) {
   try {
-    const result = await categoriesService.getAllCategories();
+    const result = await getOrSetCache('cache:categories:tree', 60, categoriesService.getAllCategories);
     res.json(result);
   } catch (err) {
     next(err);
@@ -12,7 +13,7 @@ export async function getAllCategories(req, res, next) {
 
 export async function getCategoryBySlug(req, res, next) {
   try {
-    const result = await categoriesService.getCategoryBySlug(req.params.slug);
+    const result = await getOrSetCache(`cache:category:${req.params.slug}`, 60, () => categoriesService.getCategoryBySlug(req.params.slug));
     res.json(result);
   } catch (err) {
     next(err);

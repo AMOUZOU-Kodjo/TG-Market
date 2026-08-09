@@ -198,22 +198,18 @@ export async function register(data, req) {
       password: hashedPassword,
       city,
       accepted_terms_at: acceptedTerms ? new Date() : null,
+      email_verified_at: new Date(),
     },
   });
 
   const { accessToken, refreshToken } = generateTokens(user);
   await storeRefreshToken(user.id, refreshToken, req);
 
-  const emailResult = await sendVerificationEmail(user);
-  if (!emailResult.success) {
-    console.error('[Register] Failed to send verification email:', emailResult.error);
-  }
-
   return {
     accessToken,
     refreshToken,
     user: formatUser(user),
-    verificationEmailSent: emailResult.success,
+    verificationEmailSent: false,
   };
 }
 

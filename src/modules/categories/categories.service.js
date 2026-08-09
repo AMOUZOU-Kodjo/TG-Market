@@ -222,12 +222,38 @@ export async function getCategoryProducts(slug, { page, perPage, condition, minP
 }
 
 export async function getCategorySpecTemplates(categoryId) {
+  const chain = [];
+  let cat = await prisma.category.findUnique({
+    where: { id: categoryId },
+    select: { id: true, parent_id: true },
+  });
+  if (!cat) return [];
+
+  while (cat) {
+    chain.push(cat.id);
+    if (cat.parent_id == null) break;
+    cat = await prisma.category.findUnique({
+      where: { id: cat.parent_id },
+      select: { id: true, parent_id: true },
+    });
+  }
+
   const templates = await prisma.categorySpecTemplate.findMany({
-    where: { category_id: categoryId },
+    where: { category_id: { in: chain } },
     orderBy: { sort_order: 'asc' },
   });
 
-  return templates.map((t) => ({
+  const seenLabels = new Set();
+  const result = [];
+  for (const cid of chain) {
+    for (const t of templates) {
+      if (t.category_id !== cid || seenLabels.has(t.label)) continue;
+      seenLabels.add(t.label);
+      result.push(t);
+    }
+  }
+
+  return result.map((t) => ({
     id: t.id,
     categoryId: t.category_id,
     label: t.label,

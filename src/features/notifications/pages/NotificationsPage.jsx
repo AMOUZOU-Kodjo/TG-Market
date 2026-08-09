@@ -13,6 +13,10 @@ import {
   Trash2,
   Heart,
   ShoppingCart,
+  Handshake,
+  CheckCircle2,
+  XCircle,
+  PackagePlus,
 } from "lucide-react";
 import Button from "@/shared/ui/Button";
 import EmptyState from "@/shared/ui/EmptyState";
@@ -40,6 +44,15 @@ const notificationTypes = {
   delivery_confirmed: { icon: Package, color: "text-green-600", bg: "bg-green-50 dark:bg-green-500/10", link: true },
   escrow_disputed: { icon: TrendingDown, color: "text-red-600", bg: "bg-red-50 dark:bg-red-500/10", link: true },
   escrow_cancelled: { icon: Package, color: "text-gray-500", bg: "bg-gray-100 dark:bg-gray-800", link: true },
+  payment_verified: { icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50 dark:bg-green-500/10", link: true },
+  new_offer: { icon: Handshake, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10", link: true },
+  offer_accepted: { icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50 dark:bg-green-500/10", link: true },
+  offer_rejected: { icon: XCircle, color: "text-red-600", bg: "bg-red-50 dark:bg-red-500/10", link: true },
+  offer_cancelled: { icon: XCircle, color: "text-gray-500", bg: "bg-gray-100 dark:bg-gray-800", link: true },
+  bundle_proposal: { icon: PackagePlus, color: "text-brand-700", bg: "bg-brand-50 dark:bg-brand-700/10", link: true },
+  bundle_proposal_accepted: { icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50 dark:bg-green-500/10", link: true },
+  bundle_proposal_rejected: { icon: XCircle, color: "text-red-600", bg: "bg-red-50 dark:bg-red-500/10", link: true },
+  bundle_proposal_cancelled: { icon: XCircle, color: "text-gray-500", bg: "bg-gray-100 dark:bg-gray-800", link: true },
 };
 
 const listVariants = {
@@ -129,9 +142,9 @@ export default function NotificationsPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
-      <BackButton />
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
+      <div className="mb-6 flex flex-wrap items-center gap-3">
+        <BackButton />
+        <div className="min-w-0 flex-1">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             Notifications
           </h1>
@@ -190,6 +203,10 @@ export default function NotificationsPage() {
             const isEscrow = typeConfig.link && escrowId != null;
             const sellerId = notification.metadata?.sellerId;
             const isReview = typeConfig.link && sellerId != null;
+            const offerId = notification.metadata?.offerId;
+            const isOffer = typeConfig.link && offerId != null;
+            const bundleId = notification.metadata?.bundleId;
+            const isBundle = typeConfig.link && bundleId != null;
 
             const mainContent = (
               <>
@@ -230,7 +247,13 @@ export default function NotificationsPage() {
                 ? `/commandes/${escrowId}`
                 : isReview
                   ? `/vendeur/${sellerId}`
-                  : null;
+                  : isOffer
+                    ? `/dashboard/offres`
+                    : isBundle
+                      ? `/dashboard/propositions`
+                      : notification.productId
+                        ? `/produit/${notification.productId}`
+                        : null;
 
             return (
               <motion.div

@@ -19,12 +19,21 @@ const statusConfig = {
   cancelled: { label: "Annulée", variant: "danger", icon: XCircle },
 };
 
+const payoutConfig = {
+  sent: { label: "Paiement envoyé", variant: "success" },
+  paid: { label: "Paiement reçu", variant: "success" },
+  pending: { label: "Paiement en cours", variant: "warning" },
+  failed: { label: "Échec du paiement", variant: "danger" },
+};
+
 function EscrowRow({ escrow, role, onAction }) {
   const isSeller = role === "seller";
   const navigate = useNavigate();
   const counterparty = isSeller ? escrow.buyerName : escrow.sellerName;
   const status = statusConfig[escrow.status] || { label: escrow.status, variant: "gray", icon: Clock };
   const StatusIcon = status.icon;
+  const payout = escrow.payout;
+  const payoutInfo = isSeller && payout ? payoutConfig[payout.status] : null;
 
   return (
     <div
@@ -44,6 +53,7 @@ function EscrowRow({ escrow, role, onAction }) {
         <div className="flex items-center gap-2 mt-1">
           <StatusIcon className="h-3.5 w-3.5 text-gray-400" />
           <Badge variant={status.variant}>{status.label}</Badge>
+          {payoutInfo && <Badge variant={payoutInfo.variant}>{payoutInfo.label}</Badge>}
         </div>
       </div>
       <div className="text-right shrink-0 flex flex-col items-end gap-1.5">

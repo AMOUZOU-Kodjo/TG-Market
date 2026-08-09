@@ -103,6 +103,7 @@ export default function EditListingPage() {
       setValue("brand", existingProduct.brand || "");
       setValue("deliveryAvailable", existingProduct.deliveryAvailable);
       setValue("deliveryPrice", existingProduct.deliveryPrice || "");
+      setValue("quantity", existingProduct.quantity || 1);
       setValue("tags", existingProduct.tags?.join(", ") || "");
     }
   }, [existingProduct, categories, setValue]);
@@ -182,6 +183,7 @@ export default function EditListingPage() {
           negotiable: formValues.negotiable,
           deliveryAvailable: formValues.deliveryAvailable,
           deliveryPrice: formValues.deliveryPrice ? Number(formValues.deliveryPrice) : undefined,
+          quantity: Number(formValues.quantity) || 1,
           tags: Array.isArray(formValues.tags) ? formValues.tags : (formValues.tags ? formValues.tags.split(",").map((t) => t.trim()).filter(Boolean) : []),
           images: allImages,
         },
@@ -400,6 +402,22 @@ export default function EditListingPage() {
                   </motion.div>
                 )}
               </AnimatePresence>
+
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Quantité en stock
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="999"
+                  className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 transition-colors focus:border-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                  {...register("quantity", { valueAsNumber: true, min: 1 })}
+                />
+                {errors.quantity && (
+                  <p className="mt-1.5 text-xs text-red-700">{errors.quantity.message}</p>
+                )}
+              </div>
             </div>
           </ListingFormStep>
         );

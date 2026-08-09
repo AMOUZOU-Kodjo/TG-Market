@@ -215,7 +215,7 @@ export default function DashboardProfilePage() {
               price={product.price} originalPrice={product.originalPrice} location={product.city || product.location}
               neighborhood={product.neighborhood} condition={product.condition}
               hasActiveNegotiation={product.hasActiveNegotiation} hasActiveEscrow={product.hasActiveEscrow}
-              status={product.status} isUrgent={product.isUrgent}
+              quantity={product.quantity} status={product.status} isUrgent={product.isUrgent}
               isPromoted={product.isPromoted} isFeatured={product.isFeatured} negotiable={product.negotiable}
               isFavorite onClick={() => navigate(`/annonce/${product.id}`)} />
           ))}

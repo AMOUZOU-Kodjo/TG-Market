@@ -38,7 +38,9 @@ export default function ProductCard({
   const [imageLoaded, setImageLoaded] = useState(false);
 
   const handleFavorite = async (e) => {
+    e.preventDefault();
     e.stopPropagation();
+    if (toggleFav.isPending) return;
     if (!isAuthenticated) {
       toast.error("Connectez-vous pour ajouter aux favoris");
       navigate("/connexion");
@@ -86,7 +88,7 @@ export default function ProductCard({
 
         {/* Chap-Chap badge (urgent) - top left */}
         {isUrgent && (
-          <div className="absolute left-3 top-3 z-10 flex items-center gap-1 rounded-full bg-orange-500 px-2.5 py-1 shadow-md">
+          <div className="absolute left-3 top-11 z-10 flex items-center gap-1 rounded-full bg-orange-500 px-2.5 py-1 shadow-md">
             <Zap className="h-3 w-3 fill-white text-white" />
             <span className="text-[10px] font-bold text-white">Chap-Chap</span>
           </div>
@@ -94,24 +96,24 @@ export default function ProductCard({
 
         {/* Condition badge - top right (or below Chap-Chap) */}
         {condition && (
-          <div className={cn("absolute top-3 z-10", isUrgent ? "right-3 top-11" : "right-3")}>
+          <div className="absolute left-3 top-3 z-10">
             <Badge variant={condition === "new" ? "success" : "warning"}>
               {condition === "new" ? "Neuf" : condition === "like_new" ? "Très bon état" : condition === "good" ? "Bon état" : condition === "fair" ? "Usé" : condition}
             </Badge>
           </div>
         )}
 
-        {/* Heart button - top right corner */}
+        {/* Heart button - top left corner */}
         {productId && (
           <button
+            type="button"
             onClick={handleFavorite}
-            disabled={toggleFav.isPending}
-            className="absolute right-3 top-3 z-20 rounded-full bg-white/90 p-2 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:shadow-md dark:bg-gray-800/90 dark:hover:bg-gray-900"
+            className="absolute right-3 top-3 z-30 cursor-pointer rounded-full border-2 border-white bg-white p-1 shadow-sm transition-transform hover:scale-110"
           >
             <Heart
               className={cn(
                 "h-5 w-5 transition-colors",
-                isFavorite ? "fill-red-700 text-red-700" : "text-gray-600 dark:text-gray-400"
+                isFavorite ? "fill-red-700 text-red-700" : "text-gray-600 text-bold dark:text-gray-400"
               )}
             />
           </button>
@@ -136,7 +138,7 @@ export default function ProductCard({
         )}
 
         {/* Stock badge */}
-        {quantity > 1 && status !== "sold" && (
+        {quantity >= 1 && status !== "sold" && (
           <div className="absolute bottom-2 left-2 z-10 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-gray-700 shadow-sm backdrop-blur-sm dark:bg-gray-900/90 dark:text-gray-300">
             {quantity} en stock
           </div>

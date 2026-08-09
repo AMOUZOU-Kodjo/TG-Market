@@ -129,6 +129,12 @@ export default function ProductDetailPage() {
             {formatNumber(product.views)}
           </span>
         </div>
+        <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-4 py-2.5 dark:border-gray-700">
+          <span className="text-sm text-gray-500 dark:text-gray-400">Stock disponible</span>
+          <span className="text-sm font-medium text-gray-900 dark:text-white">
+            {product.status === "sold" ? "Vendu" : (formatNumber(product.quantity) + " en stock")}
+          </span>
+        </div>
         <div className="flex items-center justify-between gap-3 px-4 py-2.5">
           <span className="text-sm text-gray-500 dark:text-gray-400">Favoris</span>
           <span className="text-sm font-medium text-gray-900 dark:text-white">

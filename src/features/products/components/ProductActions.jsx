@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import api from "@/shared/services/api";
 import Modal from "@/shared/ui/Modal";
 import Button from "@/shared/ui/Button";
+import { slugify } from "@/shared/utils/format";
 
 const REPORT_REASONS = [
   { value: "inappropriate", label: "Contenu inapproprié" },
@@ -37,6 +38,10 @@ export default function ProductActions({ product }) {
   const [reportDescription, setReportDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  const shareUrl = product?.id
+    ? `${window.location.origin}/annonce/${product.id}-${slugify(product.title || "")}`
+    : window.location.href;
+
   const handleFavorite = async () => {
     if (!isAuthenticated) {
       toast.error("Connectez-vous pour ajouter aux favoris");
@@ -57,7 +62,7 @@ export default function ProductActions({ product }) {
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
       toast.success("Lien copié !");
       setTimeout(() => setCopied(false), 2000);
@@ -72,7 +77,7 @@ export default function ProductActions({ product }) {
         await navigator.share({
           title: product.title,
           text: `Regarde ${product.title} sur ${siteName}`,
-          url: window.location.href,
+          url: shareUrl,
         });
       } catch (err) {
         if (err.name !== "AbortError") {
@@ -87,7 +92,7 @@ export default function ProductActions({ product }) {
 
   const handleWhatsAppShare = () => {
     const text = encodeURIComponent(
-      `${product.title} - ${product.price?.toLocaleString("fr-FR")} FCFA\n${window.location.href}`
+      `${product.title} - ${product.price?.toLocaleString("fr-FR")} FCFA\n${shareUrl}`
     );
     window.open(`https://wa.me/?text=${text}`, "_blank");
     setShowShareMenu(false);

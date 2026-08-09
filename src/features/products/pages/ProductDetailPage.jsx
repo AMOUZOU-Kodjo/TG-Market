@@ -31,18 +31,21 @@ const fadeUp = {
 };
 
 export default function ProductDetailPage() {
-  const { id } = useParams();
+  const params = useParams();
   const navigate = useNavigate();
 
-  const { data: product, isLoading } = useProduct(id);
-  const { data: similarProducts = [] } = useSimilarProducts(id);
+  const id = String(params.id ?? "").replace(/[^0-9].*$/, "");
+  const productId = id ? Number(id) : null;
+
+  const { data: product, isLoading } = useProduct(productId);
+  const { data: similarProducts = [] } = useSimilarProducts(productId);
   const { user } = useAuth();
 
   useEffect(() => {
-    if (id) {
-      productsApi.incrementViews(id).catch(() => {});
+    if (productId) {
+      productsApi.incrementViews(productId).catch(() => {});
     }
-  }, [id]);
+  }, [productId]);
 
   if (isLoading) {
     return (

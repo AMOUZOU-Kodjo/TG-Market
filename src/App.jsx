@@ -72,6 +72,10 @@ import {
   BundlesManagePage,
 } from "@/routes/lazyPages";
 
+const GOOGLE_CLIENT_ID =
+  import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+  "106947888287-6o72a1vfmo03ejt20bt0m1gsieq03jml.apps.googleusercontent.com";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -95,7 +99,7 @@ function PageLoader() {
 
 function App() {
   return (
-    <GoogleOAuthProvider clientId="106947888287-6o72a1vfmo03ejt20bt0m1gsieq03jml.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>

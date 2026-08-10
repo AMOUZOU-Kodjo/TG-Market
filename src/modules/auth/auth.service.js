@@ -6,6 +6,7 @@ import jwtConfig from '../../config/jwt.js';
 import redis from '../../config/redis.js';
 import { generateOtp } from '../../utils/helpers.js';
 import { sendEmail, passwordResetEmail, verificationEmail } from '../../utils/email.js';
+import { deleteUserData } from '../../utils/userCleanup.js';
 
 export function formatUser(user, unreadMessages = 0, unreadNotifications = 0) {
   const name = `${user.first_name || ''} ${user.last_name || ''}`.trim();
@@ -622,7 +623,7 @@ export async function deleteAccount(userId) {
   }
 
   await prisma.refreshToken.deleteMany({ where: { user_id: userId } });
-  await prisma.user.delete({ where: { id: userId } });
+  await deleteUserData(userId);
   return { message: 'Compte supprimé avec succès' };
 }
 

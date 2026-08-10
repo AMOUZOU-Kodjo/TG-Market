@@ -1,5 +1,6 @@
 import prisma from '../../config/database.js';
 import { invalidateCache, invalidateCacheByPattern } from '../../utils/cache.js';
+import { deleteUserData } from '../../utils/userCleanup.js';
 
 function invalidateCategoriesCache() {
   invalidateCache('cache:categories:tree');
@@ -264,7 +265,7 @@ export async function deleteUser(userId) {
     throw error;
   }
 
-  await prisma.user.delete({ where: { id: userId } });
+  await deleteUserData(userId);
   return { message: 'Utilisateur supprimé avec succès' };
 }
 

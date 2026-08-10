@@ -47,6 +47,9 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (email, password, rememberMe = true) => {
     try {
       const { data } = await api.post("/auth/login", { email, password });
+      if (data.requiresTwoFactor) {
+        return { success: false, requiresTwoFactor: true, tempToken: data.tempToken };
+      }
       setAuthTokens(data.accessToken, data.refreshToken, rememberMe);
       setUser(data.user);
       return { success: true };
@@ -57,10 +60,26 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const googleLogin = useCallback(async (code) => {
+  const verifyTwoFactor = useCallback(async (tempToken, code, rememberMe = true) => {
+    try {
+      const { data } = await api.post("/auth/2fa/verify", { tempToken, token: code });
+      setAuthTokens(data.accessToken, data.refreshToken, rememberMe);
+      setUser(data.user);
+      return { success: true };
+    } catch (error) {
+      const message =
+        error.response?.data?.error || "Code 2FA invalide";
+      return { success: false, error: message };
+    }
+  }, []);
+
+  const googleLogin = useCallback(async (code, rememberMe = true) => {
     try {
       const { data } = await api.post("/auth/google", { code });
-      setAuthTokens(data.accessToken, data.refreshToken);
+      if (data.requiresTwoFactor) {
+        return { success: false, requiresTwoFactor: true, tempToken: data.tempToken };
+      }
+      setAuthTokens(data.accessToken, data.refreshToken, rememberMe);
       setUser(data.user);
       return { success: true };
     } catch (error) {
@@ -124,6 +143,7 @@ export function AuthProvider({ children }) {
         isAuthenticated,
         isAdmin,
         login,
+        verifyTwoFactor,
         googleLogin,
         register,
         logout,

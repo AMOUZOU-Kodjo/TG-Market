@@ -1,21 +1,31 @@
 import prisma from '../../config/database.js';
 
 export async function getAllCategories() {
-  const categories = await prisma.category.findMany({
-    where: { is_active: true },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      icon: true,
-      color: true,
-      description: true,
-      image: true,
-      parent_id: true,
-      product_count: true,
-    },
-    orderBy: { sort_order: 'asc' },
-  });
+  const [categories, productCounts] = await Promise.all([
+    prisma.category.findMany({
+      where: { is_active: true },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        icon: true,
+        color: true,
+        description: true,
+        image: true,
+        parent_id: true,
+      },
+      orderBy: { sort_order: 'asc' },
+    }),
+    prisma.product.groupBy({
+      by: ['category_id'],
+      where: { status: { in: ['active', 'reserved'] } },
+      _count: { _all: true },
+    }),
+  ]);
+
+  const countMap = new Map(
+    productCounts.map((p) => [p.category_id, p._count._all])
+  );
 
   const flat = categories.map((c) => ({
     id: c.id,
@@ -26,7 +36,7 @@ export async function getAllCategories() {
     description: c.description,
     image: c.image,
     parentId: c.parent_id ?? null,
-    productCount: c.product_count,
+    productCount: countMap.get(c.id) ?? 0,
   }));
 
   const map = new Map(flat.map((c) => [c.id, { ...c, children: [] }]));
@@ -40,6 +50,14 @@ export async function getAllCategories() {
     } else {
       roots.push(cat);
     }
+  }
+
+  const sumDescendants = (node) =>
+    node.productCount +
+    node.children.reduce((sum, child) => sum + sumDescendants(child), 0);
+
+  for (const root of roots) {
+    root.productCount = sumDescendants(root);
   }
 
   return roots;
@@ -82,6 +100,19 @@ export async function getCategoryBySlug(slug) {
     throw error;
   }
 
+  const childIds = (category.children ?? []).map((ch) => ch.id);
+  const productCounts = await prisma.product.groupBy({
+    by: ['category_id'],
+    where: {
+      category_id: { in: [...childIds, category.id] },
+      status: { in: ['active', 'reserved'] },
+    },
+    _count: { _all: true },
+  });
+  const countMap = new Map(
+    productCounts.map((p) => [p.category_id, p._count._all])
+  );
+
   return {
     id: category.id,
     name: category.name,
@@ -98,9 +129,9 @@ export async function getCategoryBySlug(slug) {
       slug: ch.slug,
       icon: ch.icon,
       color: ch.color,
-      productCount: ch.product_count,
+      productCount: countMap.get(ch.id) ?? 0,
     })),
-    productCount: category.product_count,
+    productCount: countMap.get(category.id) ?? 0,
   };
 }
 

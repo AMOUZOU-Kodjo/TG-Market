@@ -25,6 +25,7 @@ import {
   ResetPasswordPage,
   EmailVerificationPage,
   CategoryPage,
+  CategoriesPage,
   SearchResultsPage,
   ProductDetailPage,
   CreateListingPage,
@@ -114,6 +115,7 @@ function App() {
                       <Routes>
                         <Route element={<MainLayout />}>
                           <Route path="/" element={<HomePage />} />
+                          <Route path="/categories" element={<CategoriesPage />} />
                           <Route path="/categories/:slug" element={<CategoryPage />} />
                           <Route path="/vehicules" element={<VehicleListingsPage />} />
                           <Route path="/recherche" element={<SearchResultsPage />} />

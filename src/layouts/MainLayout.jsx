@@ -110,7 +110,7 @@ export default function MainLayout() {
     <div className="min-h-screen flex flex-col">
       <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors">
         {/* Sticky Header + Category Bar */}
-        <div className={`sticky top-0 z-50 relative ${location.pathname.startsWith("/vendeur/") || location.pathname.startsWith("/recherche") || location.pathname.startsWith("/a-propos") || location.pathname.startsWith("/annonce/") ? "hidden" : ""}`}>
+        <div className={`sticky top-0 z-50 relative ${location.pathname === "/categories" || location.pathname.startsWith("/vendeur/") || location.pathname.startsWith("/recherche") || location.pathname.startsWith("/a-propos") || location.pathname.startsWith("/annonce/") ? "hidden" : ""}`}>
           {/* Logo centered in combined header+category height */}
           <Link to="/" className="absolute left-4 sm:left-6 lg:left-8 top-1/3 -translate-y-1/2 z-50 hidden md:block">
             <Logo size="md" className="w-24 h-24" />
@@ -416,7 +416,7 @@ export default function MainLayout() {
         </div>
 
         {/* Main Content */}
-        <main className={`flex-1 ${location.pathname.startsWith("/annonce/") ? "md:pb-0" : "pb-20 md:pb-0"}`}>
+        <main className={`flex-1 ${location.pathname === "/categories" ? "pb-0" : location.pathname.startsWith("/annonce/") ? "md:pb-0" : "pb-20 md:pb-0"}`}>
           <motion.div
             key={location.pathname}
             initial={{ opacity: 0, y: 12 }}
@@ -429,7 +429,7 @@ export default function MainLayout() {
 
         <footer
           className={`bg-footer dark:bg-footer-dark text-footer-text pb-20 md:pb-0 
-${location.pathname.startsWith("/categories/") || location.pathname.startsWith("/vendre") || 
+${location.pathname === "/categories" || location.pathname.startsWith("/categories/") || location.pathname.startsWith("/vendre") || 
 location.pathname.startsWith("/annonce/") || location.pathname.startsWith("/vendeur/") || 
 location.pathname.startsWith("/recherche") ||
 location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWith("/portefeuille") ||location.pathname.startsWith("/contact")|| location.pathname.startsWith("/a-propos") ? "hidden " : ""}`}
@@ -561,7 +561,7 @@ location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWit
         </footer>
 
         {/* Mobile Bottom Nav */}
-        {!location.pathname.startsWith("/vendeur/") && !location.pathname.startsWith("/annonce/") && <BottomNav />}
+        {!location.pathname.startsWith("/vendeur/") && !location.pathname.startsWith("/annonce/") && location.pathname !== "/categories" && <BottomNav />}
       </div>
     </div>
   );

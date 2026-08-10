@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import {
   Search,
   Smartphone,
@@ -139,23 +138,6 @@ const hexToBg = (hex) => {
   return map[hex] || "bg-brand-800";
 };
 
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.04, delayChildren: 0.05 },
-  },
-};
-
-const staggerItem = {
-  hidden: { opacity: 0, scale: 0.9 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: { duration: 0.3, ease: "easeOut" },
-  },
-};
-
 export default function CategoriesPage() {
   const { data: categories = [], isLoading } = useCategories();
   const [searchQuery, setSearchQuery] = useState("");
@@ -166,33 +148,49 @@ export default function CategoriesPage() {
       categories.map((c) => c.name.charAt(0).toUpperCase())
     );
     return [...letters].sort();
-  }, []);
+  }, [categories]);
 
-  const filteredCategories = useMemo(() => {
-    let result = categories;
-
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(
-        (c) =>
-          c.name.toLowerCase().includes(q) ||
-          (c.description && c.description.toLowerCase().includes(q))
-      );
-    }
+  const filtered = useMemo(() => {
+    let megas = categories;
 
     if (selectedLetter) {
-      result = result.filter(
+      megas = megas.filter(
         (c) => c.name.charAt(0).toUpperCase() === selectedLetter
       );
     }
 
-    return result;
-  }, [searchQuery, selectedLetter]);
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      megas = megas
+        .map((mega) => {
+          const megaMatches =
+            mega.name.toLowerCase().includes(q) ||
+            (mega.description && mega.description.toLowerCase().includes(q));
+          const children = (mega.children ?? []).filter(
+            (c) =>
+              c.name.toLowerCase().includes(q) ||
+              (c.description && c.description.toLowerCase().includes(q))
+          );
+          if (megaMatches) return { ...mega, children: mega.children ?? [] };
+          if (children.length) return { ...mega, children };
+          return null;
+        })
+        .filter(Boolean);
+    }
+
+    return megas;
+  }, [categories, searchQuery, selectedLetter]);
 
   const totalProducts = categories.reduce(
-    (sum, c) => sum + c.productCount,
+    (sum, c) => sum + (c.productCount ?? 0),
     0
   );
+
+  const scrollToSection = (slug) => {
+    document
+      .getElementById(slug)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const breadcrumbItems = [
     { label: "Accueil", href: "/" },
@@ -204,12 +202,7 @@ export default function CategoriesPage() {
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <Breadcrumb items={breadcrumbItems} className="mb-6" />
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-8"
-        >
+        <div className="mb-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
@@ -221,14 +214,9 @@ export default function CategoriesPage() {
               </p>
             </div>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-          className="mb-8"
-        >
+        <div className="mb-8">
           <div className="relative max-w-md">
             <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <input
@@ -242,24 +230,19 @@ export default function CategoriesPage() {
               className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500"
             />
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4, delay: 0.15 }}
-          className="mb-8 flex flex-wrap gap-1.5"
-        >
+        <div className="mb-4 -mx-4 flex gap-1.5 overflow-x-auto px-4 hide-scrollbar sm:mx-0 sm:flex-wrap sm:px-0">
           <button
             onClick={() => {
               setSelectedLetter(null);
               setSearchQuery("");
             }}
             className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium transition-all",
+              "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-medium transition-colors",
               !selectedLetter && !searchQuery
-                ? "bg-brand-800 text-white shadow-sm shadow-brand-800/25"
-                : "bg-white text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+                ? "bg-brand-800 text-white"
+                : "bg-gray-50 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
             )}
           >
             <LayoutGrid className="h-3.5 w-3.5" />
@@ -272,23 +255,41 @@ export default function CategoriesPage() {
                 setSearchQuery("");
               }}
               className={cn(
-                "flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium transition-all",
+                "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-medium transition-colors",
                 selectedLetter === letter
-                  ? "bg-brand-800 text-white shadow-sm shadow-brand-800/25"
-                  : "bg-white text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+                  ? "bg-brand-800 text-white"
+                  : "bg-gray-50 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
               )}
             >
               {letter}
             </button>
           ))}
-        </motion.div>
+        </div>
 
-        {filteredCategories.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="py-16 text-center"
-          >
+        {filtered.length > 0 && (
+          <div className="mb-8 -mx-4 flex items-center gap-2 overflow-x-auto px-4 hide-scrollbar sm:mx-0 sm:flex-wrap sm:px-0">
+            {filtered.map((mega) => {
+              const QuickIcon = iconMap[mega.icon] || Package;
+              return (
+                <button
+                  key={mega.id}
+                  onClick={() => scrollToSection(mega.slug)}
+                  className="flex shrink-0 items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium text-gray-700 transition-colors hover:border-brand-800 hover:text-brand-800 sm:shrink dark:border-gray-700 dark:bg-gray-700/50 dark:text-gray-200 dark:hover:border-brand-600 dark:hover:text-brand-400"
+                >
+                  <QuickIcon className="h-3.5 w-3.5 text-gray-400" />
+                  {mega.name}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-600 border-t-transparent" />
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="py-16 text-center">
             <Search className="mx-auto mb-4 h-12 w-12 text-gray-300 dark:text-gray-600" />
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               Aucune catégorie trouvée
@@ -305,74 +306,95 @@ export default function CategoriesPage() {
             >
               Réinitialiser les filtres
             </button>
-          </motion.div>
+          </div>
         ) : (
-          <>
-            <div className="mb-4 text-xs font-medium text-gray-400 dark:text-gray-500">
-              {filteredCategories.length} catégorie{filteredCategories.length > 1 ? "s" : ""}
-            </div>
-
-            <motion.div
-              variants={staggerContainer}
-              initial="hidden"
-              animate="visible"
-              key={`${selectedLetter}-${searchQuery}`}
-              className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
-            >
-              {filteredCategories.map((cat) => {
-                const Icon = iconMap[cat.icon] || Package;
-                return (
-                  <motion.div key={cat.id} variants={staggerItem}>
-                    <Link to={`/categories/${cat.slug}`}>
-                      <motion.div
-                        whileHover={{ y: -6, scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                        className="group cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all hover:shadow-lg dark:border-gray-800 dark:bg-gray-800"
-                      >
-                        <div
-                          className={cn(
-                            "relative flex h-28 items-center justify-center sm:h-32",
-                            hexToBg(cat.color) + "/10"
-                          )}
-                        >
-                          <div
-                            className="flex h-14 w-14 items-center justify-center rounded-2xl transition-transform group-hover:scale-110"
-                            style={{
-                              backgroundColor: `${cat.color}15`,
-                              color: cat.color,
-                            }}
-                          >
-                            <Icon className="h-7 w-7" />
-                          </div>
-                          <Badge
-                            variant="secondary"
-                            size="sm"
-                            className="absolute right-2 top-2 bg-white/80 backdrop-blur-sm dark:bg-gray-800/80"
-                          >
-                            {cat.productCount}
+          <div className="space-y-10">
+            {filtered.map((mega) => {
+              const MegaIcon = iconMap[mega.icon] || Package;
+              const children = mega.children ?? [];
+              const megaCount = mega.productCount ?? 0;
+              return (
+                <section
+                  key={mega.id}
+                  id={mega.slug}
+                  className="scroll-mt-6"
+                >
+                  <div className="mb-4 flex items-start gap-3 border-b border-gray-100 pb-4 dark:border-gray-700">
+                    <div
+                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
+                      style={{
+                        backgroundColor: `${mega.color || "#01796F"}15`,
+                        color: mega.color || "#01796F",
+                      }}
+                    >
+                      <MegaIcon className="h-6 w-6" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                        <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                          {mega.name}
+                        </h2>
+                        {megaCount > 0 && (
+                          <Badge variant="secondary" size="sm">
+                            {megaCount} annonces
                           </Badge>
-                        </div>
-
-                        <div className="p-4">
-                          <h3 className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-brand-800 transition-colors">
-                            {cat.name}
-                          </h3>
-                          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
-                            {cat.description}
-                          </p>
-                          <div className="mt-3 flex items-center gap-1 text-xs font-medium text-brand-800 opacity-0 transition-opacity group-hover:opacity-100">
-                            Explorer
-                            <ChevronRight className="h-3.5 w-3.5" />
-                          </div>
-                        </div>
-                      </motion.div>
+                        )}
+                      </div>
+                      {mega.description && (
+                        <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+                          {mega.description}
+                        </p>
+                      )}
+                    </div>
+                    <Link
+                      to={`/categories/${mega.slug}`}
+                      className="flex shrink-0 items-center gap-1 text-xs font-medium text-brand-800 hover:text-brand-900"
+                    >
+                      <span className="hidden sm:inline">Voir tout</span>
+                      <ChevronRight className="h-3.5 w-3.5" />
                     </Link>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
-          </>
+                  </div>
+
+                  {children.length > 0 ? (
+                    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 lg:grid-cols-6">
+                      {children.map((child) => {
+                        const ChildIcon = iconMap[child.icon] || Package;
+                        return (
+                          <Link
+                            key={child.id}
+                            to={`/categories/${child.slug}`}
+                            className="flex flex-col rounded-2xl border border-gray-100 bg-gray-50 p-3 transition-colors dark:border-gray-700 dark:bg-gray-700/50"
+                          >
+                            <div
+                              className="mb-2 flex h-9 w-9 items-center justify-center rounded-lg"
+                              style={{
+                                backgroundColor: `${child.color || "#01796F"}12`,
+                                color: child.color || "#01796F",
+                              }}
+                            >
+                              <ChildIcon className="h-4.5 w-4.5" />
+                            </div>
+                            <h3 className="text-xs font-medium text-gray-800 dark:text-gray-200 line-clamp-2">
+                              {child.name}
+                            </h3>
+                            {(child.productCount ?? 0) > 0 && (
+                              <p className="mt-1 text-[11px] text-gray-400">
+                                {child.productCount} annonces
+                              </p>
+                            )}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-400">
+                      Aucune sous-catégorie
+                    </p>
+                  )}
+                </section>
+              );
+            })}
+          </div>
         )}
       </div>
     </div>

@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Search, Ban, CheckCircle, Trash2, Loader2, UserCheck, UserX, ShieldCheck } from "lucide-react";
+import { Search, Ban, CheckCircle, Trash2, Loader2, ShieldCheck, ChevronRight, UserCheck, UserX } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/shared/services/api";
 import Badge from "@/shared/ui/Badge";
 import Avatar from "@/shared/ui/Avatar";
+import Modal from "@/shared/ui/Modal";
 import toast from "react-hot-toast";
 
 export default function AdminUsersPage() {
@@ -11,6 +12,7 @@ export default function AdminUsersPage() {
   const [page, setPage] = useState(1);
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [actionUser, setActionUser] = useState(null);
   const qc = useQueryClient();
 
   const params = new URLSearchParams({ page, perPage: 20 });
@@ -36,7 +38,7 @@ export default function AdminUsersPage() {
 
   const deleteUser = useMutation({
     mutationFn: (id) => api.delete(`/admin/users/${id}`),
-    onSuccess: () => { toast.success("Utilisateur supprimé"); qc.invalidateQueries({ queryKey: ["adminUsers"] }); },
+    onSuccess: () => { setActionUser(null); toast.success("Utilisateur supprimé"); qc.invalidateQueries({ queryKey: ["adminUsers"] }); },
     onError: (e) => toast.error(e.response?.data?.error ?? "Erreur lors de la suppression"),
   });
 
@@ -46,6 +48,8 @@ export default function AdminUsersPage() {
     const text = `${u.firstName} ${u.lastName} ${u.email}`.toLowerCase();
     return text.includes(search.toLowerCase());
   });
+
+  const pending = toggleStatus.isPending || changeRole.isPending || deleteUser.isPending;
 
   return (
     <div className="space-y-6">
@@ -83,121 +87,172 @@ export default function AdminUsersPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-600 border-t-transparent" />
+      {isLoading ? (
+        <div className="flex items-center justify-center py-20 bg-white rounded-2xl border border-gray-200">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand-600 border-t-transparent" />
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-gray-400 bg-white rounded-2xl border border-gray-200">
+          <p>Aucun utilisateur trouvé</p>
+        </div>
+      ) : (
+        <>
+          {/* Cartes utilisateurs */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+            {filtered.map((user) => (
+              <button
+                key={user.id}
+                onClick={() => setActionUser(user)}
+                className="w-full h-full text-left bg-white rounded-2xl border border-gray-200 shadow-sm p-4 transition-all hover:border-gray-300 hover:shadow-md active:bg-gray-50"
+              >
+                <div className="flex items-start gap-3">
+                  <Avatar src={user.avatar} name={`${user.firstName} ${user.lastName}`} size="sm" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {user.firstName} {user.lastName}
+                      {user.role === "admin" && (
+                        <ShieldCheck className="inline w-3.5 h-3.5 ml-1.5 text-purple-500" />
+                      )}
+                    </p>
+                    <p className="text-xs text-gray-400 truncate">{user.email}</p>
+                    {user.city && <p className="text-xs text-gray-400 truncate mt-0.5">{user.city}</p>}
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      <Badge variant={user.role === "admin" ? "primary" : "secondary"}>
+                        {user.role === "admin" ? "Admin" : "Utilisateur"}
+                      </Badge>
+                      <Badge variant={user.isActive ? "success" : "danger"}>
+                        {user.isActive ? "Actif" : "Inactif"}
+                      </Badge>
+                      <Badge variant={user.identityVerified ? "success" : "warning"}>
+                        {user.identityVerified ? "Vérifié" : "Non vérifié"}
+                      </Badge>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-gray-300 mt-1 shrink-0" />
+                </div>
+              </button>
+            ))}
           </div>
-        ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-            <p>Aucun utilisateur trouvé</p>
+        </>
+      )}
+
+      {meta && meta.totalPages > 1 && (
+        <div className="flex items-center justify-between border-t border-gray-100 bg-white rounded-2xl border border-gray-200 shadow-sm px-6 py-3">
+          <p className="text-xs text-gray-400">
+            {meta.total} utilisateurs · Page {meta.page}/{meta.totalPages}
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+              className="px-3 py-1 text-xs rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 disabled:opacity-30"
+            >
+              Précédent
+            </button>
+            <button
+              onClick={() => setPage((p) => Math.min(meta.totalPages, p + 1))}
+              disabled={page >= meta.totalPages}
+              className="px-3 py-1 text-xs rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 disabled:opacity-30"
+            >
+              Suivant
+            </button>
           </div>
-        ) : (
-          <>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-100 text-left text-xs font-medium uppercase tracking-wider text-gray-400">
-                    <th className="px-6 py-3">Utilisateur</th>
-                    <th className="px-6 py-3 hidden md:table-cell">Email</th>
-                    <th className="px-6 py-3 hidden lg:table-cell">Ville</th>
-                    <th className="px-6 py-3">Rôle</th>
-                    <th className="px-6 py-3">Statut</th>
-                    <th className="px-6 py-3">Vérifié</th>
-                    <th className="px-6 py-3">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {filtered.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-3">
-                        <div className="flex items-center gap-3">
-                          <Avatar src={user.avatar} name={`${user.firstName} ${user.lastName}`} size="sm" />
-                          <div>
-                            <p className="text-sm font-medium text-gray-900">{user.firstName} {user.lastName}</p>
-                            <p className="text-xs text-gray-400 md:hidden">{user.email}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-3 hidden md:table-cell text-sm text-gray-500">{user.email}</td>
-                      <td className="px-6 py-3 hidden lg:table-cell text-sm text-gray-500">{user.city ?? "—"}</td>
-                      <td className="px-6 py-3">
-                        <select
-                          value={user.role}
-                          onChange={(e) => changeRole.mutate({ id: user.id, role: e.target.value })}
-                          disabled={changeRole.isPending}
-                          className={`text-xs font-medium rounded-lg px-2 py-1 border-0 cursor-pointer disabled:opacity-50 ${
-                            user.role === "admin" ? "bg-purple-50 text-purple-600" : "bg-gray-100 text-gray-500"
-                          }`}
-                        >
-                          <option value="user">Utilisateur</option>
-                          <option value="admin">Admin</option>
-                        </select>
-                      </td>
-                      <td className="px-6 py-3">
-                        <Badge variant={user.isActive ? "success" : "danger"}>
-                          {user.isActive ? "Actif" : "Inactif"}
-                        </Badge>
-                      </td>
-                      <td className="px-6 py-3">
-                        <Badge variant={user.identityVerified ? "success" : "warning"}>
-                          {user.identityVerified ? "Vérifié" : "Non vérifié"}
-                        </Badge>
-                      </td>
-                      <td className="px-6 py-3">
-                        <div className="flex items-center gap-1">
-                          <button
-                            onClick={() => toggleStatus.mutate({ id: user.id, isActive: !user.isActive })}
-                            disabled={toggleStatus.isPending}
-                            className={`p-1.5 rounded-lg transition-colors ${
-                              user.isActive ? "text-red-500 hover:bg-red-50" : "text-green-600 hover:bg-green-50"
-                            }`}
-                            title={user.isActive ? "Désactiver" : "Activer"}
-                          >
-                            {user.isActive ? <Ban className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
-                          </button>
-                          <button
-                            onClick={() => { if (confirm("Supprimer cet utilisateur ?")) deleteUser.mutate(user.id); }}
-                            disabled={deleteUser.isPending || user.role === "admin"}
-                            className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 transition-colors disabled:opacity-30"
-                            title="Supprimer"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        </div>
+      )}
+
+      {/* Sheet d'actions */}
+      <Modal
+        isOpen={!!actionUser}
+        onClose={() => setActionUser(null)}
+        title="Actions"
+        size="sm"
+      >
+        {actionUser && (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <Avatar src={actionUser.avatar} name={`${actionUser.firstName} ${actionUser.lastName}`} size="md" />
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-gray-900 truncate">
+                  {actionUser.firstName} {actionUser.lastName}
+                </p>
+                <p className="text-xs text-gray-400 truncate">{actionUser.email}</p>
+              </div>
             </div>
 
-            {meta && meta.totalPages > 1 && (
-              <div className="flex items-center justify-between border-t border-gray-100 px-6 py-3">
-                <p className="text-xs text-gray-400">
-                  {meta.total} utilisateurs · Page {meta.page}/{meta.totalPages}
-                </p>
+            <div className="flex flex-wrap gap-1.5">
+              <Badge variant={actionUser.role === "admin" ? "primary" : "secondary"}>
+                {actionUser.role === "admin" ? "Admin" : "Utilisateur"}
+              </Badge>
+              <Badge variant={actionUser.isActive ? "success" : "danger"}>
+                {actionUser.isActive ? "Actif" : "Inactif"}
+              </Badge>
+              <Badge variant={actionUser.identityVerified ? "success" : "warning"}>
+                {actionUser.identityVerified ? "Vérifié" : "Non vérifié"}
+              </Badge>
+            </div>
+
+            <div className="space-y-2">
+              <button
+                onClick={() => toggleStatus.mutate({ id: actionUser.id, isActive: !actionUser.isActive })}
+                disabled={pending}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-50 text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+              >
+                {toggleStatus.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
+                ) : actionUser.isActive ? (
+                  <Ban className="w-4 h-4 text-red-500" />
+                ) : (
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                )}
+                {actionUser.isActive ? "Désactiver le compte" : "Activer le compte"}
+              </button>
+
+              <div className="px-4 py-3 rounded-xl bg-gray-50">
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-400 mb-2">Rôle</p>
                 <div className="flex gap-2">
                   <button
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    disabled={page <= 1}
-                    className="px-3 py-1 text-xs rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 disabled:opacity-30"
+                    onClick={() => changeRole.mutate({ id: actionUser.id, role: "user" })}
+                    disabled={pending || actionUser.role === "user"}
+                    className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-medium border transition-colors disabled:cursor-default ${
+                      actionUser.role === "user"
+                        ? "bg-gray-900 text-white border-gray-900"
+                        : "border-gray-200 text-gray-500 hover:bg-gray-100"
+                    }`}
                   >
-                    Précédent
+                    <UserX className="w-3.5 h-3.5" />
+                    Utilisateur
                   </button>
                   <button
-                    onClick={() => setPage((p) => Math.min(meta.totalPages, p + 1))}
-                    disabled={page >= meta.totalPages}
-                    className="px-3 py-1 text-xs rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 disabled:opacity-30"
+                    onClick={() => changeRole.mutate({ id: actionUser.id, role: "admin" })}
+                    disabled={pending || actionUser.role === "admin"}
+                    className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-medium border transition-colors disabled:cursor-default ${
+                      actionUser.role === "admin"
+                        ? "bg-purple-600 text-white border-purple-600"
+                        : "border-gray-200 text-gray-500 hover:bg-gray-100"
+                    }`}
                   >
-                    Suivant
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    Admin
                   </button>
                 </div>
               </div>
-            )}
-          </>
+
+              <button
+                onClick={() => { if (confirm("Supprimer cet utilisateur ?")) deleteUser.mutate(actionUser.id); }}
+                disabled={pending || actionUser.role === "admin"}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-red-50 text-sm font-medium text-red-600 hover:bg-red-100 disabled:opacity-50"
+              >
+                {deleteUser.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Trash2 className="w-4 h-4" />
+                )}
+                Supprimer l'utilisateur
+              </button>
+            </div>
+          </div>
         )}
-      </div>
+      </Modal>
     </div>
   );
 }

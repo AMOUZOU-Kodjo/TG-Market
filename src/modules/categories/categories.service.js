@@ -52,12 +52,17 @@ export async function getAllCategories() {
     }
   }
 
-  const sumDescendants = (node) =>
-    node.productCount +
-    node.children.reduce((sum, child) => sum + sumDescendants(child), 0);
+  const sumDescendants = (node) => {
+    let total = node.productCount;
+    for (const child of node.children) {
+      total += sumDescendants(child);
+    }
+    node.productCount = total;
+    return total;
+  };
 
   for (const root of roots) {
-    root.productCount = sumDescendants(root);
+    sumDescendants(root);
   }
 
   return roots;
@@ -155,15 +160,20 @@ export async function getCategoryProducts(slug, { page, perPage, condition, minP
     throw error;
   }
 
-  // If it's a mega-category (no parent), include products from all children
-  const categoryIds = [category.id];
-  if (category.parent_id === null) {
+  // Include the category + ALL descendants (sub-categories and leaves)
+  const collectCategoryIds = async (parentId, ids) => {
     const children = await prisma.category.findMany({
-      where: { parent_id: category.id, is_active: true },
+      where: { parent_id: parentId, is_active: true },
       select: { id: true },
     });
-    children.forEach((ch) => categoryIds.push(ch.id));
-  }
+    for (const child of children) {
+      ids.push(child.id);
+      await collectCategoryIds(child.id, ids);
+    }
+  };
+
+  const categoryIds = [category.id];
+  await collectCategoryIds(category.id, categoryIds);
 
   const where = {
     category_id: { in: categoryIds },

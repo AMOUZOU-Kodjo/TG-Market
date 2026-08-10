@@ -92,7 +92,7 @@ export async function verifyTwoFactor(tempToken, token, req) {
   try {
     const { default: jwt } = await import('jsonwebtoken');
     const { default: jwtConfig } = await import('../../config/jwt.js');
-    decoded = jwt.verify(tempToken, jwtConfig.accessSecret);
+    decoded = jwt.verify(tempToken, jwtConfig.secret);
   } catch {
     const error = new Error('Session expirée');
     error.status = 401;

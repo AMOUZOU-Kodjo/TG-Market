@@ -76,6 +76,16 @@ export async function googleLogin(authCode, req) {
     throw error;
   }
 
+  if (user.two_factor_enabled) {
+    const { default: jwt } = await import('jsonwebtoken');
+    const tempToken = jwt.sign(
+      { userId: user.id, purpose: '2fa' },
+      jwtConfig.secret,
+      { expiresIn: '5m' },
+    );
+    return { requiresTwoFactor: true, tempToken };
+  }
+
   const { accessToken, refreshToken } = generateTokens(user);
   await storeRefreshToken(user.id, refreshToken, req);
 

@@ -13,11 +13,11 @@ const statusConfig = {
 
 const docLabels = {
   cni: "Carte Nationale d'Identité",
-  passport: "Passeport",
-  driver: "Permis de conduire",
+  peris: "Permis de conduire",
+  passeport: "Passeport",
 };
 
-export default function DocumentUpload({ documentType = "cni", onUpload, status = "none", rejectionReason }) {
+export default function DocumentUpload({ documentType = "cni", title, hint, accept = "image/*,.pdf", onUpload, status = "none", rejectionReason }) {
   const [preview, setPreview] = useState(null);
   const [dragOver, setDragOver] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -62,8 +62,9 @@ export default function DocumentUpload({ documentType = "cni", onUpload, status 
   return (
     <div className="space-y-3">
       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-        {docLabels[documentType] || "Document d'identité"}
+        {title || docLabels[documentType] || "Document d'identité"}
       </label>
+      {hint && <p className="mb-1 text-xs text-gray-400">{hint}</p>}
 
       {preview || status !== "none" ? (
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="relative">
@@ -111,7 +112,7 @@ export default function DocumentUpload({ documentType = "cni", onUpload, status 
           <Upload className="mb-2 h-8 w-8 text-gray-400" />
           <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Cliquez ou glissez votre document ici</p>
           <p className="mt-1 text-xs text-gray-400">PNG, JPG ou PDF — Max 5 MB</p>
-          <input type="file" accept="image/*,.pdf" className="hidden" onChange={(e) => handleFile(e.target.files?.[0])} />
+          <input type="file" accept={accept} className="hidden" onChange={(e) => handleFile(e.target.files?.[0])} />
         </label>
       )}
     </div>

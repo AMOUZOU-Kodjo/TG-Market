@@ -31,7 +31,10 @@ export function useVerifyOtp() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: kycApi.verifyOtp,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["kycStatus"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["kycStatus"] });
+      qc.invalidateQueries({ queryKey: ["kycBadges"] });
+    },
   });
 }
 
@@ -43,6 +46,9 @@ export function useVerifyEmailOtp() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: kycApi.verifyEmailOtp,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["kycStatus"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["kycStatus"] });
+      qc.invalidateQueries({ queryKey: ["kycBadges"] });
+    },
   });
 }

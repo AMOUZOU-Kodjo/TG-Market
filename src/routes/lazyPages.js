@@ -31,6 +31,7 @@ const AdminPaymentsPage = lazy(() => import("@/features/admin/pages/AdminPayment
 const AdminPayoutsPage = lazy(() => import("@/features/admin/pages/AdminPayoutsPage"));
 const AdminReportsPage = lazy(() => import("@/features/admin/pages/AdminReportsPage"));
 const AdminContactMessagesPage = lazy(() => import("@/features/admin/pages/AdminContactMessagesPage"));
+const AdminKycPage = lazy(() => import("@/features/admin/pages/AdminKycPage"));
 const AdminSettingsPage = lazy(() => import("@/features/admin/pages/AdminSettingsPage"));
 const AboutPage = lazy(() => import("@/features/static/pages/AboutPage"));
 const FAQPage = lazy(() => import("@/features/static/pages/FAQPage"));
@@ -86,6 +87,7 @@ export {
   AdminPayoutsPage,
   AdminReportsPage,
   AdminContactMessagesPage,
+  AdminKycPage,
   AdminSettingsPage,
   AboutPage,
   FAQPage,

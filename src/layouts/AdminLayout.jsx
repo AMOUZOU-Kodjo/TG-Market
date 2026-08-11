@@ -21,6 +21,7 @@ import {
   Activity,
   ChevronRight,
   Send,
+  ShieldCheck,
 } from "lucide-react";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
@@ -46,6 +47,7 @@ export default function AdminLayout() {
     { to: "/admin/payments", label: "Paiements", icon: CreditCard },
     { to: "/admin/payouts", label: "Paiements vendeurs", icon: Send },
     { to: "/admin/reports", label: "Signalements", icon: AlertTriangle },
+    { to: "/admin/kyc", label: "Vérifications", icon: ShieldCheck },
     { to: "/admin/contact-messages", label: "Messages", icon: Mail },
     { to: "/admin/settings", label: "Parametres", icon: Settings },
   ];

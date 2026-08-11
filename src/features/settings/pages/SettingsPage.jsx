@@ -1103,7 +1103,23 @@ export default function SettingsPage() {
   });
 
   const { mutate: submitKyc, isPending: submittingKyc } = useSubmitKyc();
+  const [documentType, setDocumentType] = useState("cni");
   const [documentFrontUrl, setDocumentFrontUrl] = useState(null);
+  const [documentBackUrl, setDocumentBackUrl] = useState(null);
+  const [selfieUrl, setSelfieUrl] = useState(null);
+
+  const handleSubmitKyc = () => {
+    if (!documentFrontUrl || !selfieUrl) {
+      toast.error("Veuillez ajouter le recto du document et un selfie");
+      return;
+    }
+    submitKyc({
+      documentType,
+      documentFrontUrl,
+      documentBackUrl: documentBackUrl || undefined,
+      selfieUrl,
+    });
+  };
 
   const verificationSteps = [
     {
@@ -1877,16 +1893,13 @@ export default function SettingsPage() {
                 <h3 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">
                   Document d'identité
                 </h3>
-                {kycStatus?.documentStatus === "none" || !kycStatus?.documentStatus ? (
-                  <DocumentUpload
-                    onUpload={(file, fileUrl) => {
-                      setDocumentFrontUrl(fileUrl);
-                      submitKyc({
-                        documentType: "cni",
-                        documentFrontUrl: fileUrl,
-                      });
-                    }}
-                  />
+                {kycStatus?.documentStatus === "approved" ? (
+                  <div className="flex items-center gap-3 rounded-xl border border-brand-200 bg-brand-50 p-4 dark:border-brand-800 dark:bg-brand-900/20">
+                    <CheckCircle2 className="h-5 w-5 text-brand-600" />
+                    <p className="text-sm font-medium text-brand-800 dark:text-brand-300">
+                      Document vérifié avec succès
+                    </p>
+                  </div>
                 ) : kycStatus?.documentStatus === "pending" ? (
                   <div className="flex items-center gap-3 rounded-xl border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
                     <AlertCircle className="h-5 w-5 text-yellow-600" />
@@ -1899,34 +1912,79 @@ export default function SettingsPage() {
                       </p>
                     </div>
                   </div>
-                ) : kycStatus?.documentStatus === "approved" ? (
-                  <div className="flex items-center gap-3 rounded-xl border border-brand-200 bg-brand-50 p-4 dark:border-brand-800 dark:bg-brand-900/20">
-                    <CheckCircle2 className="h-5 w-5 text-brand-600" />
-                    <p className="text-sm font-medium text-brand-800 dark:text-brand-300">
-                      Document vérifié avec succès
-                    </p>
-                  </div>
                 ) : (
-                  <div className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
-                    <AlertCircle className="h-5 w-5 text-red-600" />
-                    <div>
-                      <p className="text-sm font-medium text-red-800 dark:text-red-300">
-                        Document rejeté
-                      </p>
-                      <p className="text-xs text-red-600 dark:text-red-400">
-                        {kycStatus?.rejectionReason || "Veuillez soumettre un nouveau document."}
-                      </p>
+                  <>
+                    {kycStatus?.documentStatus === "rejected" && (
+                      <div className="mb-4 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+                        <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-600" />
+                        <div>
+                          <p className="text-sm font-medium text-red-800 dark:text-red-300">
+                            Document rejeté
+                          </p>
+                          <p className="text-xs text-red-600 dark:text-red-400">
+                            {kycStatus?.rejectionReason || "Veuillez soumettre un nouveau document."}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="space-y-4">
+                      <div>
+                        <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Type de document
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {[
+                            { value: "cni", label: "Carte Nationale d'Identité" },
+                            { value: "peris", label: "Permis de conduire" },
+                            { value: "passeport", label: "Passeport" },
+                          ].map((opt) => (
+                            <button
+                              key={opt.value}
+                              type="button"
+                              onClick={() => setDocumentType(opt.value)}
+                              className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
+                                documentType === opt.value
+                                  ? "border-red-800 bg-red-800 text-white"
+                                  : "border-gray-300 bg-white text-gray-700 hover:border-red-800/40 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
+                              }`}
+                            >
+                              {opt.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
                       <DocumentUpload
-                        onUpload={(file, fileUrl) => {
-                          setDocumentFrontUrl(fileUrl);
-                          submitKyc({
-                            documentType: "cni",
-                            documentFrontUrl: fileUrl,
-                          });
-                        }}
+                        title="Recto du document"
+                        onUpload={(file, fileUrl) => setDocumentFrontUrl(fileUrl)}
                       />
+                      <DocumentUpload
+                        title="Verso du document (optionnel)"
+                        onUpload={(file, fileUrl) => setDocumentBackUrl(fileUrl)}
+                      />
+                      <DocumentUpload
+                        title="Selfie avec votre document"
+                        hint="Prenez une photo de vous tenant votre document près de votre visage."
+                        accept="image/*"
+                        onUpload={(file, fileUrl) => setSelfieUrl(fileUrl)}
+                      />
+
+                      <Button
+                        onClick={handleSubmitKyc}
+                        loading={submittingKyc}
+                        disabled={!documentFrontUrl || !selfieUrl}
+                        className="w-full"
+                      >
+                        Soumettre ma demande de vérification
+                      </Button>
+                      <p className="text-center text-xs text-gray-400">
+                        {!documentFrontUrl || !selfieUrl
+                          ? "Ajoutez le recto du document et un selfie pour soumettre."
+                          : "Votre demande sera examinée sous 24-48h."}
+                      </p>
                     </div>
-                  </div>
+                  </>
                 )}
               </div>
 

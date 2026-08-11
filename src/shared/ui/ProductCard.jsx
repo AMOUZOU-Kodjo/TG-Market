@@ -63,14 +63,14 @@ export default function ProductCard({
     <div
       onClick={onClick}
       className={cn(
-        "cursor-pointer overflow-hidden  dark:border-gray-800 ",
+        "cursor-pointer overflow-hidden shadow-sm rounded-bl-2xl   dark:border-gray-800 ",
         isPromoted && "ring-2 ring-brand-500",
         className
       )}
       {...rest}
     >
       {/* <div className="relative aspect-[4/5]  overflow-hidden border border-gray-200 bg-white rounded-2xl dark:border-gray-600 dark:bg-gray-800"> */}
-      <div className="relative aspect-[4/5] overflow-hidden border border-gray-200 bg-white rounded-2xl shadow-[inset_0_0_25px_rgba(0,0,0,0.35)] dark:border-gray-600 dark:bg-gray-800">
+      <div className="relative aspect-[4/5] overflow-hidden border border-gray-200 bg-white rounded-tr-2xl shadow-[inset_0_0_25px_rgba(0,0,0,0.35)] dark:border-gray-600 dark:bg-gray-800">
         {!imageLoaded && (
           <div className="absolute inset-0 bg-gray-500 dark:bg-gray-700" />
         )}
@@ -84,7 +84,7 @@ export default function ProductCard({
             imageLoaded ? "opacity-100" : "opacity-0"
           )}
         />
-        <div className="pointer-events-none absolute inset-0 rounded-2xl shadow-[inset_0_0_30px_rgba(0,0,0,0.1)]" />
+        <div className="pointer-events-none absolute inset-0  shadow-[inset_0_0_30px_rgba(0,0,0,0.1)]" />
 
         {/* Chap-Chap badge (urgent) - top left */}
         {isUrgent && (
@@ -172,18 +172,20 @@ export default function ProductCard({
         <div className="mb-1.5 line-clamp-1 text-sm  font-semibold text-gray-900 dark:text-white">
           {title}
         </div>
-        <div className="mb-2 flex items-baseline gap-2 flex-wrap">
-          <span className="text-sm font-extrabold text-brand-800">{formatPrice(price)}</span>
-          {originalPrice && (
-            <span className="text-xs text-gray-400 line-through">{formatPrice(originalPrice)}</span>
-          )}
-          {/* {negotiable && (
-            <span className="text-sm text-brand-600 font-semibold ml-2">Négociable</span>
-          )} */}
-        </div>
-        <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-          <MapPin className="h-3 w-3" />
-          <span className="truncate">{neighborhood ? `${neighborhood}, ${location}, Togo` : `${location}, Togo`}</span>
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-baseline gap-2 flex-wrap">
+            <span className="text-xs font-bold text-brand-800">{formatPrice(price)}</span>
+            {originalPrice && (
+              <span className="text-xs text-gray-400 line-through">{formatPrice(originalPrice)}</span>
+            )}
+            {/* {negotiable && (
+              <span className="text-sm text-brand-600 font-semibold ml-2">Négociable</span>
+            )} */}
+          </div>
+          <div className="flex min-w-0 items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+            <MapPin className="h-3 w-3 shrink-0" />
+            <span className="truncate">{`${location}, Togo`}</span>
+          </div>
         </div>
       </div>
     </div>

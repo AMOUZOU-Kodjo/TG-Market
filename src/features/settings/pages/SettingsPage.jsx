@@ -1869,9 +1869,9 @@ export default function SettingsPage() {
             <KycProgress steps={verificationSteps} />
 
             <div className="mt-6 space-y-6">
-              <PhoneVerification />
+              <PhoneVerification phone={user?.phone} verified={kycStatus?.phoneVerified} />
 
-              <EmailVerification email={user?.email} />
+              <EmailVerification email={user?.email} verified={kycStatus?.emailVerified} />
 
               <div>
                 <h3 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">

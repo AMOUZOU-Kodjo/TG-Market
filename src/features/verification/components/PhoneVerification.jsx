@@ -5,14 +5,18 @@ import Button from "@/shared/ui/Button";
 import { useSendOtp, useVerifyOtp } from "@/features/verification/hooks/useKyc";
 import toast from "react-hot-toast";
 
-export default function PhoneVerification({ phone: initialPhone = "+228 90 12 34 56", onVerify }) {
+export default function PhoneVerification({ phone: initialPhone = "+228 90 12 34 56", verified: initiallyVerified = false, onVerify }) {
   const [phone, setPhone] = useState(initialPhone);
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState(initialPhone.replace(/^\+228\s*/, ""));
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [sent, setSent] = useState(false);
-  const [verified, setVerified] = useState(false);
+  const [verified, setVerified] = useState(initiallyVerified);
   const [countdown, setCountdown] = useState(0);
+
+  useEffect(() => {
+    if (initiallyVerified) setVerified(true);
+  }, [initiallyVerified]);
 
   useEffect(() => {
     if (countdown > 0) {

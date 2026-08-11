@@ -5,11 +5,15 @@ import Button from "@/shared/ui/Button";
 import { useSendEmailOtp, useVerifyEmailOtp } from "@/features/verification/hooks/useKyc";
 import toast from "react-hot-toast";
 
-export default function EmailVerification({ email, onVerify }) {
+export default function EmailVerification({ email, verified: initiallyVerified = false, onVerify }) {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [sent, setSent] = useState(false);
-  const [verified, setVerified] = useState(false);
+  const [verified, setVerified] = useState(initiallyVerified);
   const [countdown, setCountdown] = useState(0);
+
+  useEffect(() => {
+    if (initiallyVerified) setVerified(true);
+  }, [initiallyVerified]);
 
   useEffect(() => {
     if (countdown > 0) {

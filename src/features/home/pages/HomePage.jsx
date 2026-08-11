@@ -470,9 +470,8 @@ function PopularProductsSection() {
       <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
           title="En ce moment"
-          subtitle="Les 30 produits les plus récemment publiés"
           action="/recherche?sort=newest"
-          className="!mb-6 border-b border-gray-200  pb-4"
+          className="!mb-4 border-b border-gray-200  pb-4"
         />
 
         <motion.div

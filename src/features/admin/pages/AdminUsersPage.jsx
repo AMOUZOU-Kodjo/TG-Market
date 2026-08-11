@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Ban, CheckCircle, Trash2, Loader2, ShieldCheck, ChevronRight, UserCheck, UserX } from "lucide-react";
+import { Search, Ban, CheckCircle, Trash2, Loader2, ShieldCheck, ChevronRight, UserCheck, UserX, Star, BadgeCheck } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/shared/services/api";
 import Badge from "@/shared/ui/Badge";
@@ -36,6 +36,18 @@ export default function AdminUsersPage() {
     onError: (e) => toast.error(e.response?.data?.error ?? "Erreur"),
   });
 
+  const toggleProfessional = useMutation({
+    mutationFn: ({ id, enabled }) => api.put(`/admin/users/${id}/professional`, { enabled }),
+    onSuccess: () => { toast.success("Statut professionnel mis à jour"); qc.invalidateQueries({ queryKey: ["adminUsers"] }); },
+    onError: (e) => toast.error(e.response?.data?.error ?? "Erreur"),
+  });
+
+  const toggleTrusted = useMutation({
+    mutationFn: ({ id, enabled }) => api.put(`/admin/users/${id}/trusted`, { enabled }),
+    onSuccess: () => { toast.success("Statut de confiance mis à jour"); qc.invalidateQueries({ queryKey: ["adminUsers"] }); },
+    onError: (e) => toast.error(e.response?.data?.error ?? "Erreur"),
+  });
+
   const deleteUser = useMutation({
     mutationFn: (id) => api.delete(`/admin/users/${id}`),
     onSuccess: () => { setActionUser(null); toast.success("Utilisateur supprimé"); qc.invalidateQueries({ queryKey: ["adminUsers"] }); },
@@ -49,7 +61,7 @@ export default function AdminUsersPage() {
     return text.includes(search.toLowerCase());
   });
 
-  const pending = toggleStatus.isPending || changeRole.isPending || deleteUser.isPending;
+  const pending = toggleStatus.isPending || changeRole.isPending || toggleProfessional.isPending || toggleTrusted.isPending || deleteUser.isPending;
 
   return (
     <div className="space-y-6">
@@ -126,6 +138,8 @@ export default function AdminUsersPage() {
                       <Badge variant={user.identityVerified ? "success" : "warning"}>
                         {user.identityVerified ? "Vérifié" : "Non vérifié"}
                       </Badge>
+                      {user.isProfessional && <Badge variant="primary">Pro</Badge>}
+                      {user.isTrusted && <Badge variant="success">De confiance</Badge>}
                     </div>
                   </div>
                   <ChevronRight className="w-4 h-4 text-gray-300 mt-1 shrink-0" />
@@ -233,6 +247,54 @@ export default function AdminUsersPage() {
                   >
                     <ShieldCheck className="w-3.5 h-3.5" />
                     Admin
+                  </button>
+                </div>
+              </div>
+
+              <div className="px-4 py-3 rounded-xl bg-gray-50">
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-400 mb-2">Statuts vendeur</p>
+                <div className="flex flex-col gap-2">
+                  <button
+                    onClick={() => toggleProfessional.mutate({ id: actionUser.id, enabled: !actionUser.isProfessional })}
+                    disabled={pending}
+                    className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium border transition-colors disabled:opacity-50 ${
+                      actionUser.isProfessional
+                        ? "bg-brand-600 text-white border-brand-600"
+                        : "border-gray-200 text-gray-500 hover:bg-gray-100"
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <Star className="w-3.5 h-3.5" />
+                      Vendeur professionnel
+                    </span>
+                    {toggleProfessional.isPending ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : actionUser.isProfessional ? (
+                      "Actif"
+                    ) : (
+                      "Inactif"
+                    )}
+                  </button>
+                  <button
+                    onClick={() => toggleTrusted.mutate({ id: actionUser.id, enabled: !actionUser.isTrusted })}
+                    disabled={pending}
+                    className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium border transition-colors disabled:opacity-50 ${
+                      actionUser.isTrusted
+                        ? "bg-emerald-600 text-white border-emerald-600"
+                        : "border-gray-200 text-gray-500 hover:bg-gray-100"
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <BadgeCheck className="w-3.5 h-3.5" />
+                      Vendeur de confiance
+                    </span>
+                    {toggleTrusted.isPending ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : actionUser.isTrusted ? (
+                      "Actif"
+                    ) : (
+                      "Inactif"
+                    )}
                   </button>
                 </div>
               </div>

@@ -44,8 +44,8 @@ export default function SellerCard({ seller, productId, hasActiveEscrow, product
             >
               <ChevronRight className="h-5 w-5" />
             </button>
-            <SellerBadges seller={seller} className="mt-0.5" />
           </div>
+          <SellerBadges seller={seller} className="mt-1" />
 
           {seller.rating && (
             <div className="mt-1 flex items-center gap-1.5">

@@ -1,6 +1,7 @@
 import prisma from '../../config/database.js';
 import { invalidateCache, invalidateCacheByPattern } from '../../utils/cache.js';
 import { deleteUserData } from '../../utils/userCleanup.js';
+import { grantBadge } from '../../utils/badges.js';
 
 function invalidateCategoriesCache() {
   invalidateCache('cache:categories:tree');
@@ -840,6 +841,8 @@ export async function approveKyc(id, adminId) {
       data: { identity_verified: true },
     }),
   ]);
+
+  await grantBadge(kyc.user_id, 'identity_verified');
 
   return { message: 'Vérification KYC approuvée avec succès' };
 }

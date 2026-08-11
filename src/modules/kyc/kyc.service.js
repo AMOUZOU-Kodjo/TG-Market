@@ -2,6 +2,7 @@ import prisma from '../../config/database.js';
 import redis from '../../config/redis.js';
 import { generateOtp } from '../../utils/helpers.js';
 import { sendEmail } from '../../utils/email.js';
+import { grantBadge } from '../../utils/badges.js';
 
 export async function getStatus(userId) {
   const user = await prisma.user.findUnique({
@@ -105,6 +106,8 @@ export async function verifyOtp(userId, otp) {
     data: { phone_verified_at: new Date() },
   });
 
+  await grantBadge(userId, 'phone_verified');
+
   return { message: 'Téléphone vérifié avec succès' };
 }
 
@@ -190,6 +193,8 @@ export async function verifyEmailOtp(userId, otp) {
     where: { id: userId },
     data: { email_verified_at: new Date() },
   });
+
+  await grantBadge(userId, 'email_verified');
 
   return { message: 'Email vérifié avec succès' };
 }

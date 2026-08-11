@@ -5,12 +5,12 @@ import {
   Package,
   MessageCircle,
   Star,
-  ShieldCheck,
   ExternalLink,
   ChevronRight,
 } from "lucide-react";
 import Avatar from "@/shared/ui/Avatar";
 import Button from "@/shared/ui/Button";
+import SellerBadges from "@/shared/ui/SellerBadges";
 import { formatRelativeTime } from "@/shared/utils/format";
 import { useCreateConversation } from "@/features/chat/hooks/useConversations";
 import { useAuth } from "@/shared/contexts/AuthContext";
@@ -44,12 +44,7 @@ export default function SellerCard({ seller, productId, hasActiveEscrow, product
             >
               <ChevronRight className="h-5 w-5" />
             </button>
-            {seller.verified && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-medium text-red-900 dark:bg-red-700/15 dark:text-red-400">
-                <ShieldCheck className="h-3 w-3" />
-                Vérifié
-              </span>
-            )}
+            <SellerBadges seller={seller} className="mt-0.5" />
           </div>
 
           {seller.rating && (

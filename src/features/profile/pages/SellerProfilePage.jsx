@@ -6,6 +6,7 @@ import ProductCard from "@/shared/ui/ProductCard";
 import Tabs from "@/shared/ui/Tabs";
 import Avatar from "@/shared/ui/Avatar";
 import Badge from "@/shared/ui/Badge";
+import SellerBadges from "@/shared/ui/SellerBadges";
 import Logo from "@/shared/ui/Logo";
 import Button from "@/shared/ui/Button";
 import ReviewList from "@/features/profile/components/ReviewList";
@@ -162,7 +163,10 @@ export default function SellerProfilePage() {
             </div>
 
             <div className="space-y-2 text-center md:text-left">
-              <h2 className="text-sm font-bold text-gray-900 dark:text-white md:text-xl">{seller.name}</h2>
+              <div className="flex flex-wrap items-center justify-center gap-2 md:justify-start">
+                <h2 className="text-sm font-bold text-gray-900 dark:text-white md:text-xl">{seller.name}</h2>
+                <SellerBadges seller={seller} />
+              </div>
               {seller.city && (
                 <p className="flex items-center justify-center gap-1 text-xs text-gray-500 dark:text-gray-400 md:text-sm md:justify-start">
                   <MapPin className="h-4 w-4" />
@@ -235,6 +239,7 @@ export default function SellerProfilePage() {
           <Avatar src={seller.avatar} name={seller.name} size="sm" verified={seller.verified} />
           <div className="flex-1 min-w-0">
             <p className="truncate text-sm font-bold text-gray-900 dark:text-white">{seller.name}</p>
+            <SellerBadges seller={seller} className="mt-1" />
             <span className="inline-block rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-medium text-brand-800 dark:bg-brand-900/30 dark:text-brand-400">
               {roleLabel}
             </span>

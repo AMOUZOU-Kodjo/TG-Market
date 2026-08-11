@@ -3,6 +3,20 @@ import prisma from '../../config/database.js';
 import redis from '../../config/redis.js';
 import { getPlatformFeePercent, getBuyerFeePercent } from '../../utils/platformFee.js';
 import { getSellerPayoutMethod, createAndSendPayout, getPayoutForEscrow, formatPayout } from '../payment/payout.service.js';
+import { grantBadge } from '../../utils/badges.js';
+
+async function maybeGrantFirstSale(sellerId, currentEscrowId) {
+  try {
+    const count = await prisma.escrowTransaction.count({
+      where: { seller_id: sellerId, status: 'completed', id: { not: currentEscrowId } },
+    });
+    if (count === 0) {
+      await grantBadge(sellerId, 'first_sale');
+    }
+  } catch (err) {
+    console.error('[badges] Erreur first_sale :', err.message);
+  }
+}
 
 function formatEscrow(escrow) {
   return {
@@ -532,6 +546,8 @@ export async function confirmWithCode(id, sellerId, code) {
 
   await finalizeSellerPayout(id, escrow.seller_id, sellerPayout);
 
+  await maybeGrantFirstSale(escrow.seller_id, id);
+
   const full = await prisma.escrowTransaction.findUnique({
     where: { id },
     include: {
@@ -670,6 +686,8 @@ export async function confirmDelivery(id, buyerId) {
 
   await finalizeSellerPayout(id, escrow.seller_id, sellerPayout);
 
+  await maybeGrantFirstSale(escrow.seller_id, id);
+
   const full = await prisma.escrowTransaction.findUnique({
     where: { id },
     include: {
@@ -681,7 +699,7 @@ export async function confirmDelivery(id, buyerId) {
           images: { select: { url: true }, orderBy: { sort_order: 'asc' }, take: 1 },
         },
       },
-bundle: { select: { id: true, title: true } },
+      bundle: { select: { id: true, title: true } },
       payouts: true,
     },
   });

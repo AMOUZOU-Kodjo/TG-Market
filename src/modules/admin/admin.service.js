@@ -168,6 +168,8 @@ export async function getUsers({ page, perPage, skip, role, isActive }) {
         role: true,
         identity_verified: true,
         is_active: true,
+        is_professional: true,
+        is_trusted: true,
         product_count: true,
         rating_avg: true,
         review_count: true,
@@ -192,6 +194,8 @@ export async function getUsers({ page, perPage, skip, role, isActive }) {
       role: u.role,
       identityVerified: u.identity_verified,
       isActive: u.is_active,
+      isProfessional: u.is_professional,
+      isTrusted: u.is_trusted,
       productCount: u.product_count,
       ratingAvg: u.rating_avg,
       reviewCount: u.review_count,
@@ -246,6 +250,54 @@ export async function updateUserRole(userId, role) {
   });
 
   return { message: `Rôle mis à jour vers "${role}" avec succès` };
+}
+
+export async function updateUserProfessional(userId, enabled) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, is_professional: true },
+  });
+
+  if (!user) {
+    const error = new Error('Utilisateur introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { is_professional: enabled },
+  });
+
+  if (enabled) {
+    await grantBadge(userId, 'professional_seller');
+  }
+
+  return { message: `Vendeur professionnel ${enabled ? 'activé' : 'désactivé'} avec succès` };
+}
+
+export async function updateUserTrusted(userId, enabled) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, is_trusted: true },
+  });
+
+  if (!user) {
+    const error = new Error('Utilisateur introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { is_trusted: enabled },
+  });
+
+  if (enabled) {
+    await grantBadge(userId, 'trusted_seller');
+  }
+
+  return { message: `Vendeur de confiance ${enabled ? 'activé' : 'désactivé'} avec succès` };
 }
 
 export async function deleteUser(userId) {

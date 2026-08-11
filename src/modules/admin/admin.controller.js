@@ -57,6 +57,32 @@ export async function updateUserRole(req, res, next) {
   }
 }
 
+export async function updateUserProfessional(req, res, next) {
+  try {
+    const result = await adminService.updateUserProfessional(
+      Number(req.params.id),
+      !!req.body.enabled,
+    );
+    try { req.app.get('io')?.emit('user_updated', { userId: Number(req.params.id) }); } catch {}
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function updateUserTrusted(req, res, next) {
+  try {
+    const result = await adminService.updateUserTrusted(
+      Number(req.params.id),
+      !!req.body.enabled,
+    );
+    try { req.app.get('io')?.emit('user_updated', { userId: Number(req.params.id) }); } catch {}
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function deleteUser(req, res, next) {
   try {
     const result = await adminService.deleteUser(Number(req.params.id));

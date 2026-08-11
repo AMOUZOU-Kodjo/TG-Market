@@ -88,6 +88,8 @@ router.get('/stats', adminController.getStats);
 router.get('/users', pagination, adminController.getUsers);
 router.put('/users/:id/status', adminController.updateUserStatus);
 router.put('/users/:id/role', adminController.updateUserRole);
+router.put('/users/:id/professional', adminController.updateUserProfessional);
+router.put('/users/:id/trusted', adminController.updateUserTrusted);
 router.delete('/users/:id', adminController.deleteUser);
 router.get('/products', pagination, adminController.getProducts);
 router.get('/products/:id', adminController.getProductDetail);

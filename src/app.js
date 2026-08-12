@@ -120,7 +120,7 @@ app.get('/api/settings/public', async (_req, res) => {
   try {
     const data = await getOrSetCache('cache:settings:public', 600, async () => {
       const rows = await prisma.siteSetting.findMany({
-        where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode', 'support_email', 'maintenance_message', 'maintenance_estimated_return', 'maintenance_improvements', 'social_facebook', 'social_twitter', 'social_instagram', 'social_linkedin', 'team_members'] } },
+        where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode', 'support_email', 'maintenance_message', 'maintenance_estimated_return', 'maintenance_improvements', 'social_facebook', 'social_twitter', 'social_instagram', 'social_linkedin', 'team_members', 'platform_fee_percent', 'platform_buyer_fee_percent'] } },
       });
       const map = {};
       for (const row of rows) map[row.key] = row.value;
@@ -138,6 +138,8 @@ app.get('/api/settings/public', async (_req, res) => {
         socialInstagram: map.social_instagram ?? 'https://instagram.com/tgmarket',
         socialLinkedin: map.social_linkedin ?? 'https://linkedin.com/company/tgmarket',
         teamMembers: JSON.parse(map.team_members ?? '[{"name":"Amouzou Kodjo","role":"Co-fondateur & Développeur Frontend","initials":"AK","photo":"","bio":"Architecte de l\'interface TG-Market.","linkedin":"#","facebook":"#","twitter":"#","instagram":"#"}]'),
+        platformFeePercent: Number(map.platform_fee_percent ?? 5),
+        platformBuyerFeePercent: Number(map.platform_buyer_fee_percent ?? 0),
       };
     });
     res.json(data);

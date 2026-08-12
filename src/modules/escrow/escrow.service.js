@@ -119,7 +119,7 @@ const feePercent = await getPlatformFeePercent();
       data: {
         user_id: buyerId,
         type: 'purchase',
-        amount: product.price,
+        amount: product.price + buyerFee,
         description: `Achat : ${product.title}`,
         counterparty: null,
         status: 'pending',

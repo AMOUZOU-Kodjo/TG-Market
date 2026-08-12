@@ -603,7 +603,7 @@ export async function purchaseBundle(bundleId, buyerId) {
       data: {
         user_id: buyerId,
         type: 'purchase',
-        amount: bundle.bundle_price,
+        amount: bundle.bundle_price + buyerFee,
         description: `Achat du lot : ${bundle.title}`,
         counterparty: null,
         status: 'pending',

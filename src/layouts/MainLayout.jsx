@@ -497,13 +497,13 @@ location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWit
                     <Phone className="w-4 h-4 text-brand-400 shrink-0" />
                     <span>+228 90 00 00 00</span>
                   </li> */}
-                  <li className="flex items-center justify-center gap-2">
-                    <SiGmail className="w-4 h-4 text-black shrink-0" />
+                  <li className="flex items-center justify-center gap-2 ">
+                    {/* <SiGmail className="w-4 h-4 text-black shrink-0" /> */}
                     <a
-                      href="mailto:contact@akmarket.tg"
-                      className="underline-offset-4 hover:underline"
+                      href="tel:+22890000000"
+                      className="underline-offset-4  text-blue-600 font-bold text-md"
                     >
-                      contact@akmarket.tg
+                      +228 90 00 00 00
                     </a>
                   </li>
                 </ul>

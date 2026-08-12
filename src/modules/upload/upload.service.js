@@ -98,6 +98,39 @@ export async function uploadImages(files, userId) {
   return Promise.all(files.map((file) => uploadImage(file, userId)));
 }
 
+export async function uploadFile(file, userId) {
+  const baseName = generateFilename(file.originalname);
+  const cleanName = (file.originalname || 'fichier').replace(/[^\w.\-\u00C0-\u024F ]/g, '_').substring(0, 120);
+
+  if (STORAGE_MODE === 'cloudinary') {
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: `tg-market/files/${userId}`, resource_type: 'auto' },
+        (error, res) => (error ? reject(error) : resolve(res)),
+      );
+      stream.end(file.buffer);
+    });
+    return {
+      url: result.secure_url,
+      key: result.public_id,
+      name: cleanName,
+      size: file.size,
+    };
+  }
+
+  const dir = path.join(UPLOADS_ROOT, 'files', String(userId));
+  const filename = `file_${baseName}`;
+  await saveLocal(file.buffer, dir, filename);
+  const relativePath = toRelative(path.join(dir, filename));
+
+  return {
+    url: `${BASE_URL}/uploads/${relativePath}`,
+    key: relativePath,
+    name: cleanName,
+    size: file.size,
+  };
+}
+
 export async function deleteFile(key) {
   if (STORAGE_MODE === 'cloudinary') {
     await cloudinary.uploader.destroy(key);

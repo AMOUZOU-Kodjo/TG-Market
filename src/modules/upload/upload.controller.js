@@ -30,6 +30,21 @@ export async function uploadImages(req, res, next) {
   }
 }
 
+export async function uploadFile(req, res, next) {
+  try {
+    if (!req.file) {
+      const error = new Error('Aucun fichier fourni');
+      error.status = 400;
+      throw error;
+    }
+
+    const result = await uploadService.uploadFile(req.file, req.user.id);
+    res.status(201).json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function deleteFile(req, res, next) {
   try {
     const key = decodeURIComponent(req.params.key);

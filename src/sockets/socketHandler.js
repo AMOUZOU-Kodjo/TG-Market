@@ -46,15 +46,25 @@ export function setupSocketIO(io) {
       socket.leave(room);
     });
 
-    socket.on('send_message', async ({ conversationId, content }) => {
+    socket.on('send_message', async ({ conversationId, content, type = 'text', metadata = null }) => {
       try {
         const participant = await prisma.conversationParticipant.findUnique({
           where: { conversation_id_user_id: { conversation_id: conversationId, user_id: userId } },
         });
         if (!participant) return;
 
+        const text = (content ?? '').toString().trim();
+        if (!['text', 'image', 'offer', 'system'].includes(type)) type = 'text';
+        if (type === 'text' && !text) return;
+
         const message = await prisma.message.create({
-          data: { conversation_id: conversationId, sender_id: userId, text: content, type: 'text' },
+          data: {
+            conversation_id: conversationId,
+            sender_id: userId,
+            text,
+            type,
+            metadata: metadata || undefined,
+          },
           include: { sender: { select: { id: true, first_name: true, last_name: true, avatar: true } } },
         });
 
@@ -75,6 +85,7 @@ export function setupSocketIO(io) {
           senderAvatar: message.sender.avatar,
           text: message.text,
           type: message.type,
+          metadata: message.metadata,
           createdAt: message.created_at,
         };
 
@@ -97,7 +108,7 @@ export function setupSocketIO(io) {
               user_id: otherParticipant.user_id,
               type: 'message',
               title: `Nouveau message de ${socket.user.name}`,
-              description: content.substring(0, 120),
+              description: (text || '📷 Photo').substring(0, 120),
               product_id: otherParticipant.conversation?.product_id || null,
               metadata: { conversationId },
             },
@@ -108,7 +119,7 @@ export function setupSocketIO(io) {
               id: Date.now(),
               type: 'message',
               title: `Nouveau message de ${socket.user.name}`,
-              description: content.substring(0, 120),
+              description: (text || '📷 Photo').substring(0, 120),
               productId: otherParticipant.conversation?.product_id || null,
               read: false,
               createdAt: new Date().toISOString(),

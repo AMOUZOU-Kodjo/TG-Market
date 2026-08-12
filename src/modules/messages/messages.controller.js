@@ -27,7 +27,8 @@ export async function sendMessage(req, res, next) {
   try {
     const { text, type, metadata } = req.body;
 
-    if (!text || typeof text !== 'string' || text.trim().length === 0) {
+    const isImage = type === 'image';
+    if (!isImage && (!text || typeof text !== 'string' || text.trim().length === 0)) {
       return res.status(422).json({ error: 'Le message texte est requis' });
     }
 
@@ -39,7 +40,7 @@ export async function sendMessage(req, res, next) {
     const message = await messagesService.sendMessage(
       conversationId,
       req.user.id,
-      text.trim(),
+      (text ?? '').trim(),
       type,
       metadata,
     );
@@ -65,7 +66,7 @@ export async function sendMessage(req, res, next) {
             user_id: other.user_id,
             type: 'message',
             title: `Nouveau message de ${req.user.first_name || req.user.name}`,
-            description: text.trim().substring(0, 120),
+            description: ((text ?? '').trim() || '📷 Photo').substring(0, 120),
             product_id: other.conversation?.product_id || null,
             metadata: { conversationId },
           },
@@ -76,7 +77,7 @@ export async function sendMessage(req, res, next) {
             id: Date.now(),
             type: 'message',
             title: `Nouveau message de ${req.user.first_name || req.user.name}`,
-            description: text.trim().substring(0, 120),
+            description: ((text ?? '').trim() || '📷 Photo').substring(0, 120),
             productId: other.conversation?.product_id || null,
             read: false,
             createdAt: new Date().toISOString(),

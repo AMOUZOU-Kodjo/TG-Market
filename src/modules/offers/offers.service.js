@@ -240,7 +240,7 @@ export async function acceptOffer(offerId, sellerId) {
       data: { status: 'accepted' },
     });
 
-    await tx.escrowTransaction.create({
+    const createdEscrow = await tx.escrowTransaction.create({
       data: {
         product_id: offer.product_id,
         buyer_id: offer.buyer_id,
@@ -249,6 +249,19 @@ export async function acceptOffer(offerId, sellerId) {
         fee,
         buyer_fee: buyerFee,
         status: 'pending',
+      },
+    });
+
+    await tx.walletTransaction.create({
+      data: {
+        user_id: offer.buyer_id,
+        type: 'purchase',
+        amount: offer.amount + buyerFee,
+        description: `Achat : ${product.title}`,
+        counterparty: null,
+        status: 'pending',
+        reference_type: 'escrow',
+        reference_id: createdEscrow.id,
       },
     });
 

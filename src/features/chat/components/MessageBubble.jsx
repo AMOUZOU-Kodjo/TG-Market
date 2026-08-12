@@ -17,8 +17,9 @@ import { cn } from "@/shared/utils/cn";
 import { formatTime, formatCFA, formatFileSize } from "@/shared/utils/format";
 import { Link } from "react-router-dom";
 
-function getDownloadUrl(url) {
-  if (!url) return url;
+function getDownloadUrl(file) {
+  if (file.downloadUrl) return file.downloadUrl;
+  const url = file.url || "";
   if (url.includes("res.cloudinary.com")) {
     return url.replace("/upload/", "/upload/fl_attachment/");
   }
@@ -27,7 +28,7 @@ function getDownloadUrl(url) {
 
 function DocumentCard({ file, isOwn, onPreview }) {
   const isPdf = /\.pdf$/i.test(file.name || file.url);
-  const downloadUrl = getDownloadUrl(file.url);
+  const downloadUrl = getDownloadUrl(file);
   const cardClass = cn(
     "flex min-w-52 items-center gap-3 rounded-xl border px-3 py-2.5 transition-colors",
     isOwn
@@ -179,7 +180,7 @@ function ImageViewer({ viewer, onClose, onNavigate }) {
         </span>
         <div className="flex items-center gap-2">
           <a
-            href={getDownloadUrl(current.url)}
+            href={getDownloadUrl(current)}
             download
             onClick={(e) => e.stopPropagation()}
             className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
@@ -272,7 +273,7 @@ function FileViewer({ file, onClose }) {
         </div>
         <div className="flex items-center gap-2">
           <a
-            href={getDownloadUrl(file.url)}
+            href={getDownloadUrl(file)}
             download={file.name}
             className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
             title="Télécharger"

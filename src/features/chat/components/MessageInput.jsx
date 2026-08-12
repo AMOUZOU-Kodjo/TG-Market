@@ -113,7 +113,7 @@ export default function MessageInput({ onSend, onTyping, disabled = false, class
         const formData = new FormData();
         formData.append("file", item.file);
         const res = await api.post("/upload/file", formData);
-        files.push({ url: res.data.url, name: res.data.name || item.name, size: res.data.size || item.size });
+        files.push({ url: res.data.url, downloadUrl: res.data.downloadUrl || res.data.url, name: res.data.name || item.name, size: res.data.size || item.size });
       }
 
       onSend(trimmed, { images, files });

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Heart, MapPin, MessageCircle, Zap, Star } from "lucide-react";
 import { cn } from "@/shared/utils/cn";
 import Badge from "@/shared/ui/Badge";
+import { getConditionLabel, getConditionBadgeVariant } from "@/shared/constants";
 import { useCheckFavorite, useToggleFavorite } from "@/features/favorites/hooks/useFavorites";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -94,11 +95,11 @@ export default function ProductCard({
           </div>
         )}
 
-        {/* Condition badge - top right (or below Chap-Chap) */}
+        {/* Condition badge - top left */}
         {condition && (
           <div className="absolute left-3 top-2 z-10 ">
-            <Badge variant={condition === "new" ? "success" : "warning"}>
-              {condition === "new" ? "Neuf" : condition === "like_new" ? "Très bon état" : condition === "good" ? "Bon état" : condition === "fair" ? "Usé" : condition}
+            <Badge variant={getConditionBadgeVariant(condition)}>
+              {getConditionLabel(condition)}
             </Badge>
           </div>
         )}

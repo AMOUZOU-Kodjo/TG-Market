@@ -21,6 +21,7 @@ import ActiveFilters from "@/features/search/components/ActiveFilters";
 import { useSearch } from "@/features/search/hooks/useSearch";
 import { useCategories } from "@/features/categories/hooks/useCategories";
 import { useIsMobile } from "@/shared/hooks/useMediaQuery";
+import { getConditionLabel } from "@/shared/constants";
 
 function ProductCardSkeleton() {
   return (
@@ -195,7 +196,7 @@ export default function SearchResultsPage() {
       chips.push({ key: `cat-${cat}`, label: cat.replace(/-/g, " "), type: "categories" });
     });
     filters.conditions.forEach((cond) => {
-      chips.push({ key: `cond-${cond}`, label: cond, type: "conditions" });
+      chips.push({ key: `cond-${cond}`, label: getConditionLabel(cond), type: "conditions" });
     });
     if (filters.minPrice) chips.push({ key: "minPrice", label: `Min: ${filters.minPrice} FCFA` });
     if (filters.maxPrice) chips.push({ key: "maxPrice", label: `Max: ${filters.maxPrice} FCFA` });

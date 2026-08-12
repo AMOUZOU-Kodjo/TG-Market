@@ -1,7 +1,7 @@
 import { MapPin, Tag, Truck, HandCoins, ShieldCheck, Zap } from "lucide-react";
 import Badge from "@/shared/ui/Badge";
 import { formatCFA } from "@/shared/utils/format";
-import { CONDITION_MAP } from "@/shared/constants";
+import { CONDITION_MAP, getConditionBadgeVariant } from "@/shared/constants";
 
 export default function ListingPreview({ data = {} }) {
   const {
@@ -54,7 +54,7 @@ export default function ListingPreview({ data = {} }) {
 
         <div className="absolute left-3 top-3 flex gap-1.5">
           {conditionInfo && (
-            <Badge variant={condition === "new" ? "success" : "warning"}>
+            <Badge variant={getConditionBadgeVariant(condition)}>
               {conditionInfo.label}
             </Badge>
           )}

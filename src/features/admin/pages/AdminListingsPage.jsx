@@ -6,6 +6,7 @@ import { formatCFA } from "@/shared/utils/format";
 import { cn } from "@/shared/utils/cn";
 import Badge from "@/shared/ui/Badge";
 import Avatar from "@/shared/ui/Avatar";
+import { PRODUCT_CONDITIONS, getConditionLabel, getConditionBadgeVariant } from "@/shared/constants";
 import toast from "react-hot-toast";
 
 const statusLabels = {
@@ -27,8 +28,6 @@ const statusColors = {
   inactive: "secondary",
   deleted: "danger",
 };
-
-const conditionLabels = { new: "Neuf", like_new: "Comme neuf", good: "Bon état", fair: "État correct", poor: "Usé" };
 
 function ProductModal({ productId, onClose }) {
   const qc = useQueryClient();
@@ -146,7 +145,7 @@ function ProductModal({ productId, onClose }) {
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1">État</label>
                   <select value={form.condition} onChange={(e) => setForm({ ...form, condition: e.target.value })} className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500/50">
-                    {Object.entries(conditionLabels).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+                    {PRODUCT_CONDITIONS.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
                   </select>
                 </div>
                 <div>
@@ -193,7 +192,7 @@ function ProductModal({ productId, onClose }) {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Badge variant={statusColors[product.status] ?? "secondary"}>{statusLabels[product.status] ?? product.status}</Badge>
-                <Badge variant="secondary">{conditionLabels[product.condition] ?? product.condition}</Badge>
+                <Badge variant="secondary">{getConditionLabel(product.condition)}</Badge>
                 {product.isUrgent && <Badge variant="danger">Urgent</Badge>}
                 {product.isPromoted && <Badge variant="primary">Promu</Badge>}
                 {product.isFeatured && <Badge variant="warning">En avant</Badge>}
@@ -359,8 +358,8 @@ export default function AdminListingsPage() {
 
                   {product.condition && (
                     <div className="absolute left-3 top-3 z-10">
-                      <Badge variant={product.condition === "new" ? "success" : "warning"}>
-                        {conditionLabels[product.condition] ?? product.condition}
+                      <Badge variant={getConditionBadgeVariant(product.condition)}>
+                        {getConditionLabel(product.condition)}
                       </Badge>
                     </div>
                   )}

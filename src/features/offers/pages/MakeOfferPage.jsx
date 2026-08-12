@@ -6,6 +6,7 @@ import { useCreateOffer } from "@/features/offers/hooks/useOffers";
 import { useProduct } from "@/features/products/hooks/useProducts";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { formatCFA } from "@/shared/utils/format";
+import { getConditionLabel } from "@/shared/constants";
 import Button from "@/shared/ui/Button";
 import Input from "@/shared/ui/Input";
 import Textarea from "@/shared/ui/Textarea";
@@ -110,7 +111,7 @@ export default function MakeOfferPage() {
                 )}
                 {product.condition && (
                   <div className="absolute right-2 top-2 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold text-gray-700 shadow-sm backdrop-blur-sm dark:bg-gray-800/90 dark:text-gray-300">
-                    {product.condition === "new" ? "Neuf" : product.condition === "like_new" ? "Très bon état" : product.condition === "good" ? "Bon état" : product.condition === "fair" ? "Usé" : product.condition}
+                    {getConditionLabel(product.condition)}
                   </div>
                 )}
               </div>

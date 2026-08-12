@@ -67,6 +67,12 @@ export const CONDITION_MAP = Object.fromEntries(
   PRODUCT_CONDITIONS.map((c) => [c.value, c])
 );
 
+export const getConditionLabel = (condition) =>
+  CONDITION_MAP[condition]?.label ?? condition ?? "";
+
+export const getConditionBadgeVariant = (condition) =>
+  condition === "new" ? "success" : condition === "like_new" ? "primary" : "warning";
+
 export const NAVIGATION = [
   { label: "Accueil", to: "/" },
   { label: "Catégories", to: "/categories" },

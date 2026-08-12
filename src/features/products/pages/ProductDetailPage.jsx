@@ -17,6 +17,7 @@ import { useProduct, useSimilarProducts } from "@/features/products/hooks/usePro
 import { productsApi } from "@/features/products/services/products.api";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { formatCFA, formatRelativeTime, formatNumber } from "@/shared/utils/format";
+import { getConditionLabel, getConditionBadgeVariant } from "@/shared/constants";
 import BackButton from "@/shared/ui/BackButton";
 import Badge from "@/shared/ui/Badge";
 import Button from "@/shared/ui/Button";
@@ -238,16 +239,8 @@ export default function ProductDetailPage() {
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <Badge
-          variant={
-            product.condition === "Neuf"
-              ? "success"
-              : product.condition === "Comme neuf"
-                ? "primary"
-                : "warning"
-          }
-        >
-          {product.condition}
+        <Badge variant={getConditionBadgeVariant(product.condition)}>
+          {getConditionLabel(product.condition)}
         </Badge>
         {product.negotiable && <Badge variant="neutral">Négociable</Badge>}
         {product.status === "reserved" && <Badge variant="warning">Réservé</Badge>}

@@ -20,7 +20,7 @@ export default function AuthLayout() {
             <AuthHeroBg />
           </div>
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gray-50 dark:to-gray-900 z-10" />
-          <Link to="/" className="absolute left-4 top-4 z-20 flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+          <Link to="/" className="absolute left-4 top-4 z-30 flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm font-medium">Retour</span>
           </Link>

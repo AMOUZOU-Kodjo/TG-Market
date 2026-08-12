@@ -7,6 +7,15 @@ import AuthHeroCarousel, { AuthHeroBg } from "@/features/auth/components/AuthHer
 export default function AuthLayout() {
   return (
     <div className="min-h-screen flex bg-white dark:bg-gray-900">
+      {/* Desktop Back Button */}
+      <Link
+        to="/"
+        className="hidden lg:flex fixed left-6 top-6 z-30 items-center gap-2 rounded-lg bg-white/80 px-3 py-2 text-sm font-medium text-gray-700 shadow-sm backdrop-blur transition-colors hover:bg-white dark:bg-gray-900/80 dark:text-gray-300 dark:hover:bg-gray-900"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        <span>Retour</span>
+      </Link>
+
       {/* Left Hero Carousel Panel */}
       <div className="hidden lg:flex lg:w-1/2 xl:w-[55%] relative overflow-hidden">
         <AuthHeroCarousel />

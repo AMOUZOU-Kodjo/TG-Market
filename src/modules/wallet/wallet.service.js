@@ -19,6 +19,7 @@ export async function getBalance(userId) {
     if (tx.status === 'completed') {
       switch (tx.type) {
         case 'sale':
+          available += tx.amount;
           totalEarned += tx.amount;
           break;
         case 'deposit':

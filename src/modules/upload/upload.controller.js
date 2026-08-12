@@ -48,7 +48,8 @@ export async function uploadFile(req, res, next) {
 export async function deleteFile(req, res, next) {
   try {
     const key = decodeURIComponent(req.params.key);
-    const result = await uploadService.deleteFile(key);
+    const resourceType = key.includes('tg-market/files/') ? 'raw' : 'image';
+    const result = await uploadService.deleteFile(key, resourceType);
     res.json(result);
   } catch (err) {
     next(err);

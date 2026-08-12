@@ -105,14 +105,37 @@ export async function uploadFile(file, userId) {
   if (STORAGE_MODE === 'cloudinary') {
     const result = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
-        { folder: `tg-market/files/${userId}`, resource_type: 'auto' },
+        {
+          folder: `tg-market/files/${userId}`,
+          resource_type: 'raw',
+          type: 'upload',
+          format: baseName.split('.').pop() || undefined,
+        },
         (error, res) => (error ? reject(error) : resolve(res)),
       );
       stream.end(file.buffer);
     });
+
+    const signedUrl = cloudinary.url(result.public_id, {
+      resource_type: 'raw',
+      sign_url: true,
+      secure: true,
+      expires_at: Math.floor(Date.now() / 1000) + 365 * 24 * 3600,
+    });
+
+    const downloadUrl = cloudinary.url(result.public_id, {
+      resource_type: 'raw',
+      sign_url: true,
+      secure: true,
+      expires_at: Math.floor(Date.now() / 1000) + 365 * 24 * 3600,
+      transformation: [{ flags: 'attachment' }],
+    });
+
     return {
-      url: result.secure_url,
+      url: signedUrl,
+      downloadUrl,
       key: result.public_id,
+      resourceType: result.resource_type,
       name: cleanName,
       size: file.size,
     };
@@ -131,9 +154,9 @@ export async function uploadFile(file, userId) {
   };
 }
 
-export async function deleteFile(key) {
+export async function deleteFile(key, resourceType = 'image') {
   if (STORAGE_MODE === 'cloudinary') {
-    await cloudinary.uploader.destroy(key);
+    await cloudinary.uploader.destroy(key, { resource_type: resourceType });
     return { message: 'Fichier supprimé avec succès' };
   }
 

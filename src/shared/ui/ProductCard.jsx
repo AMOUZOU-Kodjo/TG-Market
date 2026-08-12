@@ -63,7 +63,7 @@ export default function ProductCard({
     <div
       onClick={onClick}
       className={cn(
-        "cursor-pointer overflow-hidden shadow-sm rounded-bl-2xl rounded-tr-2xl   dark:border-gray-800 ",
+        "cursor-pointer overflow-hidden  rounded-bl-2xl rounded-tr-2xl   dark:border-gray-800 ",
         isPromoted && "ring-2 ring-brand-500",
         className
       )}

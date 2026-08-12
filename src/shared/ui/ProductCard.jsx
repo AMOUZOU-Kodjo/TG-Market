@@ -96,7 +96,7 @@ export default function ProductCard({
 
         {/* Condition badge - top right (or below Chap-Chap) */}
         {condition && (
-          <div className="absolute left-3 top-3 z-10">
+          <div className="absolute left-3 top-2 z-10 ">
             <Badge variant={condition === "new" ? "success" : "warning"}>
               {condition === "new" ? "Neuf" : condition === "like_new" ? "Très bon état" : condition === "good" ? "Bon état" : condition === "fair" ? "Usé" : condition}
             </Badge>
@@ -144,7 +144,7 @@ export default function ProductCard({
 
         {/* Stock badge */}
         {quantity >= 1 && status !== "sold" && status !== "reserved" && (
-          <div className="absolute bottom-2 left-2 z-10 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-gray-700 shadow-sm backdrop-blur-sm dark:bg-gray-900/90 dark:text-gray-300">
+          <div className="absolute bottom-0 left-0 rounded-tr-2xl z-10  bg-white/90 px-2 py-0.5 text-[10px] font-extrabold text-gray-700 shadow-sm backdrop-blur-sm dark:bg-gray-900/90 dark:text-gray-300">
             {quantity} en stock
           </div>
         )}

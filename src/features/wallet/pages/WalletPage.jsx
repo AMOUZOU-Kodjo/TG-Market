@@ -24,7 +24,6 @@ import { formatCFA, formatRelativeTime } from "@/shared/utils/format";
 import { useWalletBalance, useWalletTransactions, useEscrowList, usePaymentMethods, useAddPaymentMethod, useSetDefaultPaymentMethod } from "@/features/wallet/hooks/useWallet";
 import WalletBalance from "@/features/payment/components/WalletBalance";
 import EscrowCard from "@/features/payment/components/EscrowCard";
-import EscrowTimeline from "@/features/payment/components/EscrowTimeline";
 import WithdrawModal from "@/features/payment/components/WithdrawModal";
 import toast from "react-hot-toast";
 
@@ -71,7 +70,6 @@ export default function WalletPage() {
 
   const [activeTab, setActiveTab] = useState("transactions");
   const [showBalance] = useState(true);
-  const [selectedEscrow, setSelectedEscrow] = useState(null);
   const [showWithdraw, setShowWithdraw] = useState(false);
   const [showAddPayment, setShowAddPayment] = useState(false);
   const [newMethod, setNewMethod] = useState({ provider: "flooz", providerUserId: "" });
@@ -214,46 +212,26 @@ export default function WalletPage() {
         {/* Escrow Tab */}
         {activeTab === "escrow" && (
           <motion.div variants={itemVariants} className="space-y-4">
-            {selectedEscrow ? (
-              <div className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-gray-800">
-                <button
-                  onClick={() => setSelectedEscrow(null)}
-                  className="mb-4 text-sm font-medium text-brand-800 hover:text-brand-900"
-                >
-                  ← Retour à la liste
-                </button>
-                <h3 className="mb-1 text-lg font-semibold text-gray-900 dark:text-white">
-                  {selectedEscrow.productTitle}
+            {escrowTransactions.length === 0 ? (
+              <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
+                <Shield className="mx-auto h-12 w-12 text-gray-300 dark:text-gray-600" />
+                <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">
+                  Aucune transaction séquestre
                 </h3>
-                <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
-                  Transaction #{selectedEscrow.id} · {formatRelativeTime(selectedEscrow.createdAt)}
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                  Vos paiements sécurisés apparaîtront ici.
                 </p>
-                <EscrowTimeline transaction={selectedEscrow} />
               </div>
             ) : (
-              <>
-                {escrowTransactions.length === 0 ? (
-                  <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
-                    <Shield className="mx-auto h-12 w-12 text-gray-300 dark:text-gray-600" />
-                    <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">
-                      Aucune transaction séquestre
-                    </h3>
-                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                      Vos paiements sécurisés apparaîtront ici.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {escrowTransactions.map((tx) => (
-                      <EscrowCard
-                        key={tx.id}
-                        transaction={tx}
-                        onClick={() => setSelectedEscrow(tx)}
-                      />
-                    ))}
-                  </div>
-                )}
-              </>
+              <div className="space-y-3">
+                {escrowTransactions.map((tx) => (
+                  <EscrowCard
+                    key={tx.id}
+                    transaction={tx}
+                    onClick={() => navigate(`/commandes/${tx.id}`)}
+                  />
+                ))}
+              </div>
             )}
           </motion.div>
         )}

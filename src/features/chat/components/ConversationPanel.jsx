@@ -154,13 +154,25 @@ export default function ConversationPanel({ conversation, messages: initialMessa
     if (convId) markAsRead(convId).catch(() => {});
   }, [convId, markAsRead]);
 
-  const handleSend = useCallback(async (text) => {
-    if (!convId || !text.trim()) return;
+  const handleSend = useCallback(async (text, attachments) => {
+    if (!convId) return;
+
+    const trimmed = (text || "").trim();
+    const images = attachments?.images || [];
+    const files = attachments?.files || [];
+    const hasMedia = images.length > 0 || files.length > 0;
+    if (!trimmed && !hasMedia) return;
+
+    const type = hasMedia ? "image" : "text";
+    const metadata = hasMedia ? { images, files } : null;
+    const displayText = trimmed || (images.length ? "📷 Photo" : "📎 Fichier");
 
     const optimisticMsg = {
       id: `optimistic-${Date.now()}`,
       senderId: user?.id,
-      text: text.trim(),
+      text: displayText,
+      type,
+      metadata,
       createdAt: new Date().toISOString(),
     };
 
@@ -168,10 +180,10 @@ export default function ConversationPanel({ conversation, messages: initialMessa
     scrollToBottom();
 
     if (connected) {
-      emit("send_message", { conversationId: convId, content: text.trim() });
+      emit("send_message", { conversationId: convId, content: trimmed, type, metadata });
     } else {
       try {
-        await sendMessage({ text: text.trim() });
+        await sendMessage({ text: trimmed, type, metadata });
         qc.invalidateQueries({ queryKey: ["messages", convId] });
       } catch {
         setMessages((prev) => prev.filter((m) => m.id !== optimisticMsg.id));

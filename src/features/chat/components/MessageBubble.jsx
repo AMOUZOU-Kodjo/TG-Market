@@ -1,9 +1,60 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Check, CheckCheck, Trash2, X, ExternalLink } from "lucide-react";
+import { Check, CheckCheck, Trash2, X, ExternalLink, FileText } from "lucide-react";
 import { cn } from "@/shared/utils/cn";
-import { formatTime, formatCFA } from "@/shared/utils/format";
+import { formatTime, formatCFA, formatFileSize } from "@/shared/utils/format";
 import { Link } from "react-router-dom";
+
+function MediaContent({ message, isOwn }) {
+  const images = message.metadata?.images || [];
+  const files = message.metadata?.files || [];
+  if (images.length === 0 && files.length === 0) return null;
+
+  return (
+    <div className="space-y-2">
+      {images.length > 0 && (
+        <div className={cn("grid gap-1.5", images.length > 1 ? "grid-cols-2" : "grid-cols-1")}>
+          {images.map((img, i) => (
+            <a key={i} href={img.url} target="_blank" rel="noopener noreferrer">
+              <img
+                src={img.thumbnail || img.url}
+                alt=""
+                className={cn(
+                  "rounded-lg object-cover",
+                  images.length === 1 ? "max-h-64 w-full" : "h-28 w-28"
+                )}
+              />
+            </a>
+          ))}
+        </div>
+      )}
+      {files.length > 0 && (
+        <div className="space-y-1.5">
+          {files.map((file, i) => (
+            <a
+              key={i}
+              href={file.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                "flex items-center gap-2 rounded-lg border px-3 py-2 transition-colors",
+                isOwn
+                  ? "border-brand-700 bg-brand-700/40 hover:bg-brand-700/60"
+                  : "border-gray-200 bg-white/60 hover:bg-white dark:border-gray-600 dark:bg-gray-700/40 dark:hover:bg-gray-700"
+              )}
+            >
+              <FileText className="h-4 w-4 shrink-0" />
+              <span className="min-w-0 truncate text-xs font-medium">{file.name || "Fichier"}</span>
+              {file.size > 0 && (
+                <span className="ml-auto shrink-0 text-[10px] opacity-70">{formatFileSize(file.size)}</span>
+              )}
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function MessageBubble({
   message,
@@ -89,7 +140,9 @@ export default function MessageBubble({
             selected && "ring-2 ring-brand-500 ring-offset-2 dark:ring-offset-gray-900"
           )}
         >
-          <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
+          <p className="text-sm leading-relaxed whitespace-pre-wrap">
+            {message.text || (message.metadata?.images?.length ? "📷 Photo" : message.metadata?.files?.length ? "📎 Fichier" : "")}
+          </p>
           {showTimestamp && (
             <div
               className={cn(
@@ -142,7 +195,12 @@ export default function MessageBubble({
               : "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white rounded-bl-md"
           )}
         >
-          <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
+          <MediaContent message={message} isOwn={isOwn} />
+          {message.text && (
+            <p className={cn("text-sm leading-relaxed whitespace-pre-wrap", (message.metadata?.images?.length || message.metadata?.files?.length) && "mt-1.5")}>
+              {message.text}
+            </p>
+          )}
           {showTimestamp && (
             <div
               className={cn(

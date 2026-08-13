@@ -39,18 +39,53 @@ export default function AdminLayout() {
     refetchInterval: 30000,
   });
 
-  const navItems = [
-    { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
-    { to: "/admin/users", label: "Utilisateurs", icon: Users },
-    { to: "/admin/listings", label: "Annonces", icon: List },
-    { to: "/admin/categories", label: "Categories", icon: FolderTree },
-    { to: "/admin/payments", label: "Paiements", icon: CreditCard },
-    { to: "/admin/payouts", label: "Paiements vendeurs", icon: Send },
-    { to: "/admin/reports", label: "Signalements", icon: AlertTriangle },
-    { to: "/admin/kyc", label: "Vérifications", icon: ShieldCheck },
-    { to: "/admin/contact-messages", label: "Messages", icon: Mail },
-    { to: "/admin/settings", label: "Parametres", icon: Settings },
+  const { data: kycPendingData } = useQuery({
+    queryKey: ["adminKycPendingCount"],
+    queryFn: () => api.get("/admin/kyc/pending?page=1&perPage=1").then((r) => r.data.meta.total),
+    refetchInterval: 60000,
+  });
+
+  const { data: reportsData } = useQuery({
+    queryKey: ["adminReportsCount"],
+    queryFn: () => api.get("/admin/reports?page=1&perPage=1").then((r) => r.data.meta.total),
+    refetchInterval: 60000,
+  });
+
+  const navGroups = [
+    {
+      title: "Gestion",
+      items: [
+        { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
+        { to: "/admin/users", label: "Utilisateurs", icon: Users },
+        { to: "/admin/listings", label: "Annonces", icon: List },
+        { to: "/admin/categories", label: "Catégories", icon: FolderTree },
+      ],
+    },
+    {
+      title: "Finances",
+      items: [
+        { to: "/admin/payments", label: "Paiements", icon: CreditCard },
+        { to: "/admin/payouts", label: "Paiements vendeurs", icon: Send },
+      ],
+    },
+    {
+      title: "Modération",
+      items: [
+        { to: "/admin/reports", label: "Signalements", icon: AlertTriangle, badge: reportsData },
+        { to: "/admin/kyc", label: "Vérifications", icon: ShieldCheck, badge: kycPendingData },
+        { to: "/admin/contact-messages", label: "Messages", icon: Mail, badge: unreadData },
+      ],
+    },
+    {
+      title: "Système",
+      items: [{ to: "/admin/settings", label: "Paramètres", icon: Settings }],
+    },
   ];
+
+  const navItems = navGroups.flatMap((g) => g.items);
+
+  const isItemActive = (item) =>
+    location.pathname === item.to || (item.to === "/admin" && location.pathname === "/admin");
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
@@ -107,25 +142,45 @@ export default function AdminLayout() {
           )}
 
           {/* Navigation */}
-          <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-            {navItems.map((item) => {
-              const isActive = location.pathname === item.to || (item.to === "/admin" && location.pathname === "/admin");
-              return (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                    isActive
-                      ? "bg-brand-50 text-brand-700"
-                      : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
-                  } ${!sidebarOpen ? "justify-center" : ""}`}
-                  title={!sidebarOpen ? item.label : undefined}
-                >
-                  <item.icon className={`w-5 h-5 shrink-0 ${isActive ? "text-brand-600" : ""}`} />
-                  {sidebarOpen && <span>{item.label}</span>}
-                </Link>
-              );
-            })}
+          <nav className="flex-1 p-3 overflow-y-auto">
+            {navGroups.map((group) => (
+              <div key={group.title} className="mb-4">
+                {sidebarOpen && (
+                  <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                    {group.title}
+                  </p>
+                )}
+                <div className="space-y-0.5">
+                  {group.items.map((item) => {
+                    const isActive = isItemActive(item);
+                    return (
+                      <Link
+                        key={item.to}
+                        to={item.to}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                          isActive
+                            ? "bg-brand-50 text-brand-700"
+                            : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+                        } ${!sidebarOpen ? "justify-center" : ""}`}
+                        title={!sidebarOpen ? item.label : undefined}
+                      >
+                        <item.icon className={`w-5 h-5 shrink-0 ${isActive ? "text-brand-600" : ""}`} />
+                        {sidebarOpen && (
+                          <>
+                            <span className="flex-1 truncate">{item.label}</span>
+                            {item.badge > 0 && (
+                              <span className="min-w-[18px] h-[18px] px-1 bg-brand-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                                {item.badge > 99 ? "99+" : item.badge}
+                              </span>
+                            )}
+                          </>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </nav>
 
           {/* Sidebar Footer */}
@@ -208,7 +263,7 @@ export default function AdminLayout() {
       <nav className="fixed bottom-0 inset-x-0 z-50 lg:hidden bg-white border-t border-gray-200 safe-area-pb">
         <div className="flex items-center overflow-x-auto h-16 hide-scrollbar">
           {navItems.map((item) => {
-            const isActive = location.pathname === item.to || (item.to === "/admin" && location.pathname === "/admin");
+            const isActive = isItemActive(item);
             return (
               <Link
                 key={item.to}
@@ -219,7 +274,14 @@ export default function AdminLayout() {
                     : "text-gray-400"
                 }`}
               >
-                <item.icon className="w-5 h-5" strokeWidth={isActive ? 2.2 : 1.5} />
+                <div className="relative">
+                  <item.icon className="w-5 h-5" strokeWidth={isActive ? 2.2 : 1.5} />
+                  {item.badge > 0 && (
+                    <span className="absolute -top-1 -right-1.5 min-w-[14px] h-[14px] px-0.5 bg-brand-600 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                      {item.badge > 99 ? "99+" : item.badge}
+                    </span>
+                  )}
+                </div>
                 <span className={`text-[10px] leading-tight whitespace-nowrap ${isActive ? "font-semibold" : "font-medium"}`}>
                   {item.label}
                 </span>

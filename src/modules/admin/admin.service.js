@@ -8,6 +8,70 @@ function invalidateCategoriesCache() {
   invalidateCacheByPattern('cache:category:*');
 }
 
+const MONTHS_BACK = 11;
+
+function last12Months() {
+  const months = [];
+  const now = new Date();
+  for (let i = MONTHS_BACK; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
+  }
+  return months;
+}
+
+async function buildMonthlyData() {
+  const since = `NOW() - INTERVAL '12 months'`;
+
+  const [products, users, sales, views, volume] = await Promise.all([
+    prisma.$queryRaw`
+      SELECT to_char(created_at, 'YYYY-MM') AS month, COUNT(*)::int AS count
+      FROM "Product"
+      WHERE created_at >= (${since}::timestamptz) AND status != 'deleted'
+      GROUP BY month`,
+    prisma.$queryRaw`
+      SELECT to_char(created_at, 'YYYY-MM') AS month, COUNT(*)::int AS count
+      FROM "User"
+      WHERE created_at >= (${since}::timestamptz)
+      GROUP BY month`,
+    prisma.$queryRaw`
+      SELECT to_char(created_at, 'YYYY-MM') AS month, COUNT(*)::int AS count
+      FROM "EscrowTransaction"
+      WHERE created_at >= (${since}::timestamptz) AND status = 'completed'
+      GROUP BY month`,
+    prisma.$queryRaw`
+      SELECT to_char(created_at, 'YYYY-MM') AS month, COUNT(*)::int AS count
+      FROM "ProductView"
+      WHERE created_at >= (${since}::timestamptz)
+      GROUP BY month`,
+    prisma.$queryRaw`
+      SELECT to_char(created_at, 'YYYY-MM') AS month,
+             COALESCE(SUM(amount), 0)::int AS volume,
+             COALESCE(SUM(fee), 0)::int AS fees
+      FROM "EscrowTransaction"
+      WHERE created_at >= (${since}::timestamptz) AND status = 'completed'
+      GROUP BY month`,
+  ]);
+
+  const toMap = (rows) => new Map(rows.map((r) => [r.month, r.count ?? r]));
+
+  const productMap = toMap(products);
+  const userMap = toMap(users);
+  const salesMap = toMap(sales);
+  const viewsMap = toMap(views);
+  const volumeMap = new Map(volume.map((r) => [r.month, { volume: r.volume, fees: r.fees }]));
+
+  return last12Months().map((month) => ({
+    month,
+    products: productMap.get(month) ?? 0,
+    users: userMap.get(month) ?? 0,
+    sales: salesMap.get(month) ?? 0,
+    views: viewsMap.get(month) ?? 0,
+    volume: volumeMap.get(month)?.volume ?? 0,
+    fees: volumeMap.get(month)?.fees ?? 0,
+  }));
+}
+
 export async function getStats() {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -82,16 +146,7 @@ export async function getStats() {
     }),
   ]);
 
-  const monthlyData = await prisma.$queryRaw`
-    SELECT
-      to_char(created_at, 'YYYY-MM') AS month,
-      COUNT(*)::int AS products
-    FROM "Product"
-    WHERE created_at >= (NOW() - INTERVAL '12 months')
-      AND status != 'deleted'
-    GROUP BY month
-    ORDER BY month ASC
-  `;
+  const monthlyData = await buildMonthlyData();
 
   const weeklyData = await prisma.$queryRaw`
     SELECT

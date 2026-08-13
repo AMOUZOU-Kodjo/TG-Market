@@ -47,7 +47,7 @@ export async function scanConfirm(req, res, next) {
 export async function confirmPayment(req, res, next) {
   try {
     const id = Number(req.params.id);
-    const escrow = await escrowService.confirmPayment(id, req.user.id);
+    const escrow = await escrowService.confirmPayment(id, req.user.id, req.body?.transactionRef);
     try { req.app.get('io')?.emit('escrow_updated', { escrow }); } catch {}
 
     const io = req.app.get('io');

@@ -217,7 +217,7 @@ export async function getEscrowById(id, userId) {
   return formatEscrow(escrow);
 }
 
-export async function confirmPayment(id, buyerId) {
+export async function confirmPayment(id, buyerId, transactionRef) {
   const escrow = await prisma.escrowTransaction.findUnique({
     where: { id },
     select: { id: true, buyer_id: true, status: true },
@@ -243,7 +243,10 @@ export async function confirmPayment(id, buyerId) {
 
   await prisma.escrowTransaction.update({
     where: { id },
-    data: { status: 'awaiting_verification' },
+    data: {
+      status: 'awaiting_verification',
+      ...(transactionRef ? { payment_ref: transactionRef } : {}),
+    },
   });
 
   const full = await prisma.escrowTransaction.findUnique({

@@ -955,6 +955,7 @@ export async function getEscrowTransactions({ page, perPage, skip }) {
       fee: t.fee,
       status: t.status,
       paymentMethod: t.payment_method,
+      paymentRef: t.payment_ref,
       confirmedAt: t.confirmed_at,
       releasedAt: t.released_at,
       createdAt: t.created_at,

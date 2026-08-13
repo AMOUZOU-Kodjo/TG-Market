@@ -21,35 +21,33 @@ function last12Months() {
 }
 
 async function buildMonthlyData() {
-  const since = `NOW() - INTERVAL '12 months'`;
-
   const [products, users, sales, views, volume] = await Promise.all([
     prisma.$queryRaw`
       SELECT to_char(created_at, 'YYYY-MM') AS month, COUNT(*)::int AS count
       FROM "Product"
-      WHERE created_at >= (${since}::timestamptz) AND status != 'deleted'
+      WHERE created_at >= NOW() - INTERVAL '12 months' AND status != 'deleted'
       GROUP BY month`,
     prisma.$queryRaw`
       SELECT to_char(created_at, 'YYYY-MM') AS month, COUNT(*)::int AS count
       FROM "User"
-      WHERE created_at >= (${since}::timestamptz)
+      WHERE created_at >= NOW() - INTERVAL '12 months'
       GROUP BY month`,
     prisma.$queryRaw`
       SELECT to_char(created_at, 'YYYY-MM') AS month, COUNT(*)::int AS count
       FROM "EscrowTransaction"
-      WHERE created_at >= (${since}::timestamptz) AND status = 'completed'
+      WHERE created_at >= NOW() - INTERVAL '12 months' AND status = 'completed'
       GROUP BY month`,
     prisma.$queryRaw`
       SELECT to_char(created_at, 'YYYY-MM') AS month, COUNT(*)::int AS count
       FROM "ProductView"
-      WHERE created_at >= (${since}::timestamptz)
+      WHERE created_at >= NOW() - INTERVAL '12 months'
       GROUP BY month`,
     prisma.$queryRaw`
       SELECT to_char(created_at, 'YYYY-MM') AS month,
              COALESCE(SUM(amount), 0)::int AS volume,
              COALESCE(SUM(fee), 0)::int AS fees
       FROM "EscrowTransaction"
-      WHERE created_at >= (${since}::timestamptz) AND status = 'completed'
+      WHERE created_at >= NOW() - INTERVAL '12 months' AND status = 'completed'
       GROUP BY month`,
   ]);
 

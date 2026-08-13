@@ -97,7 +97,7 @@ export default function ProductCard({
 
         {/* Condition badge - top left */}
         {condition && (
-          <div className="absolute left-3 top-2 z-10 ">
+          <div className="absolute  left-0 -top-2 z-10 ">
             <Badge variant={getConditionBadgeVariant(condition)}>
               {getConditionLabel(condition)}
             </Badge>

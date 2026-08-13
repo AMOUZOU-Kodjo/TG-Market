@@ -750,6 +750,7 @@ import {
   TreePine,
   Wrench,
   Package,
+  ShieldCheck,
 } from "lucide-react";
 import BackButton from "@/shared/ui/BackButton";
 import { cn } from "@/shared/utils/cn";
@@ -758,13 +759,15 @@ import Input from "@/shared/ui/Input";
 import Textarea from "@/shared/ui/Textarea";
 import Select from "@/shared/ui/Select";
 import StepIndicator from "@/shared/ui/StepIndicator";
+import Modal from "@/shared/ui/Modal";
 import ListingFormStep from "@/features/listings/components/ListingFormStep";
 import PhotoUploader from "@/features/listings/components/PhotoUploader";
 import ListingPreview from "@/features/listings/components/ListingPreview";
 import { useCategories } from "@/features/categories/hooks/useCategories";
 import CategoryPicker from "@/features/categories/components/CategoryPicker";
 import { useCreateProduct } from "@/features/products/hooks/useProducts";
-import { usePaymentMethods } from "@/features/wallet/hooks/useWallet";
+import { useKycStatus } from "@/features/verification/hooks/useKyc";
+import { usePaymentMethods, useAddPaymentMethod } from "@/features/wallet/hooks/useWallet";
 import { useCategorySpecTemplates } from "@/features/categories/hooks/useCategories";
 import api from "@/shared/services/api";
 import { CITIES, PRODUCT_CONDITIONS, MAX_IMAGES_PER_LISTING } from "@/shared/constants";
@@ -802,6 +805,7 @@ export default function CreateListingPage() {
   const { data: categories = [] } = useCategories();
   const createProduct = useCreateProduct();
   const { data: methodsData } = usePaymentMethods();
+  const { data: kycStatus, isLoading: kycLoading } = useKycStatus();
   const [currentStep, setCurrentStep] = useState(0);
   const [photos, setPhotos] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -809,6 +813,9 @@ export default function CreateListingPage() {
   const [publishedProductId, setPublishedProductId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [specValues, setSpecValues] = useState({});
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [newMethod, setNewMethod] = useState({ provider: "flooz", providerUserId: "" });
+  const addPayment = useAddPaymentMethod();
 
   const { data: specTemplatesData } = useCategorySpecTemplates(selectedCategory?.id);
   const specTemplates = specTemplatesData?.data ?? specTemplatesData ?? [];
@@ -900,8 +907,9 @@ export default function CreateListingPage() {
 
     const methods = methodsData?.data || methodsData || [];
     if (methods.length === 0) {
+      setNewMethod({ provider: "flooz", providerUserId: "" });
+      setShowPaymentModal(true);
       toast.error("Ajoutez un moyen de réception (numéro Flooz/T-Money) pour recevoir vos paiements");
-      navigate("/portefeuille");
       return;
     }
 
@@ -1445,6 +1453,51 @@ export default function CreateListingPage() {
     }
   };
 
+  if (kycLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white dark:bg-gray-950">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-800 border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (kycStatus && !kycStatus.identityVerified) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-gray-950">
+        <div className="mx-auto max-w-lg px-4 py-16 sm:px-6">
+          <BackButton />
+          <div className="mt-6 rounded-2xl border border-gray-100 bg-white p-8 text-center shadow-sm dark:border-gray-800 dark:bg-gray-800">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-amber-50 dark:bg-amber-900/20">
+              <ShieldCheck className="h-8 w-8 text-amber-600" />
+            </div>
+            <h1 className="mt-5 text-xl font-bold text-gray-900 dark:text-white">
+              Vérification requise pour vendre
+            </h1>
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+              Pour publier une annonce, votre identité doit d'abord être vérifiée.
+              Soumettez votre pièce d'identité et un selfie — la vérification prend 24-48h.
+            </p>
+            <Button
+              variant="primary"
+              fullWidth
+              className="mt-6"
+              onClick={() => navigate("/parametres")}
+            >
+              Vérifier mon identité
+            </Button>
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="mt-3 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+            >
+              Retour
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
       <div className="mx-auto max-w-8xl px-4 py-6 sm:px-6">
@@ -1500,6 +1553,71 @@ export default function CreateListingPage() {
           </div>
         )}
       </div>
+
+      <Modal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        title="Ajouter un moyen de réception"
+        size="sm"
+        footer={
+          <div className="flex gap-3 justify-end">
+            <Button variant="ghost" size="sm" onClick={() => setShowPaymentModal(false)}>Annuler</Button>
+            <Button
+              variant="primary"
+              size="sm"
+              disabled={!newMethod.providerUserId || addPayment.isPending}
+              onClick={async () => {
+                try {
+                  await addPayment.mutateAsync(newMethod);
+                  setShowPaymentModal(false);
+                  toast.success("Moyen de réception ajouté");
+                  handlePublish();
+                } catch {
+                  toast.error("Erreur lors de l'ajout du moyen de réception");
+                }
+              }}
+            >
+              {addPayment.isPending ? "Ajout..." : "Ajouter"}
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Opérateur</label>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { value: "flooz", label: "Flooz", icon: Smartphone },
+                { value: "tmoney", label: "T-Money", icon: Smartphone },
+              ].map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setNewMethod({ ...newMethod, provider: opt.value })}
+                  className={`flex items-center gap-2 rounded-xl border p-3 text-sm font-medium transition-colors ${
+                    newMethod.provider === opt.value
+                      ? "border-brand-600 bg-brand-50 text-brand-700 dark:border-brand-500 dark:bg-brand-700/10 dark:text-brand-400"
+                      : "border-gray-200 text-gray-600 hover:border-gray-300 dark:border-gray-700 dark:text-gray-400"
+                  }`}
+                >
+                  <opt.icon className="h-5 w-5" />
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Numéro de téléphone</label>
+            <input
+              type="tel"
+              value={newMethod.providerUserId}
+              onChange={(e) => setNewMethod({ ...newMethod, providerUserId: e.target.value })}
+              placeholder="+228 XX XX XX XX"
+              className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+            />
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

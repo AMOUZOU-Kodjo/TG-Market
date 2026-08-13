@@ -896,7 +896,7 @@ import toast from "react-hot-toast";
 import KycProgress from "@/features/verification/components/KycProgress";
 import BadgeGrid from "@/features/verification/components/BadgeGrid";
 import DocumentUpload from "@/features/verification/components/DocumentUpload";
-import PhoneVerification from "@/features/verification/components/PhoneVerification";
+// import PhoneVerification from "@/features/verification/components/PhoneVerification";
 import EmailVerification from "@/features/verification/components/EmailVerification";
 import BackButton from "@/shared/ui/BackButton";
 import { useSubmitKyc } from "@/features/verification/hooks/useKyc";
@@ -1122,13 +1122,13 @@ export default function SettingsPage() {
   };
 
   const verificationSteps = [
-    {
-      id: 1,
-      title: "Téléphone",
-      description: "Vérifier votre numéro +228",
-      status: kycStatus?.phoneVerified ? "completed" : "pending",
-      icon: "Phone",
-    },
+    // {
+    //   id: 1,
+    //   title: "Téléphone",
+    //   description: "Vérifier votre numéro +228",
+    //   status: kycStatus?.phoneVerified ? "completed" : "pending",
+    //   icon: "Phone",
+    // },
     {
       id: 2,
       title: "Email",
@@ -1885,7 +1885,7 @@ export default function SettingsPage() {
             <KycProgress steps={verificationSteps} />
 
             <div className="mt-6 space-y-6">
-              <PhoneVerification phone={user?.phone} verified={kycStatus?.phoneVerified} />
+              {/* <PhoneVerification phone={user?.phone} verified={kycStatus?.phoneVerified} /> */}
 
               <EmailVerification email={user?.email} verified={kycStatus?.emailVerified} />
 

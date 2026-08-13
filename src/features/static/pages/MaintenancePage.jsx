@@ -58,7 +58,7 @@ export default function MaintenancePage() {
           </div>
 
           <div className="text-center">
-            <h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white flex items-center justify-center gap-3">
+            <h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white flex flex-wrap items-center justify-center gap-3">
               <div className="relative h-10 w-10 flex items-center justify-center">
                 <motion.div
                   animate={{ rotate: [0, 360] }}
@@ -108,7 +108,7 @@ export default function MaintenancePage() {
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Inscrivez-vous pour être notifié lorsque le site sera de retour :
               </p>
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2 sm:flex-row">
                 <div className="flex-1">
                   <Input
                     type="email"
@@ -118,7 +118,7 @@ export default function MaintenancePage() {
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
-                <Button type="submit" disabled={subscribing} icon={subscribing ? Loader2 : ArrowRight}>
+                <Button type="submit" disabled={subscribing} icon={subscribing ? Loader2 : ArrowRight} className="w-full sm:w-auto shrink-0">
                   {subscribing ? "..." : "Notifier"}
                 </Button>
               </div>
@@ -141,7 +141,7 @@ export default function MaintenancePage() {
             <p className="text-xs text-gray-400 dark:text-gray-500">
               Suivez-nous sur les réseaux sociaux pour les dernières mises à jour
             </p>
-            <div className="mt-3 flex justify-center gap-3">
+            <div className="mt-3 flex flex-wrap justify-center gap-2">
               <a href={socialFacebook} target="_blank" rel="noopener noreferrer" className="rounded-full bg-brand-100 px-3 py-1 text-xs font-medium text-brand-800 hover:bg-brand-200 transition-colors dark:bg-brand-700/10 dark:text-brand-400">
                 Facebook
               </a>

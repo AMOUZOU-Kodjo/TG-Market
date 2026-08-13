@@ -43,6 +43,7 @@ export default function AdminSettingsPage() {
         support_email: settings.support_email ?? "",
         platform_fee_percent: settings.platform_fee_percent ?? "5",
         platform_buyer_fee_percent: settings.platform_buyer_fee_percent ?? "0",
+        payment_provider: settings.payment_provider ?? "",
         maintenance_mode: settings.maintenance_mode === "true",
         maintenance_message: settings.maintenance_message ?? "",
         maintenance_estimated_return: settings.maintenance_estimated_return ?? "",
@@ -73,6 +74,7 @@ export default function AdminSettingsPage() {
         support_email: updated.support_email ?? "",
         platform_fee_percent: updated.platform_fee_percent ?? "5",
         platform_buyer_fee_percent: updated.platform_buyer_fee_percent ?? "0",
+        payment_provider: updated.payment_provider ?? "",
         maintenance_mode: updated.maintenance_mode === "true",
         maintenance_message: updated.maintenance_message ?? "",
         maintenance_estimated_return: updated.maintenance_estimated_return ?? "",
@@ -229,6 +231,18 @@ export default function AdminSettingsPage() {
                   className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
                 />
                 <p className="mt-1 text-xs text-gray-400">Pourcentage ajouté au prix payé par l'acheteur (0 = aucun frais d'achat).</p>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Fournisseur de paiement</label>
+                <select
+                  value={form.payment_provider}
+                  onChange={(e) => setForm({ ...form, payment_provider: e.target.value })}
+                  className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+                >
+                  <option value="">Actuel (Flutterwave / comptes manuels)</option>
+                  <option value="fedapay">FedaPay (mobile money)</option>
+                </select>
+                <p className="mt-1 text-xs text-gray-400">FedaPay n'est utilisé que si la clé FEDAPAY_SECRET_KEY est définie sur le serveur, sinon le système actuel reste actif.</p>
               </div>
             </div>
           </div>

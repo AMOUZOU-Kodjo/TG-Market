@@ -6,7 +6,7 @@ import Avatar from "@/shared/ui/Avatar";
 import Badge from "@/shared/ui/Badge";
 import Button from "@/shared/ui/Button";
 import Textarea from "@/shared/ui/Textarea";
-import { useMyReviews, useCreateReview } from "@/features/reviews/hooks/useReviews";
+import { useMyReviews, useCreateReview, useReviewVote } from "@/features/reviews/hooks/useReviews";
 import { useEscrowList } from "@/features/wallet/hooks/useWallet";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
@@ -58,6 +58,9 @@ export default function ReviewsPage() {
   const { data: reviewsData = [] } = useMyReviews();
   const { data: escrowData } = useEscrowList();
   const createReview = useCreateReview();
+  const voteMutation = useReviewVote();
+  const [votes, setVotes] = useState({});
+  const [votingId, setVotingId] = useState(null);
   const [filter, setFilter] = useState("all");
   const [selectedEscrow, setSelectedEscrow] = useState("");
   const [newRating, setNewRating] = useState(0);
@@ -76,6 +79,29 @@ export default function ReviewsPage() {
     if (filter === "negative") return r.rating <= 3;
     return true;
   });
+
+  const getVote = (review) =>
+    votes[review.id] ?? { helpful: review.helpfulCount ?? 0, unhelpful: review.unhelpfulCount ?? 0, mine: null };
+
+  const handleVote = async (review, vote) => {
+    if (!user) {
+      toast.error("Connectez-vous pour voter");
+      return;
+    }
+    if (votingId) return;
+    setVotingId(review.id);
+    try {
+      const result = await voteMutation.mutateAsync({ reviewId: review.id, vote });
+      setVotes((prev) => ({
+        ...prev,
+        [review.id]: { helpful: result.helpfulCount, unhelpful: result.unhelpfulCount, mine: result.state },
+      }));
+    } catch {
+      toast.error("Impossible de voter pour le moment");
+    } finally {
+      setVotingId(null);
+    }
+  };
 
   const handleSubmitReview = async (e) => {
     e.preventDefault();
@@ -279,12 +305,30 @@ export default function ReviewsPage() {
                     {review.comment}
                   </p>
                   <div className="mt-3 flex items-center gap-3">
-                    <button className="flex items-center gap-1 text-xs text-gray-400 transition-colors hover:text-brand-700 dark:hover:text-brand-600">
+                    <button
+                      onClick={() => handleVote(review, true)}
+                      disabled={votingId === review.id}
+                      className={`flex items-center gap-1 text-xs transition-colors disabled:opacity-50 ${
+                        getVote(review).mine === true
+                          ? "text-brand-700 dark:text-brand-500"
+                          : "text-gray-400 hover:text-brand-700 dark:hover:text-brand-600"
+                      }`}
+                    >
                       <ThumbsUp className="h-3.5 w-3.5" />
                       Utile
+                      {getVote(review).helpful > 0 && <span>({getVote(review).helpful})</span>}
                     </button>
-                    <button className="flex items-center gap-1 text-xs text-gray-400 transition-colors hover:text-red-700 dark:hover:text-red-400">
+                    <button
+                      onClick={() => handleVote(review, false)}
+                      disabled={votingId === review.id}
+                      className={`flex items-center gap-1 text-xs transition-colors disabled:opacity-50 ${
+                        getVote(review).mine === false
+                          ? "text-red-600 dark:text-red-500"
+                          : "text-gray-400 hover:text-red-700 dark:hover:text-red-400"
+                      }`}
+                    >
                       <ThumbsDown className="h-3.5 w-3.5" />
+                      {getVote(review).unhelpful > 0 && <span>({getVote(review).unhelpful})</span>}
                     </button>
                   </div>
                 </div>

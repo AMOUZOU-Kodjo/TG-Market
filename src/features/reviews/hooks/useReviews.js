@@ -35,3 +35,15 @@ export function useCreateReview() {
     },
   });
 }
+
+export function useReviewVote() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ reviewId, vote }) => reviewsApi.vote(reviewId, vote),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["myReviews"] });
+      qc.invalidateQueries({ queryKey: ["sellerReviews"] });
+      qc.invalidateQueries({ queryKey: ["productReviews"] });
+    },
+  });
+}

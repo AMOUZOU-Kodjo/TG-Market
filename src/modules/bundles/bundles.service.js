@@ -1,6 +1,7 @@
 import prisma from '../../config/database.js';
 import crypto from 'crypto';
 import { getPlatformFeePercent, getBuyerFeePercent } from '../../utils/platformFee.js';
+import { requireVerifiedSeller } from '../../utils/kyc.js';
 
 function formatBundle(bundle) {
   return {
@@ -53,6 +54,8 @@ function formatBundleWithItems(bundle) {
 }
 
 export async function createBundle(sellerId, { title, description, productIds, bundlePrice }) {
+  await requireVerifiedSeller(sellerId);
+
   const products = await prisma.product.findMany({
     where: { id: { in: productIds }, user_id: sellerId, status: 'active' },
     select: { id: true, price: true },

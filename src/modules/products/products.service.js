@@ -1,4 +1,5 @@
 import prisma from '../../config/database.js';
+import { requireVerifiedSeller } from '../../utils/kyc.js';
 
 function formatProduct(product, userId = null) {
   return {
@@ -210,6 +211,8 @@ export async function getProductById(productId, userId = null) {
 }
 
 export async function createProduct(userId, data) {
+  await requireVerifiedSeller(userId);
+
   const category = await prisma.category.findUnique({
     where: { id: data.categoryId },
     select: { id: true },

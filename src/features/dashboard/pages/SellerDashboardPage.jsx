@@ -8,6 +8,8 @@ import {
   Handshake,
   MessageCircle,
   Megaphone,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
 import { cn } from "@/shared/utils/cn";
 import { formatCFA, formatRelativeTime } from "@/shared/utils/format";

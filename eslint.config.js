@@ -3,9 +3,8 @@ import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 
 export default [
-  { ignores: ["dist/**", "node_modules/**"] },
+  { ignores: ["dist/**", "dev-dist/**", "node_modules/**"] },
   {
-    extends: [js.configs.recommended, "plugin:react-hooks/recommended"],
     files: ["**/*.{js,jsx}"],
     plugins: {
       "react-hooks": reactHooks,
@@ -28,6 +27,8 @@ export default [
         clearTimeout: "readonly",
         fetch: "readonly",
         URL: "readonly",
+        URLSearchParams: "readonly",
+        CustomEvent: "readonly",
         FormData: "readonly",
         IntersectionObserver: "readonly",
         localStorage: "readonly",
@@ -42,11 +43,25 @@ export default [
       },
     },
     rules: {
+      ...js.configs.recommended.rules,
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
       "no-console": ["warn", { allow: ["warn", "error"] }],
+      "no-empty": ["error", { allowEmptyCatch: true }],
+    },
+  },
+  {
+    files: ["vite.config.js"],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: "module",
+      globals: {
+        __dirname: "readonly",
+        process: "readonly",
+        console: "readonly",
+      },
     },
   },
 ];

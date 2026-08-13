@@ -29,6 +29,15 @@ import { useWalletBalance } from "@/features/wallet/hooks/useWallet";
 import { formatCFA } from "@/shared/utils/format";
 
 function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, totalEarned, navigate, logout, siteName }) {
+  const location = useLocation();
+
+  const handleNav = (to) => (e) => {
+    onMobileLinkClick();
+    if (location.pathname + location.search === to) {
+      e.preventDefault();
+    }
+  };
+
   return (
     <>
       {/* Sidebar Header */}
@@ -98,7 +107,7 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
       {/* Devenir membre certifié */}
       <Link
         to="/dashboard/settings"
-        onClick={onMobileLinkClick}
+        onClick={handleNav("/dashboard/settings")}
         className={`mx-3 mt-3 block rounded-xl bg-brand-600 text-center text-sm font-semibold text-white hover:bg-green-700 transition-colors ${sidebarOpen ? "px-4 py-3" : "mx-auto mt-3 w-10 h-10 flex items-center justify-center"}`}
         title={!sidebarOpen ? "Certification" : undefined}
       >
@@ -108,7 +117,7 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
       {/* Profile */}
       <Link
         to="/dashboard/profile"
-        onClick={onMobileLinkClick}
+        onClick={handleNav("/dashboard/profile")}
         className={`mx-3 mt-4 flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
         title={!sidebarOpen ? "Mon Profil" : undefined}
       >
@@ -125,7 +134,7 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
       {/* Mes Ventes et Achats */}
       <Link
         to="/dashboard/history"
-        onClick={onMobileLinkClick}
+        onClick={handleNav("/dashboard/history")}
         className={`mx-3 mt-1 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
         title={!sidebarOpen ? "Mes Ventes et Achats" : undefined}
       >
@@ -138,7 +147,7 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
       {/* Messages */}
       <Link
         to="/dashboard/messages"
-        onClick={onMobileLinkClick}
+        onClick={handleNav("/dashboard/messages")}
         className={`mx-3 mt-2 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
         title={!sidebarOpen ? "Messages" : undefined}
       >
@@ -149,7 +158,7 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
       {/* Offres */}
       <Link
         to="/dashboard/offres"
-        onClick={onMobileLinkClick}
+        onClick={handleNav("/dashboard/offres")}
         className={`mx-3 mt-2 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
         title={!sidebarOpen ? "Offres" : undefined}
       >
@@ -160,7 +169,7 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
       {/* Notifications */}
       <Link
         to="/dashboard/profile?tab=notifications"
-        onClick={onMobileLinkClick}
+        onClick={handleNav("/dashboard/profile?tab=notifications")}
         className={`mx-3 mt-2 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
         title={!sidebarOpen ? "Notifications" : undefined}
       >
@@ -171,7 +180,7 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
       {/* Mes lots */}
       <Link
         to="/dashboard/mes-lots"
-        onClick={onMobileLinkClick}
+        onClick={handleNav("/dashboard/mes-lots")}
         className={`mx-3 mt-2 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
         title={!sidebarOpen ? "Mes lots" : undefined}
       >
@@ -183,7 +192,7 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
       {user?.role === "admin" && (
         <Link
           to="/admin"
-          onClick={onMobileLinkClick}
+          onClick={handleNav("/admin")}
           className={`mx-3 mt-2 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
           title={!sidebarOpen ? "Administration" : undefined}
         >
@@ -342,6 +351,11 @@ export default function DashboardLayout() {
             <div className="flex items-center gap-2">
               <Link
                 to="/dashboard/messages"
+                onClick={(e) => {
+                  if (location.pathname + location.search === "/dashboard/messages") {
+                    e.preventDefault();
+                  }
+                }}
                 className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition-colors"
               >
                 <MessageCircle className="w-5 h-5" />
@@ -353,6 +367,11 @@ export default function DashboardLayout() {
               </Link>
               <Link
                 to="/dashboard/profile?tab=notifications"
+                onClick={(e) => {
+                  if (location.pathname + location.search === "/dashboard/profile?tab=notifications") {
+                    e.preventDefault();
+                  }
+                }}
                 className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition-colors"
               >
                 <Bell className="w-5 h-5" />

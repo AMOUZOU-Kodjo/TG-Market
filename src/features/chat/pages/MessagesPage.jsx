@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -20,6 +20,7 @@ import { cn } from "@/shared/utils/cn";
 
 export default function MessagesPage() {
   const { user, setUser, refreshUser } = useAuth();
+  const location = useLocation();
   const { data: conversationsData = [] } = useConversations();
   const conversations = conversationsData?.data || conversationsData || [];
 
@@ -69,7 +70,7 @@ export default function MessagesPage() {
       >
         {/* Header */}
         <div className="flex items-center gap-2 border-b border-gray-100 px-3 py-3 dark:border-gray-800">
-          <BackButton />
+          <BackButton fallback={location.pathname.startsWith("/dashboard") ? "/dashboard" : "/"} />
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">
             Messages
           </h2>

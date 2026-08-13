@@ -6,6 +6,7 @@ import {
   Package,
   MessageCircle,
   Megaphone,
+  Handshake,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -186,6 +187,28 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
       >
         <Package className="w-4 h-4 shrink-0" />
         {sidebarOpen && <span>Mes lots</span>}
+      </Link>
+
+      {/* Propositions */}
+      <Link
+        to="/dashboard/profile?tab=proposals"
+        onClick={handleNav("/dashboard/profile?tab=proposals")}
+        className={`mx-3 mt-2 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+        title={!sidebarOpen ? "Propositions" : undefined}
+      >
+        <Handshake className="w-4 h-4 shrink-0" />
+        {sidebarOpen && <span>Propositions</span>}
+      </Link>
+
+      {/* Promotions */}
+      <Link
+        to="/dashboard/profile?tab=promotions"
+        onClick={handleNav("/dashboard/profile?tab=promotions")}
+        className={`mx-3 mt-2 flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${!sidebarOpen ? "justify-center" : ""}`}
+        title={!sidebarOpen ? "Promotions" : undefined}
+      >
+        <Megaphone className="w-4 h-4 shrink-0" />
+        {sidebarOpen && <span>Promotions</span>}
       </Link>
 
       {/* Admin - visible only for admins */}

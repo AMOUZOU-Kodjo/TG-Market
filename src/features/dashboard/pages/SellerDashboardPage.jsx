@@ -6,22 +6,17 @@ import {
   BarChart3,
   User,
   Handshake,
-  MessageCircle,
   Megaphone,
-  CheckCircle,
-  XCircle,
 } from "lucide-react";
 import { cn } from "@/shared/utils/cn";
-import { formatCFA, formatRelativeTime } from "@/shared/utils/format";
-import Badge from "@/shared/ui/Badge";
+import { formatCFA } from "@/shared/utils/format";
 import DashboardStats from "@/features/dashboard/components/DashboardStats";
 import ProductTable from "@/features/dashboard/components/ProductTable";
+import BundleProposalsTab from "@/features/dashboard/components/BundleProposalsTab";
+import PromotionsTab from "@/features/dashboard/components/PromotionsTab";
 import { useMyProducts } from "@/features/products/hooks/useProducts";
 import { useWalletBalance } from "@/features/wallet/hooks/useWallet";
-import { useNavigate } from "react-router-dom";
 import UserProfilePage from "@/features/profile/pages/UserProfilePage";
-import ProposalStatusBadge from "@/shared/ui/ProposalStatusBadge";
-import { useReceivedBundleProposals, useAcceptBundleProposal, useRejectBundleProposal } from "@/features/bundles/hooks/useBundleProposals";
 
 function OverviewTab() {
   return (
@@ -58,124 +53,6 @@ function ProductsTab() {
   );
 }
 
-function BundleProposalsTab() {
-  const navigate = useNavigate();
-  const { data, isLoading } = useReceivedBundleProposals();
-  const acceptProposal = useAcceptBundleProposal();
-  const rejectProposal = useRejectBundleProposal();
-  const proposals = data?.data ?? [];
-
-  const handleAccept = async (proposalId) => {
-    try {
-      await acceptProposal.mutateAsync(proposalId);
-    } catch {
-      // toast already handled
-    }
-  };
-
-  const handleReject = async (proposalId) => {
-    try {
-      await rejectProposal.mutateAsync(proposalId);
-    } catch {
-      // toast already handled
-    }
-  };
-
-  return (
-    <div className="space-y-4">
-      <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-        Propositions de lots
-      </h3>
-      {isLoading ? (
-        <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-800" />
-          <p className="mt-3 text-sm text-gray-500">Chargement...</p>
-        </div>
-      ) : proposals.length === 0 ? (
-        <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
-          <Handshake className="mx-auto h-10 w-10 text-gray-300" />
-          <p className="mt-3 text-sm text-gray-500">Aucune proposition reçue</p>
-        </div>
-      ) : (
-        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-800">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-100 dark:border-gray-800">
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Acheteur</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Lot</th>
-                  <th className="hidden px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 sm:table-cell">Montant proposé</th>
-                  <th className="hidden px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 md:table-cell">Date</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Statut</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50 dark:divide-gray-800/50">
-                {proposals.map((p) => (
-                  <tr key={p.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/30">
-                    <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
-                      <button onClick={() => navigate(`/vendeur/${p.buyerId}`)} className="hover:underline">
-                        {[p.buyer?.firstName, p.buyer?.lastName].filter(Boolean).join(" ") || "Acheteur"}
-                      </button>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                      <button onClick={() => navigate(`/lot/${p.bundleId}`)} className="hover:text-brand-800 dark:hover:text-brand-600">
-                        {p.bundle?.title ?? `Lot #${p.bundleId}`}
-                      </button>
-                    </td>
-                    <td className="hidden whitespace-nowrap px-4 py-3 text-sm font-semibold text-gray-900 dark:text-white sm:table-cell">
-                      {formatCFA(p.proposedPrice)}
-                    </td>
-                    <td className="hidden whitespace-nowrap px-4 py-3 text-sm text-gray-500 dark:text-gray-400 md:table-cell">
-                      {formatRelativeTime(p.createdAt)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <ProposalStatusBadge status={p.status} />
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      {p.status === "pending" ? (
-                        <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={() => handleAccept(p.id)}
-                            disabled={acceptProposal.isPending}
-                            className="rounded-lg bg-green-50 p-1.5 text-green-700 hover:bg-green-100 disabled:opacity-50 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/30"
-                            title="Accepter"
-                          >
-                            <CheckCircle className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => handleReject(p.id)}
-                            disabled={rejectProposal.isPending}
-                            className="rounded-lg bg-red-50 p-1.5 text-red-700 hover:bg-red-100 disabled:opacity-50 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
-                            title="Refuser"
-                          >
-                            <XCircle className="h-4 w-4" />
-                          </button>
-                          {p.message && (
-                            <div className="group relative">
-                              <button className="rounded-lg bg-gray-50 p-1.5 text-gray-500 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700" title="Message">
-                                <MessageCircle className="h-4 w-4" />
-                              </button>
-                              <div className="absolute right-0 top-full z-10 mt-1 hidden w-64 rounded-xl border border-gray-200 bg-white p-3 text-xs text-gray-700 shadow-lg group-hover:block dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
-                                {p.message}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <span className="text-xs text-gray-400">—</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
 
 function AnalyticsTab() {
   const { data: myProductsData } = useMyProducts();
@@ -246,65 +123,6 @@ function AnalyticsTab() {
 
 function ProfilTab() {
   return <UserProfilePage />;
-}
-
-function PromotionsTab() {
-  const navigate = useNavigate();
-  const { data: myProductsData } = useMyProducts();
-  const products = myProductsData?.data ?? [];
-  const promotedProducts = products.filter((p) => p.isPromoted || p.isFeatured);
-
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="text-base font-semibold text-gray-900 dark:text-white">Promotions</h3>
-        <button
-          onClick={() => navigate("/vendre")}
-          className="flex items-center gap-2 rounded-xl bg-brand-800 px-4 py-2 text-sm font-medium text-white shadow-sm shadow-brand-800/25 hover:bg-brand-900 transition-colors"
-        >
-          <Package className="h-4 w-4" />
-          Nouvelle annonce
-        </button>
-      </div>
-
-      {promotedProducts.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {promotedProducts.map((p) => (
-            <div key={p.id} className="rounded-2xl border border-amber-100 bg-white p-4 dark:border-amber-900/30 dark:bg-gray-800">
-              <div className="flex items-start gap-3">
-                {p.images?.[0] && (
-                  <img src={p.images[0]} alt={p.title} className="h-16 w-16 rounded-xl object-cover shrink-0" />
-                )}
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-gray-900 dark:text-white">{p.title}</p>
-                  <p className="text-sm font-semibold text-brand-800">{formatCFA(p.price)}</p>
-                  <div className="mt-1 flex gap-1.5">
-                    {p.isPromoted && <Badge variant="warning">Promu</Badge>}
-                    {p.isFeatured && <Badge variant="primary">Featured</Badge>}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="rounded-2xl border border-gray-100 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-800">
-          <Megaphone className="mx-auto h-10 w-10 text-gray-300 dark:text-gray-600" />
-          <h4 className="mt-3 text-sm font-semibold text-gray-900 dark:text-white">Aucune annonce promue</h4>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Mettez en avant vos annonces pour toucher plus d'acheteurs.
-          </p>
-          <button
-            onClick={() => navigate("/vendre")}
-            className="mt-4 inline-flex items-center gap-2 rounded-xl bg-brand-800 px-5 py-2 text-sm font-medium text-white hover:bg-brand-900 transition-colors"
-          >
-            <Megaphone className="h-4 w-4" />
-            Publier une annonce
-          </button>
-        </div>
-      )}
-    </div>
-  );
 }
 
 const tabs = [

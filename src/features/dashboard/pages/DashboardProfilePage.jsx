@@ -3,6 +3,7 @@ import {
   Package, Star, Heart, Edit3, ShieldCheck, Bell,
   Loader2, Camera, Eye, Trash2,
   TrendingUp, MapPin, MessageCircle, Settings,
+  Handshake, Megaphone,
 } from "lucide-react";
 import BackButton from "@/shared/ui/BackButton";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -15,6 +16,8 @@ import Tabs from "@/shared/ui/Tabs";
 import ProductCard from "@/shared/ui/ProductCard";
 import ReviewList from "@/features/profile/components/ReviewList";
 import NotificationsPage from "@/features/notifications/pages/NotificationsPage";
+import BundleProposalsTab from "@/features/dashboard/components/BundleProposalsTab";
+import PromotionsTab from "@/features/dashboard/components/PromotionsTab";
 import EmptyState from "@/shared/ui/EmptyState";
 import { useIsMobile } from "@/shared/hooks/useMediaQuery";
 
@@ -234,6 +237,8 @@ export default function DashboardProfilePage() {
     )},
     { id: "reviews", label: "Avis", icon: Star, count: myReviews.length, content: <ReviewList reviews={myReviews} /> },
     { id: "notifications", label: "Notifications", icon: Bell, content: <NotificationsPage /> },
+    { id: "proposals", label: "Propositions", icon: Handshake, content: <BundleProposalsTab /> },
+    { id: "promotions", label: "Promotions", icon: Megaphone, content: <PromotionsTab /> },
   ];
 
   return (
@@ -312,7 +317,7 @@ export default function DashboardProfilePage() {
       </div>
 
       {/* Dashboard Tabs */}
-      <Tabs tabs={tabs} defaultTab={initialTab} />
+      <Tabs key={initialTab || "default"} tabs={tabs} defaultTab={initialTab} />
 
       {/* Edit Profile Modal */}
       <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} title="Modifier le profil" size="md"

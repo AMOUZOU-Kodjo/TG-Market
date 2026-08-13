@@ -1,6 +1,6 @@
 import * as paymentService from './payment.service.js';
 import * as escrowService from '../escrow/escrow.service.js';
-import { isFlutterwaveConfigured, platformAccounts } from '../../config/payment.js';
+import { isFlutterwaveConfigured, isFedaPayConfigured, platformAccounts } from '../../config/payment.js';
 
 export async function initiatePayment(req, res, next) {
   try {
@@ -46,6 +46,7 @@ export async function initiatePayment(req, res, next) {
       mode: 'auto',
       transactionRef: result.transactionRef,
       flutterwaveId: result.flutterwaveId,
+      fedapayId: result.fedapayId,
       status: result.status,
       processorResponse: result.processorResponse,
     });
@@ -78,6 +79,8 @@ export async function handleWebhook(req, res, next) {
 export async function getConfig(req, res) {
   res.json({
     flutterwaveConfigured: isFlutterwaveConfigured(),
+    fedapayConfigured: isFedaPayConfigured(),
+    paymentProvider: await paymentService.getActivePaymentProvider(),
     platformAccounts,
   });
 }

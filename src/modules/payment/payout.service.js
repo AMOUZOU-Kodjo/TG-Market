@@ -1,7 +1,16 @@
 import prisma from '../../config/database.js';
-import { flutterwave, isFlutterwaveConfigured } from '../../config/payment.js';
+import { flutterwave, fedapay, isFlutterwaveConfigured, isFedaPayConfigured } from '../../config/payment.js';
+import { getActivePaymentProvider } from './payment.service.js';
 
 const FLUTTERWAVE_API = 'https://api.flutterwave.com/v3';
+
+const FEDAPAY_API = () =>
+  fedapay.environment === 'live' ? 'https://api.fedapay.com/v1' : 'https://sandbox-api.fedapay.com/v1';
+
+const FEDAPAY_NETWORK_MAP = {
+  flooz: 'moov_tg',
+  tmoney: 'togocel',
+};
 
 const BANK_MAP = {
   flooz: 'FLO',
@@ -44,12 +53,73 @@ export async function getSellerPayoutMethod(sellerId) {
   });
 }
 
+async function sendFedaPayPayout({ amount, phone, mode }) {
+  const headers = {
+    Authorization: `Bearer ${fedapay.secretKey}`,
+    'Content-Type': 'application/json',
+  };
+
+  const createdRes = await fetch(`${FEDAPAY_API()}/payouts`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      amount,
+      currency: { iso: 'XOF' },
+      mode,
+      customer: {
+        firstname: 'Vendeur',
+        lastname: 'TG-Market',
+        email: 'seller@tgmarket.tg',
+        phone_number: { number: phone, country: 'tg' },
+      },
+    }),
+  });
+  const created = await createdRes.json().catch(() => ({}));
+  if (!createdRes.ok) {
+    throw new Error(created.message || `Erreur FedaPay payout (${createdRes.status})`);
+  }
+  const payout = created.payout ?? created.data ?? created;
+  const payoutId = payout.id;
+  if (!payoutId) {
+    throw new Error('FedaPay : dépôt non créé');
+  }
+
+  const sentRes = await fetch(`${FEDAPAY_API()}/payouts/start`, {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify({ payouts: [{ id: payoutId }] }),
+  });
+  const sent = await sentRes.json().catch(() => ({}));
+  if (!sentRes.ok) {
+    throw new Error(sent.message || `Erreur FedaPay envoi dépôt (${sentRes.status})`);
+  }
+
+  return String(payoutId);
+}
+
 export async function trySendPayout(payout) {
-  if (!isFlutterwaveConfigured()) {
+  if (!isFlutterwaveConfigured() && !isFedaPayConfigured()) {
     return { mode: 'manual' };
   }
 
   const provider = String(payout.provider || '').toLowerCase();
+
+  if (isFedaPayConfigured() && (await getActivePaymentProvider()) === 'fedapay') {
+    const mode = FEDAPAY_NETWORK_MAP[provider];
+    if (payout.account && mode) {
+      try {
+        const reference = await sendFedaPayPayout({ amount: payout.amount, phone: payout.account, mode });
+        return { mode: 'auto', status: 'sent', reference };
+      } catch (err) {
+        return {
+          mode: 'auto',
+          status: 'failed',
+          errorMessage: err.message || 'Erreur réseau lors du transfert FedaPay',
+        };
+      }
+    }
+  }
+
   const bank = BANK_MAP[provider] || BANK_MAP.mobile_money;
   if (!payout.account || !bank) {
     return { mode: 'manual' };
@@ -101,7 +171,7 @@ export async function createAndSendPayout({ escrowId, sellerId, amount, fee, pro
     },
   });
 
-  if (isFlutterwaveConfigured() && payout.provider && payout.account) {
+  if ((isFlutterwaveConfigured() || isFedaPayConfigured()) && payout.provider && payout.account) {
     const result = await trySendPayout(payout);
     if (result.mode === 'auto' && result.status === 'sent') {
       const updated = await prisma.payout.update({

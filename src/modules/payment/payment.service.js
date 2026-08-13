@@ -1,6 +1,24 @@
-import { flutterwave, directApis, isFlutterwaveConfigured, isDirectApiConfigured } from '../../config/payment.js';
+import prisma from '../../config/database.js';
+import { flutterwave, directApis, fedapay, isFlutterwaveConfigured, isDirectApiConfigured, isFedaPayConfigured } from '../../config/payment.js';
 
 const FLUTTERWAVE_API = 'https://api.flutterwave.com/v3';
+
+const FEDAPAY_API = () =>
+  fedapay.environment === 'live' ? 'https://api.fedapay.com/v1' : 'https://sandbox-api.fedapay.com/v1';
+
+const FEDAPAY_NETWORK_MAP = {
+  flooz: 'moov_tg',
+  tmoney: 'togocel',
+};
+
+export async function getActivePaymentProvider() {
+  try {
+    const row = await prisma.siteSetting.findUnique({ where: { key: 'payment_provider' } });
+    return row?.value || '';
+  } catch {
+    return '';
+  }
+}
 
 function getHeaders() {
   return {
@@ -86,8 +104,96 @@ const DIRECT_INITIATORS = {
   tmoney: initiateDirectTMoney,
 };
 
+function fedapayHeaders() {
+  return {
+    Authorization: `Bearer ${fedapay.secretKey}`,
+    'Content-Type': 'application/json',
+  };
+}
+
+async function fedapayRequest(path, options = {}) {
+  const res = await fetch(`${FEDAPAY_API()}${path}`, {
+    ...options,
+    headers: { ...fedapayHeaders(), ...(options.headers || {}) },
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || `Erreur FedaPay (${res.status})`);
+  }
+  return data;
+}
+
+async function initiateFedaPay({ amount, phone, network, txRef }) {
+  const mode = FEDAPAY_NETWORK_MAP[network];
+  if (!mode) {
+    throw new Error('Opérateur non supporté par FedaPay');
+  }
+
+  const created = await fedapayRequest('/transactions', {
+    method: 'POST',
+    body: JSON.stringify({
+      description: `Paiement TG-Market ${txRef}`,
+      amount,
+      currency: { iso: 'XOF' },
+      callback_url: process.env.FRONTEND_URL || 'https://ak-market.pages.dev',
+      customer: {
+        firstname: 'Client',
+        lastname: 'TG-Market',
+        email: 'client@tgmarket.tg',
+        phone_number: { number: phone, country: 'tg' },
+      },
+    }),
+  });
+
+  const tx = created.transaction ?? created.data ?? created;
+  const txId = tx.id;
+  if (!txId) {
+    throw new Error('FedaPay : transaction non créée');
+  }
+
+  const tokenRes = await fedapayRequest(`/transactions/${txId}/token`, { method: 'POST', body: JSON.stringify({}) });
+  const tokenObj = tokenRes.token ?? tokenRes.data ?? tokenRes;
+  const token = typeof tokenObj === 'string' ? tokenObj : tokenObj?.token;
+  if (!token) {
+    throw new Error('FedaPay : token introuvable');
+  }
+
+  await fedapayRequest(`/${mode}`, {
+    method: 'POST',
+    body: JSON.stringify({ token }),
+  });
+
+  return {
+    transactionRef: String(txId),
+    fedapayId: txId,
+    status: 'pending',
+    processorResponse: `Demande USSD ${mode} envoyée`,
+    fallback: false,
+  };
+}
+
+async function verifyFedaPayTransaction(txId) {
+  const data = await fedapayRequest(`/transactions/${txId}`, { method: 'GET' });
+  const tx = data.transaction ?? data.data ?? data;
+  return {
+    status: tx.status,
+    amount: tx.amount,
+    currency: tx.currency?.iso,
+    processorResponse: tx.payment_method || null,
+  };
+}
+
 export async function initiateMobileMoney({ amount, phone, network, redirectUrl }) {
   const txRef = generateTxRef();
+
+  // 0) FedaPay — activé depuis l'admin (payment_provider = fedapay)
+  if (isFedaPayConfigured() && (await getActivePaymentProvider()) === 'fedapay') {
+    try {
+      return await initiateFedaPay({ amount, phone, network, txRef });
+    } catch {
+      // FedaPay indisponible — on retombe sur la chaîne actuelle
+    }
+  }
 
   // 1) Try direct operator API first
   if (isDirectApiConfigured(network)) {
@@ -168,6 +274,23 @@ export async function verifyTransaction(transactionId) {
 }
 
 export async function handleWebhook(payload) {
+  // FedaPay events: { name: 'transaction.approved', data: {...} }
+  if (payload && typeof payload.name === 'string' && payload.name.startsWith('transaction.') && payload.data) {
+    const txId = payload.data.id ?? payload.data.transaction?.id;
+    if (!txId) {
+      return { handled: false };
+    }
+    const verified = await verifyFedaPayTransaction(txId);
+    if (!['approved', 'transferred'].includes(verified.status)) {
+      return { handled: false };
+    }
+    return {
+      handled: true,
+      status: 'successful',
+      txRef: String(txId),
+    };
+  }
+
   const { event, data } = payload;
 
   if (event !== 'charge.completed' && event !== 'transfer.completed') {

@@ -17,6 +17,12 @@ export const directApis = {
   },
 };
 
+export const fedapay = {
+  secretKey: process.env.FEDAPAY_SECRET_KEY || '',
+  environment: process.env.FEDAPAY_ENV || 'sandbox',
+  webhookSecret: process.env.FEDAPAY_WEBHOOK_SECRET || '',
+};
+
 export const platformAccounts = {
   flooz: {
     number: process.env.FLOOZ_ACCOUNT_NUMBER || '+228 90 00 00 01',
@@ -35,4 +41,8 @@ export function isFlutterwaveConfigured() {
 export function isDirectApiConfigured(network) {
   const cfg = directApis[network];
   return !!(cfg?.url && cfg?.apiKey);
+}
+
+export function isFedaPayConfigured() {
+  return !!fedapay.secretKey;
 }

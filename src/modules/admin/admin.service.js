@@ -1062,6 +1062,7 @@ const DEFAULT_SETTINGS = {
   support_email: 'support@akmarket.tg',
   platform_fee_percent: '5',
   platform_buyer_fee_percent: '0',
+  payment_provider: '',
   maintenance_mode: 'false',
   maintenance_message: 'est actuellement en maintenance pour améliorer vos services. Nous serons de retour très bientôt !',
   maintenance_estimated_return: '24 juillet 2026 à 18h00 (GMT+0)',

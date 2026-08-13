@@ -522,7 +522,10 @@ export async function reorderCategories(updates) {
     updates.map(({ id, sortOrder, parentId }) =>
       prisma.category.update({
         where: { id },
-        data: { sort_order: sortOrder, parent_id: parentId ?? null },
+        data: {
+          sort_order: sortOrder,
+          ...(parentId !== undefined ? { parent_id: parentId } : {}),
+        },
       })
     )
   );

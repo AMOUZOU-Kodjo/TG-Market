@@ -33,6 +33,7 @@ export function SiteSettingsProvider({ children }) {
 
   const value = {
     siteName: data?.siteName ?? "TG-Market",
+    siteLogo: data?.siteLogo ?? "",
     siteVersion: data?.siteVersion ?? "1.0.0",
     siteDescription: data?.siteDescription ?? "",
     maintenanceMode: data?.maintenanceMode ?? false,
@@ -61,6 +62,7 @@ export function SiteSettingsProvider({ children }) {
 export function useSiteSettings() {
   return useContext(SiteSettingsContext) ?? {
     siteName: "TG-Market",
+    siteLogo: "",
     siteVersion: "1.0.0",
     siteDescription: "",
     maintenanceMode: false,

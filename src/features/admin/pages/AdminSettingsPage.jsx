@@ -38,6 +38,7 @@ export default function AdminSettingsPage() {
       try { const p = JSON.parse(team); if (!Array.isArray(p)) team = "[]"; } catch { team = "[]"; }
       setForm({
         site_name: settings.site_name ?? "",
+        site_logo: settings.site_logo ?? "",
         site_version: settings.site_version ?? "",
         site_description: settings.site_description ?? "",
         support_email: settings.support_email ?? "",
@@ -69,6 +70,7 @@ export default function AdminSettingsPage() {
       try { const p = JSON.parse(team); if (!Array.isArray(p)) team = "[]"; } catch { team = "[]"; }
       setForm({
         site_name: updated.site_name ?? "",
+        site_logo: updated.site_logo ?? "",
         site_version: updated.site_version ?? "",
         site_description: updated.site_description ?? "",
         support_email: updated.support_email ?? "",
@@ -88,6 +90,7 @@ export default function AdminSettingsPage() {
       });
       qc.setQueryData(["siteSettings"], {
         siteName: updated.site_name,
+        siteLogo: updated.site_logo,
         siteVersion: updated.site_version,
         siteDescription: updated.site_description,
         maintenanceMode: updated.maintenance_mode === "true",
@@ -190,6 +193,53 @@ export default function AdminSettingsPage() {
                   onChange={(e) => setForm({ ...form, site_name: e.target.value })}
                   className="w-full px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
                 />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Logo du site</label>
+                <div className="flex flex-wrap items-center gap-3">
+                  {form.site_logo ? (
+                    <div className="relative">
+                      <img src={form.site_logo} alt="Logo" className="h-14 w-14 object-contain bg-gray-50 rounded-xl border border-gray-200 p-1" />
+                      <button
+                        onClick={() => setForm({ ...form, site_logo: "" })}
+                        title="Retirer le logo"
+                        className="absolute -top-2 -right-2 flex items-center justify-center w-5 h-5 bg-red-50 rounded-full hover:bg-red-100 transition-colors"
+                      >
+                        <X className="w-3 h-3 text-red-500" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="w-14 h-14 flex items-center justify-center bg-gray-50 rounded-xl border border-dashed border-gray-300 text-xs text-gray-400">
+                      Aucun
+                    </div>
+                  )}
+                  <div className="flex flex-col gap-1 min-w-0 flex-1">
+                    <div className="flex gap-2">
+                      <label className="shrink-0 flex items-center justify-center gap-2 px-3 h-9 bg-gray-100 rounded-xl cursor-pointer hover:bg-gray-200 transition-colors text-sm text-gray-600">
+                        <Upload className="w-4 h-4" />
+                        {form.site_logo ? "Remplacer" : "Téléverser"}
+                        <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          const fd = new FormData();
+                          fd.append("file", file);
+                          try {
+                            const res = await api.post("/upload/image", fd);
+                            setForm({ ...form, site_logo: res.data.url });
+                            toast.success("Logo téléversé — cliquez sur Enregistrer pour appliquer");
+                          } catch { toast.error("Erreur upload"); }
+                        }} />
+                      </label>
+                      <input
+                        value={form.site_logo}
+                        onChange={(e) => setForm({ ...form, site_logo: e.target.value })}
+                        placeholder="https://... (ou coller une URL)"
+                        className="min-w-0 flex-1 basis-40 px-3 py-2 bg-gray-100 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-400">PNG/WebP recommandé. Affiché partout (header, sidebar, footer, emails).</p>
+                  </div>
+                </div>
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1">Version</label>

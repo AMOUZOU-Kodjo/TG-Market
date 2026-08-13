@@ -7,9 +7,10 @@ import Input from "@/shared/ui/Input";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import api from "@/shared/services/api";
 import toast from "react-hot-toast";
+import tgLogo from "@/assets/logo-tg.png";
 
 export default function MaintenancePage() {
-  const { siteName, maintenanceMode, maintenanceMessage, maintenanceEstimatedReturn, maintenanceImprovements, socialFacebook, socialTwitter, socialInstagram, socialLinkedin, socialGithub } = useSiteSettings();
+  const { siteName, siteLogo, maintenanceMode, maintenanceMessage, maintenanceEstimatedReturn, maintenanceImprovements, socialFacebook, socialTwitter, socialInstagram, socialLinkedin, socialGithub } = useSiteSettings();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
@@ -51,7 +52,7 @@ export default function MaintenancePage() {
           {/* Logo */}
           <div className="flex justify-center mb-6">
             <img
-              src="/logo-tg.png"
+              src={siteLogo || tgLogo}
               alt={siteName}
               className="h-16 w-auto object-contain"
             />

@@ -9,8 +9,8 @@ const SIZES = {
 };
 
 export default function Logo({ size = "md", className = "" }) {
-  const { siteName } = useSiteSettings();
+  const { siteName, siteLogo } = useSiteSettings();
   return (
-    <img src={tgLogo} alt={siteName} className={`object-contain ${SIZES[size]} ${className}`} />
+    <img src={siteLogo || tgLogo} alt={siteName} className={`object-contain ${SIZES[size]} ${className}`} />
   );
 }

@@ -60,7 +60,7 @@ export default function AdminSettingsPage() {
   }, [settings]);
 
   const updateSettings = useMutation({
-    mutationFn: (data) => api.put("/admin/settings", data),
+    mutationFn: (data) => api.put("/admin/settings", data).then((r) => r.data),
     onSuccess: (updated) => {
       toast.success("Paramètres enregistrés");
       qc.setQueryData(["adminSettings"], updated);

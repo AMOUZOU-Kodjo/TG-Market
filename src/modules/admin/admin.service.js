@@ -1114,6 +1114,7 @@ export async function getRecentActivity() {
 
 const DEFAULT_SETTINGS = {
   site_name: 'TG-Market',
+  site_logo: '',
   site_version: '1.0.0',
   site_description: 'La plateforme togolaise de vente et d\'achat d\'articles d\'occasion',
   support_email: 'support@akmarket.tg',
@@ -1189,12 +1190,13 @@ export async function updateSettings(data) {
 
 export async function getPublicSettings() {
   const rows = await prisma.siteSetting.findMany({
-    where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode', 'maintenance_message', 'maintenance_estimated_return', 'maintenance_improvements', 'social_facebook', 'social_twitter', 'social_instagram', 'social_linkedin', 'team_members', 'platform_fee_percent', 'platform_buyer_fee_percent'] } },
+    where: { key: { in: ['site_name', 'site_logo', 'site_version', 'site_description', 'maintenance_mode', 'maintenance_message', 'maintenance_estimated_return', 'maintenance_improvements', 'social_facebook', 'social_twitter', 'social_instagram', 'social_linkedin', 'team_members', 'platform_fee_percent', 'platform_buyer_fee_percent'] } },
   });
   const map = {};
   for (const row of rows) map[row.key] = row.value;
   return {
     siteName: map.site_name ?? DEFAULT_SETTINGS.site_name,
+    siteLogo: map.site_logo ?? DEFAULT_SETTINGS.site_logo,
     siteVersion: map.site_version ?? DEFAULT_SETTINGS.site_version,
     siteDescription: map.site_description ?? DEFAULT_SETTINGS.site_description,
     maintenanceMode: map.maintenance_mode === 'true',

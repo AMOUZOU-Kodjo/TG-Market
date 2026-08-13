@@ -120,12 +120,13 @@ app.get('/api/settings/public', async (_req, res) => {
   try {
     const data = await getOrSetCache('cache:settings:public', 600, async () => {
       const rows = await prisma.siteSetting.findMany({
-        where: { key: { in: ['site_name', 'site_version', 'site_description', 'maintenance_mode', 'support_email', 'maintenance_message', 'maintenance_estimated_return', 'maintenance_improvements', 'social_facebook', 'social_twitter', 'social_instagram', 'social_linkedin', 'team_members', 'platform_fee_percent', 'platform_buyer_fee_percent'] } },
+        where: { key: { in: ['site_name', 'site_logo', 'site_version', 'site_description', 'maintenance_mode', 'support_email', 'maintenance_message', 'maintenance_estimated_return', 'maintenance_improvements', 'social_facebook', 'social_twitter', 'social_instagram', 'social_linkedin', 'team_members', 'platform_fee_percent', 'platform_buyer_fee_percent'] } },
       });
       const map = {};
       for (const row of rows) map[row.key] = row.value;
       return {
         siteName: map.site_name ?? 'TG-Market',
+        siteLogo: map.site_logo ?? '',
         siteVersion: map.site_version ?? '1.0.0',
         siteDescription: map.site_description ?? 'La plateforme togolaise de vente et d\'achat d\'articles d\'occasion',
         maintenanceMode: map.maintenance_mode === 'true',

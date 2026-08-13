@@ -9,9 +9,6 @@ import {
   MapPin,
   ArrowRight,
   MessageCircle,
-  CheckCircle,
-  XCircle,
-  Clock,
   Send,
   Euro,
   Smartphone,
@@ -31,6 +28,9 @@ import { useAuth } from "@/shared/contexts/AuthContext";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import { paymentApi } from "@/features/payment/services/payment.api";
 import { formatCFA } from "@/shared/utils/format";
+import { PAYMENT_METHODS, PLATFORM_ACCOUNTS } from "@/shared/constants/payment";
+import { useCopyToClipboard } from "@/shared/hooks/useCopyToClipboard";
+import ProposalStatusBadge from "@/shared/ui/ProposalStatusBadge";
 import { toast } from "react-hot-toast";
 
 const fadeUp = {
@@ -54,7 +54,7 @@ export default function BundleDetailPage() {
   const [phone, setPhone] = useState("");
   const [purchasing, setPurchasing] = useState(false);
   const [paymentResult, setPaymentResult] = useState(null);
-  const [copied, setCopied] = useState(false);
+  const { copied, handleCopy } = useCopyToClipboard();
 
   const seller = bundle?.seller;
   const isOwnBundle = user && seller && user.id === seller.id;
@@ -132,11 +132,6 @@ export default function BundleDetailPage() {
     }
   };
 
-  const PAYMENT_METHODS = [
-    { id: "flooz", name: "Flooz", color: "#E60000" },
-    { id: "tmoney", name: "TMoney", color: "#00A651" },
-  ];
-
   const handleBuy = async () => {
     if (!user) {
       toast.error("Connectez-vous pour acheter ce lot");
@@ -182,34 +177,7 @@ export default function BundleDetailPage() {
     }
   };
 
-  const handleCopy = (text) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const PLATFORM_ACCOUNTS = {
-    flooz: { number: "+228 90 00 00 01", name: "TG-Market Flooz" },
-    tmoney: { number: "+228 90 00 00 02", name: "TG-Market T-Money" },
-  };
-
   const account = PLATFORM_ACCOUNTS[paymentMethod];
-
-  const proposalStatusBadge = (status) => {
-    const map = {
-      pending: { label: "En attente", icon: Clock, class: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
-      accepted: { label: "Acceptée", icon: CheckCircle, class: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
-      rejected: { label: "Refusée", icon: XCircle, class: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
-      cancelled: { label: "Annulée", icon: XCircle, class: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400" },
-    };
-    const s = map[status] || map.pending;
-    return (
-      <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${s.class}`}>
-        <s.icon className="h-3 w-3" />
-        {s.label}
-      </span>
-    );
-  };
 
   if (paymentResult === "success") {
     return (
@@ -541,7 +509,7 @@ export default function BundleDetailPage() {
                   <div className="mt-4 rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
                     <div className="flex items-center justify-between">
                       <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Ma proposition</h4>
-                      {proposalStatusBadge(userProposal.status)}
+                      <ProposalStatusBadge status={userProposal.status} />
                     </div>
                     <p className="mt-2 text-lg font-bold text-brand-800 dark:text-brand-600">
                       {formatCFA(userProposal.proposedPrice)}
@@ -564,7 +532,7 @@ export default function BundleDetailPage() {
                             <span className="font-medium text-gray-900 dark:text-white">
                               {[p.buyer?.firstName, p.buyer?.lastName].filter(Boolean).join(" ")}
                             </span>
-                            {proposalStatusBadge(p.status)}
+                            <ProposalStatusBadge status={p.status} />
                           </div>
                           <p className="mt-1 font-bold text-brand-800 dark:text-brand-600">
                             {formatCFA(p.proposedPrice)}

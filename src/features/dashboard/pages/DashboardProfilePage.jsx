@@ -21,7 +21,7 @@ import { useIsMobile } from "@/shared/hooks/useMediaQuery";
 import toast from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/shared/contexts/AuthContext";
-import { useMyProducts, useDeleteProduct, useEndNegotiation } from "@/features/products/hooks/useProducts";
+import { useMyProducts, useDeleteProductHandler, useEndNegotiation } from "@/features/products/hooks/useProducts";
 import { useMyReviews } from "@/features/reviews/hooks/useReviews";
 import { useFavorites } from "@/features/favorites/hooks/useFavorites";
 import { useWalletBalance } from "@/features/wallet/hooks/useWallet";
@@ -31,18 +31,8 @@ import { formatDate, formatCFA, formatRelativeTime } from "@/shared/utils/format
 
 function ProductsTab({ products }) {
   const navigate = useNavigate();
-  const deleteProduct = useDeleteProduct();
+  const { handleDelete } = useDeleteProductHandler();
   const endNegotiation = useEndNegotiation();
-
-  const handleDelete = async (product) => {
-    if (!window.confirm(`Supprimer « ${product.title} » ?`)) return;
-    try {
-      await deleteProduct.mutateAsync(product.id);
-      toast.success("Annonce supprimée");
-    } catch {
-      toast.error("Erreur lors de la suppression");
-    }
-  };
 
   const handleEndNegotiation = async (product) => {
     if (!window.confirm(`Arrêter la négociation pour « ${product.title} » ?`)) return;

@@ -204,18 +204,30 @@ export default function AdminCategoriesPage() {
   };
 
   const moveCategory = (id, direction) => {
-    const all = [...categories].sort((a, b) => a.sortOrder - b.sortOrder);
-    const idx = all.findIndex((c) => c.id === id);
+    const cat = categories.find((c) => c.id === id);
+    if (!cat) return;
+    const siblings = categories
+      .filter((c) => c.parentId === cat.parentId)
+      .sort((a, b) => a.sortOrder - b.sortOrder);
+    const idx = siblings.findIndex((c) => c.id === id);
     if (idx === -1) return;
     const newIdx = idx + (direction === "up" ? -1 : 1);
-    if (newIdx < 0 || newIdx >= all.length) return;
+    if (newIdx < 0 || newIdx >= siblings.length) return;
 
-    const updates = all.map((c, i) => {
-      if (i === idx) return { id: c.id, sortOrder: all[newIdx].sortOrder };
-      if (i === newIdx) return { id: c.id, sortOrder: all[idx].sortOrder };
-      return { id: c.id, sortOrder: c.sortOrder };
-    });
-    reorderMutation.mutate(updates);
+    const a = siblings[idx];
+    const b = siblings[newIdx];
+    reorderMutation.mutate([
+      { id: a.id, sortOrder: b.sortOrder },
+      { id: b.id, sortOrder: a.sortOrder },
+    ]);
+  };
+
+  const canMoveUp = (cat) => {
+    const siblings = categories
+      .filter((c) => c.parentId === cat.parentId)
+      .sort((a, b) => a.sortOrder - b.sortOrder);
+    const idx = siblings.findIndex((c) => c.id === cat.id);
+    return idx > 0;
   };
 
   const childrenOf = (parentId) => categories.filter((c) => c.parentId === parentId).sort((a, b) => a.sortOrder - b.sortOrder);
@@ -294,7 +306,7 @@ export default function AdminCategoriesPage() {
             )}
           </div>
           <div className="flex items-center gap-1 shrink-0 flex-wrap justify-end">
-            <button onClick={() => moveCategory(cat.id, "up")} className="p-2 sm:p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Monter" disabled={cat.sortOrder === 0}><ChevronUp className="w-4 h-4" /></button>
+            <button onClick={() => moveCategory(cat.id, "up")} className="p-2 sm:p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Monter" disabled={!canMoveUp(cat)}><ChevronUp className="w-4 h-4" /></button>
             <button onClick={() => moveCategory(cat.id, "down")} className="p-2 sm:p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Descendre"><ChevronDown className="w-4 h-4" /></button>
             <button onClick={() => openEdit(cat)} className="p-2 sm:p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Modifier"><Edit2 className="w-4 h-4" /></button>
             <button onClick={() => openCreate(cat.id)} className="p-2 sm:p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700" title="Sous-catégorie"><Plus className="w-4 h-4" /></button>

@@ -6,75 +6,11 @@ import {
   X,
   Check,
   Package,
-  Smartphone,
-  Car,
-  Laptop,
-  Sofa,
-  Shirt,
-  Home,
-  Refrigerator,
-  Gamepad2,
-  Dumbbell,
-  Sparkles,
-  Baby,
-  Apple,
-  Briefcase,
-  PawPrint,
-  BookOpen,
-  Music,
-  Palette,
-  TreePine,
-  GraduationCap,
-  Crown,
-  Scissors,
-  Hammer,
-  Wrench,
-  PartyPopper,
-  Camera,
-  Bike,
-  Footprints,
-  ShoppingBag,
-  Gem,
-  Flower2,
-  Sun,
 } from "lucide-react";
 import { useCategories } from "@/features/categories/hooks/useCategories";
+import { CATEGORY_ICON_MAP } from "@/shared/constants/categories";
 import Badge from "@/shared/ui/Badge";
 import { cn } from "@/shared/utils/cn";
-
-const iconMap = {
-  Smartphone,
-  Car,
-  Laptop,
-  Sofa,
-  Shirt,
-  Home,
-  Refrigerator,
-  Gamepad2,
-  Dumbbell,
-  Sparkles,
-  Baby,
-  Apple,
-  Briefcase,
-  PawPrint,
-  BookOpen,
-  Music,
-  Palette,
-  TreePine,
-  GraduationCap,
-  Crown,
-  Scissors,
-  Hammer,
-  Wrench,
-  PartyPopper,
-  Camera,
-  Bike,
-  Footprints,
-  ShoppingBag,
-  Gem,
-  Flower2,
-  Sun,
-};
 
 const hexToColorKey = (hex) => {
   const map = {
@@ -240,7 +176,7 @@ export default function CategoryFilter({
       <div className="max-h-[480px] overflow-y-auto p-2 scrollbar-thin">
         <div className="space-y-0.5">
           {visibleCategories.map((category) => {
-            const Icon = iconMap[category.icon] || Package;
+            const Icon = CATEGORY_ICON_MAP[category.icon] || Package;
             const selected = isSelected(category.id);
             const colorStyle = hexToColorKey(category.color);
 

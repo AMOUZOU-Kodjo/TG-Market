@@ -16,20 +16,12 @@ import { useProduct } from "@/features/products/hooks/useProducts";
 import { escrowApi } from "@/features/wallet/services/wallet.api";
 import { paymentApi } from "@/features/payment/services/payment.api";
 import { formatCFA } from "@/shared/utils/format";
+import { PAYMENT_METHODS, PLATFORM_ACCOUNTS } from "@/shared/constants/payment";
+import { useCopyToClipboard } from "@/shared/hooks/useCopyToClipboard";
 import PaymentMethodSelector from "@/features/payment/components/PaymentMethodSelector";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import toast from "react-hot-toast";
-
-const PAYMENT_METHODS = [
-  { id: "flooz", name: "Flooz", color: "#E60000", bgClass: "bg-red-50" },
-  { id: "tmoney", name: "TMoney", color: "#00A651", bgClass: "bg-green-50" },
-];
-
-const PLATFORM_ACCOUNTS = {
-  flooz: { number: "+228 90 00 00 01", name: "TG-Market Flooz" },
-  tmoney: { number: "+228 90 00 00 02", name: "TG-Market T-Money" },
-};
 
 export default function CheckoutPage() {
   const { productId } = useParams();
@@ -43,7 +35,7 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [createdEscrow, setCreatedEscrow] = useState(null);
   const [paymentStep, setPaymentStep] = useState(null);
-  const [copied, setCopied] = useState(false);
+  const { copied, handleCopy } = useCopyToClipboard();
 
   if (isLoading) {
     return (
@@ -120,12 +112,6 @@ export default function CheckoutPage() {
     }
   };
 
-  const handleCopy = (text) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   const handleConfirmPayment = async () => {
     if (!transactionRef.trim()) {
       toast.error("Veuillez entrer le numéro de transaction Flooz/TMoney");
@@ -133,7 +119,7 @@ export default function CheckoutPage() {
     }
     setSubmitting(true);
     try {
-      await escrowApi.confirmPayment(createdEscrow.id);
+      await escrowApi.confirmPayment(createdEscrow.id, transactionRef.trim());
       setPaymentStep("success");
     } catch (err) {
       toast.error(err?.response?.data?.error || "Erreur lors de la confirmation");
@@ -386,6 +372,7 @@ export default function CheckoutPage() {
                   value={transactionRef}
                   onChange={(e) => setTransactionRef(e.target.value)}
                   placeholder="Ex: TRX789XYZ"
+                  maxLength={100}
                   className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-800/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                 />
               </div>

@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Share2, Flag, Copy, Check, Loader2, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { cn } from "@/shared/utils/cn";
-import { useCheckFavorite, useToggleFavorite } from "@/features/favorites/hooks/useFavorites";
+import { useFavoriteHandler } from "@/features/favorites/hooks/useFavoriteHandler";
+import { useCopyToClipboard } from "@/shared/hooks/useCopyToClipboard";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 import { useNavigate } from "react-router-dom";
@@ -26,13 +27,10 @@ export default function ProductActions({ product }) {
   const { isAuthenticated } = useAuth();
   const { siteName } = useSiteSettings();
   const navigate = useNavigate();
-  const { data: favData } = useCheckFavorite(product?.id, isAuthenticated);
-  const toggleFav = useToggleFavorite();
-
-  const isFavorite = favData?.isFavorite ?? false;
+  const { isFavorite, handleFavorite, toggleFav } = useFavoriteHandler(product?.id);
 
   const [showShareMenu, setShowShareMenu] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const { copied, handleCopy } = useCopyToClipboard();
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportReason, setReportReason] = useState("");
   const [reportDescription, setReportDescription] = useState("");
@@ -42,30 +40,14 @@ export default function ProductActions({ product }) {
     ? `${window.location.origin}/annonce/${product.id}-${slugify(product.title || "")}`
     : window.location.href;
 
-  const handleFavorite = async () => {
-    if (!isAuthenticated) {
-      toast.error("Connectez-vous pour ajouter aux favoris");
-      navigate("/connexion");
-      return;
-    }
-    try {
-      await toggleFav.mutateAsync(product.id);
-      toast.success(isFavorite ? "Retiré des favoris" : "Ajouté aux favoris");
-    } catch {
-      toast.error("Erreur lors de la modification du favori");
-    }
-  };
-
   const handleShare = () => {
     setShowShareMenu(!showShareMenu);
   };
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
+      await handleCopy(shareUrl);
       toast.success("Lien copié !");
-      setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error("Impossible de copier le lien");
     }

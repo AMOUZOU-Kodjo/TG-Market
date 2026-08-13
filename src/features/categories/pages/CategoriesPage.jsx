@@ -2,37 +2,6 @@ import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   Search,
-  Smartphone,
-  Car,
-  Laptop,
-  Sofa,
-  Shirt,
-  Home,
-  Refrigerator,
-  Gamepad2,
-  Dumbbell,
-  Sparkles,
-  Baby,
-  Apple,
-  Briefcase,
-  PawPrint,
-  BookOpen,
-  Music,
-  Palette,
-  TreePine,
-  GraduationCap,
-  Crown,
-  Scissors,
-  Hammer,
-  Wrench,
-  PartyPopper,
-  Camera,
-  Bike,
-  Footprints,
-  ShoppingBag,
-  Gem,
-  Flower2,
-  Sun,
   Package,
   Building2,
   Cable,
@@ -49,55 +18,10 @@ import {
   Watch,
 } from "lucide-react";
 import { useCategories } from "@/features/categories/hooks/useCategories";
+import { CATEGORY_ICON_MAP } from "@/shared/constants/categories";
 import Breadcrumb from "@/shared/ui/Breadcrumb";
 import Badge from "@/shared/ui/Badge";
 import { cn } from "@/shared/utils/cn";
-
-const iconMap = {
-  Smartphone,
-  Car,
-  Laptop,
-  Sofa,
-  Shirt,
-  Home,
-  Refrigerator,
-  Gamepad2,
-  Dumbbell,
-  Sparkles,
-  Baby,
-  Apple,
-  Briefcase,
-  PawPrint,
-  BookOpen,
-  Music,
-  Palette,
-  TreePine,
-  GraduationCap,
-  Crown,
-  Scissors,
-  Hammer,
-  Wrench,
-  PartyPopper,
-  Camera,
-  Bike,
-  Footprints,
-  ShoppingBag,
-  Gem,
-  Flower2,
-  Sun,
-  Package,
-  Building2,
-  Cable,
-  Calendar,
-  Coffee,
-  Glasses,
-  Heart,
-  BaggageClaim,
-  Tablet,
-  Tv,
-  User,
-  Watch,
-};
 
 const hexToBg = (hex) => {
   const map = {
@@ -269,7 +193,7 @@ export default function CategoriesPage() {
         {filtered.length > 0 && (
           <div className="mb-8 -mx-4 flex items-center gap-2 overflow-x-auto px-4 hide-scrollbar sm:mx-0 sm:flex-wrap sm:px-0">
             {filtered.map((mega) => {
-              const QuickIcon = iconMap[mega.icon] || Package;
+              const QuickIcon = CATEGORY_ICON_MAP[mega.icon] || Package;
               return (
                 <button
                   key={mega.id}
@@ -310,7 +234,7 @@ export default function CategoriesPage() {
         ) : (
           <div className="space-y-10">
             {filtered.map((mega) => {
-              const MegaIcon = iconMap[mega.icon] || Package;
+              const MegaIcon = CATEGORY_ICON_MAP[mega.icon] || Package;
               const children = mega.children ?? [];
               const megaCount = mega.productCount ?? 0;
               return (
@@ -358,7 +282,7 @@ export default function CategoriesPage() {
                   {children.length > 0 ? (
                     <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 lg:grid-cols-6">
                       {children.map((child) => {
-                        const ChildIcon = iconMap[child.icon] || Package;
+                        const ChildIcon = CATEGORY_ICON_MAP[child.icon] || Package;
                         return (
                           <Link
                             key={child.id}

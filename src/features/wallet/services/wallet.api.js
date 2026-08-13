@@ -14,7 +14,7 @@ export const escrowApi = {
   create: (data) => api.post("/escrow", data).then((r) => r.data),
   list: (params) => api.get("/escrow", { params }).then((r) => r.data),
   getById: (id) => api.get(`/escrow/${id}`).then((r) => r.data),
-  confirmPayment: (id) => api.put(`/escrow/${id}/confirm-payment`).then((r) => r.data),
+  confirmPayment: (id, transactionRef) => api.put(`/escrow/${id}/confirm-payment`, { transactionRef }).then((r) => r.data),
   markAsShipped: (id) => api.put(`/escrow/${id}/mark-shipped`).then((r) => r.data),
   scanConfirm: (token) => api.post("/escrow/scan-confirm", { token }).then((r) => r.data),
   confirmDelivery: (id) => api.put(`/escrow/${id}/confirm-delivery`).then((r) => r.data),

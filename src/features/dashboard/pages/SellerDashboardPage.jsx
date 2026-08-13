@@ -6,10 +6,7 @@ import {
   BarChart3,
   User,
   Handshake,
-  CheckCircle,
-  XCircle,
   MessageCircle,
-  Clock,
   Megaphone,
 } from "lucide-react";
 import { cn } from "@/shared/utils/cn";
@@ -21,6 +18,7 @@ import { useMyProducts } from "@/features/products/hooks/useProducts";
 import { useWalletBalance } from "@/features/wallet/hooks/useWallet";
 import { useNavigate } from "react-router-dom";
 import UserProfilePage from "@/features/profile/pages/UserProfilePage";
+import ProposalStatusBadge from "@/shared/ui/ProposalStatusBadge";
 import { useReceivedBundleProposals, useAcceptBundleProposal, useRejectBundleProposal } from "@/features/bundles/hooks/useBundleProposals";
 
 function OverviewTab() {
@@ -81,22 +79,6 @@ function BundleProposalsTab() {
     }
   };
 
-  const proposalStatusBadge = (status) => {
-    const map = {
-      pending: { label: "En attente", icon: Clock, class: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400" },
-      accepted: { label: "Acceptée", icon: CheckCircle, class: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" },
-      rejected: { label: "Refusée", icon: XCircle, class: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" },
-      cancelled: { label: "Annulée", icon: XCircle, class: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400" },
-    };
-    const s = map[status] || map.pending;
-    return (
-      <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${s.class}`}>
-        <s.icon className="h-3 w-3" />
-        {s.label}
-      </span>
-    );
-  };
-
   return (
     <div className="space-y-4">
       <h3 className="text-base font-semibold text-gray-900 dark:text-white">
@@ -146,7 +128,7 @@ function BundleProposalsTab() {
                       {formatRelativeTime(p.createdAt)}
                     </td>
                     <td className="px-4 py-3">
-                      {proposalStatusBadge(p.status)}
+                      <ProposalStatusBadge status={p.status} />
                     </td>
                     <td className="px-4 py-3 text-right">
                       {p.status === "pending" ? (

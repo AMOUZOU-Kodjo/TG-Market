@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/shared/services/api";
 import { formatCFA } from "@/shared/utils/format";
 import Badge from "@/shared/ui/Badge";
+import { ESCROW_STATUS_CONFIG } from "@/shared/constants/escrow";
 import toast from "react-hot-toast";
 
 export default function AdminPaymentsPage() {
@@ -45,30 +46,6 @@ export default function AdminPaymentsPage() {
   );
   const meta = data?.meta;
 
-  const statusColors = {
-    completed: "success",
-    pending: "warning",
-    awaiting_verification: "warning",
-    paid: "primary",
-    pending_delivery: "info",
-    delivered: "info",
-    disputed: "danger",
-    refunded: "danger",
-    cancelled: "secondary",
-  };
-
-  const statusLabels = {
-    completed: "Terminé",
-    pending: "En attente",
-    awaiting_verification: "À vérifier",
-    paid: "Payé",
-    pending_delivery: "Expédié",
-    delivered: "Livré",
-    disputed: "Litige",
-    refunded: "Remboursé",
-    cancelled: "Annulé",
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -92,8 +69,8 @@ export default function AdminPaymentsPage() {
               <div key={tx.id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 hover:shadow-md transition-shadow flex flex-col">
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <p className="text-sm font-medium text-gray-900 truncate flex-1">{tx.product?.title ?? "—"}</p>
-                  <Badge variant={statusColors[tx.status] ?? "secondary"} size="sm" className="shrink-0">
-                    {statusLabels[tx.status] ?? tx.status}
+                  <Badge variant={ESCROW_STATUS_CONFIG[tx.status]?.variant ?? "secondary"} size="sm" className="shrink-0">
+                    {ESCROW_STATUS_CONFIG[tx.status]?.label ?? tx.status}
                   </Badge>
                 </div>
                 <div className="space-y-1 text-xs text-gray-500 flex-1">
@@ -101,6 +78,12 @@ export default function AdminPaymentsPage() {
                     <span>Montant</span>
                     <span className="font-medium text-gray-900">{formatCFA(tx.amount)}</span>
                   </div>
+                  {tx.paymentRef && (
+                    <div className="flex justify-between">
+                      <span>Référence</span>
+                      <span className="font-medium text-gray-900 truncate max-w-[140px] text-right">{tx.paymentRef}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span>Frais</span>
                     <span className="font-medium text-gray-900">{formatCFA(tx.fee ?? 0)}</span>

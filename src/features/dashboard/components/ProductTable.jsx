@@ -11,7 +11,7 @@ import {
 import Badge from "@/shared/ui/Badge";
 import { cn } from "@/shared/utils/cn";
 import { formatCFA, formatRelativeTime } from "@/shared/utils/format";
-import { useMyProducts, useDeleteProduct } from "@/features/products/hooks/useProducts";
+import { useMyProducts, useDeleteProductHandler } from "@/features/products/hooks/useProducts";
 import { productsApi } from "@/features/products/services/products.api";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -28,18 +28,8 @@ export default function ProductTable() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data, isLoading } = useMyProducts();
-  const deleteProduct = useDeleteProduct();
+  const { handleDelete } = useDeleteProductHandler();
   const products = data?.data ?? [];
-
-  const handleDelete = async (product) => {
-    if (!window.confirm(`Supprimer « ${product.title} » ?`)) return;
-    try {
-      await deleteProduct.mutateAsync(product.id);
-      toast.success("Annonce supprimée");
-    } catch {
-      toast.error("Erreur lors de la suppression");
-    }
-  };
 
   const handleToggleStatus = async (product) => {
     const newStatus = product.status === "active" ? "paused" : "active";

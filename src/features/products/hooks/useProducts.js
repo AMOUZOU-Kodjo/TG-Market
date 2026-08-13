@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import { productsApi } from "../services/products.api";
 
 export function useProducts(params) {
@@ -73,4 +74,18 @@ export function useEndNegotiation() {
       qc.invalidateQueries({ queryKey: ["products"] });
     },
   });
+}
+
+export function useDeleteProductHandler() {
+  const deleteProduct = useDeleteProduct();
+  const handleDelete = async (product) => {
+    if (!window.confirm(`Supprimer « ${product.title} » ?`)) return;
+    try {
+      await deleteProduct.mutateAsync(product.id);
+      toast.success("Annonce supprimée");
+    } catch {
+      toast.error("Erreur lors de la suppression");
+    }
+  };
+  return { deleteProduct, handleDelete };
 }

@@ -6,34 +6,28 @@ import { escrowApi } from "@/features/wallet/services/wallet.api";
 import { formatCFA } from "@/shared/utils/format";
 import BackButton from "@/shared/ui/BackButton";
 import Badge from "@/shared/ui/Badge";
+import { ESCROW_STATUS_CONFIG, ESCROW_PAYOUT_CONFIG } from "@/shared/constants/escrow";
 import toast from "react-hot-toast";
 
-const statusConfig = {
-  awaiting_verification: { label: "En vérification", variant: "warning", icon: Clock },
-  completed: { label: "Terminée", variant: "success", icon: CheckCircle2 },
-  pending: { label: "En attente", variant: "warning", icon: Clock },
-  paid: { label: "Payée", variant: "primary", icon: CheckCircle2 },
-  pending_delivery: { label: "Expédiée", variant: "info", icon: Truck },
-  delivered: { label: "Livrée", variant: "info", icon: Truck },
-  disputed: { label: "Litige", variant: "danger", icon: AlertCircle },
-  cancelled: { label: "Annulée", variant: "danger", icon: XCircle },
-};
-
-const payoutConfig = {
-  sent: { label: "Paiement envoyé", variant: "success" },
-  paid: { label: "Paiement reçu", variant: "success" },
-  pending: { label: "Paiement en cours", variant: "warning" },
-  failed: { label: "Échec du paiement", variant: "danger" },
+const statusIcons = {
+  awaiting_verification: Clock,
+  completed: CheckCircle2,
+  pending: Clock,
+  paid: CheckCircle2,
+  pending_delivery: Truck,
+  delivered: Truck,
+  disputed: AlertCircle,
+  cancelled: XCircle,
 };
 
 function EscrowRow({ escrow, role, onAction }) {
   const isSeller = role === "seller";
   const navigate = useNavigate();
   const counterparty = isSeller ? escrow.buyerName : escrow.sellerName;
-  const status = statusConfig[escrow.status] || { label: escrow.status, variant: "gray", icon: Clock };
-  const StatusIcon = status.icon;
+  const status = ESCROW_STATUS_CONFIG[escrow.status] || { label: escrow.status, variant: "gray" };
+  const StatusIcon = statusIcons[escrow.status] || Clock;
   const payout = escrow.payout;
-  const payoutInfo = isSeller && payout ? payoutConfig[payout.status] : null;
+  const payoutInfo = isSeller && payout ? ESCROW_PAYOUT_CONFIG[payout.status] : null;
 
   return (
     <div

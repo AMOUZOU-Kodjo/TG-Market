@@ -281,10 +281,6 @@ function App() {
                             path="/dashboard/products"
                             element={<SellerDashboardPage defaultTab="products" />}
                           />
-                          <Route
-                            path="/dashboard/orders"
-                            element={<SellerDashboardPage defaultTab="orders" />}
-                          />
                           <Route path="/dashboard/messages" element={<MessagesPage />} />
                           <Route
                             path="/dashboard/analytics"

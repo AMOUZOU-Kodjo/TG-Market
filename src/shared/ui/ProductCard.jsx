@@ -3,10 +3,8 @@ import { Heart, MapPin, MessageCircle, Zap, Star } from "lucide-react";
 import { cn } from "@/shared/utils/cn";
 import Badge from "@/shared/ui/Badge";
 import { getConditionLabel, getConditionBadgeVariant } from "@/shared/constants";
-import { useCheckFavorite, useToggleFavorite } from "@/features/favorites/hooks/useFavorites";
-import { useAuth } from "@/shared/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import { useFavoriteHandler } from "@/features/favorites/hooks/useFavoriteHandler";
+import { formatCFA } from "@/shared/utils/format";
 
 export default function ProductCard({
   image,
@@ -30,35 +28,8 @@ export default function ProductCard({
   className,
   ...rest
 }) {
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
-  const { data: favData } = useCheckFavorite(productId, isAuthenticated);
-  const toggleFav = useToggleFavorite();
-
-  const isFavorite = favData?.isFavorite ?? isFavoriteProp ?? false;
+  const { isFavorite, handleFavorite } = useFavoriteHandler(productId, isFavoriteProp);
   const [imageLoaded, setImageLoaded] = useState(false);
-
-  const handleFavorite = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (toggleFav.isPending) return;
-    if (!isAuthenticated) {
-      toast.error("Connectez-vous pour ajouter aux favoris");
-      navigate("/connexion");
-      return;
-    }
-    if (!productId) return;
-    try {
-      await toggleFav.mutateAsync(productId);
-      toast.success(isFavorite ? "Retiré des favoris" : "Ajouté aux favoris");
-    } catch {
-      toast.error("Erreur lors de la modification du favori");
-    }
-  };
-
-  const formatPrice = (p) => {
-    return new Intl.NumberFormat("fr-FR").format(p) + " FCFA";
-  };
 
   return (
     <div
@@ -175,9 +146,9 @@ export default function ProductCard({
         </div>
         <div className="mb-2 flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-baseline gap-2 flex-wrap">
-            <span className="text-xs sm:text-sm   font-bold text-brand-800">{formatPrice(price)}</span>
+            <span className="text-xs sm:text-sm   font-bold text-brand-800">{formatCFA(price)}</span>
             {originalPrice && (
-              <span className="text-sm text-gray-400 line-through">{formatPrice(originalPrice)}</span>
+              <span className="text-sm text-gray-400 line-through">{formatCFA(originalPrice)}</span>
             )}
             {/* {negotiable && (
               <span className="text-sm text-brand-600 font-semibold ml-2">Négociable</span>

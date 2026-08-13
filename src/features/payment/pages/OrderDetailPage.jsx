@@ -25,19 +25,8 @@ import { formatCFA, formatDate } from "@/shared/utils/format";
 import EscrowTimeline from "@/features/payment/components/EscrowTimeline";
 import PayoutNotice from "@/features/payment/components/PayoutNotice";
 import Badge from "@/shared/ui/Badge";
+import { ESCROW_STATUS_CONFIG } from "@/shared/constants/escrow";
 import toast from "react-hot-toast";
-
-const statusConfig = {
-  pending: { label: "En attente de paiement", variant: "warning" },
-  awaiting_verification: { label: "Paiement en vérification", variant: "warning" },
-  paid: { label: "Payée", variant: "primary" },
-  pending_delivery: { label: "Expédiée", variant: "info" },
-  delivered: { label: "Livrée", variant: "info" },
-  completed: { label: "Terminée", variant: "success" },
-  disputed: { label: "Litige", variant: "danger" },
-  refunded: { label: "Remboursée", variant: "secondary" },
-  cancelled: { label: "Annulée", variant: "danger" },
-};
 
 export default function OrderDetailPage() {
   const { id } = useParams();
@@ -102,13 +91,13 @@ export default function OrderDetailPage() {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center px-4">
         <p className="text-gray-500">Commande introuvable</p>
-        <Link to="/dashboard/orders" className="mt-4 text-sm text-brand-800 hover:underline">Voir mes commandes</Link>
+        <Link to="/dashboard/history" className="mt-4 text-sm text-brand-800 hover:underline">Voir mes commandes</Link>
       </div>
     );
   }
 
   const isBuyer = escrow.buyerId === user?.id;
-  const statusInfo = statusConfig[escrow.status] || { label: escrow.status, variant: "neutral" };
+  const statusInfo = ESCROW_STATUS_CONFIG[escrow.status] || { label: escrow.status, variant: "neutral" };
 
   const handleConfirm = async () => {
     setActionLoading("confirm");

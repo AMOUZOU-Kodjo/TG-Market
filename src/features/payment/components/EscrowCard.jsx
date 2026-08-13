@@ -2,19 +2,10 @@ import { motion } from "framer-motion";
 import { formatCFA, formatRelativeTime } from "@/shared/utils/format";
 import Badge from "@/shared/ui/Badge";
 import Avatar from "@/shared/ui/Avatar";
-
-const statusBadge = {
-  pending: { label: "En attente", variant: "warning" },
-  paid: { label: "Payée", variant: "primary" },
-  pending_delivery: { label: "Expédiée", variant: "info" },
-  delivered: { label: "Livrée", variant: "info" },
-  completed: { label: "Terminée", variant: "success" },
-  disputed: { label: "Litige", variant: "danger" },
-  refunded: { label: "Remboursée", variant: "secondary" },
-};
+import { ESCROW_STATUS_CONFIG } from "@/shared/constants/escrow";
 
 export default function EscrowCard({ transaction, onClick }) {
-  const st = statusBadge[transaction.status] || statusBadge.pending_delivery;
+  const st = ESCROW_STATUS_CONFIG[transaction.status] || ESCROW_STATUS_CONFIG.pending_delivery;
   return (
     <motion.div
       whileHover={{ y: -2 }}

@@ -8,6 +8,15 @@ export const getReviewsBySellerSchema = z.object({
   }),
 });
 
+export const voteReviewSchema = z.object({
+  params: z.object({
+    id: z.coerce.number().int().positive(),
+  }),
+  body: z.object({
+    vote: z.boolean(),
+  }),
+});
+
 export const createReviewSchema = z.object({
   body: z.object({
     escrowId: z.number().int().positive(),

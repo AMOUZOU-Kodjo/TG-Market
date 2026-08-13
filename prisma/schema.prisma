@@ -171,6 +171,7 @@ model User {
   escrow_as_seller     EscrowTransaction[]   @relation("EscrowSeller")
   reviews_given        Review[]              @relation("ReviewReviewer")
   reviews_received     Review[]              @relation("ReviewSeller")
+  review_votes         ReviewVote[]
   favorites            Favorite[]
   follows_followers    Follow[]              @relation("FollowFollower")
   follows_following    Follow[]              @relation("FollowFollowing")
@@ -536,10 +537,26 @@ model Review {
   seller      User               @relation("ReviewSeller", fields: [seller_id], references: [id])
   product     Product?           @relation(fields: [product_id], references: [id], onDelete: SetNull)
   escrow      EscrowTransaction? @relation(fields: [escrow_id], references: [id])
+  votes       ReviewVote[]
 
   @@unique([reviewer_id, escrow_id])
   @@index([seller_id])
   @@index([created_at])
+}
+
+model ReviewVote {
+  id         Int      @id @default(autoincrement())
+  review_id  Int
+  user_id    Int
+  vote       Boolean
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  review Review @relation(fields: [review_id], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([review_id, user_id])
+  @@index([user_id])
 }
 
 model Favorite {

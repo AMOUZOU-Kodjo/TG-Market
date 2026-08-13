@@ -40,7 +40,7 @@ export async function getReviewsBySeller(sellerId, { page, perPage }) {
   ]);
 
   return {
-    reviews: reviews.map(formatReview),
+    reviews: await withVoteCounts(reviews),
     total,
   };
 }
@@ -69,7 +69,7 @@ export async function getMyReviews(userId, { page, perPage }) {
   ]);
 
   return {
-    reviews: reviews.map(formatReview),
+    reviews: await withVoteCounts(reviews),
     total,
   };
 }
@@ -147,4 +147,57 @@ export async function createReview(userId, data) {
   });
 
   return formatReview(review);
+}
+
+async function withVoteCounts(reviews) {
+  if (!reviews.length) return [];
+  const ids = reviews.map((r) => r.id);
+  const votes = await prisma.reviewVote.groupBy({
+    by: ['review_id', 'vote'],
+    where: { review_id: { in: ids } },
+    _count: true,
+  });
+  const counts = {};
+  for (const v of votes) {
+    counts[v.review_id] ??= { helpfulCount: 0, unhelpfulCount: 0 };
+    if (v.vote) counts[v.review_id].helpfulCount = v._count;
+    else counts[v.review_id].unhelpfulCount = v._count;
+  }
+  return reviews.map((r) => ({ ...formatReview(r), ...(counts[r.id] ?? { helpfulCount: 0, unhelpfulCount: 0 }) }));
+}
+
+export async function toggleReviewVote(userId, reviewId, vote) {
+  const review = await prisma.review.findUnique({ where: { id: reviewId }, select: { id: true } });
+  if (!review) {
+    const error = new Error('Avis introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  const existing = await prisma.reviewVote.findUnique({
+    where: { review_id_user_id: { review_id: reviewId, user_id: userId } },
+  });
+
+  if (existing) {
+    if (existing.vote === vote) {
+      await prisma.reviewVote.delete({ where: { id: existing.id } });
+    } else {
+      await prisma.reviewVote.update({ where: { id: existing.id }, data: { vote } });
+    }
+  } else {
+    await prisma.reviewVote.create({ data: { review_id: reviewId, user_id: userId, vote } });
+  }
+
+  const counts = await prisma.reviewVote.groupBy({
+    by: ['vote'],
+    where: { review_id: reviewId },
+    _count: true,
+  });
+
+  return {
+    reviewId,
+    state: existing && existing.vote === vote ? null : vote,
+    helpfulCount: counts.find((c) => c.vote === true)?._count ?? 0,
+    unhelpfulCount: counts.find((c) => c.vote === false)?._count ?? 0,
+  };
 }

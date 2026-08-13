@@ -32,6 +32,15 @@ export async function getMyReviews(req, res, next) {
   }
 }
 
+export async function voteReview(req, res, next) {
+  try {
+    const result = await reviewsService.toggleReviewVote(req.user.id, req.validated.params.id, req.validated.body.vote);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function createReview(req, res, next) {
   try {
     const review = await reviewsService.createReview(req.user.id, req.validated.body);

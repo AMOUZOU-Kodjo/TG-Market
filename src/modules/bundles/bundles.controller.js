@@ -113,6 +113,7 @@ export async function createBundleProposal(req, res, next) {
 
     const io = req.app.get('io');
     if (io) {
+      try { io.emit('bundle_proposal_created', { bundleId: proposal.bundleId, proposalId: proposal.id }); } catch {}
       await notifyUser(io, proposal.sellerId, {
         type: 'bundle_proposal',
         title: 'Nouvelle proposition sur votre lot',
@@ -164,6 +165,7 @@ export async function acceptBundleProposal(req, res, next) {
 
     const io = req.app.get('io');
     if (io) {
+      try { io.emit('bundle_proposal_updated', { bundleId: proposal.bundleId, proposalId: proposal.id }); } catch {}
       await notifyUser(io, proposal.buyerId, {
         type: 'bundle_proposal_accepted',
         title: 'Proposition acceptée',
@@ -185,6 +187,7 @@ export async function rejectBundleProposal(req, res, next) {
 
     const io = req.app.get('io');
     if (io) {
+      try { io.emit('bundle_proposal_updated', { bundleId: proposal.bundleId, proposalId: proposal.id }); } catch {}
       await notifyUser(io, proposal.buyerId, {
         type: 'bundle_proposal_rejected',
         title: 'Proposition refusée',
@@ -206,6 +209,7 @@ export async function cancelBundleProposal(req, res, next) {
 
     const io = req.app.get('io');
     if (io) {
+      try { io.emit('bundle_proposal_updated', { bundleId: proposal.bundleId, proposalId: proposal.id }); } catch {}
       const recipientId = proposal.sellerId === req.user.id ? proposal.buyerId : proposal.sellerId;
       await notifyUser(io, recipientId, {
         type: 'bundle_proposal_cancelled',

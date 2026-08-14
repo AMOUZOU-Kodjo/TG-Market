@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { Package, Truck, CheckCircle2, AlertTriangle, RotateCcw, DollarSign } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Package, Truck, CheckCircle2, AlertTriangle, RotateCcw, DollarSign, LifeBuoy } from "lucide-react";
 import { formatCFA } from "@/shared/utils/format";
 
 const statusIcons = {
@@ -49,6 +50,7 @@ const completedSteps = {
 };
 
 export default function EscrowTimeline({ transaction }) {
+  const navigate = useNavigate();
   const done = completedSteps[transaction.status] || [];
   const StatusIcon = statusIcons[transaction.status] || Package;
 
@@ -95,7 +97,11 @@ export default function EscrowTimeline({ transaction }) {
       </div>
 
       {transaction.status === "disputed" && (
-        <button className="w-full rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-100 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+        <button
+          onClick={() => navigate("/contact")}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-100 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400"
+        >
+          <LifeBuoy className="h-4 w-4" />
           Contacter le support
         </button>
       )}

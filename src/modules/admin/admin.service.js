@@ -737,6 +737,12 @@ export async function updateProductStatus(productId, status) {
     throw error;
   }
 
+  if (product.status === 'sold' && status === 'active') {
+    const error = new Error('Un produit vendu ne peut pas être remis en vente');
+    error.status = 400;
+    throw error;
+  }
+
   await prisma.product.update({
     where: { id: productId },
     data: { status },

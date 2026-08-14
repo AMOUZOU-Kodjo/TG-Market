@@ -546,6 +546,37 @@ export async function resolveEscrowDispute(req, res, next) {
   }
 }
 
+export async function resumeEscrow(req, res, next) {
+  try {
+    const id = Number(req.params.id);
+    const escrow = await escrowService.resumeDispute(id);
+    try { req.app.get('io')?.emit('escrow_updated', { escrow }); } catch {}
+
+    const io = req.app.get('io');
+    if (io) {
+      const { notifyUser } = await import('../notifications/notifications.service.js');
+      await notifyUser(io, escrow.buyerId, {
+        type: 'escrow_dispute_cancelled',
+        title: 'Litige refermé',
+        description: `Le litige pour "${escrow.productTitle}" a été refermé par l'administration, la vente reprend son cours`,
+        productId: escrow.productId,
+        metadata: { escrowId: escrow.id },
+      });
+      await notifyUser(io, escrow.sellerId, {
+        type: 'escrow_dispute_cancelled',
+        title: 'Litige refermé',
+        description: `Le litige pour "${escrow.productTitle}" a été refermé par l'administration, la vente reprend son cours`,
+        productId: escrow.productId,
+        metadata: { escrowId: escrow.id },
+      });
+    }
+
+    res.json(escrow);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function getAdminReports(req, res, next) {
   try {
     const { page, perPage, skip } = req.pagination;

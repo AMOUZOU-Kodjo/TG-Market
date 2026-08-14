@@ -40,6 +40,7 @@ function formatEscrow(escrow) {
     createdAt: escrow.created_at,
     confirmedAt: escrow.confirmed_at ?? null,
     releasedAt: escrow.released_at ?? null,
+    disputedBy: escrow.disputed_by ?? null,
   };
 }
 
@@ -734,12 +735,14 @@ export async function disputeEscrow(id, userId, reason) {
     throw error;
   }
 
-  await prisma.escrowTransaction.update({
+await prisma.escrowTransaction.update({
     where: { id },
     data: {
       status: 'disputed',
       disputed_at: new Date(),
       dispute_reason: reason,
+      status_before_dispute: escrow.status,
+      disputed_by: userId,
     },
   });
 
@@ -961,6 +964,91 @@ export async function resolveDispute(id, action) {
   });
 
   return formatEscrow(full);
+}
+
+async function restoreFromDispute(id) {
+  const escrow = await prisma.escrowTransaction.findUnique({
+    where: { id },
+    select: { id: true, status: true, status_before_dispute: true },
+  });
+
+  if (!escrow) {
+    const error = new Error('Transaction introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  if (escrow.status !== 'disputed') {
+    const error = new Error('Ce litige a déjà été traité');
+    error.status = 400;
+    throw error;
+  }
+
+  if (!escrow.status_before_dispute || !['paid', 'pending_delivery', 'delivered'].includes(escrow.status_before_dispute)) {
+    const error = new Error('Ce litige ne peut pas être repris automatiquement, contactez l\'administrateur');
+    error.status = 400;
+    throw error;
+  }
+
+  const res = await prisma.escrowTransaction.updateMany({
+    where: { id, status: 'disputed' },
+    data: {
+      status: escrow.status_before_dispute,
+      status_before_dispute: null,
+      disputed_by: null,
+      disputed_at: null,
+      dispute_reason: null,
+    },
+  });
+
+  if (res.count === 0) {
+    const error = new Error('Ce litige a déjà été traité');
+    error.status = 400;
+    throw error;
+  }
+
+  const full = await prisma.escrowTransaction.findUnique({
+    where: { id },
+    include: {
+      buyer: { select: { first_name: true, last_name: true } },
+      seller: { select: { first_name: true, last_name: true } },
+      product: {
+        select: {
+          title: true,
+          images: { select: { url: true }, orderBy: { sort_order: 'asc' }, take: 1 },
+        },
+      },
+      bundle: { select: { id: true, title: true } },
+      payouts: true,
+    },
+  });
+
+  return formatEscrow(full);
+}
+
+export async function cancelDispute(id, userId) {
+  const escrow = await prisma.escrowTransaction.findUnique({
+    where: { id },
+    select: { id: true, disputed_by: true },
+  });
+
+  if (!escrow) {
+    const error = new Error('Transaction introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  if (escrow.disputed_by !== userId) {
+    const error = new Error('Seul l\'auteur du litige peut le refermer');
+    error.status = 403;
+    throw error;
+  }
+
+  return restoreFromDispute(id);
+}
+
+export async function resumeDispute(id) {
+  return restoreFromDispute(id);
 }
 
 export async function cancelEscrow(id, userId) {

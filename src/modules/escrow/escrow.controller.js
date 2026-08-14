@@ -168,6 +168,31 @@ export async function disputeEscrow(req, res, next) {
   }
 }
 
+export async function cancelDispute(req, res, next) {
+  try {
+    const id = Number(req.params.id);
+    const escrow = await escrowService.cancelDispute(id, req.user.id);
+    try { req.app.get('io')?.emit('escrow_updated', { escrow }); } catch {}
+
+    const io = req.app.get('io');
+    if (io) {
+      const { notifyUser } = await import('../notifications/notifications.service.js');
+      const recipientId = escrow.buyerId === req.user.id ? escrow.sellerId : escrow.buyerId;
+      await notifyUser(io, recipientId, {
+        type: 'escrow_dispute_cancelled',
+        title: 'Litige refermé',
+        description: `Le litige pour "${escrow.productTitle}" a été refermé, la vente reprend son cours`,
+        productId: escrow.productId,
+        metadata: { escrowId: escrow.id },
+      });
+    }
+
+    res.json(escrow);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function cancelEscrow(req, res, next) {
   try {
     const id = Number(req.params.id);

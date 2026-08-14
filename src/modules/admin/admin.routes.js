@@ -120,6 +120,7 @@ router.post('/contact-messages/:id/reply', adminController.replyContactMessage);
 router.post('/wallet/credit', adminController.creditWallet);
 router.put('/escrow/:id/verify', adminController.verifyPaymentAdmin);
 router.put('/escrow/:id/resolve', adminController.resolveEscrowDispute);
+router.put('/escrow/:id/resume', adminController.resumeEscrow);
 router.get('/reports', pagination, adminController.getAdminReports);
 router.put('/reports/:id/resolve', adminController.resolveReport);
 router.put('/reports/:id/dismiss', adminController.dismissReport);

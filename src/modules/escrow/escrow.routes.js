@@ -21,6 +21,7 @@ router.put('/:id/confirm-payment', auth, validate(getEscrowSchema), escrowContro
 router.put('/:id/mark-shipped', auth, validate(getEscrowSchema), escrowController.markAsShipped);
 router.put('/:id/confirm-delivery', auth, validate(getEscrowSchema), escrowController.confirmDelivery);
 router.put('/:id/dispute', auth, validate(disputeEscrowSchema), escrowController.disputeEscrow);
+router.put('/:id/cancel-dispute', auth, validate(getEscrowSchema), escrowController.cancelDispute);
 router.post('/scan-confirm', auth, validate(scanConfirmSchema), escrowController.scanConfirm);
 router.put('/:id/cancel', auth, validate(getEscrowSchema), escrowController.cancelEscrow);
 router.put('/:id/confirm-code', auth, confirmCodeLimiter, validate(confirmCodeSchema), escrowController.confirmWithCode);

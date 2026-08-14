@@ -15,6 +15,7 @@ import {
   Loader2,
   Smartphone,
   Star,
+  RotateCcw,
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import QrScanner from "@/features/payment/components/QrScanner";
@@ -149,6 +150,19 @@ export default function OrderDetailPage() {
       await escrowApi.dispute(escrow.id, { reason: disputeReason });
       toast.success("Litige ouvert");
       setShowDispute(false);
+      refetch();
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Erreur");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleCancelDispute = async () => {
+    setActionLoading("cancelDispute");
+    try {
+      await escrowApi.cancelDispute(escrow.id);
+      toast.success("Litige refermé, la vente reprend");
       refetch();
     } catch (err) {
       toast.error(err?.response?.data?.error || "Erreur");
@@ -407,6 +421,16 @@ export default function OrderDetailPage() {
                   <AlertTriangle className="mx-auto mb-2 h-6 w-6 text-red-600" />
                   <p className="text-sm font-medium text-red-800 dark:text-red-400">Litige en cours</p>
                   <p className="mt-1 text-xs text-red-600 dark:text-red-500">Notre équipe va examiner votre dossier</p>
+                  {escrow.disputedBy === user?.id && (
+                    <button
+                      onClick={handleCancelDispute}
+                      disabled={actionLoading === "cancelDispute"}
+                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+                    >
+                      {actionLoading === "cancelDispute" ? <Loader2 className="h-4 w-4 animate-spin" /> : <RotateCcw className="h-4 w-4" />}
+                      Reprendre la vente
+                    </button>
+                  )}
                 </div>
               ) : (
                 <button

@@ -73,6 +73,17 @@ export default function AdminPaymentsPage() {
     },
   });
 
+  const resumeMutation = useMutation({
+    mutationFn: (escrowId) => api.put(`/admin/escrow/${escrowId}/resume`).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["adminEscrow"] });
+      toast.success("Vente reprise");
+    },
+    onError: (err) => {
+      toast.error(err?.response?.data?.error || "Erreur");
+    },
+  });
+
   const transactions = (data?.data ?? []).filter(
     (t) => t.status !== "cancelled"
   );
@@ -147,6 +158,13 @@ export default function AdminPaymentsPage() {
                   )}
                   {tx.status === "disputed" && (
                     <div className="flex flex-col gap-2">
+                      <button onClick={() => resumeMutation.mutate(tx.id)}
+                        disabled={resumeMutation.isPending}
+                        title="Refermer le litige et reprendre la vente au statut précédent"
+                        className="w-full flex items-center justify-center gap-1 rounded-lg bg-blue-600 px-3 py-2 text-xs font-medium text-white hover:bg-blue-700 transition-colors disabled:opacity-50">
+                        {resumeMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RotateCcw className="h-3.5 w-3.5" />}
+                        Reprendre la vente
+                      </button>
                       <button onClick={() => setResolveEscrow({ tx, action: "refund" })}
                         className="w-full flex items-center justify-center gap-1 rounded-lg bg-amber-500 px-3 py-2 text-xs font-medium text-white hover:bg-amber-600 transition-colors">
                         <RotateCcw className="h-3.5 w-3.5" />

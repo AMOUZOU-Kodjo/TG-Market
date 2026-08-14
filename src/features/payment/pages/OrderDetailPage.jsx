@@ -386,7 +386,7 @@ export default function OrderDetailPage() {
             </button>
           )}
 
-          {(escrow.status === "pending" || escrow.status === "paid" || escrow.status === "pending_delivery") && (
+          {(escrow.status === "pending" || escrow.status === "paid" || escrow.status === "pending_delivery" || escrow.status === "delivered") && (
             <div className="space-y-3">
               {showDispute ? (
                 <div className="rounded-2xl border border-red-100 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/10">

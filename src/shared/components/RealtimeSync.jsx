@@ -19,6 +19,7 @@ export function RealtimeSync() {
       queryClient.invalidateQueries({ queryKey: ["myProducts"] });
       queryClient.invalidateQueries({ queryKey: ["adminProducts"] });
       queryClient.invalidateQueries({ queryKey: ["adminStats"] });
+      queryClient.invalidateQueries({ queryKey: ["adminActivity"] });
     }));
 
     unsubs.push(on("product_updated", ({ product }) => {
@@ -27,6 +28,7 @@ export function RealtimeSync() {
       queryClient.invalidateQueries({ queryKey: ["myProducts"] });
       queryClient.invalidateQueries({ queryKey: ["adminProducts"] });
       queryClient.invalidateQueries({ queryKey: ["adminStats"] });
+      queryClient.invalidateQueries({ queryKey: ["adminActivity"] });
     }));
 
     unsubs.push(on("product_deleted", ({ productId }) => {
@@ -35,18 +37,23 @@ export function RealtimeSync() {
       queryClient.invalidateQueries({ queryKey: ["myProducts"] });
       queryClient.invalidateQueries({ queryKey: ["adminProducts"] });
       queryClient.invalidateQueries({ queryKey: ["adminStats"] });
+      queryClient.invalidateQueries({ queryKey: ["adminActivity"] });
     }));
 
     // Escrow
     unsubs.push(on("escrow_created", () => {
       queryClient.invalidateQueries({ queryKey: ["escrow"] });
+      queryClient.invalidateQueries({ queryKey: ["adminEscrow"] });
       queryClient.invalidateQueries({ queryKey: ["adminStats"] });
+      queryClient.invalidateQueries({ queryKey: ["adminActivity"] });
     }));
 
     unsubs.push(on("escrow_updated", ({ escrow }) => {
       queryClient.invalidateQueries({ queryKey: ["escrow"] });
       if (escrow?.id) queryClient.invalidateQueries({ queryKey: ["escrow", escrow.id] });
+      queryClient.invalidateQueries({ queryKey: ["adminEscrow"] });
       queryClient.invalidateQueries({ queryKey: ["adminStats"] });
+      queryClient.invalidateQueries({ queryKey: ["adminActivity"] });
     }));
 
     // Favorites
@@ -68,6 +75,7 @@ export function RealtimeSync() {
       queryClient.invalidateQueries({ queryKey: ["seller", userId] });
       queryClient.invalidateQueries({ queryKey: ["sellers"] });
       queryClient.invalidateQueries({ queryKey: ["adminUsers"] });
+      queryClient.invalidateQueries({ queryKey: ["adminActivity"] });
     }));
 
     unsubs.push(on("user_followed", ({ followingId }) => {
@@ -86,6 +94,7 @@ export function RealtimeSync() {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       queryClient.invalidateQueries({ queryKey: ["users"] });
       queryClient.invalidateQueries({ queryKey: ["adminUsers"] });
+      queryClient.invalidateQueries({ queryKey: ["adminActivity"] });
     }));
 
     // Messages (liste des conversations + badge)

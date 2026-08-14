@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { CreditCard, CheckCircle, Loader2, X, Scale, RotateCcw } from "lucide-react";
+import { CreditCard, CheckCircle, Loader2, X, Scale, RotateCcw, MessageCircle } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import api from "@/shared/services/api";
+import { conversationsApi } from "@/features/chat/services/conversations.api";
 import { formatCFA } from "@/shared/utils/format";
 import Badge from "@/shared/ui/Badge";
 import { ESCROW_STATUS_CONFIG } from "@/shared/constants/escrow";
@@ -11,7 +13,24 @@ export default function AdminPaymentsPage() {
   const [page, setPage] = useState(1);
   const [confirmEscrow, setConfirmEscrow] = useState(null);
   const [resolveEscrow, setResolveEscrow] = useState(null);
+  const [contacting, setContacting] = useState(false);
   const qc = useQueryClient();
+  const navigate = useNavigate();
+
+  const contactSeller = async (tx) => {
+    setContacting(true);
+    try {
+      const conversation = await conversationsApi.create({
+        participantId: tx.seller?.id,
+        productId: tx.product?.id,
+      });
+      navigate(`/messages/${conversation.id}`);
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Erreur lors de la création de la conversation");
+    } finally {
+      setContacting(false);
+    }
+  };
 
   const { data, isLoading } = useQuery({
     queryKey: ["adminEscrow", page],
@@ -252,6 +271,14 @@ export default function AdminPaymentsPage() {
                 className="flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300"
               >
                 Annuler
+              </button>
+              <button
+                onClick={() => contactSeller(resolveEscrow.tx)}
+                disabled={contacting}
+                className="flex-1 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {contacting ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageCircle className="h-4 w-4" />}
+                {contacting ? "Ouverture..." : "Contacter le vendeur"}
               </button>
               <button
                 onClick={() => resolveMutation.mutate({ id: resolveEscrow.tx.id, action: resolveEscrow.action })}

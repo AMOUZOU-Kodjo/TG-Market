@@ -11,8 +11,7 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       devOptions: {
-        enabled: true,
-        navigateFallback: "/index.html",
+        enabled: false,
       },
       includeAssets: ["favicon.svg", "logo-tg.png"],
       manifest: {

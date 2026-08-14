@@ -16,6 +16,7 @@ import { AuthGuard, GuestGuard, AdminGuard } from "@/guards/AuthGuard";
 import { MaintenanceGuard } from "@/guards/MaintenanceGuard";
 import { AuthLogoutHandler } from "@/shared/contexts/AuthContext";
 import { RealtimeSync } from "@/shared/components/RealtimeSync";
+import UpdateBanner from "@/shared/ui/UpdateBanner";
 
 import {
   HomePage,
@@ -111,6 +112,7 @@ function App() {
                 <BrowserRouter>
                   <AuthLogoutHandler />
                   <RealtimeSync />
+                  <UpdateBanner />
                   <MaintenanceGuard>
                     <Suspense fallback={<PageLoader />}>
                       <Routes>

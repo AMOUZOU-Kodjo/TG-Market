@@ -750,6 +750,8 @@ import {
   TreePine,
   Wrench,
   Package,
+  Layers,
+  Trash2,
   ShieldCheck,
 } from "lucide-react";
 import BackButton from "@/shared/ui/BackButton";
@@ -816,6 +818,11 @@ export default function CreateListingPage() {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [newMethod, setNewMethod] = useState({ provider: "flooz", providerUserId: "" });
   const addPayment = useAddPaymentMethod();
+  const [batchMode, setBatchMode] = useState(false);
+  const [draftList, setDraftList] = useState([]);
+  const [batchResult, setBatchResult] = useState(null);
+  const [pendingPublish, setPendingPublish] = useState(null);
+  const [batchProgress, setBatchProgress] = useState({ done: 0, total: 0 });
 
   const { data: specTemplatesData } = useCategorySpecTemplates(selectedCategory?.id);
   const specTemplates = specTemplatesData?.data ?? specTemplatesData ?? [];
@@ -837,6 +844,7 @@ export default function CreateListingPage() {
     watch,
     setValue,
     trigger,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(createListingSchema),
@@ -895,6 +903,122 @@ export default function CreateListingPage() {
     }
   }, [currentStep]);
 
+  const buildPayloadFrom = useCallback(
+    async ({ category, photos: targetPhotos, values, specs }) => {
+      const filesToUpload = targetPhotos.filter((p) => p.file).map((p) => p.file);
+      const existingUrls = targetPhotos.filter((p) => !p.file).map((p) => p.url);
+
+      let uploadedUrls = [];
+      if (filesToUpload.length > 0) {
+        uploadedUrls = await uploadImages(filesToUpload);
+      }
+
+      const allImages = [...existingUrls, ...uploadedUrls];
+
+      return {
+        categoryId: category.id,
+        title: values.title,
+        description: values.description,
+        condition: values.condition,
+        brand: values.brand || undefined,
+        tags: values.tags || [],
+        images: allImages,
+        price: Math.round(Number(values.price)),
+        negotiable: values.negotiable,
+        deliveryAvailable: values.deliveryAvailable,
+        deliveryPrice: values.deliveryAvailable
+          ? Math.round(Number(values.deliveryPrice) || 0) || undefined
+          : undefined,
+        quantity: values.quantity || 1,
+        city: values.city,
+        neighborhood: values.neighborhood || undefined,
+        specifications: specs,
+      };
+    },
+    [uploadImages]
+  );
+
+  const captureCurrentDraft = useCallback(
+    () => ({
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      category: selectedCategory,
+      photos,
+      values: { ...formValues },
+      specs: buildSpecifications(),
+    }),
+    [selectedCategory, photos, formValues, buildSpecifications]
+  );
+
+  const addToBatch = useCallback(async () => {
+    for (const step of [0, 1, 2, 3, 4]) {
+      const valid = await validateStep(step);
+      if (!valid) {
+        setCurrentStep(step);
+        return;
+      }
+    }
+    if (draftList.length >= 10) {
+      toast.error("Maximum 10 annonces par lot");
+      return;
+    }
+    setDraftList((prev) => [...prev, captureCurrentDraft()]);
+    setSelectedCategory(null);
+    setPhotos([]);
+    setSpecValues({});
+    reset(defaultFormValues);
+    setCurrentStep(0);
+    toast.success("Annonce ajoutée au lot — préparez la suivante !");
+  }, [validateStep, draftList.length, captureCurrentDraft, reset]);
+
+  const removeDraft = useCallback((id) => {
+    setDraftList((prev) => prev.filter((d) => d.id !== id));
+  }, []);
+
+  const handlePublishBatch = useCallback(async () => {
+    const methods = methodsData?.data || methodsData || [];
+    if (methods.length === 0) {
+      setPendingPublish("batch");
+      setNewMethod({ provider: "flooz", providerUserId: "" });
+      setShowPaymentModal(true);
+      toast.error("Ajoutez un moyen de réception (numéro Flooz/T-Money) pour recevoir vos paiements");
+      return;
+    }
+
+    for (const step of [0, 1, 2, 3, 4]) {
+      const valid = await validateStep(step);
+      if (!valid) {
+        setCurrentStep(step);
+        return;
+      }
+    }
+
+    const allDrafts = [...draftList, captureCurrentDraft()];
+    setIsSubmitting(true);
+    setBatchProgress({ done: 0, total: allDrafts.length });
+    const results = { published: [], failed: [] };
+    for (let i = 0; i < allDrafts.length; i++) {
+      const d = allDrafts[i];
+      try {
+        const payload = await buildPayloadFrom(d);
+        const result = await createProduct.mutateAsync(payload);
+        results.published.push({ id: result?.id, title: d.values.title });
+      } catch (err) {
+        const msg = err?.response?.data?.message || err?.message || "Erreur lors de la publication";
+        results.failed.push({ title: d.values.title || "Annonce sans titre", error: msg });
+      }
+      setBatchProgress((prev) => ({ ...prev, done: prev.done + 1 }));
+    }
+    setBatchResult(results);
+    setIsPublished(true);
+    setPublishedProductId(results.published[0]?.id);
+    setIsSubmitting(false);
+    if (results.failed.length === 0) {
+      toast.success(`${results.published.length} annonce(s) publiée(s) !`);
+    } else {
+      toast.error(`${results.failed.length} annonce(s) en échec sur ${allDrafts.length}`);
+    }
+  }, [draftList, captureCurrentDraft, buildPayloadFrom, createProduct, methodsData, validateStep]);
+
   const handlePublish = useCallback(async () => {
     if (!selectedCategory) {
       toast.error("Veuillez sélectionner une catégorie");
@@ -907,6 +1031,7 @@ export default function CreateListingPage() {
 
     const methods = methodsData?.data || methodsData || [];
     if (methods.length === 0) {
+      setPendingPublish("single");
       setNewMethod({ provider: "flooz", providerUserId: "" });
       setShowPaymentModal(true);
       toast.error("Ajoutez un moyen de réception (numéro Flooz/T-Money) pour recevoir vos paiements");
@@ -915,35 +1040,12 @@ export default function CreateListingPage() {
 
     setIsSubmitting(true);
     try {
-      const filesToUpload = photos.filter((p) => p.file).map((p) => p.file);
-      const existingUrls = photos.filter((p) => !p.file).map((p) => p.url);
-
-      let uploadedUrls = [];
-      if (filesToUpload.length > 0) {
-        uploadedUrls = await uploadImages(filesToUpload);
-      }
-
-      const allImages = [...existingUrls, ...uploadedUrls];
-
-      const payload = {
-        categoryId: selectedCategory.id,
-        title: formValues.title,
-        description: formValues.description,
-        condition: formValues.condition,
-        brand: formValues.brand || undefined,
-        tags: formValues.tags || [],
-        images: allImages,
-        price: Math.round(Number(formValues.price)),
-        negotiable: formValues.negotiable,
-        deliveryAvailable: formValues.deliveryAvailable,
-        deliveryPrice: formValues.deliveryAvailable
-          ? Math.round(Number(formValues.deliveryPrice) || 0) || undefined
-          : undefined,
-        quantity: formValues.quantity || 1,
-        city: formValues.city,
-        neighborhood: formValues.neighborhood || undefined,
-        specifications: buildSpecifications(),
-      };
+      const payload = await buildPayloadFrom({
+        category: selectedCategory,
+        photos,
+        values: formValues,
+        specs: buildSpecifications(),
+      });
 
       const result = await createProduct.mutateAsync(payload);
       setPublishedProductId(result?.id);
@@ -955,7 +1057,7 @@ export default function CreateListingPage() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [selectedCategory, photos, formValues, createProduct, buildSpecifications]);
+  }, [selectedCategory, photos, formValues, createProduct, buildSpecifications, buildPayloadFrom, methodsData]);
 
   const handleSaveDraft = useCallback(() => {
     toast.success("Brouillon sauvegardé !");
@@ -1323,7 +1425,87 @@ export default function CreateListingPage() {
       case 6: // Finalisation et publication
         return (
           <ListingFormStep>
-            {isPublished ? (
+            {isPublished && batchResult ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex w-full flex-col items-center py-12 text-center"
+              >
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
+                  className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-brand-100 dark:bg-brand-700/10"
+                >
+                  <CheckCircle2 className="h-12 w-12 text-brand-700" />
+                </motion.div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {batchResult.published.length} annonce(s) en ligne !
+                </h2>
+                <p className="mt-2 max-w-md text-sm text-gray-500 dark:text-gray-400">
+                  {batchResult.failed.length > 0
+                    ? `${batchResult.published.length} publiée(s), ${batchResult.failed.length} en échec.`
+                    : "Toutes vos annonces sont maintenant visibles par les acheteurs."}
+                </p>
+
+                {batchResult.published.length > 0 && (
+                  <div className="mt-6 w-full max-w-md space-y-2 text-left">
+                    {batchResult.published.map((p) => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => navigate(`/annonce/${p.id}`)}
+                        className="flex w-full items-center justify-between rounded-xl border border-gray-100 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:border-brand-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-brand-600"
+                      >
+                        <span className="truncate">{p.title || "Annonce"}</span>
+                        <ExternalLink className="ml-3 h-4 w-4 shrink-0 text-gray-400" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {batchResult.failed.length > 0 && (
+                  <div className="mt-4 w-full max-w-md space-y-2 text-left">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-red-500">
+                      Échecs
+                    </p>
+                    {batchResult.failed.map((f, i) => (
+                      <div
+                        key={i}
+                        className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400"
+                      >
+                        <span className="font-medium">{f.title}</span>
+                        <span className="ml-2 text-xs">{f.error}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <Button icon={Eye} onClick={() => navigate("/dashboard")}>
+                    Mes annonces
+                  </Button>
+                  <Button
+                    variant="outline"
+                    icon={Layers}
+                    onClick={() => {
+                      setBatchResult(null);
+                      setDraftList([]);
+                      setBatchProgress({ done: 0, total: 0 });
+                      setSelectedCategory(null);
+                      setPhotos([]);
+                      setSpecValues({});
+                      reset(defaultFormValues);
+                      setCurrentStep(0);
+                      setIsPublished(false);
+                      setPublishedProductId(null);
+                    }}
+                  >
+                    Nouveau lot
+                  </Button>
+                </div>
+              </motion.div>
+            ) : isPublished ? (
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -1415,6 +1597,71 @@ export default function CreateListingPage() {
                 </motion.div>
               </motion.div>
             ) : (
+              batchMode ? (
+                <div className="flex w-full flex-col items-center py-8 text-center">
+                  <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-brand-200 dark:bg-brand-800/10">
+                    <Layers className="h-12 w-12 text-brand-800" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                    Publier plusieurs annonces
+                  </h2>
+                  <p className="mt-2 max-w-md text-sm text-gray-500 dark:text-gray-400">
+                    Ajoutez cette annonce au lot, remplissez la suivante, puis tout publier d'un coup.
+                  </p>
+
+                  {draftList.length > 0 && (
+                    <div className="mt-8 w-full max-w-xl space-y-2 text-left">
+                      {draftList.map((d, i) => (
+                        <div
+                          key={d.id}
+                          className="flex items-center justify-between rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
+                              {i + 1}. {d.values.title || "Annonce"}
+                            </p>
+                            <p className="truncate text-xs text-gray-500 dark:text-gray-400">
+                              {d.category?.name}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeDraft(d.id)}
+                            className="ml-3 rounded-lg p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/40"
+                            aria-label="Retirer l'annonce du lot"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                    <Button
+                      variant="outline"
+                      icon={Save}
+                      onClick={addToBatch}
+                      disabled={isSubmitting}
+                    >
+                      Ajouter au lot
+                    </Button>
+                    <Button
+                      icon={Send}
+                      size="lg"
+                      onClick={handlePublishBatch}
+                      disabled={isSubmitting}
+                      loading={isSubmitting}
+                    >
+                      {isSubmitting
+                        ? batchProgress.total > 0
+                          ? `Publication ${batchProgress.done}/${batchProgress.total}...`
+                          : "Publication en cours..."
+                        : `Tout publier (${draftList.length + 1})`}
+                    </Button>
+                  </div>
+                </div>
+              ) : (
               <div className="flex flex-col items-center py-12 text-center">
                 <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-brand-200 dark:bg-brand-800/10">
                   <Send className="h-12 w-12 text-brand-800" />
@@ -1444,6 +1691,7 @@ export default function CreateListingPage() {
                   </Button>
                 </div>
               </div>
+              )
             )}
           </ListingFormStep>
         );
@@ -1503,12 +1751,46 @@ export default function CreateListingPage() {
       <div className="mx-auto max-w-8xl px-4 py-6 sm:px-6">
         <BackButton />
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Nouvelle annonce
-          </h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Remplissez les informations pour publier votre annonce
-          </p>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Nouvelle annonce
+              </h1>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                Remplissez les informations pour publier votre annonce
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setBatchMode((m) => !m)}
+              className={`flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                batchMode
+                  ? "border-brand-600 bg-brand-50 text-brand-700 dark:border-brand-500 dark:bg-brand-700/10 dark:text-brand-400"
+                  : "border-gray-200 text-gray-600 hover:border-gray-300 dark:border-gray-700 dark:text-gray-400 dark:hover:border-gray-600"
+              }`}
+            >
+              <Layers className="h-4 w-4" />
+              Mode lot
+              <span
+                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                  batchMode ? "bg-brand-700" : "bg-gray-300 dark:bg-gray-700"
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                    batchMode ? "translate-x-4" : "translate-x-0.5"
+                  }`}
+                />
+              </span>
+            </button>
+          </div>
+          {batchMode && (
+            <p className="mt-2 text-sm text-brand-700 dark:text-brand-400">
+              {draftList.length > 0
+                ? `${draftList.length} annonce(s) dans le lot.`
+                : "Préparez plusieurs annonces puis publiez-les d'un coup."}
+            </p>
+          )}
         </div>
 
         <div className="mb-8 overflow-hidden rounded-2xl border border-gray-100 bg-white px-4 py-5 dark:border-gray-800 dark:bg-gray-800">
@@ -1571,7 +1853,8 @@ export default function CreateListingPage() {
                   await addPayment.mutateAsync(newMethod);
                   setShowPaymentModal(false);
                   toast.success("Moyen de réception ajouté");
-                  handlePublish();
+                  if (pendingPublish === "batch") handlePublishBatch();
+                  else handlePublish();
                 } catch {
                   toast.error("Erreur lors de l'ajout du moyen de réception");
                 }

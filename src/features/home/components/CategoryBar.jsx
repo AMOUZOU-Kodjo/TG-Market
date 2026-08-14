@@ -101,22 +101,25 @@ const faIconMap = {
 };
 
 const groupImages = {
-  multimedia:
+  "multimedia-electronique":
     "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=500&h=400&fit=crop",
-  vehicules:
+  "vehicules-accessoires":
     "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=500&h=400&fit=crop",
-  maison:
+  "maison-decoration":
     "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=500&h=400&fit=crop",
-  mode: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=500&h=400&fit=crop",
-  loisirs:
+  "mode-accessoires":
+    "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=500&h=400&fit=crop",
+  "sports-loisirs":
     "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500&h=400&fit=crop",
-  famille:
+  "enfants-bebes":
     "https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=500&h=400&fit=crop",
+  "sante-beaute":
+    "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=500&h=400&fit=crop",
   "bricolage-jardin":
     "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=500&h=400&fit=crop",
-  immobilier:
-    "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=500&h=400&fit=crop",
-  "pro-services":
+  "animaux-domestiques":
+    "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=500&h=400&fit=crop",
+  "services-professionnel":
     "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=400&fit=crop",
 };
 
@@ -411,7 +414,7 @@ export default function CategoryBar() {
                     </div>
                     <div className="mx-6 mt-0 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                       <img
-                        src={groupImages[activeParent.slug] || groupImages.multimedia}
+                        src={groupImages[activeParent.slug] || groupImages["multimedia-electronique"]}
                         alt={activeParent.name}
                         className="w-full object-cover transition-transform duration-500 hover:scale-[1.03] aspect-5/5"
                       />

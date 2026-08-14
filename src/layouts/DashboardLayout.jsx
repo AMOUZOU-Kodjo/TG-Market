@@ -42,14 +42,13 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
   return (
     <>
       {/* Sidebar Header */}
-      <div className="h-16 flex items-center px-4 border-b border-gray-100 dark:border-gray-700">
+      <div className="h-16 relative flex items-center justify-center px-4  py-3 sticky bg-white top-0 Z-20 border-b border-gray-100 dark:border-gray-700">
         {sidebarOpen && (
-          <Link to="/" className="flex items-center gap-2">
-            <Logo size="sm" />
-            <span className="text-lg font-bold text-brand-900">{siteName ?? "Market"}</span>
+          <Link to="/">
+            <Logo size="sm" className="max-h-10" />
           </Link>
         )}
-        <div className={sidebarOpen ? "ml-auto" : "mx-auto"}>
+        <div className={sidebarOpen ? "absolute right-3" : "absolute left-1/2 -translate-x-1/2"}>
           <button
             onClick={onMobileLinkClick}
             className="lg:hidden p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 transition-colors"
@@ -79,23 +78,23 @@ function SidebarContent({ sidebarOpen, setSidebarOpen, onMobileLinkClick, user, 
       <div className="mx-3 rounded-xl bg-brand-600 text-white shadow-lg">
         {sidebarOpen ? (
           <div className="p-4">
-            <div className="flex items-end justify-between">
-              <div>
-                <div className="mb-3 flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
-                    <Wallet size={18} className="text-amber-300" />
-                  </div>
-                  <span className="text-sm font-semibold text-white/80">Portefeuille {siteName?.split("-")[0] ?? "TGM"}</span>
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-2.5">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/10">
+                  <Wallet size={18} className="text-amber-300" />
                 </div>
-                <h2 className="text-2xl font-bold tracking-tight">{formatCFA(totalEarned)}</h2>
+                <span className="truncate text-sm font-semibold text-white/80">
+                  Portefeuille {siteName?.split("-")[0] ?? "TGM"}
+                </span>
               </div>
               <button
                 onClick={() => { onMobileLinkClick(); navigate("/portefeuille"); }}
-                className="rounded-xl border border-white/25 bg-white/15 px-5 py-3 text-sm font-medium text-white backdrop-blur transition-all hover:bg-white/20"
+                className="shrink-0 rounded-lg border border-white/25 bg-white/15 px-3 py-1.5 text-xs font-medium text-white backdrop-blur transition-all hover:bg-white/20"
               >
-                Voir →
+                Voir
               </button>
             </div>
+            <p className="mt-3 truncate text-2xl font-bold tracking-tight">{formatCFA(totalEarned)}</p>
           </div>
         ) : (
           <div className="flex flex-col items-center py-3 gap-1">
@@ -268,7 +267,7 @@ export default function DashboardLayout() {
   const settings = useSiteSettings();
 
   const { data: walletData } = useWalletBalance();
-  const totalEarned = walletData?.totalEarned ?? 0;
+  const totalEarned = walletData?.available ?? 0;
 
   useEffect(() => {
     setMobileView(location.pathname === "/dashboard" ? "sidebar" : "page");
@@ -343,7 +342,7 @@ export default function DashboardLayout() {
         {/* ===== MAIN CONTENT ===== */}
         <div className="flex-1 min-w-0">
           {/* Dashboard Header */}
-          <header className={`${mobileView === "sidebar" ? "hidden lg:flex" : "flex"} sticky top-0 z-30 h-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-700 items-center justify-between px-4 sm:px-6`}>
+          <header className={`${mobileView === "sidebar" ? "hidden lg:flex" : "flex"} sticky top-0 z-100 h-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-700 items-center justify-between px-4 sm:px-6`}>
             <div className="flex items-center gap-3">
               {/* Mobile: hamburger menu */}
               <button
@@ -364,14 +363,19 @@ export default function DashboardLayout() {
               {/* Desktop: search */}
               <div className="relative hidden lg:block">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
+                {/* <input
                   type="text"
                   placeholder="Rechercher..."
                   className="pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-700/50 text-gray-900 dark:text-white w-64"
-                />
+                /> */}
+                {sidebarOpen && (
+                  <Link to="/">
+                    <Logo size="sm" className="max-h-10" />
+                  </Link>
+                )}
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 z-20">
               <Link
                 to="/dashboard/messages"
                 onClick={(e) => {
@@ -404,12 +408,12 @@ export default function DashboardLayout() {
                   </span>
                 )}
               </Link>
-              <Link
+              {/* <Link
                 to="/vendre"
                 className="hidden sm:flex items-center gap-2 px-4 py-2 bg-brand-900 text-white rounded-xl text-sm font-medium hover:bg-brand-950 transition-colors shadow-md shadow-brand-700/25"
               >
                 + Nouvelle annonce
-              </Link>
+              </Link> */}
             </div>
           </header>
 

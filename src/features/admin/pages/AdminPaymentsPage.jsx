@@ -127,14 +127,14 @@ export default function AdminPaymentsPage() {
                     </button>
                   )}
                   {tx.status === "disputed" && (
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-2">
                       <button onClick={() => setResolveEscrow({ tx, action: "refund" })}
-                        className="flex-1 flex items-center justify-center gap-1 rounded-lg bg-amber-500 px-3 py-2 text-xs font-medium text-white hover:bg-amber-600 transition-colors">
+                        className="w-full flex items-center justify-center gap-1 rounded-lg bg-amber-500 px-3 py-2 text-xs font-medium text-white hover:bg-amber-600 transition-colors">
                         <RotateCcw className="h-3.5 w-3.5" />
                         Rembourser
                       </button>
                       <button onClick={() => setResolveEscrow({ tx, action: "complete" })}
-                        className="flex-1 flex items-center justify-center gap-1 rounded-lg bg-green-600 px-3 py-2 text-xs font-medium text-white hover:bg-green-700 transition-colors">
+                        className="w-full flex items-center justify-center gap-1 rounded-lg bg-green-600 px-3 py-2 text-xs font-medium text-white hover:bg-green-700 transition-colors">
                         <CheckCircle className="h-3.5 w-3.5" />
                         Terminer
                       </button>

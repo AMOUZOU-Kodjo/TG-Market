@@ -511,7 +511,15 @@ export default function AdminDashboardPage() {
               <p className="text-[10px] sm:text-xs text-gray-400">
                 {metric === "all"
                   ? "Toutes les métriques · 12 derniers mois · échelle normalisée (max = 100%)"
-                  : `Total : <span className="font-semibold text-gray-600">${activeMetric.money ? formatCFA(metricTotal) : metricTotal.toLocaleString("fr-FR")}</span> · 12 derniers mois`}
+                  : (
+                      <>
+                        Total :{" "}
+                        <span className="font-semibold text-gray-600">
+                          {activeMetric.money ? formatCFA(metricTotal) : metricTotal.toLocaleString("fr-FR")}
+                        </span>{" "}
+                        · 12 derniers mois
+                      </>
+                    )}
               </p>
             </div>
             <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-0.5 overflow-x-auto hide-scrollbar">

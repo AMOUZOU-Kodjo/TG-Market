@@ -113,7 +113,7 @@ export default function MainLayout() {
         <div className={`sticky top-0 z-50 relative ${location.pathname === "/categories" || location.pathname.startsWith("/vendeur/") || location.pathname.startsWith("/recherche") || location.pathname.startsWith("/a-propos") || location.pathname.startsWith("/annonce/") ? "hidden" : ""}`}>
           {/* Logo centered in combined header+category height */}
           <Link to="/" className="absolute left-4 sm:left-6 lg:left-8 top-1/3 -translate-y-1/2 z-50 hidden md:block">
-            <Logo size="md" className="w-24 h-24" />
+            <Logo size="sm" />
           </Link>
 
           {/* Header */}
@@ -554,7 +554,7 @@ location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWit
             {/* Copyright */}
             <div className="mt-8 pt-4 border-t text-center border-footer-border  items-center justify-between gap-4 text-md font-extrabold text-footer-text">
               <p>
-                Copyright &copy; 2026 - {settings.siteName} {"   "} v{settings.siteVersion} - Tous droits réservés
+                Copyright &copy; 2026 - <span className="text-brand-600">{settings.siteName}</span> {"  - "} v{settings.siteVersion} - Tous droits réservés
               </p>
             </div>
           </div>

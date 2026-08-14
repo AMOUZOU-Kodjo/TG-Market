@@ -177,7 +177,7 @@ export default function OrderDetailPage() {
       <header className="sticky top-0 z-40 border-b border-gray-100 bg-white/95 backdrop-blur dark:border-gray-800 dark:bg-gray-950/95">
         <div className="mx-auto flex max-w-2xl items-center gap-3 px-4 py-2.5 sm:px-6">
           <Link to="/" className="shrink-0">
-            <Logo size="sm" className="h-9 w-9" />
+            <Logo size="sm" />
           </Link>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">

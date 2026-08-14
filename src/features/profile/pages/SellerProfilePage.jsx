@@ -153,7 +153,7 @@ export default function SellerProfilePage() {
                 ESPACE {seller.name.toUpperCase()}
               </h1>
             </div>
-            <Logo size="sm" className="w-14 h-14" />
+            <Logo size="sm" />
           </div>
 
           <div className="mb-8 grid grid-cols-1 gap-4 items-center md:grid-cols-[auto_1fr_1fr_1fr]">

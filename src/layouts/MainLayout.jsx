@@ -554,7 +554,7 @@ location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWit
             {/* Copyright */}
             <div className="mt-8 pt-4 border-t text-center border-footer-border  items-center justify-between gap-4 text-md font-extrabold text-footer-text">
               <p>
-                Copyright &copy; 2026 - <span className="text-brand-600">{settings.siteName}</span> {"  - "} v{settings.siteVersion} - Tous droits réservés
+                Copyright &copy; 2026 - <span className="text-brand-400">{settings.siteName}</span> {"  - "} v{settings.siteVersion} - Tous droits réservés
               </p>
             </div>
           </div>

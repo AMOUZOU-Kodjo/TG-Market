@@ -26,6 +26,7 @@ import { formatCFA, formatDate } from "@/shared/utils/format";
 import EscrowTimeline from "@/features/payment/components/EscrowTimeline";
 import PayoutNotice from "@/features/payment/components/PayoutNotice";
 import Badge from "@/shared/ui/Badge";
+import Logo from "@/shared/ui/Logo";
 import { ESCROW_STATUS_CONFIG } from "@/shared/constants/escrow";
 import toast from "react-hot-toast";
 
@@ -173,6 +174,23 @@ export default function OrderDetailPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
+      <header className="sticky top-0 z-40 border-b border-gray-100 bg-white/95 backdrop-blur dark:border-gray-800 dark:bg-gray-950/95">
+        <div className="mx-auto flex max-w-2xl items-center gap-3 px-4 py-2.5 sm:px-6">
+          <Link to="/" className="shrink-0">
+            <Logo size="sm" className="h-9 w-9" />
+          </Link>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
+              {escrow.productTitle ?? "Mon produit"}
+            </p>
+            <p className="truncate text-xs text-gray-500 dark:text-gray-400">
+              {isBuyer ? `Vendu par ${escrow.sellerName}` : `Acheté par ${escrow.buyerName}`}
+            </p>
+          </div>
+          <Badge variant={statusInfo.variant} size="sm" dot>{statusInfo.label}</Badge>
+        </div>
+      </header>
+
       <div className="mx-auto max-w-2xl px-4 py-6 sm:px-6">
         <button
           onClick={() => navigate(-1)}

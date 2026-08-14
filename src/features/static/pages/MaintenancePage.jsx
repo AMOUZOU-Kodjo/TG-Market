@@ -41,13 +41,13 @@ export default function MaintenancePage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white px-4 dark:bg-gray-950">
-      <div className="w-full max-w-7xl">
+    <div className="flex min-h-dvh items-center justify-center overflow-y-auto bg-white px-4 py-8 dark:bg-gray-950">
+      <div className="m-auto w-full max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 260, damping: 20 }}
-          className="rounded-3xl border border-gray-100 bg-white p-8 shadow-xl dark:border-gray-800 dark:bg-gray-800 sm:p-10"
+          className="rounded-3xl border border-gray-100 bg-white p-6 shadow-xl dark:border-gray-800 dark:bg-gray-800 sm:p-10"
         >
           {/* Logo */}
           <div className="flex justify-center mb-6">
@@ -70,7 +70,7 @@ export default function MaintenancePage() {
               </div>
               Maintenance en cours
             </h1>
-            <p className="mb-6 text-gray-500 dark:text-gray-400">
+            <p className="mb-6 break-words text-gray-500 dark:text-gray-400">
               {siteName} {maintenanceMessage}
             </p>
           </div>

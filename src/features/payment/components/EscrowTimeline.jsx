@@ -98,7 +98,18 @@ export default function EscrowTimeline({ transaction }) {
 
       {transaction.status === "disputed" && (
         <button
-          onClick={() => navigate("/contact")}
+          onClick={() =>
+            navigate("/contact", {
+              state: {
+                escrowContext: {
+                  productId: transaction.productId,
+                  productTitle: transaction.productTitle,
+                  sellerName: transaction.sellerName,
+                  escrowId: transaction.id,
+                },
+              },
+            })
+          }
           className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-100 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400"
         >
           <LifeBuoy className="h-4 w-4" />

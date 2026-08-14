@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, Send, MessageCircle, Clock, CheckCircle2 } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { Mail, Phone, MapPin, Send, MessageCircle, Clock, CheckCircle2, Tag } from "lucide-react";
 import Button from "@/shared/ui/Button";
 import Input from "@/shared/ui/Input";
 import Textarea from "@/shared/ui/Textarea";
 import toast from "react-hot-toast";
 import api from "@/shared/services/api";
+import { useAuth } from "@/shared/contexts/AuthContext";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -23,7 +25,20 @@ const contactInfo = [
 ];
 
 export default function ContactPage() {
-  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const location = useLocation();
+  const { user } = useAuth();
+  const context = location.state?.escrowContext ?? null;
+
+  const buildInitialForm = () => ({
+    name: user ? `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() : "",
+    email: user?.email ?? "",
+    subject: context ? `Aide sur la commande n°${context.escrowId}` : "",
+    message: context
+      ? `Annonce : ${context.productTitle} (n°${context.productId})\nVendeur : ${context.sellerName}\nCommande : n°${context.escrowId}\n\n`
+      : "",
+  });
+
+  const [form, setForm] = useState(buildInitialForm);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
 
@@ -84,7 +99,7 @@ export default function ContactPage() {
                     Merci {form.name}. Nous vous répondrons à <strong>{form.email}</strong> dans les plus brefs délais.
                   </p>
                   <button
-                    onClick={() => { setSent(false); setForm({ name: "", email: "", subject: "", message: "" }); }}
+                    onClick={() => { setSent(false); setForm(buildInitialForm()); }}
                     className="mt-6 text-sm font-medium text-brand-800 underline dark:text-brand-400"
                   >
                     Envoyer un autre message
@@ -134,12 +149,26 @@ export default function ContactPage() {
                     <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
                       Message <span className="text-red-500">*</span>
                     </label>
+                    {context && (
+                      <div className="mb-2 flex items-start gap-2 rounded-xl border border-brand-100 bg-brand-50 p-3 dark:border-brand-800/30 dark:bg-brand-900/10">
+                        <Tag className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
+                        <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300">
+                          Annonce liée :{" "}
+                          <Link to={`/annonce/${context.productId}`} className="font-semibold text-brand-800 underline dark:text-brand-400">
+                            {context.productTitle}
+                          </Link>{" "}
+                          · Vendeur : <span className="font-semibold">{context.sellerName}</span> · Commande n°{context.escrowId}
+                          <br />
+                          <span className="text-gray-400">Ces informations sont ajoutées automatiquement à votre message.</span>
+                        </p>
+                      </div>
+                    )}
                     <Textarea
                       name="message"
                       value={form.message}
                       onChange={handleChange}
                       placeholder="Décrivez votre demande en détail..."
-                      rows={5}
+                      rows={context ? 8 : 5}
                       required
                     />
                   </div>

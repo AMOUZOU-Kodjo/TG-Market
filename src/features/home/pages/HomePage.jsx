@@ -246,8 +246,8 @@ function HeroSection() {
       <div className="absolute inset-0 bg-gray-900/20" style={{ zIndex: 1 }} />
 
       {/* <div className="absolute inset-0 flex  items-center justify-center px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}> */}
-      <div className="absolute inset-0 flex  items-center sm:items-start justify-center   sm:pt-10 px-4 sm:px-6 lg:px-8" style={{ zIndex: 10 }}>
-        <div className="relative md:-left-70 w-full md:top-40 top-20  rounded-tr-xl rounded-xl  bg-white/90 p-3   max-w-lg text-center">
+      <div className="absolute inset-0 flex items-center justify-center px-4 sm:items-end sm:justify-start sm:px-10 sm:pb-8 md:px-16 md:pb-10 lg:px-24" style={{ zIndex: 10 }}>
+        <div className="w-full max-w-lg rounded-xl bg-white/90 p-3 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

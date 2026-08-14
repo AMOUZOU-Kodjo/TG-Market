@@ -13,6 +13,7 @@ import { cn } from "@/shared/utils/cn";
 export default function ImageGallery({
   images = [],
   className,
+  aspectClassName = "aspect-[6/4]",
   ...rest
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -29,7 +30,7 @@ export default function ImageGallery({
     <>
       <div className={cn("w-full", className)} {...rest}>
         <div className="relative mb-3 overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-800">
-          <div className="relative aspect-[4/5]">
+          <div className={`relative ${aspectClassName}`}>
             <AnimatePresence mode="wait">
               <motion.img
                 key={activeIndex}

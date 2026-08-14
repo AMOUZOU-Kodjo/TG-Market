@@ -277,11 +277,11 @@ export default function ProductDetailPage() {
         {/* <div className="grid gap-8 mt-8 lg:grid-cols-[1fr_380px]"> */}
         <div className="grid gap-8 mt-8 lg:grid-cols-[1fr_720px]">
           <div className="space-y-4 min-w-0">
-            <motion.div {...fadeUp} transition={{ delay: 0.05 }}>
+<motion.div {...fadeUp} transition={{ delay: 0.05 }}>
               {/* <div className="overflow-hidden rounded-2xl aspect-[16/] max-h-[780px]"> */}
-              <div className="overflow-hidden rounded-2xl aspect-[10/9]   max-h-120">
+              <div className="overflow-hidden rounded-2xl">
                 {/* <div className="overflow-hidden rounded-2xl aspect-[16/9] max-h-[360px]"> */}
-                <ImageGallery images={product.images} />
+                <ImageGallery images={product.images} aspectClassName="aspect-[10/9] max-h-120" />
               </div>
             </motion.div>
 

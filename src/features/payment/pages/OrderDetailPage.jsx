@@ -173,7 +173,7 @@ export default function OrderDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
+    <div className="min-h-screen overflow-x-clip bg-white dark:bg-gray-950">
       <header className="sticky top-0 z-40 border-b border-gray-100 bg-white/95 backdrop-blur dark:border-gray-800 dark:bg-gray-950/95">
         <div className="mx-auto flex max-w-2xl items-center gap-3 px-4 py-2.5 sm:px-6">
           <Link to="/" className="shrink-0">
@@ -379,7 +379,7 @@ export default function OrderDetailPage() {
                   value={sellerCode}
                   onChange={(e) => setSellerCode(e.target.value.replace(/\D/g, "").slice(0, 4))}
                   placeholder="Code à 4 chiffres"
-                  className="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3 text-center text-lg font-bold tracking-widest text-gray-900 placeholder:text-sm placeholder:tracking-normal placeholder:font-normal placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                  className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3 text-center text-lg font-bold tracking-widest text-gray-900 placeholder:text-sm placeholder:tracking-normal placeholder:font-normal placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                 />
                 <button
                   onClick={handleConfirmCode}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CreditCard, CheckCircle, Loader2, X } from "lucide-react";
+import { CreditCard, CheckCircle, Loader2, X, Scale, RotateCcw } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/shared/services/api";
 import { formatCFA } from "@/shared/utils/format";
@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 export default function AdminPaymentsPage() {
   const [page, setPage] = useState(1);
   const [confirmEscrow, setConfirmEscrow] = useState(null);
+  const [resolveEscrow, setResolveEscrow] = useState(null);
   const qc = useQueryClient();
 
   const { data, isLoading } = useQuery({
@@ -41,8 +42,20 @@ export default function AdminPaymentsPage() {
     },
   });
 
+  const resolveMutation = useMutation({
+    mutationFn: ({ id, action }) => api.put(`/admin/escrow/${id}/resolve`, { action }).then((r) => r.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["adminEscrow"] });
+      toast.success("Litige résolu");
+      setResolveEscrow(null);
+    },
+    onError: (err) => {
+      toast.error(err?.response?.data?.error || "Erreur");
+    },
+  });
+
   const transactions = (data?.data ?? []).filter(
-    (t) => !["cancelled", "refunded"].includes(t.status)
+    (t) => t.status !== "cancelled"
   );
   const meta = data?.meta;
 
@@ -113,6 +126,20 @@ export default function AdminPaymentsPage() {
                       Créditer
                     </button>
                   )}
+                  {tx.status === "disputed" && (
+                    <div className="flex gap-2">
+                      <button onClick={() => setResolveEscrow({ tx, action: "refund" })}
+                        className="flex-1 flex items-center justify-center gap-1 rounded-lg bg-amber-500 px-3 py-2 text-xs font-medium text-white hover:bg-amber-600 transition-colors">
+                        <RotateCcw className="h-3.5 w-3.5" />
+                        Rembourser
+                      </button>
+                      <button onClick={() => setResolveEscrow({ tx, action: "complete" })}
+                        className="flex-1 flex items-center justify-center gap-1 rounded-lg bg-green-600 px-3 py-2 text-xs font-medium text-white hover:bg-green-700 transition-colors">
+                        <CheckCircle className="h-3.5 w-3.5" />
+                        Terminer
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -178,6 +205,63 @@ export default function AdminPaymentsPage() {
               >
                 {creditMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
                 {creditMutation.isPending ? "Traitement..." : "Créditer + Valider"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {resolveEscrow && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-800">
+            <button
+              onClick={() => setResolveEscrow(null)}
+              className="absolute right-4 top-4 rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+              Résoudre le litige
+            </h2>
+            <p className="text-xs text-gray-400 mb-4">Transaction #{resolveEscrow.tx.id}</p>
+            <div className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+              <p><strong>Produit :</strong> {resolveEscrow.tx.product?.title}</p>
+              <p><strong>Acheteur :</strong> {resolveEscrow.tx.buyer?.firstName} {resolveEscrow.tx.buyer?.lastName}</p>
+              <p><strong>Vendeur :</strong> {resolveEscrow.tx.seller?.firstName} {resolveEscrow.tx.seller?.lastName}</p>
+              <p><strong>Montant :</strong> {formatCFA(resolveEscrow.tx.amount)} (dont frais {formatCFA(resolveEscrow.tx.fee ?? 0)})</p>
+              {resolveEscrow.tx.disputeReason && (
+                <p className="rounded-lg bg-red-50 dark:bg-red-900/20 p-2 text-xs">
+                  <strong>Motif :</strong> {resolveEscrow.tx.disputeReason}
+                </p>
+              )}
+              {resolveEscrow.action === "refund" ? (
+                <p className="text-xs text-amber-600">
+                  <RotateCcw className="inline h-3.5 w-3.5 mr-1" />
+                  Rembourse l'acheteur ({formatCFA(resolveEscrow.tx.amount + (resolveEscrow.tx.buyerFee ?? 0))}) et remet le produit en vente. Le vendeur ne reçoit rien.
+                </p>
+              ) : (
+                <p className="text-xs text-green-600">
+                  <CheckCircle className="inline h-3.5 w-3.5 mr-1" />
+                  Verse au vendeur {formatCFA(resolveEscrow.tx.amount - (resolveEscrow.tx.fee ?? 0))} (frais de la plateforme déduits) et finalise la vente.
+                </p>
+              )}
+            </div>
+            <div className="mt-5 flex gap-3">
+              <button
+                onClick={() => setResolveEscrow(null)}
+                className="flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={() => resolveMutation.mutate({ id: resolveEscrow.tx.id, action: resolveEscrow.action })}
+                disabled={resolveMutation.isPending}
+                className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-medium text-white disabled:opacity-50 flex items-center justify-center gap-2 ${
+                  resolveEscrow.action === "refund" ? "bg-amber-500 hover:bg-amber-600" : "bg-green-600 hover:bg-green-700"
+                }`}
+              >
+                {resolveMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Scale className="h-4 w-4" />}
+                {resolveMutation.isPending ? "Traitement..." : resolveEscrow.action === "refund" ? "Confirmer le remboursement" : "Confirmer pour le vendeur"}
               </button>
             </div>
           </div>

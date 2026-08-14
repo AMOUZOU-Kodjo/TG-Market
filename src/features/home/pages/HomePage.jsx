@@ -479,11 +479,17 @@ function PopularProductsSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
-          className="grid grid-cols-2  gap-4 md:grid-cols-3  lg:grid-cols-5"
+          className="flex flex-wrap gap-4"
         >
-          {popularProducts.slice(0, 30).map((product) => (
-            <motion.div key={product.id} variants={staggerItem}>
-              <Link to={`/annonce/${product.id}`}>
+          {(() => {
+            const featured = popularProducts.slice(0, 30);
+            return featured.map((product) => (
+              <motion.div
+                key={product.id}
+                variants={staggerItem}
+                className="w-[calc(50%-0.5rem)] grow md:w-[calc(33.333%-0.667rem)] lg:w-[calc(20%-0.8rem)]"
+              >
+                <Link to={`/annonce/${product.id}`}>
                   <ProductCard
                     productId={product.id}
                     image={product.images?.[0]}
@@ -502,9 +508,10 @@ function PopularProductsSection() {
                     isFeatured={product.isFeatured}
                     negotiable={product.negotiable}
                   />
-              </Link>
-            </motion.div>
-          ))}
+                </Link>
+              </motion.div>
+            ));
+          })()}
           
         </motion.div>
         

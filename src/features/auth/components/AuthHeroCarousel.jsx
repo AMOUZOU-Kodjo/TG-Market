@@ -108,10 +108,9 @@ export function AuthHeroBg() {
 export default function AuthHeroCarousel() {
   return (
     <div className="relative h-full w-full bg-black">
-      <div className="absolute left-6 top-6 z-20">
+      <div className="absolute left-6 top-20 z-20">
         <div className="flex items-center gap-2.5">
           <Logo size="lg" className="bg-white/15 backdrop-blur-md shadow-none" />
-          <span className="text-lg font-bold text-white">Market</span>
         </div>
       </div>
 

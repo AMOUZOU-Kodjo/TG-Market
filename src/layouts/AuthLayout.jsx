@@ -33,12 +33,9 @@ export default function AuthLayout() {
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm font-medium">Retour</span>
           </Link>
-          <div className="absolute inset-0 z-20 flex items-center justify-center">
+<div className="absolute inset-0 z-20 flex items-center justify-center">
             <Link to="/" className="inline-flex items-center gap-2">
-              <Logo size="lg" className="shadow-none" />
-              <span className="text-2xl font-bold text-white drop-shadow-lg">
-                Market
-              </span>
+              <Logo size="sm" className="shadow-none" />
             </Link>
           </div>
         </div>

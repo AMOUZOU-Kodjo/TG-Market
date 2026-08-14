@@ -19,14 +19,14 @@ const statusLabels = {
   deleted: "Supprimé",
 };
 
-const statusColors = {
-  active: "success",
-  reserved: "warning",
-  pending: "warning",
-  rejected: "danger",
-  sold: "primary",
-  inactive: "secondary",
-  deleted: "danger",
+const statusTextColors = {
+  active: "text-green-600",
+  reserved: "text-indigo-600",
+  pending: "text-amber-600",
+  rejected: "text-red-600",
+  sold: "text-fuchsia-600",
+  inactive: "text-gray-500",
+  deleted: "text-red-600",
 };
 
 function ProductModal({ productId, onClose }) {
@@ -339,16 +339,16 @@ export default function AdminListingsPage() {
             <p>Aucune annonce trouvée</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
             {filtered.map((product) => (
               <div
                 key={product.id}
                 className={cn(
-                  "overflow-hidden",
+                  "overflow-hidden rounded-bl-2xl rounded-tr-2xl",
                   product.isPromoted && "ring-2 ring-brand-500 rounded-2xl"
                 )}
               >
-                <div className="relative aspect-[4/5] overflow-hidden border border-gray-200 bg-white rounded-2xl shadow-[inset_0_0_25px_rgba(0,0,0,0.35)] dark:border-gray-600 dark:bg-gray-800">
+                <div className="relative aspect-[4/5] overflow-hidden border border-gray-200 bg-white rounded-tr-2xl shadow-[inset_0_0_25px_rgba(0,0,0,0.35)] dark:border-gray-600 dark:bg-gray-800">
                   {product.images?.[0] ? (
                     <img src={product.images[0]} alt={product.title} loading="lazy" className="h-full w-full object-cover" />
                   ) : (
@@ -357,17 +357,17 @@ export default function AdminListingsPage() {
                   <div className="pointer-events-none absolute inset-0 rounded-2xl shadow-[inset_0_0_30px_rgba(0,0,0,0.1)]" />
 
                   {product.condition && (
-                    <div className="absolute left-3 top-3 z-10">
+                    <div className="absolute left-0 -top-2 z-10">
                       <Badge variant={getConditionBadgeVariant(product.condition)}>
                         {getConditionLabel(product.condition)}
                       </Badge>
                     </div>
                   )}
 
-                  <div className="absolute right-3 top-3 z-10">
-                    <Badge variant={statusColors[product.status] ?? "secondary"} size="sm">
+                  <div className="absolute right-3 top-3 z-30 rounded-full border-2 border-white bg-white px-2 py-0.5 shadow-sm">
+                    <span className={cn("text-[10px] font-bold", statusTextColors[product.status] ?? "text-gray-500")}>
                       {statusLabels[product.status] ?? product.status}
-                    </Badge>
+                    </span>
                   </div>
 
                   {product.isUrgent && (
@@ -389,23 +389,31 @@ export default function AdminListingsPage() {
                       <span className="flex items-center justify-center gap-1.5 text-xs font-bold text-white">Vendu</span>
                     </div>
                   )}
+
+                  {product.status === "reserved" && (
+                    <div className="absolute bottom-0 left-0 right-0 z-20 bg-indigo-600/90 backdrop-blur-sm px-3 py-2">
+                      <span className="flex items-center justify-center gap-1.5 text-xs font-bold text-white">Réservé</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="p-3">
                   <div className="mb-1.5 line-clamp-1 text-sm font-semibold text-gray-900 dark:text-white">
                     {product.title}
                   </div>
-                  <div className="mb-2 flex items-baseline gap-2 flex-wrap">
-                    <span className="text-sm font-extrabold text-brand-800">{formatCFA(product.price)}</span>
-                    {product.originalPrice && (
-                      <span className="text-xs text-gray-400 line-through">{formatCFA(product.originalPrice)}</span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-                    <MapPin className="h-3 w-3 shrink-0" />
-                    <span className="truncate">
-                      {product.neighborhood ? `${product.neighborhood}, ${product.city}, Togo` : `${product.city}, Togo`}
-                    </span>
+                  <div className="mb-2 flex items-center justify-between gap-2">
+                    <div className="flex min-w-0 items-baseline gap-2 flex-wrap">
+                      <span className="text-xs sm:text-sm font-bold text-brand-800">{formatCFA(product.price)}</span>
+                      {product.originalPrice && (
+                        <span className="text-sm text-gray-400 line-through">{formatCFA(product.originalPrice)}</span>
+                      )}
+                    </div>
+                    <div className="flex min-w-0 items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                      <MapPin className="h-3 w-3 shrink-0" />
+                      <span className="truncate">
+                        {product.neighborhood ? `${product.neighborhood}, ${product.city}` : product.city}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="mt-2 flex items-center justify-between gap-2 border-t border-gray-100 pt-2 dark:border-gray-800">

@@ -471,6 +471,58 @@ export async function verifyPaymentAdmin(req, res, next) {
   }
 }
 
+export async function resolveEscrowDispute(req, res, next) {
+  try {
+    const id = Number(req.params.id);
+    const action = req.body?.action;
+    if (!['refund', 'complete'].includes(action)) {
+      return res.status(400).json({ error: 'Action invalide (refund ou complete)' });
+    }
+
+    const escrow = await escrowService.resolveDispute(id, action);
+
+    const io = req.app.get('io');
+    if (io) {
+      const { notifyUser } = await import('../notifications/notifications.service.js');
+      if (action === 'refund') {
+        await notifyUser(io, escrow.buyerId, {
+          type: 'dispute_resolved',
+          title: 'Litige résolu',
+          description: `Votre litige pour "${escrow.productTitle}" a été résolu : remboursement effectué`,
+          productId: escrow.productId,
+          metadata: { escrowId: escrow.id },
+        });
+        await notifyUser(io, escrow.sellerId, {
+          type: 'dispute_resolved',
+          title: 'Litige résolu',
+          description: `Le litige pour "${escrow.productTitle}" a été tranché en faveur de l'acheteur : remboursement effectué`,
+          productId: escrow.productId,
+          metadata: { escrowId: escrow.id },
+        });
+      } else {
+        await notifyUser(io, escrow.buyerId, {
+          type: 'dispute_resolved',
+          title: 'Litige résolu',
+          description: `Le litige pour "${escrow.productTitle}" a été tranché en faveur du vendeur : vente finalisée`,
+          productId: escrow.productId,
+          metadata: { escrowId: escrow.id },
+        });
+        await notifyUser(io, escrow.sellerId, {
+          type: 'dispute_resolved',
+          title: 'Litige résolu',
+          description: `Le litige pour "${escrow.productTitle}" a été tranché en votre faveur : fonds versés`,
+          productId: escrow.productId,
+          metadata: { escrowId: escrow.id },
+        });
+      }
+    }
+
+    res.json(escrow);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function getAdminReports(req, res, next) {
   try {
     const { page, perPage, skip } = req.pagination;

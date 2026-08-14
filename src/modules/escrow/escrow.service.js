@@ -760,6 +760,209 @@ export async function disputeEscrow(id, userId, reason) {
   return formatEscrow(full);
 }
 
+export async function resolveDispute(id, action) {
+  const escrow = await prisma.escrowTransaction.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      product_id: true,
+      buyer_id: true,
+      seller_id: true,
+      bundle_id: true,
+      amount: true,
+      fee: true,
+      buyer_fee: true,
+      status: true,
+    },
+  });
+
+  if (!escrow) {
+    const error = new Error('Transaction introuvable');
+    error.status = 404;
+    throw error;
+  }
+
+  if (escrow.status !== 'disputed') {
+    const error = new Error('Seules les transactions en litige peuvent être résolues');
+    error.status = 400;
+    throw error;
+  }
+
+  if (action === 'refund') {
+    await prisma.$transaction(async (tx) => {
+      await tx.escrowTransaction.update({
+        where: { id },
+        data: { status: 'refunded' },
+      });
+
+      const purchaseTx = await tx.walletTransaction.findFirst({
+        where: { reference_type: 'escrow', reference_id: id, user_id: escrow.buyer_id },
+      });
+
+      if (purchaseTx) {
+        if (purchaseTx.status === 'pending') {
+          await tx.walletTransaction.update({
+            where: { id: purchaseTx.id },
+            data: { status: 'failed' },
+          });
+        } else if (purchaseTx.status === 'completed') {
+          await tx.walletTransaction.create({
+            data: {
+              user_id: escrow.buyer_id,
+              type: 'refund',
+              amount: escrow.amount + (escrow.buyer_fee ?? 0),
+              description: 'Remboursement litige (admin)',
+              status: 'completed',
+              reference_type: 'escrow',
+              reference_id: id,
+            },
+          });
+        }
+      }
+
+      if (escrow.bundle_id) {
+        const bundleItems = await tx.bundleItem.findMany({
+          where: { bundle_id: escrow.bundle_id },
+          select: { product_id: true },
+        });
+        await tx.product.updateMany({
+          where: { id: { in: bundleItems.map((i) => i.product_id) }, status: 'reserved' },
+          data: { status: 'active' },
+        });
+      } else {
+        const product = await tx.product.findUnique({
+          where: { id: escrow.product_id },
+          select: { status: true },
+        });
+        if (product?.status === 'reserved') {
+          await tx.product.update({
+            where: { id: escrow.product_id },
+            data: { status: 'active' },
+          });
+        }
+      }
+    });
+  } else if (action === 'complete') {
+    const sellerPayout = escrow.amount - escrow.fee;
+
+    await prisma.$transaction(async (tx) => {
+      await tx.escrowTransaction.update({
+        where: { id },
+        data: {
+          status: 'completed',
+          confirmed_at: new Date(),
+          released_at: new Date(),
+        },
+      });
+
+      if (escrow.bundle_id) {
+        const bundleItems = await tx.bundleItem.findMany({
+          where: { bundle_id: escrow.bundle_id },
+          select: { product_id: true },
+        });
+        await tx.product.updateMany({
+          where: { id: { in: bundleItems.map((i) => i.product_id) } },
+          data: { status: 'sold' },
+        });
+      } else {
+        await tx.product.update({
+          where: { id: escrow.product_id },
+          data: { quantity: { decrement: 1 } },
+        });
+
+        const updatedProduct = await tx.product.findUnique({
+          where: { id: escrow.product_id },
+          select: { quantity: true },
+        });
+
+        if (updatedProduct.quantity === 0) {
+          await tx.product.update({
+            where: { id: escrow.product_id },
+            data: { status: 'sold' },
+          });
+        }
+      }
+
+      const buyerTransaction = await tx.walletTransaction.findFirst({
+        where: { reference_type: 'escrow', reference_id: id, user_id: escrow.buyer_id, status: 'pending' },
+      });
+
+      if (buyerTransaction) {
+        await tx.walletTransaction.update({
+          where: { id: buyerTransaction.id },
+          data: { status: 'completed' },
+        });
+      }
+
+      const escrowRecord = await tx.escrowTransaction.findUnique({
+        where: { id },
+        include: {
+          product: { select: { title: true } },
+          bundle: { select: { title: true } },
+        },
+      });
+
+      const itemLabel = escrowRecord.bundle?.title || escrowRecord.product?.title || 'Produit';
+
+      await tx.walletTransaction.create({
+        data: {
+          user_id: escrow.seller_id,
+          type: 'sale',
+          amount: sellerPayout,
+          description: `Vente (litige résolu) : ${itemLabel}`,
+          status: 'completed',
+          reference_type: 'escrow',
+          reference_id: id,
+        },
+      });
+
+      const admin = await tx.user.findFirst({
+        where: { role: 'admin' },
+        select: { id: true },
+      });
+
+      if (admin) {
+        await tx.walletTransaction.create({
+          data: {
+            user_id: admin.id,
+            type: 'commission',
+            amount: escrow.fee + (escrow.buyer_fee ?? 0),
+            description: `Commission - ${itemLabel}`,
+            status: 'completed',
+            reference_type: 'escrow',
+            reference_id: id,
+          },
+        });
+      }
+    });
+
+    await finalizeSellerPayout(id, escrow.seller_id, sellerPayout);
+    await maybeGrantFirstSale(escrow.seller_id, id);
+  } else {
+    const error = new Error('Action invalide (refund ou complete)');
+    error.status = 400;
+    throw error;
+  }
+
+  const full = await prisma.escrowTransaction.findUnique({
+    where: { id },
+    include: {
+      buyer: { select: { first_name: true, last_name: true } },
+      seller: { select: { first_name: true, last_name: true } },
+      product: {
+        select: {
+          title: true,
+          images: { select: { url: true }, orderBy: { sort_order: 'asc' }, take: 1 },
+        },
+      },
+      bundle: { select: { id: true, title: true } },
+      payouts: true,
+    },
+  });
+
+  return formatEscrow(full);
+}
+
 export async function cancelEscrow(id, userId) {
   const escrow = await prisma.escrowTransaction.findUnique({
     where: { id },

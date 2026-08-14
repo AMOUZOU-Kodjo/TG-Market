@@ -8,7 +8,7 @@ export const productsApi = {
   delete: (id) => api.delete(`/products/${id}`).then((r) => r.data),
   updateStatus: (id, status) => api.put(`/products/${id}/status`, { status }).then((r) => r.data),
   incrementViews: (id) => api.post(`/products/${id}/view`).then((r) => r.data),
-  getSimilar: (id) => api.get(`/products/${id}/similar`).then((r) => r.data),
+  getSimilar: (id) => api.get(`/products/${id}/similar`).then((r) => r.data.data),
   getMy: (params) => api.get("/products/my", { params }).then((r) => r.data),
   endNegotiation: (id) => api.put(`/products/${id}/end-negotiation`).then((r) => r.data),
 };

@@ -7,12 +7,18 @@ import {
   off as socketOff,
   isConnected,
 } from "../services/socket";
+import { useAuth } from "./AuthContext";
 
 const SocketContext = createContext(undefined);
+
+function getAccessToken() {
+  return sessionStorage.getItem("ak_access_token") || localStorage.getItem("ak_access_token");
+}
 
 export function SocketProvider({ children }) {
   const [connected, setConnected] = useState(false);
   const socketRef = useRef(null);
+  const { user } = useAuth();
 
   const connect = useCallback((token) => {
     if (!token) return;
@@ -22,6 +28,12 @@ export function SocketProvider({ children }) {
 
     socket.on("connect", () => setConnected(true));
     socket.on("disconnect", () => setConnected(false));
+    socket.on("connect_error", (err) => {
+      if (err?.message?.includes("Authentication")) {
+        const freshToken = getAccessToken();
+        if (freshToken && freshToken !== token) connect(freshToken);
+      }
+    });
 
     if (socket.connected) {
       setConnected(true);
@@ -47,15 +59,18 @@ export function SocketProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem("ak_access_token");
-    if (token) connect(token);
+    if (!user) {
+      disconnect();
+      return;
+    }
+    connect(getAccessToken());
 
     return () => {
       disconnectSocket();
       socketRef.current = null;
       setConnected(false);
     };
-  }, [connect]);
+  }, [user, connect, disconnect]);
 
   return (
     <SocketContext.Provider

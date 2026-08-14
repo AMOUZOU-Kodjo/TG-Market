@@ -413,7 +413,7 @@ export default function AdminListingsPage() {
                       {product.user?.firstName} {product.user?.lastName}
                     </p>
                     <div className="flex shrink-0 items-center gap-0.5">
-                      {product.status !== "active" && (
+                      {product.status !== "active" && product.status !== "sold" && (
                         <button onClick={() => updateStatus.mutate({ id: product.id, status: "active" })}
                           className="p-1.5 rounded-lg text-green-600 hover:bg-green-50 transition-colors" title="Approuver">
                           <CheckCircle className="h-4 w-4" />

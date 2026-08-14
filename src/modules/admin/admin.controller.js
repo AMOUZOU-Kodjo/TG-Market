@@ -481,6 +481,29 @@ export async function resolveEscrowDispute(req, res, next) {
 
     const escrow = await escrowService.resolveDispute(id, action);
 
+    try {
+      const seller = await prisma.user.findUnique({
+        where: { id: escrow.sellerId },
+        select: { email: true, first_name: true },
+      });
+      if (seller?.email) {
+        const refund = action === 'refund';
+        await sendEmail({
+          to: seller.email,
+          subject: `Litige résolu — ${escrow.productTitle}`,
+          html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+            <h2 style="color:#01796F;">Votre litige a été résolu</h2>
+            <p>Bonjour ${seller.first_name ?? ''},</p>
+            <p>Le litige concernant <strong>"${escrow.productTitle}"</strong> (#${escrow.id}) a été tranché par l'administration :</p>
+            ${refund
+              ? '<p>La décision a été prise <strong>en faveur de l\'acheteur</strong> : le montant a été remboursé et la vente est annulée.</p>'
+              : '<p>La décision a été prise <strong>en votre faveur</strong> : la vente est finalisée et le montant vous a été versé (frais de la plateforme déduits).</p>'}
+            <p style="color:#999;font-size:12px;">Cordialement,<br/>L'équipe TG-Market</p>
+          </div>`,
+        });
+      }
+    } catch {}
+
     const io = req.app.get('io');
     if (io) {
       const { notifyUser } = await import('../notifications/notifications.service.js');

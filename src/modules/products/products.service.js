@@ -471,7 +471,26 @@ export async function getMyProducts(userId, page, perPage) {
 export async function getSimilarProducts(productId, limit = 10) {
   const product = await prisma.product.findUnique({
     where: { id: productId },
-    select: { id: true, category_id: true, status: true },
+    select: {
+      id: true,
+      category_id: true,
+      status: true,
+      category: {
+        select: {
+          id: true,
+          parent_id: true,
+          parent: {
+            select: {
+              id: true,
+              parent_id: true,
+              parent: {
+                select: { id: true, parent_id: true },
+              },
+            },
+          },
+        },
+      },
+    },
   });
 
   if (!product || product.status === 'deleted') {
@@ -480,16 +499,29 @@ export async function getSimilarProducts(productId, limit = 10) {
     throw error;
   }
 
-  const products = await prisma.product.findMany({
-    where: {
-      category_id: product.category_id,
-      id: { not: productId },
-      status: { in: ['active', 'reserved'] },
-    },
-    include: productInclude,
-    orderBy: [{ views: 'desc' }, { favorites_count: 'desc' }],
-    take: limit,
-  });
+  const categoryIds = [
+    product.category.id,
+    product.category.parent_id,
+    product.category.parent?.id,
+    product.category.parent?.parent_id,
+    product.category.parent?.parent?.id,
+  ].filter(Boolean);
+
+  const baseWhere = {
+    id: { not: productId },
+    status: { in: ['active', 'reserved'] },
+  };
+
+  let products = [];
+  for (const categoryId of categoryIds) {
+    products = await prisma.product.findMany({
+      where: { ...baseWhere, category_id: categoryId },
+      include: productInclude,
+      orderBy: [{ views: 'desc' }, { favorites_count: 'desc' }],
+      take: limit,
+    });
+    if (products.length > 0) break;
+  }
 
   return products.map((p) => formatProduct(p));
 }

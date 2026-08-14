@@ -248,10 +248,10 @@ export default function EditListingPage() {
         const formData = new FormData();
         filesToUpload.forEach((file) => formData.append("files", file));
         const { default: api } = await import("@/shared/services/api");
-        const { data } = await api.post("/upload/image", formData, {
+        const { data } = await api.post("/upload/images", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        uploadedUrls = data.urls || [];
+        uploadedUrls = data.data.map((img) => img.url);
       }
       const allImages = [...existingUrls, ...uploadedUrls];
 

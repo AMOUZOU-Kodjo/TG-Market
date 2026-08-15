@@ -126,6 +126,7 @@ export async function endNegotiation(req, res, next) {
       Number(req.params.id),
       req.user.id,
     );
+    try { req.app.get('io')?.emit('product_updated', { product: { id: Number(req.params.id) } }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);

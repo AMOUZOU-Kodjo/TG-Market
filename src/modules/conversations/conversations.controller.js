@@ -44,6 +44,10 @@ export async function createConversation(req, res, next) {
       productId ? Number(productId) : undefined,
     );
 
+    if (productId) {
+      try { req.app.get('io')?.emit('product_updated', { product: { id: Number(productId) } }); } catch {}
+    }
+
     res.status(201).json(conversation);
   } catch (err) {
     next(err);
@@ -62,6 +66,7 @@ export async function markAsRead(req, res, next) {
 export async function deleteConversation(req, res, next) {
   try {
     const result = await conversationsService.deleteConversation(Number(req.params.id), req.user.id);
+    try { req.app.get('io')?.emit('product_updated', { product: {} }); } catch {}
     res.json(result);
   } catch (err) {
     next(err);

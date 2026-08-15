@@ -72,7 +72,7 @@ export default function NotificationsPage() {
   const { data: notificationsData, isLoading } = useNotifications();
   const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllNotificationsRead();
-  const { markAsRead: socketMarkAsRead, markAllAsRead: socketMarkAllAsRead } = useNotificationContext();
+  const { markAsRead: socketMarkAsRead, markAllAsRead: socketMarkAllAsRead, clearAll } = useNotificationContext();
 
   const notifications = notificationsData?.data ?? [];
 
@@ -100,6 +100,16 @@ export default function NotificationsPage() {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       queryClient.invalidateQueries({ queryKey: ["unreadNotificationCount"] });
       toast.success("Notification supprimée");
+    } catch {
+      toast.error("Erreur lors de la suppression");
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    try {
+      await notificationsApi.deleteAll();
+      clearAll();
+      toast.success("Toutes les notifications ont été supprimées");
     } catch {
       toast.error("Erreur lors de la suppression");
     }
@@ -159,6 +169,9 @@ export default function NotificationsPage() {
             Tout marquer comme lu
           </Button>
         )}
+        <Button variant="ghost" size="sm" icon={Trash2} onClick={handleDeleteAll}>
+          Tout supprimer
+        </Button>
       </div>
 
       <div className="mb-4 flex items-center gap-2">

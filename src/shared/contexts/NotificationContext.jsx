@@ -49,12 +49,20 @@ export function NotificationProvider({ children }) {
     queryClient.invalidateQueries({ queryKey: ["unreadNotificationCount"] });
   }, [setUser, queryClient]);
 
+  const clearAll = useCallback(() => {
+    setUnreadCount(0);
+    setUser((prev) => prev ? { ...prev, unreadNotifications: 0 } : prev);
+    queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    queryClient.invalidateQueries({ queryKey: ["unreadNotificationCount"] });
+  }, [setUser, queryClient]);
+
   return (
     <NotificationContext.Provider
       value={{
         unreadCount,
         markAsRead,
         markAllAsRead,
+        clearAll,
       }}
     >
       {children}

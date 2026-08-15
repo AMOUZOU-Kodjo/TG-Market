@@ -51,6 +51,9 @@ export function RealtimeSync() {
       queryClient.invalidateQueries({ queryKey: ["adminEscrow"] });
       queryClient.invalidateQueries({ queryKey: ["adminStats"] });
       queryClient.invalidateQueries({ queryKey: ["adminActivity"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["product"] });
+      queryClient.invalidateQueries({ queryKey: ["myProducts"] });
     }));
 
     unsubs.push(on("escrow_updated", ({ escrow }) => {
@@ -59,6 +62,9 @@ export function RealtimeSync() {
       queryClient.invalidateQueries({ queryKey: ["adminEscrow"] });
       queryClient.invalidateQueries({ queryKey: ["adminStats"] });
       queryClient.invalidateQueries({ queryKey: ["adminActivity"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["product"] });
+      queryClient.invalidateQueries({ queryKey: ["myProducts"] });
     }));
 
     // Favorites
@@ -200,6 +206,8 @@ export function RealtimeSync() {
       queryClient.invalidateQueries({ queryKey: ["kycBadges"] });
       queryClient.invalidateQueries({ queryKey: ["adminStats"] });
       queryClient.invalidateQueries({ queryKey: ["adminKycPendingCount"] });
+      queryClient.invalidateQueries({ queryKey: ["seller"] });
+      queryClient.invalidateQueries({ queryKey: ["sellers"] });
     }));
 
     // Settings

@@ -1,5 +1,18 @@
 import prisma from '../../config/database.js';
 import { requireVerifiedSeller } from '../../utils/kyc.js';
+import { findForbiddenWords } from '../../utils/wordFilter.js';
+
+function assertAllowedContent(title, description) {
+  const banned = [
+    ...(title ? findForbiddenWords(title) : []),
+    ...(description ? findForbiddenWords(description) : []),
+  ];
+  if (banned.length > 0) {
+    const error = new Error('Votre annonce contient un contenu interdit par nos CGU');
+    error.status = 422;
+    throw error;
+  }
+}
 
 function formatProduct(product, userId = null) {
   return {
@@ -213,6 +226,8 @@ export async function getProductById(productId, userId = null) {
 export async function createProduct(userId, data) {
   await requireVerifiedSeller(userId);
 
+  assertAllowedContent(data.title, data.description);
+
   const category = await prisma.category.findUnique({
     where: { id: data.categoryId },
     select: { id: true },
@@ -406,10 +421,12 @@ export async function deleteProduct(productId, userId) {
   }
 
   if (existing.user_id !== userId) {
-    const error = new Error('Non autorisé à supprimer ce produit');
+    const error = new Error('Non autorisé à modifier ce produit');
     error.status = 403;
     throw error;
   }
+
+  assertAllowedContent(data.title, data.description);
 
   const activeEscrows = await prisma.escrowTransaction.findMany({
     where: {

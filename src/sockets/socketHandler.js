@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import jwtConfig from '../config/jwt.js';
 import prisma from '../config/database.js';
+import { containsForbiddenContent } from '../utils/wordFilter.js';
 
 const onlineUsers = new Map();
 
@@ -56,6 +57,13 @@ export function setupSocketIO(io) {
         const text = (content ?? '').toString().trim();
         if (!['text', 'image', 'offer', 'system'].includes(type)) type = 'text';
         if (type === 'text' && !text) return;
+        if (type !== 'image' && containsForbiddenContent(text)) {
+          socket.emit('message_rejected', {
+            conversationId,
+            error: 'Ce message contient un contenu interdit par nos CGU',
+          });
+          return;
+        }
 
         const message = await prisma.message.create({
           data: {

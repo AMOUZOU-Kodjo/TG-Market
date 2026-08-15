@@ -1,6 +1,7 @@
 import * as messagesService from './messages.service.js';
 import { buildPaginationMeta } from '../../utils/pagination.js';
 import { getUserSockets } from '../../sockets/socketHandler.js';
+import { containsForbiddenContent } from '../../utils/wordFilter.js';
 import prisma from '../../config/database.js';
 
 const VALID_MESSAGE_TYPES = ['text', 'image', 'offer', 'system'];
@@ -34,6 +35,10 @@ export async function sendMessage(req, res, next) {
 
     if (type && !VALID_MESSAGE_TYPES.includes(type)) {
       return res.status(422).json({ error: 'Type de message invalide' });
+    }
+
+    if (!isImage && containsForbiddenContent(text)) {
+      return res.status(422).json({ error: 'Ce message contient un contenu interdit par nos CGU' });
     }
 
     const conversationId = Number(req.params.id);

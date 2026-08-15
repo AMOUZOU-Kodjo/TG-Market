@@ -1,5 +1,6 @@
 import prisma from '../../config/database.js';
 import { requireVerifiedSeller } from '../../utils/kyc.js';
+import { findForbiddenWords } from '../../utils/wordFilter.js';
 
 function formatVehicle(vehicle, userId = null) {
   const product = vehicle.product;
@@ -219,6 +220,13 @@ export async function getVehicleById(id, userId = null) {
 export async function createVehicle(userId, data) {
   await requireVerifiedSeller(userId);
 
+  const banned = findForbiddenWords(data.title).concat(findForbiddenWords(data.description));
+  if (banned.length > 0) {
+    const error = new Error('Votre annonce contient un contenu interdit par nos CGU');
+    error.status = 422;
+    throw error;
+  }
+
   const category = await prisma.category.findUnique({
     where: { id: data.categoryId },
     select: { id: true },
@@ -333,6 +341,13 @@ export async function updateVehicle(id, data, userId) {
   if (existing.product.user_id !== userId) {
     const error = new Error('Non autorisé à modifier ce véhicule');
     error.status = 403;
+    throw error;
+  }
+
+  const banned = findForbiddenWords(data.title).concat(findForbiddenWords(data.description));
+  if (banned.length > 0) {
+    const error = new Error('Votre annonce contient un contenu interdit par nos CGU');
+    error.status = 422;
     throw error;
   }
 

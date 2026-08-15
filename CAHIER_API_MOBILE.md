@@ -193,3 +193,19 @@
 - Frontend web : `https://ak-market.pages.dev`
 - Health check : `GET /health`
 - Test socket : connexion avec token puis `join_room` sur `conversation:<id>`
+
+---
+
+## 13. Push Notifications — `/api/push` (ajouté août 2026)
+
+Fonctionne pour les PWA installées (Web Push via VAPID). Le backend envoie le push à chaque notification (`notifyUser`) et à chaque message (API `sendMessage` + socket `send_message`, `tag: msg-{conversationId}` pour remplacer la précédente).
+
+| Méthode | Path | Auth | Description |
+|---|---|---|---|
+| GET | `/push/config` | ✗ | `{ enabled, publicKey }` — clé VAPID publique pour s'abonner |
+| POST | `/push/subscribe` | ✓ | Body : `PushSubscription` navigateur (`endpoint`, `keys`) — upsert par endpoint |
+| DELETE | `/push/subscribe` | ✓ | Body : `{ endpoint }` — désabonnement |
+
+**Payload push** : `{ title, body, data: { url, conversationId, productId }, tag }` — l'utilisateur est redirigé vers `/messages/:id` ou `/notifications` au clic. Respecte `User.notifications_push` ; abonnements invalides supprimés (404/410).
+
+> Pour une app mobile native, les notifications passeraient par FCM/APNs (Firebase) — le serveur envoie alors vers un device token au lieu d'un endpoint Web Push. Le modèle `PushSubscription` stocke l'endpoint, `p256dh`, `auth`.

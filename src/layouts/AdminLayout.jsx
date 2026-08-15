@@ -42,13 +42,13 @@ export default function AdminLayout() {
   const { data: kycPendingData } = useQuery({
     queryKey: ["adminKycPendingCount"],
     queryFn: () => api.get("/admin/kyc/pending?page=1&perPage=1").then((r) => r.data.meta.total),
-    refetchInterval: 60000,
+    refetchInterval: 30000,
   });
 
   const { data: reportsData } = useQuery({
     queryKey: ["adminReportsCount"],
     queryFn: () => api.get("/admin/reports?page=1&perPage=1").then((r) => r.data.meta.total),
-    refetchInterval: 60000,
+    refetchInterval: 30000,
   });
 
   const navGroups = [

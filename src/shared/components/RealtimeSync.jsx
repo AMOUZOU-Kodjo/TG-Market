@@ -14,6 +14,11 @@ export function RealtimeSync() {
     const unsubs = [];
 
     // Products
+    unsubs.push(on("product_viewed", ({ productId }) => {
+      if (productId) queryClient.invalidateQueries({ queryKey: ["product", productId] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    }));
+
     unsubs.push(on("product_created", () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       queryClient.invalidateQueries({ queryKey: ["myProducts"] });
@@ -194,6 +199,7 @@ export function RealtimeSync() {
       queryClient.invalidateQueries({ queryKey: ["kycStatus"] });
       queryClient.invalidateQueries({ queryKey: ["kycBadges"] });
       queryClient.invalidateQueries({ queryKey: ["adminStats"] });
+      queryClient.invalidateQueries({ queryKey: ["adminKycPendingCount"] });
     }));
 
     // Settings
@@ -204,10 +210,18 @@ export function RealtimeSync() {
     // Reports
     unsubs.push(on("report_created", () => {
       queryClient.invalidateQueries({ queryKey: ["adminReports"] });
+      queryClient.invalidateQueries({ queryKey: ["adminReportsCount"] });
     }));
 
     unsubs.push(on("report_updated", () => {
       queryClient.invalidateQueries({ queryKey: ["adminReports"] });
+      queryClient.invalidateQueries({ queryKey: ["adminReportsCount"] });
+    }));
+
+    // Contact messages (admin)
+    unsubs.push(on("contact_message_created", () => {
+      queryClient.invalidateQueries({ queryKey: ["adminUnreadMessages"] });
+      queryClient.invalidateQueries({ queryKey: ["adminContactMessages"] });
     }));
 
     return () => {

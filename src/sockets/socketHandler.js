@@ -81,10 +81,23 @@ export function setupSocketIO(io) {
           data: { updated_at: new Date() },
         });
 
-        await prisma.conversationParticipant.updateMany({
+        const otherParticipant = await prisma.conversationParticipant.findFirst({
           where: { conversation_id: conversationId, user_id: { not: userId } },
-          data: { unread_count: { increment: 1 }, deleted_at: null },
+          select: { user_id: true, conversation: { select: { product_id: true } } },
         });
+
+        const room = `conversation:${conversationId}`;
+        const roomSocketIds = io.sockets.adapter.rooms.get(room);
+        const isRecipientViewing = otherParticipant
+          ? getUserSockets(otherParticipant.user_id).some((sid) => roomSocketIds?.has(sid) === true)
+          : false;
+
+        if (!isRecipientViewing) {
+          await prisma.conversationParticipant.updateMany({
+            where: { conversation_id: conversationId, user_id: { not: userId } },
+            data: { unread_count: { increment: 1 }, deleted_at: null },
+          });
+        }
 
         const formattedMessage = {
           id: message.id,
@@ -97,14 +110,9 @@ export function setupSocketIO(io) {
           createdAt: message.created_at,
         };
 
-        io.to(`conversation:${conversationId}`).emit('new_message', {
+        io.to(room).emit('new_message', {
           conversationId,
           message: formattedMessage,
-        });
-
-        const otherParticipant = await prisma.conversationParticipant.findFirst({
-          where: { conversation_id: conversationId, user_id: { not: userId } },
-          select: { user_id: true, conversation: { select: { product_id: true } } },
         });
         if (otherParticipant) {
           getUserSockets(otherParticipant.user_id).forEach((sid) => {

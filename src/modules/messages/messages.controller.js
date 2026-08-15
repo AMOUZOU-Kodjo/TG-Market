@@ -42,15 +42,29 @@ export async function sendMessage(req, res, next) {
     }
 
     const conversationId = Number(req.params.id);
+    const io = req.app.get('io');
+
+    let isRecipientViewing = false;
+    if (io) {
+      const other = await prisma.conversationParticipant.findFirst({
+        where: { conversation_id: conversationId, user_id: { not: req.user.id } },
+        select: { user_id: true },
+      });
+      if (other) {
+        const roomSocketIds = io.sockets.adapter.rooms.get(`conversation:${conversationId}`);
+        isRecipientViewing = getUserSockets(other.user_id).some((sid) => roomSocketIds?.has(sid) === true);
+      }
+    }
+
     const message = await messagesService.sendMessage(
       conversationId,
       req.user.id,
       (text ?? '').trim(),
       type,
       metadata,
+      isRecipientViewing,
     );
 
-    const io = req.app.get('io');
     if (io) {
       io.to(`conversation:${conversationId}`).emit('new_message', {
         conversationId,

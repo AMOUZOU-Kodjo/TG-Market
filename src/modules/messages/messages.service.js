@@ -83,7 +83,7 @@ export async function getMessages(conversationId, userId, { page, perPage }) {
   };
 }
 
-export async function sendMessage(conversationId, senderId, text, type = 'text', metadata = null) {
+export async function sendMessage(conversationId, senderId, text, type = 'text', metadata = null, isRecipientViewing = false) {
   const participant = await prisma.conversationParticipant.findUnique({
     where: {
       conversation_id_user_id: {
@@ -99,7 +99,7 @@ export async function sendMessage(conversationId, senderId, text, type = 'text',
     throw error;
   }
 
-  const [createdMessage] = await prisma.$transaction([
+  const operations = [
     prisma.message.create({
       data: {
         conversation_id: conversationId,
@@ -114,17 +114,24 @@ export async function sendMessage(conversationId, senderId, text, type = 'text',
       where: { id: conversationId },
       data: { updated_at: new Date() },
     }),
-    prisma.conversationParticipant.updateMany({
-      where: {
-        conversation_id: conversationId,
-        user_id: { not: senderId },
-      },
-      data: {
-        unread_count: { increment: 1 },
-        deleted_at: null,
-      },
-    }),
-  ]);
+  ];
+
+  if (!isRecipientViewing) {
+    operations.push(
+      prisma.conversationParticipant.updateMany({
+        where: {
+          conversation_id: conversationId,
+          user_id: { not: senderId },
+        },
+        data: {
+          unread_count: { increment: 1 },
+          deleted_at: null,
+        },
+      }),
+    );
+  }
+
+  const [createdMessage] = await prisma.$transaction(operations);
 
   return formatMessage(createdMessage);
 }

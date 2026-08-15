@@ -448,6 +448,7 @@ export async function verifyPaymentAdmin(req, res, next) {
 
     const io = req.app.get('io');
     if (io) {
+      try { io.emit('escrow_updated', { escrow }); } catch {}
       const { notifyUser } = await import('../notifications/notifications.service.js');
       await notifyUser(io, escrow.buyerId, {
         type: 'payment_verified',
@@ -506,6 +507,7 @@ export async function resolveEscrowDispute(req, res, next) {
 
     const io = req.app.get('io');
     if (io) {
+      try { io.emit('escrow_updated', { escrow }); } catch {}
       const { notifyUser } = await import('../notifications/notifications.service.js');
       if (action === 'refund') {
         await notifyUser(io, escrow.buyerId, {

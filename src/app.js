@@ -185,6 +185,11 @@ app.post('/api/contact', async (req, res) => {
     data: { name, email, subject, message },
   });
 
+  try {
+    const io = req.app.get('io');
+    if (io) io.emit('contact_message_created', {});
+  } catch {}
+
   sendEmail({
     to: 'phipsipy@gmail.com',
     subject: `[Contact] ${subject || 'Nouveau message'} de ${name}`,

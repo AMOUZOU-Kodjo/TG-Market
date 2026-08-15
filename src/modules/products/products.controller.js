@@ -98,6 +98,9 @@ export async function incrementViews(req, res, next) {
       userAgent,
       userId,
     );
+    if (result.viewed) {
+      try { req.app.get('io')?.emit('product_viewed', { productId: Number(req.params.id) }); } catch {}
+    }
     res.json(result);
   } catch (err) {
     next(err);

@@ -55,3 +55,12 @@ export async function deleteNotification(req, res, next) {
     next(err);
   }
 }
+
+export async function deleteAllNotifications(req, res, next) {
+  try {
+    await notificationsService.deleteAllNotifications(req.user.id);
+    res.status(204).end();
+  } catch (err) {
+    next(err);
+  }
+}

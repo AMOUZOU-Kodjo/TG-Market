@@ -85,6 +85,12 @@ export async function deleteNotification(id, userId) {
   await prisma.notification.delete({ where: { id } });
 }
 
+export async function deleteAllNotifications(userId) {
+  await prisma.notification.deleteMany({
+    where: { user_id: userId },
+  });
+}
+
 export async function createNotification({ userId, type, title, description, productId = null, metadata = null }) {
   const notification = await prisma.notification.create({
     data: {

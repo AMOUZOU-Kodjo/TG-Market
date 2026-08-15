@@ -73,6 +73,7 @@ import {
   OffersPage,
   BundlesListPage,
   BundlesManagePage,
+  SafetyPage,
 } from "@/routes/lazyPages";
 
 const GOOGLE_CLIENT_ID =
@@ -187,6 +188,7 @@ function App() {
                           />
 
                           <Route path="/a-propos" element={<AboutPage />} />
+                          <Route path="/securite" element={<SafetyPage />} />
                           <Route path="/comment-ca-marche" element={<HowItWorksPage />} />
                           <Route path="/contact" element={<ContactPage />} />
                           <Route path="/faq" element={<FAQPage />} />

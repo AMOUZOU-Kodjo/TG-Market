@@ -54,6 +54,7 @@ const BundleDetailPage = lazy(() => import("@/features/bundles/pages/BundleDetai
 const OffersPage = lazy(() => import("@/features/offers/pages/OffersPage"));
 const BundlesListPage = lazy(() => import("@/features/bundles/pages/BundlesListPage"));
 const BundlesManagePage = lazy(() => import("@/features/dashboard/pages/BundlesManagePage"));
+const SafetyPage = lazy(() => import("@/features/static/pages/SafetyPage"));
 
 export {
   HomePage,
@@ -110,4 +111,5 @@ export {
   OffersPage,
   BundlesListPage,
   BundlesManagePage,
+  SafetyPage,
 };

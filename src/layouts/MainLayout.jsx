@@ -462,14 +462,19 @@ location.pathname.startsWith("/comment-ca-marche") ||location.pathname.startsWit
               <div className="text-center mb-8 lg:mb-0 w-full">
                 <h3 className="text-footer-heading font-extrabold text-xl mb-4">À propos</h3>
                 <ul className="space-y-3 text-sm font-bold">
-                  {[
+                  {[ 
+                    { to: "/a-propos", label: "Qui sommes-nous ?" },
+                    { to: "/securite", label: "Sécurité" },
                     { to: "/confidentialite", label: "Politique de confidentialité" },
                     { to: "/mentions-legales", label: "Mentions légales" },
-                    { to: "/a-propos", label: "Sécurité" },
                     { to: "/conditions", label: "CGU" },
                   ].map((link) => (
                     <li key={link.label}>
-                      <Link to={link.to} className="hover:text-footer-heading transition-colors">
+                      <Link
+                        to={link.to}
+                        onClick={() => window.scrollTo(0, 0)}
+                        className="hover:text-footer-heading transition-colors"
+                      >
                         {link.label}
                       </Link>
                     </li>

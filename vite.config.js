@@ -19,8 +19,8 @@ export default defineConfig({
       },
       includeAssets: ["favicon.svg", "logo-tg.png"],
       manifest: {
-        name: "TG-Market - Achat & Vente d'occasion au Togo",
-        short_name: "AK Market",
+        name: "OccasionTG - Achat & Vente d'occasion au Togo",
+        short_name: "OccasionTG",
         description: "Achetez et vendez en toute sécurité au Togo. Téléphones, véhicules, vêtements, meubles et plus. Paiement sécurisé via séquestre.",
         theme_color: "#01796F",
         background_color: "#ffffff",

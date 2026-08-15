@@ -22,7 +22,7 @@ import toast from "react-hot-toast";
 import { conversationsApi } from "@/features/chat/services/conversations.api";
 
 export default function ConversationPanel({ conversation, messages: initialMessages = [] }) {
-  const { user, setUser } = useAuth();
+  const { user } = useAuth();
   const { emit, on, off, connected } = useSocket();
   const qc = useQueryClient();
 
@@ -78,9 +78,6 @@ export default function ConversationPanel({ conversation, messages: initialMessa
 
     const unsubMessage = on("new_message", (data) => {
       if (data.conversationId !== convId) return;
-      if (data.message.senderId !== user?.id) {
-        setUser((prev) => prev ? { ...prev, unreadMessages: prev.unreadMessages + 1 } : prev);
-      }
       setMessages((prev) => {
         if (prev.some((m) => m.id === data.message.id)) return prev;
         if (data.message.senderId === user?.id) {
@@ -153,18 +150,11 @@ export default function ConversationPanel({ conversation, messages: initialMessa
       if (userId === remoteParticipant.id) setParticipantOnline(false);
     });
 
-    const unsubNotif = on("message_notification", ({ conversationId }) => {
-      if (conversationId !== convId) {
-        setUser((prev) => prev ? { ...prev, unreadMessages: prev.unreadMessages + 1 } : prev);
-      }
-    });
-
     return () => {
       unsubOnline();
       unsubOffline();
-      unsubNotif();
     };
-  }, [connected, on, remoteParticipant, convId, user, setUser]);
+  }, [connected, on, remoteParticipant]);
 
   useEffect(() => {
     if (convId) markAsRead(convId).catch(() => {});

@@ -182,6 +182,9 @@ export function RealtimeSync() {
     unsubs.push(on("offer_updated", ({ offerId }) => {
       queryClient.invalidateQueries({ queryKey: ["offers"] });
       queryClient.invalidateQueries({ queryKey: ["offer", offerId] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["product"] });
+      queryClient.invalidateQueries({ queryKey: ["myProducts"] });
     }));
 
     // Reviews

@@ -109,5 +109,19 @@ export async function notifyUser(io, userId, { type, title, description, product
     io.to(sid).emit('notification', notification);
   });
 
+  const { sendPush } = await import('../push/push.service.js');
+  sendPush(userId, {
+    title: notification.title,
+    body: notification.description,
+    data: {
+      url: type === 'message' && metadata?.conversationId
+        ? `/messages/${metadata.conversationId}`
+        : '/notifications',
+      notificationId: notification.id,
+      productId: notification.product_id,
+    },
+    tag: type === 'message' ? `msg-${metadata?.conversationId ?? notification.id}` : `notif-${notification.id}`,
+  });
+
   return notification;
 }

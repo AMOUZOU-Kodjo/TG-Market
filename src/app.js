@@ -31,6 +31,7 @@ import faqRoutes from './modules/faq/faq.routes.js';
 import reportsRoutes from './modules/reports/reports.routes.js';
 import paymentRoutes from './modules/payment/payment.routes.js';
 import adminRoutes from './modules/admin/admin.routes.js';
+import pushRoutes from './modules/push/push.routes.js';
 
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -227,6 +228,7 @@ app.use('/api/faqs', faqRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/push', pushRoutes);
 
 // ─── 404 ─────────────────────────────────────────────
 app.use((_req, res) => {

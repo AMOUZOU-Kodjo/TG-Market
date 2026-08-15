@@ -114,6 +114,18 @@ export function setupSocketIO(io) {
             },
           });
 
+          const { sendPush } = await import('../modules/push/push.service.js');
+          sendPush(otherParticipant.user_id, {
+            title: `Nouveau message de ${socket.user.name}`,
+            body: (text || '📷 Photo').substring(0, 120),
+            data: {
+              url: `/messages/${conversationId}`,
+              conversationId,
+              productId: otherParticipant.conversation?.product_id || null,
+            },
+            tag: `msg-${conversationId}`,
+          });
+
           getUserSockets(otherParticipant.user_id).forEach((sid) => {
             io.to(sid).emit('notification', {
               id: Date.now(),

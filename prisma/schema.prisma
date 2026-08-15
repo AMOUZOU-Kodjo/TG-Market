@@ -190,10 +190,26 @@ model User {
   bundles              Bundle[]
   bundle_proposals_received BundleProposal[] @relation("BundleProposalSeller")
   bundle_proposals_made    BundleProposal[] @relation("BundleProposalBuyer")
+  push_subscriptions   PushSubscription[]
 
   @@index([city])
   @@index([created_at])
   @@index([is_active, role])
+}
+
+model PushSubscription {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  endpoint   String   @unique @db.Text
+  p256dh     String   @db.Text
+  auth       String   @db.Text
+  user_agent String?  @db.VarChar(500)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
 }
 
 model RefreshToken {

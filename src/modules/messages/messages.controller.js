@@ -72,6 +72,18 @@ export async function sendMessage(req, res, next) {
           },
         });
 
+        const { sendPush } = await import('../push/push.service.js');
+        sendPush(other.user_id, {
+          title: `Nouveau message de ${req.user.first_name || req.user.name}`,
+          body: ((text ?? '').trim() || '📷 Photo').substring(0, 120),
+          data: {
+            url: `/messages/${conversationId}`,
+            conversationId,
+            productId: other.conversation?.product_id || null,
+          },
+          tag: `msg-${conversationId}`,
+        });
+
         getUserSockets(other.user_id).forEach((sid) => {
           io.to(sid).emit('notification', {
             id: Date.now(),

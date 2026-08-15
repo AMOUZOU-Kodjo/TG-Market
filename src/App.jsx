@@ -15,6 +15,7 @@ import AdminLayout from "@/layouts/AdminLayout";
 import { AuthGuard, GuestGuard, AdminGuard } from "@/guards/AuthGuard";
 import { MaintenanceGuard } from "@/guards/MaintenanceGuard";
 import { AuthLogoutHandler } from "@/shared/contexts/AuthContext";
+import { PushNotificationsSubscriber } from "@/shared/hooks/usePushNotifications";
 import { RealtimeSync } from "@/shared/components/RealtimeSync";
 import UpdateBanner from "@/shared/ui/UpdateBanner";
 
@@ -112,6 +113,7 @@ function App() {
               <SiteSettingsProvider>
                 <BrowserRouter>
                   <AuthLogoutHandler />
+                  <PushNotificationsSubscriber />
                   <RealtimeSync />
                   <UpdateBanner />
                   <MaintenanceGuard>

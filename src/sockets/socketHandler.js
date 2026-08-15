@@ -306,5 +306,5 @@ export function getOnlineUsers() {
 }
 
 export function getUserSockets(userId) {
-  return onlineUsers.get(userId) || new Set();
+  return Array.from(onlineUsers.get(userId) || []);
 }

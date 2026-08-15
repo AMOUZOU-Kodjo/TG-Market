@@ -1003,7 +1003,7 @@ export default function CreateListingPage() {
         const result = await createProduct.mutateAsync(payload);
         results.published.push({ id: result?.id, title: d.values.title });
       } catch (err) {
-        const msg = err?.response?.data?.message || err?.message || "Erreur lors de la publication";
+        const msg = err?.response?.data?.error || err?.response?.data?.message || err?.message || "Erreur lors de la publication";
         results.failed.push({ title: d.values.title || "Annonce sans titre", error: msg });
       }
       setBatchProgress((prev) => ({ ...prev, done: prev.done + 1 }));
@@ -1052,7 +1052,7 @@ export default function CreateListingPage() {
       setIsPublished(true);
       toast.success("Votre annonce a été publiée !");
     } catch (err) {
-      const msg = err?.response?.data?.message || err?.message || "Erreur lors de la publication";
+      const msg = err?.response?.data?.error || err?.response?.data?.message || err?.message || "Erreur lors de la publication";
       toast.error(msg);
     } finally {
       setIsSubmitting(false);

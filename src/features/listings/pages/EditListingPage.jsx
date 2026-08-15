@@ -278,7 +278,7 @@ export default function EditListingPage() {
       setIsSaved(true);
       toast.success("Annonce mise à jour avec succès !");
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Erreur lors de la mise à jour");
+      toast.error(err?.response?.data?.error || err?.response?.data?.message || "Erreur lors de la mise à jour");
     }
   }, [selectedCategory, photos, formValues, id, updateProduct, buildSpecifications]);
 

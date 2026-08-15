@@ -18,6 +18,7 @@ import { useSocket } from "@/shared/contexts/SocketContext";
 import { formatCFA } from "@/shared/utils/format";
 import { useSendMessage, useMarkAsRead } from "@/features/chat/hooks/useConversations";
 import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import { conversationsApi } from "@/features/chat/services/conversations.api";
 
 export default function ConversationPanel({ conversation, messages: initialMessages = [] }) {
@@ -116,6 +117,20 @@ export default function ConversationPanel({ conversation, messages: initialMessa
       });
     });
 
+    const unsubRejected = on("message_rejected", (data) => {
+      if (data.conversationId !== convId) return;
+      setMessages((prev) => {
+        const lastIndex = [...prev]
+          .reverse()
+          .findIndex((m) => m.id.startsWith("optimistic-") && m.senderId === user?.id);
+        if (lastIndex === -1) return prev;
+        const copy = [...prev];
+        copy.splice(copy.length - 1 - lastIndex, 1);
+        return copy;
+      });
+      toast.error(data.error || "Votre message a été refusé");
+    });
+
     return () => {
       if (connected) emit("leave_room", { room });
       unsubMessage();
@@ -123,6 +138,7 @@ export default function ConversationPanel({ conversation, messages: initialMessa
       unsubStopTyping();
       unsubDeleted();
       unsubBulkDeleted();
+      unsubRejected();
     };
   }, [convId, connected, emit, on, user]);
 
@@ -185,8 +201,9 @@ export default function ConversationPanel({ conversation, messages: initialMessa
       try {
         await sendMessage({ text: trimmed, type, metadata });
         qc.invalidateQueries({ queryKey: ["messages", convId] });
-      } catch {
+      } catch (err) {
         setMessages((prev) => prev.filter((m) => m.id !== optimisticMsg.id));
+        toast.error(err?.response?.data?.error || "Votre message n'a pas pu être envoyé");
       }
     }
     qc.invalidateQueries({ queryKey: ["conversations"] });

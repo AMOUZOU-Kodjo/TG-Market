@@ -494,34 +494,37 @@ export async function getSimilarProducts(productId, limit = 10) {
     status: { in: ['active', 'reserved'] },
   };
 
-  let categoryIds = [product.category.id];
-
-  if (product.category.parent_id) {
-    const siblings = await prisma.category.findMany({
-      where: { parent_id: product.category.parent_id },
-      select: { id: true },
-    });
-    categoryIds = [...categoryIds, ...siblings.map((s) => s.id)];
-  } else {
-    const children = await prisma.category.findMany({
-      where: { parent_id: product.category.id },
-      select: { id: true },
-    });
-    categoryIds = [...categoryIds, ...children.map((c) => c.id)];
-  }
+  const orderBy = [{ views: 'desc' }, { favorites_count: 'desc' }];
 
   let products = await prisma.product.findMany({
-    where: { ...baseWhere, category_id: { in: categoryIds } },
+    where: { ...baseWhere, category_id: product.category.id },
     include: productInclude,
-    orderBy: [{ views: 'desc' }, { favorites_count: 'desc' }],
+    orderBy,
     take: limit,
   });
+
+  if (products.length < limit) {
+    const siblings = await prisma.category.findMany({
+      where: { parent_id: product.category.parent_id ?? product.category.id },
+      select: { id: true },
+    });
+    const siblingIds = siblings.map((s) => s.id).filter((id) => id !== product.category.id);
+    if (siblingIds.length > 0) {
+      const extra = await prisma.product.findMany({
+        where: { ...baseWhere, category_id: { in: siblingIds } },
+        include: productInclude,
+        orderBy,
+        take: limit - products.length,
+      });
+      products = [...products, ...extra];
+    }
+  }
 
   if (products.length === 0 && product.category.parent_id) {
     products = await prisma.product.findMany({
       where: { ...baseWhere, category_id: product.category.parent_id },
       include: productInclude,
-      orderBy: [{ views: 'desc' }, { favorites_count: 'desc' }],
+      orderBy,
       take: limit,
     });
   }

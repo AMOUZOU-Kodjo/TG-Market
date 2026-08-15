@@ -473,21 +473,11 @@ export async function getSimilarProducts(productId, limit = 10) {
     where: { id: productId },
     select: {
       id: true,
-      category_id: true,
       status: true,
       category: {
         select: {
           id: true,
           parent_id: true,
-          parent: {
-            select: {
-              id: true,
-              parent_id: true,
-              parent: {
-                select: { id: true, parent_id: true },
-              },
-            },
-          },
         },
       },
     },
@@ -499,28 +489,41 @@ export async function getSimilarProducts(productId, limit = 10) {
     throw error;
   }
 
-  const categoryIds = [
-    product.category.id,
-    product.category.parent_id,
-    product.category.parent?.id,
-    product.category.parent?.parent_id,
-    product.category.parent?.parent?.id,
-  ].filter(Boolean);
-
   const baseWhere = {
     id: { not: productId },
     status: { in: ['active', 'reserved'] },
   };
 
-  let products = [];
-  for (const categoryId of categoryIds) {
+  let categoryIds = [product.category.id];
+
+  if (product.category.parent_id) {
+    const siblings = await prisma.category.findMany({
+      where: { parent_id: product.category.parent_id },
+      select: { id: true },
+    });
+    categoryIds = [...categoryIds, ...siblings.map((s) => s.id)];
+  } else {
+    const children = await prisma.category.findMany({
+      where: { parent_id: product.category.id },
+      select: { id: true },
+    });
+    categoryIds = [...categoryIds, ...children.map((c) => c.id)];
+  }
+
+  let products = await prisma.product.findMany({
+    where: { ...baseWhere, category_id: { in: categoryIds } },
+    include: productInclude,
+    orderBy: [{ views: 'desc' }, { favorites_count: 'desc' }],
+    take: limit,
+  });
+
+  if (products.length === 0 && product.category.parent_id) {
     products = await prisma.product.findMany({
-      where: { ...baseWhere, category_id: categoryId },
+      where: { ...baseWhere, category_id: product.category.parent_id },
       include: productInclude,
       orderBy: [{ views: 'desc' }, { favorites_count: 'desc' }],
       take: limit,
     });
-    if (products.length > 0) break;
   }
 
   return products.map((p) => formatProduct(p));

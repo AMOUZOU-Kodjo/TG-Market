@@ -32,6 +32,8 @@ export default function MessagesPage() {
   const selectedConversation = conversations.find((c) => c.id === selectedId);
   const { data: messagesData, isLoading: messagesLoading } = useMessages(selectedId, {});
 
+  const inDashboard = location.pathname.startsWith("/dashboard");
+
   const filteredConversations = useMemo(() => {
     if (!searchQuery.trim()) return conversations;
     const q = searchQuery.toLowerCase();
@@ -60,7 +62,12 @@ export default function MessagesPage() {
   }, []);
 
   return (
-    <div className="flex h-dvh min-h-0 overflow-hidden bg-white dark:bg-gray-800">
+    <div
+      className={cn(
+        "flex min-h-0 overflow-hidden bg-white dark:bg-gray-800",
+        inDashboard ? "h-[calc(100dvh-6rem)]" : "h-dvh"
+      )}
+    >
       {/* Conversation List Sidebar */}
       <div
         className={cn(

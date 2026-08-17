@@ -3,26 +3,29 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/shared/contexts/AuthContext";
 import { useSiteSettings } from "@/shared/contexts/SiteSettingsContext";
 
+const ALLOWED_DURING_MAINTENANCE = ["/maintenance", "/connexion", "/inscription"];
+
 export function MaintenanceGuard({ children }) {
   const { maintenanceMode } = useSiteSettings();
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isMaintenancePage = location.pathname === "/maintenance";
+  const { pathname } = location;
+  const isAllowed = ALLOWED_DURING_MAINTENANCE.includes(pathname);
+  const isAdmin = user?.role === "admin";
 
   useEffect(() => {
-    if (isLoading) return;
-    if (maintenanceMode && user?.role !== "admin" && !isMaintenancePage) {
-      navigate("/maintenance", { replace: true });
+    if (isLoading || !maintenanceMode) return;
+    if (isAdmin) {
+      if (pathname === "/maintenance") navigate("/", { replace: true });
+      return;
     }
-  }, [maintenanceMode, isLoading, user, isMaintenancePage, navigate]);
+    if (!isAllowed) navigate("/maintenance", { replace: true });
+  }, [maintenanceMode, isLoading, user, isAdmin, pathname, isAllowed, navigate]);
 
   if (isLoading) return null;
-
-  if (maintenanceMode && user?.role !== "admin" && !isMaintenancePage) {
-    return null;
-  }
-
-  return children;
+  if (!maintenanceMode) return children;
+  if (isAdmin || isAllowed) return children;
+  return null;
 }

@@ -2,9 +2,9 @@ export const APP_NAME = "TG-Market";
 export const APP_DESCRIPTION = "La marketplace n°1 au Togo";
 export const CURRENCY = "FCFA";
 const PROD = import.meta.env.PROD;
-export const API_BASE_URL = import.meta.env.VITE_API_URL || (PROD ? "https://tg-market-api-production.up.railway.app/api" : "http://localhost:3000/api");
+export const API_BASE_URL = import.meta.env.VITE_API_URL || (PROD ? "https://tg-market-production-54bc.up.railway.app/api" : "http://localhost:3000/api");
 
-export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || (PROD ? "wss://tg-market-api-production.up.railway.app" : "http://localhost:3000");
+export const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || (PROD ? "wss://tg-market-production-54bc.up.railway.app" : "http://localhost:3000");
 
 export const CITIES = [
   "Lomé",
